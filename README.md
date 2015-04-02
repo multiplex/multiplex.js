@@ -1,2 +1,398 @@
-# multiplex.jx
-A Comprehensive data-structure and LINQ library for JavaScript.
+# Multiplex
+#### Comprehensive data-structure and LINQ library for JavaScript.
+----------------------------
+
+<br/>
+## What is Multiplex
+Multiplex is a set of data-structures and implementation of .Net LINQ methods in JavaScript which adds data querying capabilities to JavaScript objects. The main features are:
+* Complete set of data-structures:
+  - `List` - strongly typed list of objects that can be accessed by index.
+  - `Dictionary` - collection of key/value pairs.
+  - `Collection` - strongly typed collection.
+  - `ReadOnlyCollection` - read-only wrapper collection.
+  - `HashSet` - high-performance set of values that contains no duplicate elements.
+  - `LinkedList` - doubly linked list.
+  - `Queue` - first-in, first-out (FIFO) collection of objects.
+  - `Stack` - last-in-first-out (LIFO) collection of objects.
+  - `Lookup` - collection of keys each mapped to one or more values.
+* Over 40 LINQ methods (90 method overloads).
+* LINQ lazy evaluation.
+* TypeScript support.
+* ES6 [Iteration protocols](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols) compatible.
+* LINQ support over built-in *Array* and *String* classes and *jQuery* objects.
+* Built-in `hash` and `equals` functions to identify objects in a hash-based collection.
+* *JSDoc* documentation.
+* IntelliSense support for *VisualStudio*.
+
+<br/>
+## Get started
+* [Basic syntax](https://github.com/KamyarNazeri/Multiplex#basic-syntax)
+* [The lambda notation](https://github.com/KamyarNazeri/Multiplex#the-lambda-notation)
+* [Executing a query](https://github.com/KamyarNazeri/Multiplex#executing-a-query)
+* [LINQ expression trees](https://github.com/KamyarNazeri/Multiplex#linq-expression-trees)
+* [Using object literals](https://github.com/KamyarNazeri/Multiplex#using-object-literals)
+* [Working with Enumerable](https://github.com/KamyarNazeri/Multiplex#working-with-enumerable)
+  - [Multiplex Collections](https://github.com/KamyarNazeri/Multiplex#--multiplex-collections)
+  - [Array and String](https://github.com/KamyarNazeri/Multiplex#--array-and-string)
+  - [Array-like objects (arguments, NodeList, jQuery)](https://github.com/KamyarNazeri/Multiplex#--array-like-objects-arguments-nodelist-jquery)
+  - [Enumerator interface](https://github.com/KamyarNazeri/Multiplex#--enumerator-interface)
+  - [Regular JavaScript objects](https://github.com/KamyarNazeri/Multiplex#--regular-javascript-objects)
+  - [ECMAScript 6 iteration protocols](https://github.com/KamyarNazeri/Multiplex#--ecmascript-6-iteration-protocols)
+* [Iteration protocols](https://github.com/KamyarNazeri/Multiplex#iteration-protocols)
+  - [ES6 Iteration protocols](https://github.com/KamyarNazeri/Multiplex#es6-iteration-protocols)
+  - [Generator functions](https://github.com/KamyarNazeri/Multiplex#generator-functions)
+  - [Legacy generator functions](https://github.com/KamyarNazeri/Multiplex#legacy-generator-functions)
+  - [Using legacy generator functions as Enumerable](https://github.com/KamyarNazeri/Multiplex#using-legacy-generator-functions-as-enumerable)
+
+
+<br/>
+### Basic syntax 
+----------------------------
+The Multiplex LINQ syntax is standard, easily-learned patterns for querying and updating data:
+
+`mx(source).operator()`
+* A `mx` function to define an *Enumerable* object.
+* A `(source)` to "query" data.
+* A LINQ `operator()` to be performed on the data.
+
+Example:
+
+````javascript
+var query = mx([1, 2, 3, 4, 5]).select(function (t) { return t * t });
+````
+
+Creates an *Enumerable* object which upon execution returns a square root of sequence of numbers.
+
+<br/>
+### The lambda notation
+----------------------------
+Lambda comes from the *Lambda Calculus* and refers to anonymous functions in programming. A lambda expression is an anonymous function that can be used to create functions without the identifier. Lambda expressions are particularly helpful for writing LINQ query expressions and are supported in Multiplex:
+
+Previous example using Lambda notation:
+````javascript
+var query = mx([1, 2, 3, 4, 5]).select("t => t * t");
+````
+
+<br/>
+### Executing a query
+----------------------------
+At what point query expressions are executed can vary. LINQ queries are always executed when the query variable is iterated over, not when the query variable is created. This is called *deferred execution*. You can also force a query to execute immediately, which is useful for caching query results.
+
+In a query that returns a sequence of values, the query variable itself never holds the query results and only stores the query commands. This is known as *deferred execution*; that is, query execution occurs some time after the query is constructed. Execution of the query is deferred until the query variable is iterated over in a `forEach` loop or when you use singleton queries like `count`, `min`, `max`, `sum`, `aggregate`. These methods execute immediately because the query must produce a sequence to calculate the singleton result. To force immediate execution of a query that does not produce a singleton value, you can call the `toList` method, the `toDictionary` method, or the `toArray` method on a query or query variable.
+
+The following example uses the `toArray` method to immediately evaluate a sequence into an array:
+
+````javascript
+mx([1, 2, 3, 4, 5]).select("t => t * t").toArray();
+````
+
+The following example uses the `sum` method to evaluate sum of the first 10 numbers:
+
+````javascript
+mx([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).sum();
+````
+
+And the following example uses the `forEach` method to iterate over an array of numbers and print them in the developer console:
+
+````javascript
+mx([1, 2, 3, 4, 5]).forEach("t => console.log(t)");
+````
+
+<br/>
+### LINQ expression trees
+----------------------------
+Since LINQ queries execution is deferred, you can chain different LINQ operations together to produce more complex expressions. You compose queries in method syntax by chaining the method calls together. And because a query variable does not store the results of the query, you can modify it or use it as the basis for a new query at any time, even after it has been executed.
+
+````javascript
+Enumerable.range(0, 1000)
+    .where("t => t % 2 == 0")
+    .orderByDescending("t => t")
+    .take(10)
+    .toArray();
+````
+
+In the example above, `Enumerable.range` method is used to create 1000 integer numbers starting from 0, then filter even numbers, sort the result in descending order and only take 10 of them. The result is the last 10 even numbers less than 1000:
+
+`[998, 996, 994, 992, 990, 988, 986, 984, 982, 980]`
+
+Note that the query is executed only 10 times, as soon as the query reaches the 10th element, the execution breaks and the result is evaluated into an array. [read more LINQ iteration over a query.](https://msdn.microsoft.com/en-us/library/system.collections.ienumerator.aspx)
+
+<br/>
+### Using object literals
+----------------------------
+An object literal is a list of zero or more pairs of property names and associated values of an object, enclosed in curly braces `{}`. Anonymous types typically are used in the select clause of a query expression to return a subset of the properties from each object in the source sequence:
+
+````javascript
+mx([1, 2, 3, 4, 5]).select("t => { val: t }").toArray();
+````
+
+In Multiplex, equality comparison on anonymous types are defined in terms of the equality of the properties, two instances of the same anonymous type are equal only if all their properties are equal. That becomes very handy working with LINQ operations which make use of equality to produce results, eg. `contains`, `join`, `groupBy`, `groupJoin`, `distinct`, `except` and `intersect`.
+
+Note that in JavaScript two distinct objects are never equal for either strict or abstract comparisons:
+
+````javascript
+{ val: 1} == { val: 1}                  // false
+{ val: 1} === { val: 1}                 // false
+````
+
+However using `mx.equals` method you can compare two object literals which results in true if all their properties are equal:
+
+````javascript
+mx.equals({ val: 1 }, { val: 1 });      // true
+````
+
+Since Multiplex LINQ operations internally make use of the `mx.equals` method, you can write expressions like this using object literals:
+
+```javascript
+mx([1, 2, 3, 4, 5]).select("t => { val: t }").contains({ val: 1 });   // true
+```
+
+The following example uses object literals as the *key* for the `groupBy` operator:
+
+````javascript
+var arr = 
+[
+  { id: 1, val: 10, name: 'A' }, 
+  { id: 1, val: 10, name: 'B' }, 
+  { id: 2, val: 20, name: 'C' }, 
+  { id: 2, val: 20, name: 'D' }
+];
+
+var grp = mx(arr)
+  .groupBy("t => { id: t.id, val: t.val }")   // group `key`
+  .select("t => t.key")
+  .toArray();
+  
+// [{ id: 1, val: 10 }, { id: 2, val: 20 }]
+  
+````
+
+<br/>
+### Working with Enumerable
+----------------------------
+*Enumerable* is the base class for all collections that can be enumerated. It contains a `getEnumerator()` method, which returns an *Enumerator* object. *Enumerator* provides the ability to iterate through the collection by exposing a `current` property and `next()` method. *Enumerator* is an implementation of [Iterator Design Pattern](http://en.wikipedia.org/wiki/Iterator).
+
+The methods in *Enumerable* class provide an implementation of the standard query operators for querying data sources which are *Enumerable*, that is, either are sub-class of the *Enumerable* class or implement `getEnumerator()` method. The standard query operators are general purpose methods that follow the LINQ pattern and enable you to express traversal, filter, and projection operations over data in JavaScript.
+
+The followings are types which can be used to create an *Enumerable* in Multiplex:
+
+<br/>
+#### - Multiplex Collections
+All the collections defined in Multiplex are *Enumerable*, and can be used in LINQ queries:
+````javascript
+var list = new List([1, 2, 3, 4]);      // a list of numbers
+var set = new HashSet([1, 2, 3, 4]);    // a set of numbers
+var dic= list.toDictionary("t => t");   // a dictionary with the key as number
+
+list.select("t => t").toArray();        // [1, 2, 3, 4]
+set.select("t => t").toArray();         // [1, 2, 3, 4]
+dic.select("t => t.key").toArray();     // [1, 2, 3, 4]
+````
+
+<br/>
+#### - Array and String
+Arrays and Strings are enumerable per ser, to make things easy, *Enumerable* methods are applied to JavaScript built-in *String* and *Array* classes, so in short you can use LINQ methods on Array and Strings pretty much the same way you use them on *Enumerable* objects:
+
+````javascript
+[1, 2, 3, 4].select("t => t * t").toArray();    // [1, 4, 9, 16]
+"multiplex".select("t => t").toArray();         // ["m", "u", "l", "t", "i", "p", "l", "e", "x"]
+````
+
+Note that, in the example above the string object is queried as a sequence of characters.
+
+<br/>
+#### - Array-like objects: `arguments`, `NodeList`, `jQuery`
+Array-like objects which expose the `length` property can be used as `Enumerable`, examples are `jQuery` objects, collections returned by `document.querySelectorAll` method and the `arguments` object corresponding to the arguments passed to a function.
+
+The following example uses `jQuery` and Multiplex to get the count of each element in a page:
+````javascript
+mx($("*"))
+  .groupBy("t => t.nodeName")
+  .select("t => { name: t.key, count: t.count() }")
+  .toArray();
+````
+
+The same result using `document.querySelectorAll`:
+````javascript
+mx(document.querySelectorAll("*"))
+  .groupBy("t => t.nodeName")
+  .select("t => { name: t.key, count: t.count() }")
+  .toArray();
+````
+
+The following example uses Multiplex to enumerate `arguments` variable available within the `Test` function:
+````javascript
+function Test()
+{
+  mx(arguments).forEach("t => console.log(t)");
+}
+
+Test(1, 2, 3);    // 1, 2, 3
+Test("a", "b");   // "a", "b"
+````
+
+<br/>
+#### - Enumerator interface
+For advanced usage of *Enumerable*, any object containing a `getEnumerator()` method, which returns an *Enumerator* can be used as *Enumerable* source. Enumerators can be used to read the data in the collection by exposing the `current` property and `next()` method. *Enumerator* is an implementation of [Iterator Design Pattern](http://en.wikipedia.org/wiki/Iterator).
+
+Initially, the enumerator is positioned before the first element in the collection. At this position, the `current` property is undefined. Therefore, you must call the `next()` method to advance the enumerator to the first element of the collection before reading the value of `current`.
+
+`current` returns the same object until `next()` is called. `next()` sets `current` to the next element. If `next()` passes the end of the collection, the enumerator is positioned after the last element in the collection and `next()` returns false. When the enumerator is at this position, subsequent calls to `next()` also return false. If the last call to `next()` returns false, `current` is undefined.
+
+The following code example demonstrates the implementation of the `getEnumerator()` method for a custom object. In this example, `getEnumerator()` is not explicitly called, but it is implemented to yield 3 integer numbers in a LINQ operation.
+````javascript
+var obj = {
+    getEnumerator: function () {
+        var count = 3, index = 0;
+        return {
+            next: function () {
+                if (index++ < count) {
+                    this.current = index;
+                    return true;
+                }
+                else {
+                    this.current = undefined;
+                    return false;
+                }
+            }
+        }
+    }
+};
+
+mx(obj).toArray();    // [1, 2, 3]
+````
+
+Read more about [getEnumerator()](https://msdn.microsoft.com/en-us/library/system.collections.ienumerable.getenumerator.aspx) method.
+
+<br/>
+#### - Regular JavaScript objects
+Any regular JavaScript object can be used as an *Enumerable* source, if an object does not implement `getEnumerator()` method, Multiplex uses object's enumerable properties, in the same order as that provided by a `for...in` loop, projecting `KeyValuePair` objects with `key` being the name of the property and `value` as value of the property:
+
+````javascript
+var obj = { name: "myObj", val: 1 };
+mx(obj).toArray();      // [{ key: "name", value: "myObj" }, { key: "val", value: 1 }]
+````
+
+<br/>
+#### - ECMAScript 6 iteration protocols
+[Iteration protocols](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols) is an addition of ECMAScript 6. Objects implementing this protocol can be used as an *Enumerable* source in Multiplex and are discussed in the next section.
+
+<br/>
+### Iteration protocols
+----------------------------
+
+#### ES6 Iteration protocols
+ECMAScript 6 comes with two iteration protocols: The iterable protocol and the iterator protocol:
+
+* The iterable protocol allows JavaScript objects to define or customize their iteration behavior. In order to be iterable, an object must implement the `@@iterator` method, meaning that the object (or one of the objects up its prototype chain) must have a property with a `Symbol.iterator` key. It is pretty much like the `getEnumerator()` method in the *Enumerable* class.
+* The iterator protocol defines a standard way to produce a sequence of values. An object is an iterator when it implements a `next()` method. It is pretty much like the *Enumerator* class.
+
+*Whenever an object needs to be iterated (such as at the beginning of a `for..of` loop), its `@@iterator` method is called with no arguments, and the returned iterator is used to obtain the values to be iterated.*
+
+Both iterable and iterator protocols are supported in Multiplex:
+* Every *Enumerable* object implements *iterable protocol*
+* Every JavaScript object implementing *iterator protocol* can be used as a source to *Enumerable*
+
+
+The following example demonstrates the use of *iterable protocol* and `for-of` loop in an *Enumerable* object:
+
+````javascript
+var source = Enumerable.range(0, 4);      // An Enumerable of numbers
+var iterable = source[Symbol.iterator];   // Retrieve @@iterator method
+
+for(var value of source){
+    console.log(value);
+}
+// 0
+// 1
+// 2
+// 3
+
+````
+
+The following example demonstrates the use of `iterator protocol` in a `Set` to create an `Enumerable`:
+
+*(`String`, `Array`, `TypedArray`, `Map` and `Set` are all built-in JavaScript iterables, because the prototype objects of them all have an `@@iterator` method.)*
+
+````javascript
+var set = new Set([1, 2, 3]);     // Create a Set of numbers
+mx(set).toArray();                // [1, 2]
+````
+
+#### Generator functions
+Generators are functions which can be exited and later re-entered. Their context (variable bindings) will be saved across re-entrances. Generators are part of ES6 iteration protocols.
+
+The `function*` declaration defines a generator function, which returns a *Generator* object. A generator object is both, *iterator* and *iterable* and is a simple, efficient way to create an *Enumerable*:
+
+The following example demonstrates the use of *generator function* in to create an *Enumerable*:
+
+````javascript
+var gen = function* () {
+  yield 1;
+  yield 2;
+  yield 3;
+}
+
+mx(gen).toArray();    // [1, 2, 3]
+````
+
+*In practice, using generator function, is the best way to create a custom Enumerable.*
+
+#### Legacy generator functions
+Generator functions are great to create an *Enumerable*, however, browser support is at this point very limited (Chrome 39+, FireFox 36+)
+
+To simulate generators functions, Multiplex supports an alternative legacy syntax which makes use of `closure` to create a stateful generator function. You have to use Multiplex's *Enumerator* class to initiate a generator function. 
+When the *Enumerator*'s `next()` method is called, the generator function's body is executed and a `yielder` parameter is passed to the generator function. The `yielder` parameter is itself a **function** which upon execution yields  the value to be returned from the *Enumerator*:
+
+The following example creates an infinite *Enumerator*, each time the `next()` method is called, it increments and yields a number:
+
+````javascript
+var index = 0;
+var gen = new Enumerator(function(yielder){
+  yielder(index++);
+});
+
+gen.next();   // true
+gen.current;  // 0
+gen.next();   // true
+gen.current;  // 1
+````
+
+#### Using legacy generator functions as Enumerable
+To use a legacy generator function with Multiplex, you need to wrap the process of creating an *Enumerator* in a **factory function**. The following example demonstrates creating an *Enumerable* of numbers using legacy generator function:
+
+````javascript
+var source = mx(function(){
+  var count = 3, index = 0;
+  return new Enumerator(function(yielder){
+    if(index++ < count)
+      yielder(index);
+  });
+});
+
+source.toArray();     // [1, 2, 3]
+````
+
+<br/>
+## How to build Multiplex
+In order to build Multiplex, you need to have the latest Node.js/npm and git 1.7 or later.
+For Windows, you have to download and install [git](http://git-scm.com/downloads) and [Node.js](http://nodejs.org/download/).
+
+Clone a copy of the main Multiplex git repo by running:
+
+```bash
+git clone git://github.com/multiplex/multiplex.js.git
+```
+
+To create custom build install [grunt command line interface](https://github.com/gruntjs/grunt-cli) as a global package (If you haven't used [Grunt](http://gruntjs.com/) before, be sure to check out the [Getting Started](http://gruntjs.com/getting-started) guide):
+
+```
+npm install -g grunt-cli
+```
+
+Now by running the `grunt` command, in the `Multiplex` directory, you can build a full version of Multiplex:
+```
+grunt
+```
+
+The built version of Multiplex will be put in the `build/` subdirectory, along with the minified copy and associated map file.
