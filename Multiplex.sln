@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.22310.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{DC0E32DD-78D0-42FE-B07A-6E17D323D034}"
+	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		Gruntfile.js = Gruntfile.js
+		LICENSE.txt = LICENSE.txt
+		package.json = package.json
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2C41D728-E27C-4CE2-8982-B07583082DF3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0AFF5CA7-3C69-45F3-A1B7-E6681E8D880C}"
+	ProjectSection(SolutionItems) = preProject
+		tests\qunit.css = tests\qunit.css
+		tests\qunit.js = tests\qunit.js
+		tests\runtime.html = tests\runtime.html
+		tests\setup.js = tests\setup.js
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "javascript", "javascript", "{9AC4F91F-D8F1-4E0D-AE8A-AC456F610F48}"
+	ProjectSection(SolutionItems) = preProject
+		src\javascript\pixel.intellisense.js = src\javascript\pixel.intellisense.js
+		src\javascript\pixel.js = src\javascript\pixel.js
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "typescript", "typescript", "{87C1D777-B6AF-4EC6-B46D-BF37DA9B60D1}"
+	ProjectSection(SolutionItems) = preProject
+		src\typescript\_references.ts = src\typescript\_references.ts
+		src\typescript\pixel.d.ts = src\typescript\pixel.d.ts
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9AC4F91F-D8F1-4E0D-AE8A-AC456F610F48} = {2C41D728-E27C-4CE2-8982-B07583082DF3}
+		{87C1D777-B6AF-4EC6-B46D-BF37DA9B60D1} = {2C41D728-E27C-4CE2-8982-B07583082DF3}
+	EndGlobalSection
+EndGlobal

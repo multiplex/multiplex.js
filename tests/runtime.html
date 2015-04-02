@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <title>multiplex.js HashCode/Equals Test</title>
+    <script src="../src/javascript/multiplex.js"></script>
+    <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+    <script src="setup.js"></script>
+    <script src="qunit.js"></script>
+    <script>
+
+        TestContext.initialize(100000);
+
+        function RunHashCodeTests() {
+            var combo = document.getElementById("combo_type"),
+                index = combo.value,
+                text = combo.options[combo.selectedIndex].innerHTML,
+                arr = TestContext["arr" + index],
+                attempt = arr.hattempt || 1;
+
+            function HashCodeTest() {
+                var name = text + " array, attempt: " + attempt++,
+                    len = arr.length;
+                arr.hattempt = attempt;
+
+                console.time(name);
+
+                for (var i = 0; i < len; i++)
+                    mx.hash(arr[i]);
+
+                console.timeEnd(name);
+            };
+
+            HashCodeTest();
+        };
+
+        function RunEqualsTests() {
+            var combo = document.getElementById("combo_type"),
+                index = combo.value,
+                text = combo.options[combo.selectedIndex].innerHTML,
+                arr = TestContext["arr" + index],
+                clone = TestContext["arr" + index + "_clone"],
+                attempt = arr.eattempt || 1;
+
+            function EqualsTest() {
+                var name = text + " array, attempt: " + attempt++,
+                    len = arr.length;
+                arr.eattempt = attempt;
+
+                console.time(name);
+
+                for (var i = 0; i < len; i++)
+                    mx.equals(arr[i], clone[i]);
+
+                console.timeEnd(name);
+            };
+
+            EqualsTest();
+        };
+
+        function RunHashCodeStressTest() {
+            var index = 0,
+                next = 1000000,
+                time = new Date().getTime();
+
+            while (index < next) {
+                index++;
+                mx.hash({ index: index });
+            }
+
+            console.log("Complete generating HashCode for 1M objects in " + (new Date().getTime() - time) + " milliseconds.");
+        };
+
+    </script>
+</head>
+<body style="padding:0; font-family:Arial">
+
+    <div>Process hashCode/Equals over 100K objects: </div>
+    <select id="combo_type">
+        <option value="1">Empty object-literal</option>
+        <option value="2">Complex object-literal</option>
+        <option value="3">Object instance without equality-comparer</option>
+        <option value="4">Object instance with equality-comparer</option>
+        <option value="5">Number</option>
+        <option value="6">Float Number</option>
+        <option value="7">String</option>
+        <option value="8">Date</option>
+        <option value="9">Boolean</option>
+    </select>
+    <input type="button" onclick="RunHashCodeTests()" value="Process HashCode" />
+    <input type="button" onclick="RunEqualsTests()" value="Process Equals" />
+    <br />
+    <br />
+    Generate HashCode for 1M objects:
+    <input type="button" onclick="RunHashCodeStressTest()" value="Generate" />
+</body>
+</html>
