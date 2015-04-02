@@ -195,7 +195,7 @@ Arrays and Strings are enumerable per ser, to make things easy, *Enumerable* met
 
 ````javascript
 [1, 2, 3, 4].select("t => t * t").toArray();  // [1, 4, 9, 16]
-"multiplex".select("t => t").toArray();       // ["m", "u", "l", "t", "i", "p", "l", "e", "x"]
+"string".select("t => t").toArray();          // ["s", "t", "r", "i", "n", "g"]
 ````
 
 Note that, in the example above the string object is queried as a sequence of characters.
