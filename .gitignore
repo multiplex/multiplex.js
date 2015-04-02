@@ -1,4 +1,5 @@
 *.suo
 *.dll
 /node_modules
+/assets
 /Pixel.sln.ide
