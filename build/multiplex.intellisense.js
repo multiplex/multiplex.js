@@ -1,9 +1,9 @@
-﻿/// <reference path="pixel.js" />
+﻿/// <reference path="multiplex.js" />
 
 
-/* px
+/* mx
 ---------------------------------------------------------------------- */
-intellisense.annotate(px, {
+intellisense.annotate(mx, {
     /// <field>Provides a set of static methods that provide support for internal operations.</field>
     "runtime": {},
     /// <field>Represents Enumerable extension methods.</field>
@@ -320,7 +320,7 @@ intellisense.annotate(px, {
 
 /* runtime
 ---------------------------------------------------------------------- */
-intellisense.annotate(px.runtime, {
+intellisense.annotate(mx.runtime, {
     "hash": function () {
         /// <signature>
         ///     <summary>
@@ -405,7 +405,7 @@ intellisense.annotate(px.runtime, {
 
 /* extensions
 ---------------------------------------------------------------------- */
-intellisense.annotate(px.extensions, {
+intellisense.annotate(mx.extensions, {
     "aggregate": function () {
         /// <signature>
         ///     <summary>
@@ -1096,7 +1096,7 @@ intellisense.annotate(px.extensions, {
 
 /* Enumerator
 ---------------------------------------------------------------------- */
-intellisense.annotate(px.Enumerator.prototype, {
+intellisense.annotate(mx.Enumerator.prototype, {
     /// <field name="current" type="Object">Gets the current element in the collection.</field>
     "current": {},
     "next": function () {
@@ -1116,7 +1116,7 @@ intellisense.annotate(px.Enumerator.prototype, {
 
 /* Enumerable
 ---------------------------------------------------------------------- */
-intellisense.annotate(px.Enumerable, {
+intellisense.annotate(mx.Enumerable, {
     "empty": function () {
         /// <signature>
         ///     <summary>
@@ -1155,7 +1155,7 @@ intellisense.annotate(px.Enumerable, {
         /// </signature>
     }
 });
-intellisense.annotate(px.Enumerable.prototype, {
+intellisense.annotate(mx.Enumerable.prototype, {
     "getEnumerator": function () {
         /// <signature>
         ///     <summary>
@@ -1165,16 +1165,16 @@ intellisense.annotate(px.Enumerable.prototype, {
         /// </signature>
     }
 });
-intellisense.annotate(px.Enumerable.prototype, px.extensions);
-intellisense.annotate(String.prototype, px.extensions);
-intellisense.annotate(Array.prototype, px.extensions);
+intellisense.annotate(mx.Enumerable.prototype, mx.extensions);
+intellisense.annotate(String.prototype, mx.extensions);
+intellisense.annotate(Array.prototype, mx.extensions);
 
 
 
 
 /* Comparer
 ---------------------------------------------------------------------- */
-intellisense.annotate(px.Comparer, {
+intellisense.annotate(mx.Comparer, {
     /// <field type="Comparer">Gets a default sort order comparer for the type specified by the generic argument.</field>
     "default": {},
     "create": function () {
@@ -1189,7 +1189,7 @@ intellisense.annotate(px.Comparer, {
         /// </signature>
     }
 });
-intellisense.annotate(px.Comparer.prototype, {
+intellisense.annotate(mx.Comparer.prototype, {
     "compare": function () {
         /// <signature>
         ///     <summary>
@@ -1215,7 +1215,7 @@ intellisense.annotate(px.Comparer.prototype, {
 
 /* EqualityComparer
 ---------------------------------------------------------------------- */
-intellisense.annotate(px.EqualityComparer, {
+intellisense.annotate(mx.EqualityComparer, {
     /// <field type="EqualityComparer">Gets a default equality comparer for the type specified by the generic argument.</field>
     "default": {},
     "create": function () {
@@ -1231,7 +1231,7 @@ intellisense.annotate(px.EqualityComparer, {
         /// </signature>
     }
 });
-intellisense.annotate(px.EqualityComparer.prototype, {
+intellisense.annotate(mx.EqualityComparer.prototype, {
     "equals": function () {
         /// <signature>
         ///     <summary>
@@ -1260,7 +1260,7 @@ intellisense.annotate(px.EqualityComparer.prototype, {
 
 /* ReadOnlyCollection
 ---------------------------------------------------------------------- */
-intellisense.annotate(px.Collection.prototype, {
+intellisense.annotate(mx.Collection.prototype, {
     /// <field name="length" type="Number">Gets the number of elements contained in the Collection.</field>
     "length": 0,
     "count": function () {
@@ -1295,7 +1295,7 @@ intellisense.annotate(px.Collection.prototype, {
 
 /* ReadOnlyCollection
 ---------------------------------------------------------------------- */
-intellisense.annotate(px.ReadOnlyCollection.prototype, {
+intellisense.annotate(mx.ReadOnlyCollection.prototype, {
     "get": function () {
         /// <signature>
         ///     <summary>
@@ -1357,7 +1357,7 @@ intellisense.annotate(px.ReadOnlyCollection.prototype, {
 
 /* List
 ---------------------------------------------------------------------- */
-intellisense.annotate(px.List.prototype, {
+intellisense.annotate(mx.List.prototype, {
     "add": function () {
         /// <signature>
         ///     <summary>
@@ -1757,7 +1757,7 @@ intellisense.annotate(px.List.prototype, {
 
 /* Dictionary
 ---------------------------------------------------------------------- */
-intellisense.annotate(px.Dictionary.prototype, {
+intellisense.annotate(mx.Dictionary.prototype, {
     "add": function () {
         /// <signature>
         ///     <summary>
@@ -1880,7 +1880,7 @@ intellisense.annotate(px.Dictionary.prototype, {
 
 /* KeyValuePair
 ---------------------------------------------------------------------- */
-intellisense.annotate(px.KeyValuePair.prototype, {
+intellisense.annotate(mx.KeyValuePair.prototype, {
     /// <field type="Object">Gets the key in the key/value pair.</field>
     "key": {},
     /// <field type="Object">Gets the value in the key/value pair.</field>
@@ -1892,7 +1892,7 @@ intellisense.annotate(px.KeyValuePair.prototype, {
 
 /* HashSet
 ---------------------------------------------------------------------- */
-intellisense.annotate(px.HashSet.prototype, {
+intellisense.annotate(mx.HashSet.prototype, {
     "add": function () {
         /// <signature>
         ///     <summary>
@@ -2076,7 +2076,7 @@ intellisense.annotate(px.HashSet.prototype, {
 
 /* LinkedListNode
 ---------------------------------------------------------------------- */
-intellisense.annotate(px.LinkedListNode.prototype, {
+intellisense.annotate(mx.LinkedListNode.prototype, {
     "value": function () {
         /// <signature>
         ///     <summary>
@@ -2116,7 +2116,7 @@ intellisense.annotate(px.LinkedListNode.prototype, {
 
 /* LinkedList
 ---------------------------------------------------------------------- */
-intellisense.annotate(px.LinkedList.prototype, {
+intellisense.annotate(mx.LinkedList.prototype, {
     "add": function () {
         /// <signature>
         ///     <summary>
@@ -2317,7 +2317,7 @@ intellisense.annotate(px.LinkedList.prototype, {
 
 /* Queue
 ---------------------------------------------------------------------- */
-intellisense.annotate(px.Queue.prototype, {
+intellisense.annotate(mx.Queue.prototype, {
     "clear": function () {
         /// <signature>
         ///     <summary>
@@ -2398,7 +2398,7 @@ intellisense.annotate(px.Queue.prototype, {
 
 /* Stack
 ---------------------------------------------------------------------- */
-intellisense.annotate(px.Stack.prototype, {
+intellisense.annotate(mx.Stack.prototype, {
     "clear": function () {
         /// <signature>
         ///     <summary>
@@ -2479,7 +2479,7 @@ intellisense.annotate(px.Stack.prototype, {
 
 /* Lookup
 ---------------------------------------------------------------------- */
-intellisense.annotate(px.Lookup.prototype, {
+intellisense.annotate(mx.Lookup.prototype, {
     "contains": function () {
         /// <signature>
         ///   <summary>Determines whether a specified key exists in the Lookup.</summary>
@@ -2515,7 +2515,7 @@ intellisense.annotate(px.Lookup.prototype, {
 
 /* Grouping
 ---------------------------------------------------------------------- */
-intellisense.annotate(px.Grouping.prototype, {
+intellisense.annotate(mx.Grouping.prototype, {
     /// <field type="Object">Gets the key of the Grouping.</field>
     "key": {},
     "count": function () {
@@ -2541,7 +2541,7 @@ intellisense.annotate(px.Grouping.prototype, {
 
 /* OrderedEnumerable
 ---------------------------------------------------------------------- */
-intellisense.annotate(px.OrderedEnumerable.prototype, {
+intellisense.annotate(mx.OrderedEnumerable.prototype, {
     "createOrderedEnumerable": function () {
         /// <signature>
         ///     <summary>
@@ -2611,16 +2611,16 @@ intellisense.annotate(px.OrderedEnumerable.prototype, {
 /* window
 ---------------------------------------------------------------------- */
 intellisense.annotate(window, {
-    "px": px.Enumerable,
-    "ReadOnlyCollection": px.ReadOnlyCollection,
-    "List": px.List,
-    "Dictionary": px.Dictionary,
-    "KeyValuePair": px.KeyValuePair,
-    "HashSet": px.HashSet,
-    "LinkedList": px.LinkedList,
-    "LinkedListNode": px.LinkedListNode,
-    "Queue": px.Queue,
-    "Stack": px.Stack,
-    "Comparer": px.Comparer,
-    "EqualityComparer": px.EqualityComparer
+    "mx": mx.Enumerable,
+    "ReadOnlyCollection": mx.ReadOnlyCollection,
+    "List": mx.List,
+    "Dictionary": mx.Dictionary,
+    "KeyValuePair": mx.KeyValuePair,
+    "HashSet": mx.HashSet,
+    "LinkedList": mx.LinkedList,
+    "LinkedListNode": mx.LinkedListNode,
+    "Queue": mx.Queue,
+    "Stack": mx.Stack,
+    "Comparer": mx.Comparer,
+    "EqualityComparer": mx.EqualityComparer
 });

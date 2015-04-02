@@ -1,10 +1,10 @@
 ﻿/*--------------------------------------------------------------------------
-* Pixel - Comprehensive data-structure and LINQ library for JavaScript.
+* Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
 * Ver 0.9.1 (March 28, 2015)
 *
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under Apache License Version 2.0
-* https://github.com/KamyarNazeri/pixel/
+* https://github.com/multiplex/multiplex.js
 *
 *
 * Lexical Note:
@@ -5359,12 +5359,12 @@
     * @param {Enumerable|Iterable|Array|String|Function|Function*|Object} value An Enumerable object.
     * @returns {Enumerable}
     */
-    function pixel(value) {
+    function multiplex(value) {
         return $enumerable(value);
     }
 
 
-    var px = $module(pixel, {
+    var mx = $module(multiplex, {
         runtime: $module({
             hash: $computeHash,
             equals: $computeEquals,
@@ -5402,8 +5402,8 @@
 
 
     $mixin(global, {
-        px: px,
-        pixel: px,
+        mx: mx,
+        multiplex: mx,
         Enumerable: __Enumerable,
         Enumerator: __Enumerator,
         ReadOnlyCollection: __ReadOnlyCollection,

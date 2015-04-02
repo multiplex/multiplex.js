@@ -1,44 +1,44 @@
 ﻿/*--------------------------------------------------------------------------
-* Pixel - Comprehensive data-structure and LINQ library for JavaScript.
+* Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
 * Ver 0.9.1 (March 28, 2015)
 *
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under Apache License Version 2.0
-* https://github.com/KamyarNazeri/pixel/
+* https://github.com/multiplex/multiplex.js
 *
 *--------------------------------------------------------------------------*/
 
 
 
-declare module 'px' {
-    export = px;
+declare module 'mx' {
+    export = mx;
 }
 
-import pixel = px;
+import multiplex = mx;
 
-import IEnumerator = px.IEnumerator;
-import IEnumerable = px.IEnumerable;
+import IEnumerator = mx.IEnumerator;
+import IEnumerable = mx.IEnumerable;
 
-import Enumerator = px.Enumerator;
-import Enumerable = px.Enumerable;
-import Comparer = px.Comparer;
-import EqualityComparer = px.EqualityComparer;
-import ReadOnlyCollection = px.ReadOnlyCollection;
-import List = px.List;
-import KeyValuePair = px.KeyValuePair;
-import Dictionary = px.Dictionary;
-import HashSet = px.HashSet;
-import LinkedListNode = px.LinkedListNode;
-import LinkedList = px.LinkedList;
-import Queue = px.Queue;
-import Stack = px.Stack;
-
-
+import Enumerator = mx.Enumerator;
+import Enumerable = mx.Enumerable;
+import Comparer = mx.Comparer;
+import EqualityComparer = mx.EqualityComparer;
+import ReadOnlyCollection = mx.ReadOnlyCollection;
+import List = mx.List;
+import KeyValuePair = mx.KeyValuePair;
+import Dictionary = mx.Dictionary;
+import HashSet = mx.HashSet;
+import LinkedListNode = mx.LinkedListNode;
+import LinkedList = mx.LinkedList;
+import Queue = mx.Queue;
+import Stack = mx.Stack;
 
 
 
 
-declare module px {
+
+
+declare module mx {
 
 
     /* runtime module
@@ -102,7 +102,7 @@ declare module px {
 
 
 
-    /* pixel static
+    /* multiplex static
     ---------------------------------------------------------------------- */
 
     /**
@@ -2293,14 +2293,14 @@ declare module px {
 
 
 
-/* px
+/* mx
 ---------------------------------------------------------------------- */
 
 /**
 * Exposes the enumerator, which supports an iteration over the specified Enumerable object.
 * @param obj An Enumerable object.
 */
-declare function px<T>(obj: IEnumerable<T>): IEnumerable<T>
+declare function mx<T>(obj: IEnumerable<T>): IEnumerable<T>
 
 
 /**
@@ -2308,28 +2308,28 @@ declare function px<T>(obj: IEnumerable<T>): IEnumerable<T>
 * An Iterable object, is an object that implements the @@iterator method. eg. Map, Set and Iterable objects.
 * @param obj An Iterable object that implements the @@iterator method.
 */
-declare function px<T>(obj: { "@@iterator": () => { next: () => px.IEnumeratorResult<T> } }): IEnumerable<T>
+declare function mx<T>(obj: { "@@iterator": () => { next: () => mx.IEnumeratorResult<T> } }): IEnumerable<T>
 
 
 /**
 * Defines an enumerator, which supports an iteration over the items of the specified Array object.
 * @param arr An array object.
 */
-declare function px<T>(arr: T[]): IEnumerable<T>
+declare function mx<T>(arr: T[]): IEnumerable<T>
 
 
 /**
 * Defines an enumerator, which supports an iteration over the characters of the specified String object.
 * @param str A string object.
 */
-declare function px(str: string): IEnumerable<string>
+declare function mx(str: string): IEnumerable<string>
 
 
 /**
 * Defines an enumerator, which supports an iteration over the specified Generator function.
 * @param func A Generator function.
 */
-declare function px<T>(func: () => (yielder: (value: T) => any) => void): IEnumerable<T>
+declare function mx<T>(func: () => (yielder: (value: T) => any) => void): IEnumerable<T>
 
 
 /**
@@ -2337,11 +2337,11 @@ declare function px<T>(func: () => (yielder: (value: T) => any) => void): IEnume
 * An Array-like object is an object which has the "length" property, eg. arguments, jQuery
 * @param obj An Array-like object.
 */
-declare function px<T>(obj: { length: Number }): IEnumerable<T>
+declare function mx<T>(obj: { length: Number }): IEnumerable<T>
 
 
 /**
 * Defines an enumerator, which supports an iteration over the properties of the specified object.
 * @param obj A regular Object.
 */
-declare function px<T>(obj: Object): IEnumerable<KeyValuePair<string, T>>
+declare function mx<T>(obj: Object): IEnumerable<KeyValuePair<string, T>>
