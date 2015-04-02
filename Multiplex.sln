@@ -25,14 +25,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0AFF5CA7
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "javascript", "javascript", "{9AC4F91F-D8F1-4E0D-AE8A-AC456F610F48}"
 	ProjectSection(SolutionItems) = preProject
-		src\javascript\pixel.intellisense.js = src\javascript\pixel.intellisense.js
-		src\javascript\pixel.js = src\javascript\pixel.js
+		src\javascript\multiplex.intellisense.js = src\javascript\multiplex.intellisense.js
+		src\javascript\multiplex.js = src\javascript\multiplex.js
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "typescript", "typescript", "{87C1D777-B6AF-4EC6-B46D-BF37DA9B60D1}"
 	ProjectSection(SolutionItems) = preProject
 		src\typescript\_references.ts = src\typescript\_references.ts
-		src\typescript\pixel.d.ts = src\typescript\pixel.d.ts
+		src\typescript\multiplex.d.ts = src\typescript\multiplex.d.ts
 	EndProjectSection
 EndProject
 Global
