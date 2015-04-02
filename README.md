@@ -194,8 +194,8 @@ dic.select("t => t.key").toArray();     // [1, 2, 3, 4]
 Arrays and Strings are enumerable per ser, to make things easy, *Enumerable* methods are applied to JavaScript built-in *String* and *Array* classes, so in short you can use LINQ methods on Array and Strings pretty much the same way you use them on *Enumerable* objects:
 
 ````javascript
-[1, 2, 3, 4].select("t => t * t").toArray();    // [1, 4, 9, 16]
-"multiplex".select("t => t").toArray();         // ["m", "u", "l", "t", "i", "p", "l", "e", "x"]
+[1, 2, 3, 4].select("t => t * t").toArray();  // [1, 4, 9, 16]
+"multiplex".select("t => t").toArray();       // ["m", "u", "l", "t", "i", "p", "l", "e", "x"]
 ````
 
 Note that, in the example above the string object is queried as a sequence of characters.
