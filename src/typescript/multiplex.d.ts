@@ -118,7 +118,7 @@ declare module mx {
     * @param objA The first object to compare.
     * @param objB The second object to compare.
     */
-    function equals(objA: any, objB: any);
+    function equals(objA: any, objB: any): boolean;
 
 
     /**
@@ -127,7 +127,7 @@ declare module mx {
     * @param objB The second object to compare.
     * @param comparer An equality comparer to compare values.
     */
-    function equals(objA: any, objB: any, comparer: IEqualityComparer<any>);
+    function equals(objA: any, objB: any, comparer: IEqualityComparer<any>): boolean;
 
 
     /**
@@ -628,7 +628,7 @@ declare module mx {
         * @param index The zero-based List index at which the range starts.
         * @param count The number of elements in the range.
         */
-        getRange(index, count): IList<T>
+        getRange(index: number, count: number): IList<T>
 
 
         /**
@@ -1909,7 +1909,7 @@ declare module mx {
         /**
         * Returns distinct elements from a sequence by using the default equality comparer to compare values.
         */
-        distinct(comparer): IEnumerable<T>
+        distinct(): IEnumerable<T>
 
 
         /**
@@ -2143,7 +2143,7 @@ declare module mx {
         * Invokes a transform function on each element of a sequence and returns the maximum value.
         * @param selector A transform function to apply to each element.
         */
-        max(selector: (item: T) => T): T
+        max<TResult>(selector: (item: T) => TResult): TResult
 
 
         /**
@@ -2156,14 +2156,14 @@ declare module mx {
         * Invokes a transform function on each element of a sequence and returns the minimum value.
         * @param selector A transform function to apply to each element.
         */
-        min(selector: (item: T) => T): T
+        min<TResult>(selector: (item: T) => TResult): TResult
 
 
         /**
         * Filters the elements of an Enumerable based on a specified type.
         * @param type The type to filter the elements of the sequence on.
         */
-        ofType<TResult>(type): IEnumerable<TResult>
+        ofType<TResult>(type: { new (...args: any[]): TResult }): IEnumerable<TResult>
 
 
         /**
@@ -2179,7 +2179,7 @@ declare module mx {
         * @param keySelector A function to extract a key from each element.
         * @param comparer A Comparer to compare keys.
         */
-        orderBy<TKey>(keySelector: (item: T) => TKey, comparer: IEqualityComparer<T>): IOrderedEnumerable<T>
+        orderBy<TKey>(keySelector: (item: T) => TKey, comparer: IEqualityComparer<TKey>): IOrderedEnumerable<T>
 
 
         /**
@@ -2197,7 +2197,7 @@ declare module mx {
         * @param keySelector A function to extract a key from each element.
         * @param comparer A Comparer to compare keys.
         */
-        orderByDescending<TKey>(keySelector: (item: T) => TKey, comparer: IEqualityComparer<T>): IOrderedEnumerable<T>
+        orderByDescending<TKey>(keySelector: (item: T) => TKey, comparer: IEqualityComparer<TKey>): IOrderedEnumerable<T>
 
 
         /**
