@@ -116,9 +116,17 @@ declare module mx {
     * Determines whether the specified object instances are considered equal. calls the overridden "equals" method when available.
     * @param objA The first object to compare.
     * @param objB The second object to compare.
+    */
+    function equals(objA: any, objB: any);
+
+
+    /**
+    * Determines whether the specified object instances are considered equal. calls the overridden "equals" method when available.
+    * @param objA The first object to compare.
+    * @param objB The second object to compare.
     * @param comparer An equality comparer to compare values.
     */
-    function equals<T>(objA: T, objB: T, comparer?: IEqualityComparer<T>);
+    function equals(objA: any, objB: any, comparer: IEqualityComparer<any>);
 
 
     /**
