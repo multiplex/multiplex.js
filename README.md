@@ -189,7 +189,7 @@ All the collections defined in Multiplex are *Enumerable*, and can be used in LI
 ````javascript
 var list = new List([1, 2, 3, 4]);      // a list of numbers
 var set = new HashSet([1, 2, 3, 4]);    // a set of numbers
-var dic= list.toDictionary("t => t");   // a dictionary with the key as number
+var dic= list.toDictionary("t => t");   // a dictionary with numeric keys
 
 list.select("t => t").toArray();        // [1, 2, 3, 4]
 set.select("t => t").toArray();         // [1, 2, 3, 4]
