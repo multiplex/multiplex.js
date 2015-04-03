@@ -84,19 +84,24 @@ In a query that returns a sequence of values, the query variable itself never ho
 The following example uses the `toArray` method to immediately evaluate a sequence into an array:
 
 ````javascript
-mx([1, 2, 3, 4, 5]).select("t => t * t").toArray();
+mx([1, 2, 3, 4, 5]).select("t => t * t").toArray();   // [1, 2, 3, 4, 5]
 ````
 
 The following example uses the `sum` method to evaluate sum of the first 10 numbers:
 
 ````javascript
-mx([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).sum();
+mx([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).sum();            // 55
 ````
 
 And the following example uses the `forEach` method to iterate over an array of numbers and print them in the developer console:
 
 ````javascript
 mx([1, 2, 3, 4, 5]).forEach("t => console.log(t)");
+// 1
+// 2
+// 3
+// 4
+// 5
 ````
 
 <br/>
@@ -116,7 +121,7 @@ In the example above, `Enumerable.range` method is used to create 1000 integer n
 
 `[998, 996, 994, 992, 990, 988, 986, 984, 982, 980]`
 
-Note that the query is executed only 10 times, as soon as the query reaches the 10th element, the execution breaks and the result is evaluated into an array. [read more LINQ iteration over a query.](https://msdn.microsoft.com/en-us/library/system.collections.ienumerator.aspx)
+Note that the query is executed only 10 times, as soon as the query reaches the 10th element, the execution breaks and the result is evaluated into an array. [read more about LINQ iteration over a query.](https://msdn.microsoft.com/en-us/library/system.collections.ienumerator.aspx)
 
 <br/>
 ### Using object literals
