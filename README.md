@@ -11,6 +11,7 @@ Multiplex is a set of data-structures and implementation of .Net LINQ methods in
   - `Collection` - strongly typed collection.
   - `ReadOnlyCollection` - read-only wrapper collection.
   - `HashSet` - high-performance set of values that contains no duplicate elements.
+  - `SortedList` - a collection of key/value pairs that are sorted by a key.
   - `LinkedList` - doubly linked list.
   - `Queue` - first-in, first-out (FIFO) collection of objects.
   - `Stack` - last-in-first-out (LIFO) collection of objects.
