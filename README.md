@@ -252,6 +252,7 @@ var obj = {
     getEnumerator: function () {
         var count = 3, index = 0;
         return {
+            current: undefined,
             next: function () {
                 if (index++ < count) {
                     this.current = index;
