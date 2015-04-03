@@ -1856,6 +1856,178 @@
 
 
     /**
+    * Represents a collection of key/value pairs that are sorted by key based on the associated Comparer implementation.
+    */
+    var __SortedList = (function () {
+
+        /**
+        * Initializes a new instance of the List class.
+        * @param {Dictionary|Comparer|Number=} value The Dictionary whose elements are copied to the new SortedList, he Comparer implementation to use when comparing keys or The initial number of elements that the SortedList can contain.
+        * @param {Comparer=} comparer The Comparer implementation to use when comparing keys.
+        */
+        function SortedList(value, comparer) {
+            comparer = $comparer(comparer);
+            if (value != null) {
+            }
+        }
+
+        return $extend(SortedList, __Collection, {
+
+            /**
+            * Adds an element with the specified key and value into the SortedList.
+            * @param {Object} key The key of the element to add.
+            * @param {Object} value The value of the element to add. The value can be null for reference types.
+            */
+            add: function (key, value) {
+                $nullCheck(key, "key");
+                $nullCheck(value, "value");
+            },
+
+            /**
+            * Gets the value associated with the specified key.
+            * @param {Object} key The key whose value to get.
+            * @returns {Object}
+            */
+            get: function (key) {
+                $nullCheck(key, "key");
+            },
+
+            /**
+            * Gets or sets the number of elements that the SortedList can contain.
+            * @param {Number} value The number of elements that the SortedList can contain.
+            * @returns {Number}
+            */
+            capacity: function (value) {
+                $ensureType(value, "value", __number);
+            },
+
+            /**
+            * Removes all elements from the SortedList.
+            */
+            clear: function () {
+            },
+
+            /**
+            * Gets the Comparer for the sorted list.
+            * @returns {Comparer}
+            */
+            comparer: function () {
+            },
+
+            /**
+            * Determines whether the SortedList contains a specific key.
+            * @param {Object} key The key to locate in the SortedList.
+            * @returns {Boolean}
+            */
+            containsKey: function (key) {
+                $nullCheck(key, "key");
+            },
+
+            /**
+            * Determines whether the SortedList contains a specific value.
+            * @param {Object} value The value to locate in the SortedList.
+            * @returns {Boolean}
+            */
+            containsValue: function () {
+            },
+
+            /**
+            * Gets the number of key/value pairs contained in the SortedList.
+            * @returns {Number}
+            */
+            count: function () {
+            },
+
+            /**
+            * Gets a collection containing the keys in the SortedList, in sorted order.
+            * @returns {List}
+            */
+            keys: function () {
+            },
+
+            /**
+            * Gets a collection containing the values in the SortedLis.
+            * @returns {List}
+            */
+            values: function () {
+            },
+
+            /**
+            * Searches for the specified key and returns the zero-based index within the entire SortedList.
+            * @param {Object} key The key to locate in the SortedList.
+            * @returns {Number}
+            */
+            indexOfKey: function (key) {
+                $nullCheck(key, "key");
+            },
+
+            /**
+            * Searches for the specified value and returns the zero-based index of the first occurrence within the entire SortedList.
+            * @param {Object} value The value to locate in the SortedList.
+            * @returns {Number}
+            */
+            indexOfValue: function (value) {
+                $nullCheck(value, "value");
+            },
+
+            /**
+            * Removes the element with the specified key from the SortedList.
+            * Returns true if the element is successfully removed; otherwise, false. This method also returns false if key was not found in the original SortedList.
+            * @param {Object} key The key of the element to remove.
+            * @returns {Boolean}
+            */
+            remove: function (key) {
+                $nullCheck(key, "key");
+            },
+
+            /**
+            * Removes the element at the specified index of the SortedList.
+            * @param {Number} index The zero-based index of the element to remove.
+            */
+            removeAt: function (index) {
+                $ensureType(index, "index", __number);
+            },
+
+            /**
+            * Sets the value associated with the specified key.
+            * @param {Object} key The key whose value to get or set.
+            * @param {Object} value The value associated with the specified key.
+            */
+            set: function (key, value) {
+                $nullCheck(key, "key");
+                $nullCheck(value, "value");
+            },
+
+            /**
+            * Sets the capacity to the actual number of elements in the SortedList, if that number is less than 90 percent of current capacity.
+            */
+            trimExcess: function () {
+            },
+
+            /**
+            * Gets the value associated with the specified key.
+            * @param {Object} key The key whose value to get.
+            * @param {Function} callback When this method returns, callback method is called with the value
+            * associated with the specified key, if the key is found; otherwise, null for the type of the value parameter.
+            * @returns {Boolean}
+            */
+            tryGetValue: function (key, callback) {
+                $nullCheck(key, "key");
+                $ensureType(callback, "callback", __function);
+            },
+
+            /** 
+            * Returns an enumerator that iterates through the collection. 
+            * @returns {Enumerator}
+            */
+            getEnumerator: function () {
+                return $enumerator(this.items());
+            }
+        });
+    })();
+
+
+    /**
     * Defines a key/value pair that can be set or retrieved.
     */
     var __KeyValuePair = (function () {
@@ -5384,6 +5556,7 @@
         Collection: __Collection,
         ReadOnlyCollection: __ReadOnlyCollection,
         List: __List,
+        SortedList: __SortedList,
         Dictionary: __Dictionary,
         KeyValuePair: __KeyValuePair,
         HashSet: __HashSet,
@@ -5408,6 +5581,7 @@
         Enumerator: __Enumerator,
         ReadOnlyCollection: __ReadOnlyCollection,
         List: __List,
+        SortedList: __SortedList,
         Dictionary: __Dictionary,
         KeyValuePair: __KeyValuePair,
         HashSet: __HashSet,

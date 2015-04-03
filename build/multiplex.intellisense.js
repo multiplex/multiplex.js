@@ -153,6 +153,51 @@ intellisense.annotate(mx, {
         ///     <param name="collection" type="Enumerable">The collection whose elements are copied to the new list.</param>
         /// </signature>
     },
+    "SortedList": function () {
+        /// <signature>
+        ///     <summary>
+        ///         Initializes a new instance of the SortedList class that is empty, 
+        ///         has the default initial capacity, and uses the default Comparer.
+        ///     </summary>
+        /// </signature>
+        /// <signature>
+        ///     <summary>
+        ///         Initializes a new instance of the SortedList class that contains elements  copied from the specified Dictionary, 
+        ///         has sufficient capacity to accommodate the number of elements copied,  and uses the default Comparer.
+        ///     </summary>
+        ///     <param name="dictionary" type="Dictionary">The Dictionary whose elements are copied to the new SortedList.</param>
+        /// </signature>
+        /// <signature>
+        ///     <summary>
+        ///         Initializes a new instance of the SortedList class that is empty, 
+        ///         has the default initial capacity, and uses the specified Comparer.
+        ///     </summary>
+        ///     <param name="comparer" type="Comparer">The Comparer implementation to use when comparing keys.-or-null to use the default Comparer for the type of the key.</param>
+        /// </signature>
+        /// <signature>
+        ///     <summary>
+        ///         Initializes a new instance of the SortedList class that is empty, 
+        ///         has the specified initial capacity, and uses the default Comparer.
+        ///     </summary>
+        ///     <param name="capacity" type="Number">The initial number of elements that the SortedList can contain.</param>
+        /// </signature>
+        /// <signature>
+        ///     <summary>
+        ///         Initializes a new instance of the SortedList class that contains elements copied from the specified Dictionary,
+        ///         has sufficient capacity to accommodate the number of elements copied, and uses the specified Comparer.
+        ///     </summary>
+        ///     <param name="dictionary" type="Dictionary">The Dictionary whose elements are copied to the new SortedList.</param>
+        ///     <param name="comparer" type="Comparer">The Comparer implementation to use when comparing keys.-or-null to use the default Comparer for the type of the key.</param>
+        /// </signature>
+        /// <signature>
+        ///     <summary>
+        ///         Initializes a new instance of the SortedList class that is empty, 
+        ///         has the specified initial capacity, and uses the specified Comparer.
+        ///     </summary>
+        ///     <param name="capacity" type="Number">The initial number of elements that the SortedList can contain.</param>
+        ///     <param name="comparer" type="Comparer">The Comparer implementation to use when comparing keys.-or-null to use the default Comparer for the type of the key.</param>
+        /// </signature>
+    },
     "Dictionary": function () {
         /// <signature>
         ///     <summary>
@@ -1746,6 +1791,171 @@ intellisense.annotate(mx.List.prototype, {
         /// <signature>
         ///     <summary>
         ///         Returns an enumerator that iterates through a List object.
+        ///     </summary>
+        ///     <returns type="Enumerator" />
+        /// </signature>
+    }
+});
+
+
+
+
+/* SortedList
+---------------------------------------------------------------------- */
+intellisense.annotate(mx.SortedList.prototype, {
+    "add": function () {
+        /// <signature>
+        ///     <summary>
+        ///         Adds an element with the specified key and value into the SortedList.
+        ///     </summary>
+        ///     <param name="key" type="Object">The key of the element to add.</param>
+        ///     <param name="value" type="Object">The value of the element to add. The value can be null for reference types.</param>
+        /// </signature>
+    },
+    "get": function () {
+        /// <signature>
+        ///     <summary>
+        ///         Gets the value associated with the specified key.
+        ///     </summary>
+        ///     <param name="key" type="Object">The key whose value to get.</param>
+        ///     <returns type="Object" />
+        /// </signature>
+    },
+    "capacity": function () {
+        /// <signature>
+        ///     <summary>
+        ///         Gets or sets the number of elements that the SortedList can contain.
+        ///     </summary>
+        ///     <param name="value" type="Number">The number of elements that the SortedList can contain.</param>
+        ///     <returns type="Numver" />
+        /// </signature>
+    },
+    "clear": function () {
+        /// <signature>
+        ///     <summary>
+        ///         Removes all elements from the SortedList.
+        ///     </summary>
+        /// </signature>
+    },
+    "comparer": function () {
+        /// <signature>
+        ///     <summary>
+        ///         Gets the Comparer for the sorted list.
+        ///     </summary>
+        ///     <returns type="Comparer" />
+        /// </signature>
+    },
+    "containsKey": function () {
+        /// <signature>
+        ///     <summary>
+        ///         Determines whether the SortedList contains a specific key.
+        ///     </summary>
+        ///     <param name="key" type="Object">The key to locate in the SortedList</param>
+        ///     <returns type="Boolean" />
+        /// </signature>
+    },
+    "containsValue": function () {
+        /// <signature>
+        ///     <summary>
+        ///         Determines whether the SortedList contains a specific value.
+        ///     </summary>
+        ///     <param name="value" type="Object">The value to locate in the SortedList</param>
+        ///     <returns type="Boolean" />
+        /// </signature>
+    },
+    "count": function () {
+        /// <signature>
+        ///     <summary>
+        ///         Gets the number of key/value pairs contained in the SortedList.
+        ///     </summary>
+        ///     <returns type="Number" />
+        /// </signature>
+    },
+    "keys": function () {
+        /// <signature>
+        ///     <summary>
+        ///         Gets a collection containing the keys in the SortedList, in sorted order.
+        ///     </summary>
+        ///     <returns type="List" />
+        /// </signature>
+    },
+    "values": function () {
+        /// <signature>
+        ///     <summary>
+        ///         Gets a collection containing the values in the SortedLis.
+        ///     </summary>
+        ///     <returns type="List" />
+        /// </signature>
+    },
+    "indexOfKey": function () {
+        /// <signature>
+        ///     <summary>
+        ///         Searches for the specified key and returns the zero-based index within the entire SortedList.
+        ///     </summary>
+        ///     <param name="key" type="Object">The key to locate in the SortedList.</param>
+        ///     <returns type="Number" />
+        /// </signature>
+    },
+    "indexOfValue": function () {
+        /// <signature>
+        ///     <summary>
+        ///         Searches for the specified value and returns the zero-based index of the first occurrence within the entire SortedList.
+        ///     </summary>
+        ///     <param name="value" type="Object">The value to locate in the SortedList.</param>
+        ///     <returns type="Number" />
+        /// </signature>
+    },
+    "remove": function () {
+        /// <signature>
+        ///     <summary>
+        ///         Removes the element with the specified key from the SortedList.
+        ///         Returns true if the element is successfully removed; otherwise, false. This method also returns false if key was not found in the original SortedList.
+        ///     </summary>
+        ///     <param name="key" type="Object">The key of the element to remove.</param>
+        ///     <returns type="Boolean" />
+        /// </signature>
+    },
+    "removeAt": function () {
+        /// <signature>
+        ///     <summary>
+        ///         Removes the element at the specified index of the SortedList.
+        ///     </summary>
+        ///     <param name="index" type="Number">The zero-based index of the element to remove.</param>
+        /// </signature>
+    },
+    "set": function () {
+        /// <signature>
+        ///     <summary>
+        ///         Sets the value associated with the specified key.
+        ///     </summary>
+        ///     <param name="key" type="Object">The key whose value to get or set.</param>
+        ///     <param name="value" type="Object">The value associated with the specified key.</param>
+        /// </signature>
+    },
+    "trimExcess": function () {
+        /// <signature>
+        ///     <summary>
+        ///         Sets the capacity to the actual number of elements in the SortedList, if that number is less than 90 percent of current capacity.
+        ///     </summary>
+        /// </signature>
+    },
+    "tryGetValue": function () {
+        /// <signature>
+        ///     <summary>
+        ///         Gets the value associated with the specified key.
+        ///     </summary>
+        ///     <param name="key" type="Object">The key whose value to get.</param>
+        ///     <param name="callback" type="Function">
+        ///         When this method returns, callback method is called with the value
+        ///         associated with the specified key, if the key is found; otherwise, null for the type of the value parameter.
+        ///     </param>
+        ///     <returns type="Boolean" />
+        /// </signature>
+    },
+    "getEnumerator": function () {
+        /// <signature>
+        ///     <summary>
+        ///         Returns an enumerator that iterates through a ReadOnlyCollection object.
         ///     </summary>
         ///     <returns type="Enumerator" />
         /// </signature>

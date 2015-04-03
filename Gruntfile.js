@@ -88,6 +88,7 @@
                         'Collection',
                         'ReadOnlyCollection',
                         'List',
+                        'SortedList',
                         'Dictionary',
                         'KeyValuePair',
                         'HashSet',

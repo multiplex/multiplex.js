@@ -25,6 +25,7 @@ import Comparer = mx.Comparer;
 import EqualityComparer = mx.EqualityComparer;
 import ReadOnlyCollection = mx.ReadOnlyCollection;
 import List = mx.List;
+import SortedList = mx.SortedList;
 import KeyValuePair = mx.KeyValuePair;
 import Dictionary = mx.Dictionary;
 import HashSet = mx.HashSet;
@@ -812,6 +813,182 @@ declare module mx {
 
 
 
+    /* SortedList
+    ---------------------------------------------------------------------- */
+
+    /**
+    * Represents a collection of key/value pairs that are sorted by key based on the associated Comparer implementation.
+    */
+    interface ISortedList<TKey, TValue> extends ICollection<KeyValuePair<TKey, TValue>> {
+
+        /**
+        * Adds an element with the specified key and value into the SortedList.
+        * @param key The key of the element to add.
+        * @param value The value of the element to add. The value can be null for reference types.
+        */
+        add(key: TKey, value: TValue): void
+
+
+        /**
+        * Gets the value associated with the specified key.
+        * @param key The key whose value to get.
+        */
+        get(key: TKey): TValue
+
+
+        /**
+        * Gets or sets the number of elements that the SortedList can contain.
+        * @param value The number of elements that the SortedList can contain.
+        */
+        capacity(value: number): number
+
+
+        /**
+        * Removes all elements from the SortedList.
+        */
+        clear(): void
+
+
+        /**
+        * Gets the Comparer for the sorted list.
+        */
+        comparer(): IEqualityComparer<TKey>
+
+
+        /**
+        * Determines whether the SortedList contains a specific key.
+        * @param key The key to locate in the SortedList.
+        */
+        containsKey(key: TKey): boolean
+
+
+        /**
+        * Determines whether the SortedList contains a specific value.
+        * @param value The value to locate in the SortedList.
+        */
+        containsValue(value: TValue): boolean
+
+
+        /**
+        * Gets a collection containing the keys in the SortedList, in sorted order.
+        */
+        keys(): IList<TKey>
+
+
+        /**
+        * Gets a collection containing the values in the SortedLis.
+        */
+        values(): IList<TValue>
+
+
+        /**
+        * Searches for the specified key and returns the zero-based index within the entire SortedList.
+        * @param key The key to locate in the SortedList.
+        */
+        indexOfKey(key: TKey): number
+
+
+        /**
+        * Searches for the specified value and returns the zero-based index of the first occurrence within the entire SortedList.
+        * @param value The value to locate in the SortedList.
+        */
+        indexOfValue(value: TValue): number
+
+
+        /**
+        * Removes the element with the specified key from the SortedList.
+        * Returns true if the element is successfully removed; otherwise, false. This method also returns false if key was not found in the original SortedList.
+        * @param key The key of the element to remove.
+        */
+        remove(key: TKey): boolean
+
+
+        /**
+        * Removes the element at the specified index of the SortedList.
+        * @param index The zero-based index of the element to remove.
+        */
+        removeAt(index: number): void
+
+
+        /**
+        * Sets the value associated with the specified key.
+        * @param key The key whose value to get or set.
+        * @param value The value associated with the specified key.
+        */
+        set(key: TKey, value: TValue): void
+
+
+        /**
+        * Sets the capacity to the actual number of elements in the SortedList, if that number is less than 90 percent of current capacity.
+        */
+        trimExcess(): void
+
+
+        /**
+        * Gets the value associated with the specified key.
+        * @param key The key whose value to get.
+        * @param callback When this method returns, callback method is called with the value
+        * associated with the specified key, if the key is found; otherwise, null for the type of the value parameter.
+        */
+        tryGetValue(key: TKey, callback: (value: TValue) => void): boolean
+    }
+
+
+    var SortedList: {
+
+        /**
+        * Initializes a new instance of the SortedList class that is empty, 
+        * has the default initial capacity, and uses the default Comparer.
+        */
+        new <TKey, TValue>(): ISortedList<TKey, TValue>
+
+
+        /**
+        * Initializes a new instance of the SortedList class that contains elements  copied from the specified Dictionary, 
+        * has sufficient capacity to accommodate the number of elements copied,  and uses the default Comparer.
+        * @param dictionary The Dictionary whose elements are copied to the new SortedList.
+        */
+        new <TKey, TValue>(dictionary: IDictionary<TKey, TValue>): ISortedList<TKey, TValue>
+
+
+        /**
+        * Initializes a new instance of the SortedList class that is empty, 
+        * has the default initial capacity, and uses the specified Comparer.
+        * @param comparer The Comparer implementation to use when comparing keys.-or-null to use the default Comparer for the type of the key.
+        */
+        new <TKey, TValue>(comparer: IComparer<TKey>): ISortedList<TKey, TValue>
+
+
+        /**
+        * Initializes a new instance of the SortedList class that is empty, 
+        * has the specified initial capacity, and uses the default Comparer.
+        * @param capacity The initial number of elements that the SortedList can contain.
+        */
+        new <TKey, TValue>(capacity: number): ISortedList<TKey, TValue>
+
+
+        /**
+        * Initializes a new instance of the SortedList class that contains elements copied from the specified Dictionary,
+        * has sufficient capacity to accommodate the number of elements copied, and uses the specified Comparer.
+        * @param dictionary The Dictionary whose elements are copied to the new SortedList.
+        * @param comparer The Comparer implementation to use when comparing keys.-or-null to use the default Comparer for the type of the key.
+        */
+        new <TKey, TValue>(dictionary: IDictionary<TKey, TValue>, comparer: IComparer<TKey>): ISortedList<TKey, TValue>
+
+
+        /**
+        * Initializes a new instance of the SortedList class that is empty, 
+        * has the specified initial capacity, and uses the specified Comparer.
+        * @param capacity The initial number of elements that the SortedList can contain.
+        * @param comparer The Comparer implementation to use when comparing keys.-or-null to use the default Comparer for the type of the key.
+        */
+        new <TKey, TValue>(capacity: number, comparer: IComparer<TKey>): ISortedList<TKey, TValue>
+    }
+
+
+
+
+
     /* KeyValuePair
     ---------------------------------------------------------------------- */
 
@@ -838,9 +1015,6 @@ declare module mx {
         */
         public value: TValue;
     }
-
-
-
 
 
 
@@ -1204,8 +1378,6 @@ declare module mx {
 
 
 
-
-
     /* LinkedList
     ---------------------------------------------------------------------- */
 
@@ -1445,7 +1617,7 @@ declare module mx {
     ---------------------------------------------------------------------- */
 
     /**
-    * 
+    * Represents a variable size last-in-first-out (LIFO) collection of instances of the same arbitrary type.
     */
     interface IStack<T> extends ICollection<T> {
 
