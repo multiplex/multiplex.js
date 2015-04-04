@@ -129,8 +129,7 @@ Note that the query is executed only 10 times, as soon as the query reaches the 
 An object literal is a list of zero or more pairs of property names and associated values of an object, enclosed in curly braces `{}`. Anonymous types typically are used in the select clause of a query expression to return a subset of the properties from each object in the source sequence:
 
 ````javascript
-mx([1, 2, 3, 4]).select("t => { val: t }").toArray();
-// [{ val: 1 }, { val: 2 }, { val: 3 }, { val: 4 }]
+mx([1, 2, 3]).select("t => { val: t }").toArray();   // [{ val: 1 }, { val: 2 }, { val: 3 }]
 ````
 
 In Multiplex, equality comparison on anonymous types are defined in terms of the equality of the properties, two instances of the same anonymous type are equal only if all their properties are equal. That becomes very handy working with LINQ operations which make use of equality to produce results, eg. `contains`, `join`, `groupBy`, `groupJoin`, `distinct`, `except` and `intersect`.
