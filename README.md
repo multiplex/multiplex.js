@@ -84,19 +84,24 @@ In a query that returns a sequence of values, the query variable itself never ho
 The following example uses the `toArray` method to immediately evaluate a sequence into an array:
 
 ````javascript
-mx([1, 2, 3, 4, 5]).select("t => t * t").toArray();
+mx([1, 2, 3, 4, 5]).select("t => t * t").toArray();   // [1, 2, 3, 4, 5]
 ````
 
 The following example uses the `sum` method to evaluate sum of the first 10 numbers:
 
 ````javascript
-mx([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).sum();
+mx([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).sum();            // 55
 ````
 
 And the following example uses the `forEach` method to iterate over an array of numbers and print them in the developer console:
 
 ````javascript
 mx([1, 2, 3, 4, 5]).forEach("t => console.log(t)");
+// 1
+// 2
+// 3
+// 4
+// 5
 ````
 
 <br/>
@@ -116,7 +121,7 @@ In the example above, `Enumerable.range` method is used to create 1000 integer n
 
 `[998, 996, 994, 992, 990, 988, 986, 984, 982, 980]`
 
-Note that the query is executed only 10 times, as soon as the query reaches the 10th element, the execution breaks and the result is evaluated into an array. [read more LINQ iteration over a query.](https://msdn.microsoft.com/en-us/library/system.collections.ienumerator.aspx)
+Note that the query is executed only 10 times, as soon as the query reaches the 10th element, the execution breaks and the result is evaluated into an array. [read more about LINQ iteration over a query.](https://msdn.microsoft.com/en-us/library/system.collections.ienumerator.aspx)
 
 <br/>
 ### Using object literals
@@ -124,7 +129,7 @@ Note that the query is executed only 10 times, as soon as the query reaches the 
 An object literal is a list of zero or more pairs of property names and associated values of an object, enclosed in curly braces `{}`. Anonymous types typically are used in the select clause of a query expression to return a subset of the properties from each object in the source sequence:
 
 ````javascript
-mx([1, 2, 3, 4, 5]).select("t => { val: t }").toArray();
+mx([1, 2, 3]).select("t => { val: t }").toArray();   // [{ val: 1 }, { val: 2 }, { val: 3 }]
 ````
 
 In Multiplex, equality comparison on anonymous types are defined in terms of the equality of the properties, two instances of the same anonymous type are equal only if all their properties are equal. That becomes very handy working with LINQ operations which make use of equality to produce results, eg. `contains`, `join`, `groupBy`, `groupJoin`, `distinct`, `except` and `intersect`.
@@ -183,7 +188,7 @@ All the collections defined in Multiplex are *Enumerable*, and can be used in LI
 ````javascript
 var list = new List([1, 2, 3, 4]);      // a list of numbers
 var set = new HashSet([1, 2, 3, 4]);    // a set of numbers
-var dic= list.toDictionary("t => t");   // a dictionary with the key as number
+var dic= list.toDictionary("t => t");   // a dictionary with numeric keys
 
 list.select("t => t").toArray();        // [1, 2, 3, 4]
 set.select("t => t").toArray();         // [1, 2, 3, 4]
@@ -246,6 +251,7 @@ var obj = {
     getEnumerator: function () {
         var count = 3, index = 0;
         return {
+            current: undefined,
             next: function () {
                 if (index++ < count) {
                     this.current = index;
