@@ -4131,6 +4131,12 @@
                     return $enumerable(this).select(selector).average();
                 }
 
+                if ($is(this, __array) && $isFunc(this.reduce)) {
+
+                    if (this.length == 0) throw new noElementsError();
+                    return this.sum() / this.length;
+                }
+
                 var _e = $enumerator(this),
                     _sum = 0,
                     _count = 0;
@@ -4671,6 +4677,15 @@
                     return $enumerable(this).select(selector).max();
                 }
 
+                if ($is(this, __array) && $isFunc(this.reduce)) {
+
+                    if (this.length == 0) throw new noElementsError();
+
+                    return this.reduce(function (a, b) {
+                        return $computeCompare(a, b) > 0 ? a : b;
+                    }, this[0]);
+                }
+
                 var _e = $enumerator(this),
                     _value = null;
 
@@ -4700,6 +4715,15 @@
                     selector = $lambda(selector);
                     $ensureType(selector, "selector", __function);
                     return $enumerable(this).select(selector).min();
+                }
+
+                if ($is(this, __array) && $isFunc(this.reduce)) {
+
+                    if (this.length == 0) throw new noElementsError();
+
+                    return this.reduce(function (a, b) {
+                        return $computeCompare(a, b) < 0 ? a : b;
+                    }, this[0]);
                 }
 
                 var _e = $enumerator(this),
@@ -5044,6 +5068,12 @@
                     return $enumerable(this).select(selector).sum();
                 }
 
+                if ($is(this, __array) && $isFunc(this.reduce)) {
+                    return this.reduce(function (a, b) {
+                        return a + b;
+                    }, 0);
+                }
+
                 var _e = $enumerator(this),
                     _sum = 0;
 
@@ -5176,7 +5206,6 @@
 
                 return __Lookup.create(this, keySelector, _elementSelector, _comparer);
             },
-
 
             /**
             * Produces the set union of two sequences by using a specified EqualityComparer.
