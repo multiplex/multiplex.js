@@ -1658,14 +1658,6 @@ intellisense.annotate(mx.List.prototype, {
         ///     <param name="collection" type="Enumerable">The collection whose elements should be inserted into the List.</param>
         /// </signature>
     },
-    "items": function () {
-        /// <signature>
-        ///     <summary>
-        ///         Gets an Array wrapper around the List.
-        ///     </summary>
-        ///     <returns type="Array" />
-        /// </signature>
-    },
     "lastIndexOf": function () {
         /// <signature>
         ///     <summary>
