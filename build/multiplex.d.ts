@@ -35,6 +35,8 @@ import Queue = mx.Queue;
 import Stack = mx.Stack;
 
 
+interface String extends IEnumerable<string> { }
+interface Array<T> extends IEnumerable<T> { }
 
 
 
