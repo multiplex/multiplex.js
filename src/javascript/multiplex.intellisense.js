@@ -2142,14 +2142,6 @@ intellisense.annotate(mx.HashSet.prototype, {
         ///     <param name="array" type="Array">The one-dimensional array that is the destination of the elements copied from the HashSet object.</param>
         ///     <param name="arrayIndex" type="Number">The zero-based index in array at which copying begins.</param>
         /// </signature>
-        /// <signature>
-        ///     <summary>
-        ///         Copies the specified number of elements of a HashSet object to an array, starting at the specified array index.
-        ///     </summary>
-        ///     <param name="array" type="Array">The one-dimensional array that is the destination of the elements copied from the HashSet object.</param>
-        ///     <param name="arrayIndex" type="Number">The zero-based index in array at which copying begins.</param>
-        ///     <param name="count" type="Number">The number of elements to copy to array.</param>
-        /// </signature>
     },
     "comparer": function () {
         /// <signature>
