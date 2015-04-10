@@ -323,7 +323,7 @@ The following example demonstrates the use of `iterator protocol` in a `Set` to 
 
 ````javascript
 var set = new Set([1, 2, 3]);     // Create a Set of numbers
-mx(set).toArray();                // [1, 2]
+mx(set).toArray();                // [1, 2, 3]
 ````
 
 #### Generator functions
