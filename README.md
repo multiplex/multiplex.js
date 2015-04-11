@@ -19,7 +19,7 @@ Multiplex is a set of data-structures and implementation of .Net LINQ methods in
 * Over 40 LINQ methods (90 method overloads).
 * LINQ lazy evaluation.
 * TypeScript support.
-* Support of [Lambda notation](https://github.com/multiplex/multiplex.js#the-lambda-notation), [Object literal](https://github.com/multiplex/multiplex.js#using-object-literals) and ES6 [Iteration protocols](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols).
+* Support for [Lambda notation](https://github.com/multiplex/multiplex.js#the-lambda-notation), [Object literal](https://github.com/multiplex/multiplex.js#using-object-literals) and ES6 [Iteration protocols](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols).
 * LINQ support over built-in [Array](https://github.com/multiplex/multiplex.js#--array-and-string) and [String](https://github.com/multiplex/multiplex.js#--array-and-string) classes and [jQuery](https://github.com/multiplex/multiplex.js#--array-like-objects-arguments-nodelist-jquery) objects.
 * Built-in `hash` and `equals` functions to identify objects in a hash-based collection.
 * *JSDoc* documentation.
