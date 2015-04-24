@@ -1027,7 +1027,7 @@
             /**
             * Gets a default sort order comparer for the type specified by the generic argument.
             */
-            default: new Comparer($computeCompare),
+            'default': new Comparer($computeCompare),
 
 
             /**
@@ -1083,7 +1083,7 @@
             /**
             * Gets a default equality comparer for the type specified by the generic argument.
             */
-            default: new EqualityComparer($hash, $equals),
+            'default': new EqualityComparer($hash, $equals),
 
             /**
             * Creates an EqualityComparer by using the specified equality and hashCodeProvider.
@@ -2495,7 +2495,7 @@
 
         function initializeHashTable(table, size, comparer) {
             size = size || _primes[0];
-            comparer = comparer || table._comparer || __EqualityComparer.default;
+            comparer = comparer || table._comparer || __EqualityComparer['default'];
 
             table._count = 0;
             table._loadSize = size * _fillFactor;
@@ -5507,7 +5507,7 @@
         }
 
         else {
-            return __Comparer.default;
+            return __Comparer['default'];
         }
     }
 
@@ -5527,7 +5527,7 @@
         }
 
         else {
-            return __EqualityComparer.default;
+            return __EqualityComparer['default'];
         }
     }
 
