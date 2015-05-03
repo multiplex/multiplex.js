@@ -364,7 +364,7 @@
     * Gets or sets object private property.
     */
     var $prop = (function () {
-        if (!$isFunc(WEAKMAP)) {
+        if ($isFunc(WEAKMAP)) {
             var _map = new WEAKMAP();
 
             return function (obj, value) {
