@@ -5,18 +5,18 @@ function Foo() {
 };
 
 
-// class with equality-comparer
+// class overriding 'hash' and 'equals' methods.
 function FooWithEqualityComparer(val) {
     this.value = val;
     this.name = val.toString();
 };
 
 FooWithEqualityComparer.prototype = {
-    __hash: function () {
+    __hash__: function () {
         return mx.hash(this.value, this.name);
     },
 
-    __equals: function (o) {
+    __equals__: function (o) {
         return o && o.value === this.value && o.name === this.name;
     }
 };
@@ -53,44 +53,65 @@ var TestContext = (function () {
         arr10 = [],
         arr10_clone = [];
 
+
     return {
-        /// Array of empty literal objects
+        /// <field>Array of empty literal objects.</field>
         arr1: arr1,
+        /// <field>Array of empty literal objects.</field>
         arr1_clone: arr1_clone,
 
-        /// Array of complex literal objects
+
+        /// <field>Array of complex literal objects.</field>
         arr2: arr2,
+        /// <field>Array of complex literal objects.</field>
         arr2_clone: arr2_clone,
 
-        /// Array of class instances without equality-comparer
+
+        /// <field>Array of class instances without equality-comparer.</field>
         arr3: arr3,
+        /// <field>Array of class instances without equality-comparer.</field>
         arr3_clone: arr3_clone,
 
-        /// Array of class instances with equality-comparer
+
+        /// <field>Array of class instances overriding 'hash' and 'equals' methods.</field>
         arr4: arr4,
+        /// <field>Array of class instances overriding 'hash' and 'equals' methods.</field>
         arr4_clone: arr4_clone,
 
-        /// Array of numbers
+
+        /// <field>Array of numbers.</field>
         arr5: arr5,
+        /// <field>Array of numbers.</field>
         arr5_clone: arr5_clone,
 
-        /// Array of float numbers
+
+        /// <field>Array of float numbers.</field>
         arr6: arr6,
+        /// <field>Array of float numbers.</field>
         arr6_clone: arr6_clone,
 
-        /// Array of strings
+
+        /// <field>Array of strings.</field>
         arr7: arr7,
+        /// <field>Array of strings.</field>
         arr7_clone: arr7_clone,
 
-        /// Array of date objects
+
+        /// <field>Array of date objects.</field>
         arr8: arr8,
+        /// <field>Array of date objects.</field>
         arr8_clone: arr8_clone,
 
-        /// Array of booleans
+
+        /// <field>Array of booleans.</field>
         arr9: arr9,
+        /// <field>Array of booleans.</field>
         arr9_clone: arr9_clone,
 
+
         initialize: function (count) {
+            var _time = new Date().getTime();
+
             for (var i = 0; i < count; i++) {
                 arr1[i] = {};                                                       // Array of empty literal objects
                 arr1_clone[i] = {};
@@ -110,7 +131,7 @@ var TestContext = (function () {
 
                 arr7[i] = arr7_clone[i] = i + "_string";                            // Array of strings
 
-                arr8[i] = arr8_clone[i] = new Date();                               // Array of date objects
+                arr8[i] = arr8_clone[i] = new Date(_time + i);                      // Array of date objects
 
                 arr9[i] = arr9_clone[i] = i % 2 == 0;                               // Array of booleans
             }

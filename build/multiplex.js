@@ -1,6 +1,6 @@
 ﻿/*--------------------------------------------------------------------------
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Ver 0.9.1 (March 28, 2015)
+* Ver 0.9.2 (May 1, 2015)
 *
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under Apache License Version 2.0
@@ -8,8 +8,8 @@
 *
 *
 * Lexical Note:
-*   - Built-in types and Global variables: start with "__"
-*   - Runtime functions, Helper functions: start with "$"
+*   - Built-in types and Global variables: capital letters
+*   - Runtime & Helper functions: start with "$"
 *   - Classes: start with a capital letter
 *   - Class Alias: start with "__" and a capital letter
 *   - Local scope variables: start with "_"
@@ -22,33 +22,52 @@
 
 
 
-    /* standard types 
-    ---------------------------------------------------------------------- */
-    var __typeFunction = "function",
-        __typeObject = "object",
-        __typeNumber = "number",
-        __typeString = "string",
-        __typeBoolean = "boolean",
-        __typeSymbol = "symbol";
-
-
-
-
     /* built-in types
     ---------------------------------------------------------------------- */
-    var __function = global.Function,
-        __object = global.Object,
-        __number = global.Number,
-        __string = global.String,
-        __boolean = global.Boolean,
-        __array = global.Array,
-        __error = global.Error,
-        __math = global.Math,
-        __date = global.Date,
-        __weakmap = global.WeakMap,
-        __symbol = global.Symbol,
-        __undefined;
+    var FUNCTION = global.Function,
+        OBJECT = global.Object,
+        NUMBER = global.Number,
+        STRING = global.String,
+        BOOLEAN = global.Boolean,
+        ARRAY = global.Array,
+        ERROR = global.Error,
+        MATH = global.Math,
+        DATE = global.Date,
+        WEAKMAP = global.WeakMap,
+        SYMBOL = global.Symbol,
+        UNDEFINED;
 
+
+
+
+
+    /* js type names
+    ---------------------------------------------------------------------- */
+    var TYPE_FUNCTION = "function",
+        TYPE_OBJECT = "object",
+        TYPE_NUMBER = "number",
+        TYPE_STRING = "string",
+        TYPE_BOOLEAN = "boolean",
+        TYPE_SYMBOL = "symbol";
+
+
+
+
+
+    /* errors
+    ---------------------------------------------------------------------- */
+    var ERROR_ARGUMENT_OUT_OF_RANGE = "Argument was out of the range of valid values.",
+        ERROR_METHOD_NOT_IMPLEMENTED = "Method not implemented.",
+        ERROR_ARRAY_SIZE = "The number of elements in the source is greater than the number of elements that the destination array can contain.",
+        ERROR_KEY_NOT_FOUND = "The given key was not present in the collection.",
+        ERROR_DUPLICATE_KEY = "An item with the same key has already been added.",
+        ERROR_EMPTY_LINKED_LIST = "Linked list is empty.",
+        ERROR_INVALID_LINKED_LIST_NODE = "Invalid node list.",
+        ERROR_MORE_THAN_ONE_ELEMENT = "Sequence contains more than one element.",
+        ERROR_MORE_THAN_ONE_MATCH = "Sequence contains more than one match.",
+        ERROR_NO_MATCH = "Sequence contains no matching element.",
+        ERROR_NO_ELEMENTS = "Sequence contains no elements.",
+        ERROR_NON_NUMERIC_TYPE = "Value is not a number.";
 
 
 
@@ -56,7 +75,6 @@
 
     /* Runtime Functions
     ---------------------------------------------------------------------- */
-
 
 
     /**
@@ -68,20 +86,20 @@
     function $is(obj, type) {
 
         switch (typeof obj) {
-            case __typeNumber:
-                return type === __number;
+            case TYPE_NUMBER:
+                return type === NUMBER;
 
-            case __typeString:
-                return type === __string;
+            case TYPE_STRING:
+                return type === STRING;
 
-            case __typeFunction:
-                return type === __function;
+            case TYPE_FUNCTION:
+                return type === FUNCTION;
 
-            case __typeBoolean:
-                return type === __boolean;
+            case TYPE_BOOLEAN:
+                return type === BOOLEAN;
 
-            case __typeSymbol:
-                return type === __symbol;
+            case TYPE_SYMBOL:
+                return type === SYMBOL;
 
             default:
                 return obj instanceof type;
@@ -95,7 +113,7 @@
     * @returns {Boolean}
     */
     function $isFunc(fn) {
-        return typeof fn === __typeFunction;
+        return typeof fn === TYPE_FUNCTION;
     }
 
 
@@ -111,17 +129,11 @@
 
 
     /**
-    * Overwrites function "toString" method.
-    * @param {Function} fn A Function instance.
-    * @param {Function} fn Function's name.
+    * Throws a user-defined exception with the specified message.
+    * @param {String} msg Human-readable description of the error.
     */
-    function $funcStr(fn, name) {
-        var _toString = "toString";
-
-        if ($isFunc(fn) && !$has(fn, _toString) && name !== _toString) {
-            var _str = "function " + name.toString() + (fn.toString().match(/\(.*?\)/) || [""])[0] + " {...}";
-            $defineProperty(fn, _toString, { value: function () { return _str; } });
-        }
+    function $error(msg) {
+        throw new ERROR(msg);
     }
 
 
@@ -134,7 +146,19 @@
     */
     function $define(obj, prop, attributes) {
         $defineProperty(obj, prop, attributes);
-        $funcStr(obj[prop], prop);
+
+
+        /// Overwrite function "toString" method.
+        if ($is(prop, STRING) && $is(attributes.value, FUNCTION)) {
+            var _fn = attributes.value,
+                _toString = "toString",
+                _str = "function " + prop + (_fn.toString().match(/\(.*?\)/) || [""])[0] + " {...}";
+
+            if (!$has(_fn, _toString)) {
+                $defineProperty(_fn, _toString, { value: function () { return _str; } });
+            }
+        }
+
         return obj;
     }
 
@@ -148,19 +172,20 @@
     */
     function $mixin(obj, properties, attributes) {
 
-        attributes = attributes || {};
+        if (obj) {
+            attributes = attributes || {};
 
-        for (var _prop in properties) {
-            if (!$has(obj, _prop)) {
-                $define(obj, _prop, {
-                    value: properties[_prop],
-                    writable: attributes.writable || false,
-                    enumerable: attributes.enumerable || false,
-                    configurable: attributes.configurable || false,
-                });
+            for (var _prop in properties) {
+                if (!$has(obj, _prop)) {
+                    $define(obj, _prop, {
+                        value: properties[_prop],
+                        writable: attributes.writable || false,
+                        enumerable: attributes.enumerable || false,
+                        configurable: attributes.configurable || false,
+                    });
+                }
             }
         }
-
         return obj;
     }
 
@@ -197,9 +222,9 @@
             _super = $isFunc(extender) ? extender : null,
             _proto = _args.length === 4 || _super ? _args[2] : extender,
             _static = _args.length === 4 || _super ? _args[3] : _args[2],
-            _str = type.name || type.toString().match(/function (.+)\(.*?\)/)[1];
+            _str = "function " + (type.name || type.toString().match(/function (.+)\(.*?\)/)[1]) + " {...}";
 
-        $funcStr(type, _str);
+        $defineProperty(type, "toString", { value: function () { return _str; } });
 
         if (_super) {
             var Super = function () { $define(this, "constructor", { value: type }); };
@@ -222,9 +247,9 @@
     /**
     * Checks for an object to be null; if true throws an Error.
     */
-    function $nullCheck(obj, name) {
+    function $nullCheck(obj) {
         if (obj == null) {
-            throw new __error("Value cannot be null. Parameter name: " + name);
+            $error("Value cannot be null.");
         }
     }
 
@@ -232,11 +257,10 @@
     /**
     * Checks for an object to be of the specified type; if not throws an Error.
     */
-    function $ensureType(obj, name, type) {
-        $nullCheck(type, "type");
+    function $ensureType(obj, type) {
 
         if (!$is(obj, type)) {
-            throw new __error("Invalid parameter type. Expected type: " + type.toString().match(/^function (.+)\(/)[1] + ". Parameter name: " + name);
+            $error("Invalid parameter type. Expected type: " + type.toString().match(/^function (.+)\(/)[1]);
         }
     }
 
@@ -249,17 +273,18 @@
     function $lambda(exp) {
         switch (typeof exp) {
 
-            case __typeFunction:
+            case TYPE_FUNCTION:
                 return exp;
 
-            case __typeString:
+            case TYPE_STRING:
                 var _pattern = /^\s*\(?\s*(([a-z_$]{1}[a-z0-9_$]*)+([, ]+[a-z_$]{1}[a-z0-9_$]*)*)*\s*\)?\s*=>\s*(.*)$/i;
                 if (_pattern.test(exp)) {
                     var _match = exp.match(_pattern);
-                    return new __function((_match[1] || "").replace(/ /g, ""), "return " + _match[4]);
+                    return new FUNCTION((_match[1] || "").replace(/ /g, ""), "return " + _match[4]);
                 }
 
-                throw new __error("Cannot parse supplied `. " + exp);
+                $error("Cannot parse supplied `. " + exp);
+                break;
 
             default:
                 return null;
@@ -322,7 +347,7 @@
     /**
     * Defines a new property directly on an object, or modifies an existing property on an object, and returns the object
     */
-    var $defineProperty = $isFunc(__object.defineProperty) ? __object.defineProperty : function (obj, prop, attr) {
+    var $defineProperty = $isFunc(OBJECT.defineProperty) ? OBJECT.defineProperty : function (obj, prop, attr) {
         obj[prop] = attr.get ? attr.get.apply(obj) : attr.value;
     };
 
@@ -330,9 +355,39 @@
     /**
     * Freezes an object, makes the object effectively immutable.
     */
-    var $freeze = $isFunc(__object.freeze) ? __object.freeze : function (o) {
+    var $freeze = $isFunc(OBJECT.freeze) ? OBJECT.freeze : function (o) {
         return o;
     };
+
+
+    /**
+    * Gets or sets object private property.
+    */
+    var $prop = (function () {
+        if ($isFunc(WEAKMAP)) {
+            var _map = new WEAKMAP();
+
+            return function (obj, value) {
+                if (value) {
+                    _map.set(obj, value);
+                    return value;
+                }
+
+                return _map.get(obj);
+            };
+        }
+        else {
+            var _source = "__props__";
+            return function (obj, value) {
+                if (value) {
+                    $define(obj, _source, { value: function () { return value; } });
+                    return value;
+                }
+
+                return obj[_source]();
+            };
+        }
+    })();
 
 
     /**
@@ -341,7 +396,7 @@
     var $computeHash = (function (useWeakMap) {
 
         var _lower31BitMask = 0X7FFFFFFF,
-            _hashSeed = __math.floor(__math.random() * 0X7FFF) + 0X7FFF,
+            _hashSeed = MATH.floor(MATH.random() * 0X7FFF) + 0X7FFF,
             _hashIndex = _hashSeed,
             _hashSymbol = "__hash__";
 
@@ -358,18 +413,18 @@
             }
 
             switch (typeof obj) {
-                case __typeNumber:
+                case TYPE_NUMBER:
                     return compute31BitNumberHash(obj);                 // Compute "Number" primitive type hash (does not incluede "new Number(value)")
 
-                case __typeString:
+                case TYPE_STRING:
                     return compute31BitStringHash(obj);                 // Compute "String" primitive type hash (does not incluede "new String(value)")
 
-                case __typeBoolean:
+                case TYPE_BOOLEAN:
                     return obj ? 1 : 0;                                 // Compute "Boolean" primitive type hash (does not incluede "new Boolean(value)")
 
                 default:
 
-                    if (obj instanceof __date) {
+                    if (obj instanceof DATE) {
                         return compute31BitDateHash(obj);               // Compute "Date" object type hash
                     }
 
@@ -414,8 +469,8 @@
 
             else {                          // decimal number
                 switch (obj) {
-                    case __number.POSITIVE_INFINITY: _hash = 0x7F800000; break;
-                    case __number.NEGATIVE_INFINITY: _hash = 0xFF800000; break;
+                    case NUMBER.POSITIVE_INFINITY: _hash = 0x7F800000; break;
+                    case NUMBER.NEGATIVE_INFINITY: _hash = 0xFF800000; break;
                     case +0.0: _hash = 0x40000000; break;
                     case -0.0: _hash = 0xC0000000; break;
                     default:
@@ -425,8 +480,8 @@
                             obj = -obj;
                         }
 
-                        var _exponent = __math.floor(__math.log(obj) / __math.log(2)),
-                            _significand = ((obj / __math.pow(2, _exponent)) * 0x00800000) | 0;
+                        var _exponent = MATH.floor(MATH.log(obj) / MATH.log(2)),
+                            _significand = ((obj / MATH.pow(2, _exponent)) * 0x00800000) | 0;
 
                         _exponent += 127;
 
@@ -458,8 +513,8 @@
         /// Creates and stores a HashCode for an object.
         /// When "useWeakMap" is true uses WeakMap as an internal hash storage whenever possible.
         var compute31BitObjecHash = (function () {
-            if (useWeakMap && $isFunc(__weakmap)) {
-                var _map = new __weakmap();
+            if (useWeakMap && $isFunc(WEAKMAP)) {
+                var _map = new WEAKMAP();
 
                 return function (obj) {
                     var _hash = _map.get(obj);
@@ -494,7 +549,7 @@
 
                     var _hash = 0;
 
-                    if (typeof obj.__hash__ !== __typeFunction || typeof (_hash = obj.__hash__()) !== __typeNumber) {
+                    if (typeof obj.__hash__ !== TYPE_FUNCTION || typeof (_hash = obj.__hash__()) !== TYPE_NUMBER) {
                         obj.__hash__ = function () { return _hash; };      // prevents recursion;
 
                         if (isObjectLiteral(obj)) {
@@ -525,8 +580,8 @@
 
         /// Detects if an object is direct child of Object class (ie. object literal)
         var isObjectLiteral = (function () {
-            var _proto = __object.prototype,
-                _prototype = __object.getPrototypeOf;
+            var _proto = OBJECT.prototype,
+                _prototype = OBJECT.getPrototypeOf;
 
             if ($isFunc(_prototype)) {
                 return function (obj) { return _prototype(obj) === _proto; };
@@ -537,11 +592,11 @@
 
 
         /// Define "__hash__" function for built-in types
-        $define(__date.prototype, _hashSymbol, { value: function () { return compute31BitDateHash(this); } });
-        $define(__number.prototype, _hashSymbol, { value: function () { return compute31BitNumberHash(this.valueOf()); } });
-        $define(__string.prototype, _hashSymbol, { value: function () { return compute31BitStringHash(this.valueOf()); } });
-        $define(__boolean.prototype, _hashSymbol, { value: function () { return this.valueOf() === true ? 1 : 0; } });
-        $define(__object.prototype, _hashSymbol, { value: function () { return compute31BitObjecHash(this); } });
+        $define(DATE.prototype, _hashSymbol, { value: function () { return compute31BitDateHash(this); } });
+        $define(NUMBER.prototype, _hashSymbol, { value: function () { return compute31BitNumberHash(this.valueOf()); } });
+        $define(STRING.prototype, _hashSymbol, { value: function () { return compute31BitStringHash(this.valueOf()); } });
+        $define(BOOLEAN.prototype, _hashSymbol, { value: function () { return this.valueOf() === true ? 1 : 0; } });
+        //$define(OBJECT.prototype, _hashSymbol, { value: function () { return compute31BitObjecHash(this); } });
 
 
         return computeHash;
@@ -573,14 +628,14 @@
             }
 
             switch (typeof objA) {
-                case __typeNumber:                                      // NaN is not equal to NaN
-                case __typeString:
-                case __typeBoolean:
+                case TYPE_NUMBER:                                      // NaN is not equal to NaN
+                case TYPE_STRING:
+                case TYPE_BOOLEAN:
                     return objA == objB;                                // Objects check for equality
 
-                case __typeObject:
+                case TYPE_OBJECT:
 
-                    if (objA instanceof __date) {
+                    if (objA instanceof DATE) {
                         return computeDateEquals(objA, objB);           // Objects are from "Date" type
                     }
 
@@ -603,7 +658,7 @@
 
         /// Compares Date objects by their time
         function computeDateEquals(objA, objB) {
-            return objB instanceof __date && objA.getTime() === objB.getTime();
+            return objB instanceof DATE && objA.getTime() === objB.getTime();
         }
 
 
@@ -616,7 +671,7 @@
         /// Compares Object types by their Hash code and Properties 
         function computeObjectEquals(objA, objB) {
 
-            if (typeof objB === __typeObject) {
+            if (typeof objB === TYPE_OBJECT) {
 
                 if ($computeHash(objA) !== $computeHash(objB)) {        // Objects having different hash code are not equal
                     return false;
@@ -648,11 +703,11 @@
 
 
         /// Define "__equals__" function for built-in types
-        $define(__date.prototype, _equalsSymbol, { value: function (obj) { return computeDateEquals(this, obj); } });
-        $define(__number.prototype, _equalsSymbol, { value: function (obj) { return computePrimitiveEquals(this, obj); } });
-        $define(__string.prototype, _equalsSymbol, { value: function (obj) { return computePrimitiveEquals(this, obj); } });
-        $define(__boolean.prototype, _equalsSymbol, { value: function (obj) { return computePrimitiveEquals(this, obj); } });
-        $define(__object.prototype, _equalsSymbol, { value: function (obj) { return computeObjectEquals(this, obj); } });
+        $define(DATE.prototype, _equalsSymbol, { value: function (obj) { return computeDateEquals(this, obj); } });
+        $define(NUMBER.prototype, _equalsSymbol, { value: function (obj) { return computePrimitiveEquals(this, obj); } });
+        $define(STRING.prototype, _equalsSymbol, { value: function (obj) { return computePrimitiveEquals(this, obj); } });
+        $define(BOOLEAN.prototype, _equalsSymbol, { value: function (obj) { return computePrimitiveEquals(this, obj); } });
+        //$define(OBJECT.prototype, _equalsSymbol, { value: function (obj) { return computeObjectEquals(this, obj); } });
 
 
         return computeEquals;
@@ -685,7 +740,7 @@
             }
 
             switch (typeof objA) {
-                case __typeString:
+                case TYPE_STRING:
                     return objA.localeCompare(objB);            // Strings are compared using String.prototype.localeCompare method
 
                 default:
@@ -711,6 +766,8 @@
 
 
 
+
+
     /* Classes
     ---------------------------------------------------------------------- */
 
@@ -727,14 +784,14 @@
         function Enumerator(factory) {
 
             var _next = false,
-                _current = __undefined,
+                _current = UNDEFINED,
                 _yielder = function (val) {
                     _next = true;
                     return _current = val;
                 };
 
 
-            $ensureType(factory, "factory", __function);
+            $ensureType(factory, FUNCTION);
             $define(this, "next", {
 
                 /**
@@ -742,7 +799,7 @@
                 * @returns {Boolean}
                 */
                 value: function () {
-                    _current = __undefined;     // reset "current"
+                    _current = UNDEFINED;     // reset "current"
                     _next = false;              // reset "next"
 
                     factory(_yielder);
@@ -769,11 +826,12 @@
     */
     var __Enumerable = (function () {
 
-        var _iteratorSymbol = $isFunc(__symbol) && $is(__symbol.iterator, __symbol) ? __symbol.iterator : "@@iterator",
+        var _iteratorSymbol = $isFunc(SYMBOL) && $is(SYMBOL.iterator, SYMBOL) ? SYMBOL.iterator : "@@iterator",
             _generatorFunction = (function () {
                 try { return eval("(function*() {}).constructor"); }
                 catch (e) { return function () { }; }
-            })();
+            })(),
+            _empty = $freeze(new Enumerable([]));
 
 
         /**
@@ -781,13 +839,12 @@
         * @param {Enumerable|Iterable|Function|Object} obj An Enumerable object.
         */
         function Enumerable(obj) {
-
-            return $define(this, "__enumerator__", { value: EnumeratorFactory(obj) });
+            $prop(this, obj);
         }
 
 
         /**
-        * Creates an Enumerator factory function which supports a simple iteration over a collection.
+        * Creates an Enumerator which supports a simple iteration over a collection.
         */
         function EnumeratorFactory(obj) {
             obj = obj || [];
@@ -795,57 +852,49 @@
 
             /// Enumerable object
             if ($is(obj, __Enumerable)) {
-                return function () {
-                    return obj.getEnumerator();
-                };
+                return obj.getEnumerator();
             }
 
 
 
             /// ES6/Legacy generator function
             if ($isFunc(obj)) {
-                return obj instanceof _generatorFunction ? EnumeratorFactory(obj()) : obj;
+                return obj instanceof _generatorFunction ? EnumeratorFactory(obj()) : obj();
             }
 
 
 
             /// Array-like: String, Array, arguments, jQuery
-            if ($is(obj, __array) || $is(obj, __string) || $is(obj.length, __number)) {
-                return function () {
-                    var _index = -1,
-                        _length = obj.length;
+            if ($is(obj, ARRAY) || $is(obj, STRING) || $is(obj.length, NUMBER)) {
+                var _index = -1,
+                    _length = obj.length;
 
-                    return new __Enumerator(function (yielder) {
-                        if (++_index < _length) {
-                            return yielder(obj[_index]);
-                        }
-                    });
-                };
+                return new __Enumerator(function (yielder) {
+                    if (++_index < _length) {
+                        return yielder(obj[_index]);
+                    }
+                });
             }
 
 
 
             /// ES6 Iterable object: Map, Set and Iterable objects
             if ($isFunc(obj[_iteratorSymbol])) {
-                return function () {
-                    var _iterator = obj[_iteratorSymbol](),
-                        _next;
+                var _iterator = obj[_iteratorSymbol](),
+                    _next;
 
-                    return new __Enumerator(function (yielder) {
-                        if (!(_next = _iterator.next()).done) {
-                            return yielder(_next.value);
-                        }
-                    });
-                };
+                return new __Enumerator(function (yielder) {
+                    if (!(_next = _iterator.next()).done) {
+                        return yielder(_next.value);
+                    }
+                });
             }
 
 
 
             /// Enumerator object
             if ($isFunc(obj.getEnumerator)) {
-                return function () {
-                    return obj.getEnumerator();
-                };
+                return obj.getEnumerator();
             }
 
 
@@ -853,7 +902,7 @@
             /// Regular object
             return function () {
 
-                if (typeof obj !== __typeObject) {
+                if (typeof obj !== TYPE_OBJECT) {
                     return EnumeratorFactory([obj]);
                 }
 
@@ -865,17 +914,15 @@
                 }
 
 
-                return function () {
-                    var _index = -1,
-                        _length = _keys.length;
+                var _index = -1,
+                    _length = _keys.length;
 
-                    return new __Enumerator(function (yielder) {
+                return new __Enumerator(function (yielder) {
 
-                        if (++_index < _length) {
-                            return yielder(new __KeyValuePair(_keys[_index], obj[_keys[_index]]));
-                        }
-                    });
-                };
+                    if (++_index < _length) {
+                        return yielder(new __KeyValuePair(_keys[_index], obj[_keys[_index]]));
+                    }
+                });
             }();
         }
 
@@ -900,7 +947,7 @@
             * @returns {Enumerator}
             */
             getEnumerator: function () {
-                return this.__enumerator__();
+                return EnumeratorFactory($prop(this));
             }
         },
         {
@@ -909,7 +956,7 @@
             * @returns {Enumerable}
             */
             empty: function () {
-                return new __Enumerable([]);
+                return _empty;
             },
 
             /**
@@ -923,12 +970,12 @@
                 }
 
                 if ($is(obj, __Enumerable) ||                                   /// Enumerable
-                    $is(obj, __array) ||                                        /// Array
-                    $is(obj, __string) ||                                       /// String
+                    $is(obj, ARRAY) ||                                        /// Array
+                    $is(obj, STRING) ||                                       /// String
                     $isFunc(obj.getEnumerator) ||                               /// Enumerable-like
                     $isFunc(obj[_iteratorSymbol]) ||                            /// Iterable
                     obj instanceof _generatorFunction ||                        /// ES6 Generator Function
-                    ($is(obj.length, __number) && $isFunc(obj.splice))) {       /// Array-like
+                    ($is(obj.length, NUMBER) && $isFunc(obj.splice))) {       /// Array-like
                     return true;
                 }
 
@@ -942,13 +989,13 @@
             * @returns {Enumerable}
             */
             range: function (start, count) {
-                $ensureType(start, "start", __number);
-                $ensureType(count, "count", __number);
+                $ensureType(start, NUMBER);
+                $ensureType(count, NUMBER);
 
                 var _max = start + count - 1;
 
-                if (count < 0 || _max > __number.MAX_VALUE) {
-                    throw new __error("Argument 'count' was out of the range of valid values");
+                if (count < 0 || _max > NUMBER.MAX_VALUE) {
+                    $error(ERROR_ARGUMENT_OUT_OF_RANGE);
                 }
 
                 return new __Enumerable(function () {
@@ -972,10 +1019,10 @@
             * @returns {Enumerable}
             */
             repeat: function (element, count) {
-                $ensureType(count, "count", __number);
+                $ensureType(count, NUMBER);
 
                 if (count < 0) {
-                    throw new __error("Argument 'count' was out of the range of valid values");
+                    $error(ERROR_ARGUMENT_OUT_OF_RANGE);
                 }
 
                 return new __Enumerable(function () {
@@ -1003,7 +1050,7 @@
 
 
         function Comparer(comparison) {
-            $ensureType(comparison, "comparison", __function);
+            $ensureType(comparison, FUNCTION);
             $define(this, "_comparison", { value: comparison });
         }
 
@@ -1027,7 +1074,7 @@
             /**
             * Gets a default sort order comparer for the type specified by the generic argument.
             */
-            default: new Comparer($computeCompare),
+            defaultComparer: new Comparer($computeCompare),
 
 
             /**
@@ -1049,8 +1096,8 @@
 
         function EqualityComparer(hashCodeProvider, equality) {
 
-            $ensureType(equality, "equality", __function);
-            $ensureType(hashCodeProvider, "hashCodeProvider", __function);
+            $ensureType(equality, FUNCTION);
+            $ensureType(hashCodeProvider, FUNCTION);
 
             $define(this, "_equality", { value: equality });
             $define(this, "_hashCodeProvider", { value: hashCodeProvider });
@@ -1083,7 +1130,7 @@
             /**
             * Gets a default equality comparer for the type specified by the generic argument.
             */
-            default: new EqualityComparer($hash, $equals),
+            defaultComparer: new EqualityComparer($hash, $equals),
 
             /**
             * Creates an EqualityComparer by using the specified equality and hashCodeProvider.
@@ -1118,7 +1165,7 @@
             */
             count: function () {
                 /// implemented in sub-classes
-                throw new __error("Not implemented");
+                $error(ERROR_METHOD_NOT_IMPLEMENTED);
             },
 
             /**
@@ -1136,7 +1183,7 @@
             */
             getEnumerator: function () {
                 /// implemented in sub-classes
-                throw new __error("Not implemented");
+                $error(ERROR_METHOD_NOT_IMPLEMENTED);
             },
         });
     })();
@@ -1153,9 +1200,9 @@
         */
         function ReadOnlyCollection(list) {
 
-            $ensureType(list, "list", __List);
+            $ensureType(list, __List);
+            $prop(this, list);
             $define(this, "length", { get: function () { return list.length; } });
-            $define(this, "items", { value: function () { return list; } });
 
             for (var i = 0, _len = list.count() ; i < _len; i++) {
                 this[i] = list[i];
@@ -1174,7 +1221,7 @@
             * @returns {Object}
             */
             get: function (index) {
-                return this.items().get(index);
+                return $prop(this).get(index);
             },
 
             /**
@@ -1200,7 +1247,7 @@
             * @param {Number} arrayIndex The zero-based index in array at which copying begins.
             */
             copyTo: function (array, arrayIndex) {
-                this.items().copyTo(array, arrayIndex);
+                $prop(this).copyTo(array, arrayIndex);
             },
 
             /**
@@ -1209,7 +1256,15 @@
             * @returns {Number}
             */
             indexOf: function (item) {
-                return this.items().indexOf(item);
+                return $prop(this).indexOf(item);
+            },
+
+            /**
+            * Buffers collection into an array.
+            * @returns {Array}
+            */
+            items: function () {
+                return $prop(this).items();
             },
 
             /** 
@@ -1217,7 +1272,7 @@
             * @returns {Enumerator}
             */
             getEnumerator: function () {
-                return $enumerator(this.items());
+                return $enumerator($prop(this));
             }
         });
     })();
@@ -1237,15 +1292,16 @@
             var _args = arguments,
                 _capacity = 0;
 
+            $prop(this, this);
             $define(this, "length", {
                 get: function () {
                     return _capacity;
                 },
                 set: function (value) {
-                    $ensureType(value, "length", __number);
+                    $ensureType(value, NUMBER);
 
                     var _len = _capacity;
-                    _capacity = __math.max(value, 0);
+                    _capacity = MATH.max(value, 0);
 
                     if (_capacity < _len) {
                         do {
@@ -1259,11 +1315,11 @@
             if (_args.length === 1 && value !== null) {
 
                 /// capacity
-                if ($is(value, __number)) {
+                if ($is(value, NUMBER)) {
                     _capacity = value;
                 }
 
-                else if (__Enumerable.is(value) && !$is(value, __string)) {
+                else if (__Enumerable.is(value) && !$is(value, STRING)) {
                     this.addRange(value);
                 }
 
@@ -1292,7 +1348,7 @@
             * @param {Enumerable} collection The collection whose elements should be added to the end of the List.
             */
             addRange: function (collection) {
-                $nullCheck(collection, "collection");
+                $nullCheck(collection);
                 this.insertRange(this.length, collection);
             },
 
@@ -1306,7 +1362,7 @@
 
             /**
             * Searches a range of elements in the sorted List for an element using the specified comparer and returns the zero-based index of the element.
-            * @param {Object} item The object to locate. The value can be null for reference types.
+            * @param {Object} item The object to locate.
             * @param {Number=} index The zero-based starting index of the range to search.
             * @param {Number=} count The length of the range to search.
             * @param {Comparer=} comparer The Comparer implementation to use when comparing elements.
@@ -1314,30 +1370,11 @@
             */
             binarySearch: function (item) {
                 var _args = arguments,
-                    _index = $is(_args[1], __number) ? _args[1] : 0,
-                    _count = $is(_args[1], __number) ? _args[2] : this.length,
-                    _comparer = $comparer(_args.length === 4 ? _args[3] : _args[2]),
-                    _lo = _index,
-                    _hi = _index + _count - 1;
+                    _index = $is(_args[1], NUMBER) ? _args[1] : 0,
+                    _count = $is(_args[1], NUMBER) ? _args[2] : this.length,
+                    _comparer = $comparer(_args.length === 4 ? _args[3] : _args[2]);
 
-
-                while (_lo <= _hi) {
-                    var i = _lo + ((_hi - _lo) >> 1);
-                    var _order = _comparer.compare(this[i], item);
-
-                    if (_order === 0) {
-                        return i;
-                    }
-
-                    if (_order < 0) {
-                        _lo = i + 1;
-                    }
-                    else {
-                        _hi = i - 1;
-                    }
-                }
-
-                return ~_lo;
+                return $binarySearch(this, _index, _count, item, _comparer);
             },
 
             /**
@@ -1361,7 +1398,7 @@
             * @returns {Boolean}
             */
             contains: function (item) {
-                return this.items().indexOf(item) !== -1;
+                return this.indexOf(item) !== -1;
             },
 
             /**
@@ -1380,7 +1417,7 @@
             */
             exists: function (match) {
                 match = $lambda(match);
-                $ensureType(match, "match", __function);
+                $ensureType(match, FUNCTION);
 
                 for (var i = 0, _len = this.length; i < _len; i++) {
                     if (match(this[i]) === true) {
@@ -1398,7 +1435,7 @@
             */
             find: function (match) {
                 match = $lambda(match);
-                $ensureType(match, "match", __function);
+                $ensureType(match, FUNCTION);
 
                 for (var i = 0, _len = this.length; i < _len; i++) {
                     if (match(this[i]) === true) {
@@ -1416,9 +1453,9 @@
             */
             findAll: function (match) {
                 match = $lambda(match);
-                $ensureType(match, "match", __function);
+                $ensureType(match, FUNCTION);
 
-                var _arr = new __array(this.length),
+                var _arr = new ARRAY(this.length),
                     _count = 0;
 
                 for (var i = 0, _len = this.length; i < _len; i++) {
@@ -1442,11 +1479,11 @@
             findIndex: function () {
                 var _args = arguments,
                     _len = this.length,
-                    _startIndex = $is(_args[0], __number) ? _args[0] : 0,
-                    _count = $is(_args[1], __number) ? _args[1] : _len - _startIndex,
+                    _startIndex = $is(_args[0], NUMBER) ? _args[0] : 0,
+                    _count = $is(_args[1], NUMBER) ? _args[1] : _len - _startIndex,
                     _match = $lambda(_args[_args.length - 1]);
 
-                $ensureType(_match, "match", __function);
+                $ensureType(_match, FUNCTION);
                 validateRange(this, _startIndex);
 
                 while (_count-- > 0 && _startIndex < _len) {
@@ -1468,7 +1505,7 @@
             */
             findLast: function (match) {
                 match = $lambda(match);
-                $ensureType(match, "match", __function);
+                $ensureType(match, FUNCTION);
 
                 var _len = this.length;
                 while (_len-- > 0) {
@@ -1491,11 +1528,11 @@
             */
             findLastIndex: function () {
                 var _args = arguments,
-                    _startIndex = $is(_args[0], __number) ? _args[0] : this.length - 1,
-                    _count = $is(_args[1], __number) ? _args[1] : _startIndex,
+                    _startIndex = $is(_args[0], NUMBER) ? _args[0] : this.length - 1,
+                    _count = $is(_args[1], NUMBER) ? _args[1] : _startIndex,
                     _match = $lambda(_args[_args.length - 1]);
 
-                $ensureType(_match, "match", __function);
+                $ensureType(_match, FUNCTION);
                 validateRange(this, _startIndex);
 
                 while (_count-- > 0 && _startIndex > 0) {
@@ -1515,7 +1552,7 @@
             */
             forEach: function (action) {
                 action = $lambda(action);
-                $ensureType(action, "action", __function);
+                $ensureType(action, FUNCTION);
 
                 for (var i = 0, _len = this.length; i < _len; i++) {
                     action(this[i]);
@@ -1555,7 +1592,7 @@
             /**
             * Inserts an element into the List at the specified index.
             * @param {Number} index The zero-based index at which item should be inserted.
-            * @param {Object} item The object to insert. The value can be null for reference types.
+            * @param {Object} item The object to insert.
             */
             insert: function (index, item) {
 
@@ -1578,14 +1615,14 @@
             * @param {Enumerable} collection The collection whose elements should be inserted into the List.
             */
             insertRange: function (index, collection) {
-                $ensureType(index, "index", __number);
-                $nullCheck(collection, "collection");
+                $ensureType(index, NUMBER);
+                $nullCheck(collection);
 
                 if (index !== this.length) {
                     validateRange(this, index);
                 }
 
-                var _arr = $buffer(collection),
+                var _arr = $buffer(collection, false),
                     _count = _arr.length,
                     _len = this.length + _count;
 
@@ -1601,7 +1638,7 @@
             },
 
             /**
-            * Gets an Array wrapper around the List.
+            * Buffers collection into an array.
             * @returns {Array}
             */
             items: function () {
@@ -1640,7 +1677,7 @@
             */
             removeAll: function (match) {
                 match = $lambda(match);
-                $ensureType(match, "match", __function);
+                $ensureType(match, FUNCTION);
 
                 var _freeIndex = 0,
                     _len = this.length;
@@ -1770,10 +1807,10 @@
                         _arr = this.items().sort(_comparison);
                     }
                     else {
-                        if ($is(_arg1, __number)) {
+                        if ($is(_arg1, NUMBER)) {
                             _index = _arg1;
 
-                            $ensureType(_args[1], "count", __number);
+                            $ensureType(_args[1], NUMBER);
                             validateRange(this, _index + _args[1] - 1);
 
                             _arr = this.slice(_index, _index + _args[1]);
@@ -1812,7 +1849,7 @@
             trueForAll: function (match) {
 
                 match = $lambda(match);
-                $ensureType(match, "match", __function);
+                $ensureType(match, FUNCTION);
 
                 for (var i = 0, _len = this.length; i < _len; i++) {
                     if (match(this[i]) === false) {
@@ -1846,10 +1883,10 @@
         ---------------------------------------------------------------------- */
 
         function validateRange(list, index) {
-            $ensureType(index, "index", __number);
+            $ensureType(index, NUMBER);
 
             if (index < 0 || index >= list.length) {
-                throw new __error("Index was out of range. Must be non-negative and less than the size of the List.");
+                $error(ERROR_ARGUMENT_OUT_OF_RANGE);
             }
         }
     })();
@@ -1866,9 +1903,29 @@
         * @param {Comparer=} comparer The Comparer implementation to use when comparing keys.
         */
         function SortedList(value, comparer) {
-            comparer = $comparer(comparer);
-            if (value != null) {
+            var _dic = $is(value, __Dictionary) ? value : null,
+                _capacity = $is(value, NUMBER) ? value : (_dic ? _dic.count() : 0),
+                _comparer = $comparer(comparer ? comparer : (_dic ? null : value)),
+                _keys = new ARRAY(_capacity),
+                _values = new ARRAY(_capacity),
+                _size = _dic ? _dic.count() : 0;
+
+            if (_dic) {
+                var _arr = $buffer(_dic).sort(function (x, y) { return _comparer.compare(x.key, y.key); }),
+                    _len = _capacity;
+
+                while (_len-- > 0) {
+                    _keys[_len] = _arr[_len].key;
+                    _values[_len] = _arr[_len].value;
+                }
             }
+
+            $prop(this, {
+                size: _size,
+                comparer: _comparer,
+                keys: _keys,
+                values: _values
+            });
         }
 
         return $extend(SortedList, __Collection, {
@@ -1876,11 +1933,19 @@
             /**
             * Adds an element with the specified key and value into the SortedList.
             * @param {Object} key The key of the element to add.
-            * @param {Object} value The value of the element to add. The value can be null for reference types.
+            * @param {Object} value The value of the element to add.
             */
             add: function (key, value) {
-                $nullCheck(key, "key");
-                $nullCheck(value, "value");
+                $nullCheck(key);
+
+                var _source = $prop(this),
+                    _index = $binarySearch(_source.keys, 0, _source.size, key, _source.comparer);
+
+                if (_index >= 0) {
+                    $error(ERROR_DUPLICATE_KEY);
+                }
+
+                Insert(this, ~_index, key, value);
             },
 
             /**
@@ -1889,7 +1954,13 @@
             * @returns {Object}
             */
             get: function (key) {
-                $nullCheck(key, "key");
+                var _index = this.indexOfKey(key);
+
+                if (_index >= 0) {
+                    return $prop(this).values[_index];
+                }
+
+                $error(ERROR_KEY_NOT_FOUND);
             },
 
             /**
@@ -1898,13 +1969,37 @@
             * @returns {Number}
             */
             capacity: function (value) {
-                $ensureType(value, "value", __number);
+
+                var _source = $prop(this),
+                    _keys = _source.keys,
+                    _size = _source.size;
+
+                if (value == null) {
+                    return _keys.length;
+                }
+                else {
+                    $ensureType(value, NUMBER);
+
+                    if (value !== _keys.length) {
+
+                        if (value < _size) {
+                            $error(ERROR_ARGUMENT_OUT_OF_RANGE);
+                        }
+
+                        _source.keys.length = value;
+                        _source.values.length = value;
+                    }
+                }
             },
 
             /**
             * Removes all elements from the SortedList.
             */
             clear: function () {
+                var _source = $prop(this);
+                _source.size = 0;
+                _source.keys.length = 0;
+                _source.values.length = 0;
             },
 
             /**
@@ -1912,6 +2007,7 @@
             * @returns {Comparer}
             */
             comparer: function () {
+                return $prop(this).comparer;
             },
 
             /**
@@ -1920,7 +2016,7 @@
             * @returns {Boolean}
             */
             containsKey: function (key) {
-                $nullCheck(key, "key");
+                return this.indexOfKey(key) >= 0;
             },
 
             /**
@@ -1928,7 +2024,8 @@
             * @param {Object} value The value to locate in the SortedList.
             * @returns {Boolean}
             */
-            containsValue: function () {
+            containsValue: function (value) {
+                return this.indexOfValue(value) >= 0;
             },
 
             /**
@@ -1936,20 +2033,25 @@
             * @returns {Number}
             */
             count: function () {
+                return $prop(this).size;
             },
 
             /**
             * Gets a collection containing the keys in the SortedList, in sorted order.
-            * @returns {List}
+            * @returns {Array}
             */
             keys: function () {
+                var _source = $prop(this);
+                return _source.keys.slice(0, _source.size);
             },
 
             /**
             * Gets a collection containing the values in the SortedLis.
-            * @returns {List}
+            * @returns {Array}
             */
             values: function () {
+                var _source = $prop(this);
+                return _source.values.slice(0, _source.size);
             },
 
             /**
@@ -1958,7 +2060,11 @@
             * @returns {Number}
             */
             indexOfKey: function (key) {
-                $nullCheck(key, "key");
+                $nullCheck(key);
+
+                var _source = $prop(this);
+
+                return $binarySearch(_source.keys, 0, _source.size, key, _source.comparer);
             },
 
             /**
@@ -1967,7 +2073,7 @@
             * @returns {Number}
             */
             indexOfValue: function (value) {
-                $nullCheck(value, "value");
+                return $prop(this).values.indexOf(value);
             },
 
             /**
@@ -1977,7 +2083,14 @@
             * @returns {Boolean}
             */
             remove: function (key) {
-                $nullCheck(key, "key");
+                var _index = this.indexOfKey(key);
+
+                if (_index >= 0) {
+                    this.removeAt(_index);
+                    return true;
+                }
+
+                return false;
             },
 
             /**
@@ -1985,7 +2098,22 @@
             * @param {Number} index The zero-based index of the element to remove.
             */
             removeAt: function (index) {
-                $ensureType(index, "index", __number);
+                $ensureType(index, NUMBER);
+
+                var _source = $prop(this),
+                    _keys = _source.keys,
+                    _values = _source.values,
+                    _len = _keys.length;
+
+                if (index < 0 || index >= _source.size) {
+                    $error(ERROR_ARGUMENT_OUT_OF_RANGE);
+                }
+
+                _source.size--;
+                _keys.splice(index, 1);
+                _values.splice(index, 1);
+                _keys.length = _len;
+                _values.length = _len;
             },
 
             /**
@@ -1994,14 +2122,27 @@
             * @param {Object} value The value associated with the specified key.
             */
             set: function (key, value) {
-                $nullCheck(key, "key");
-                $nullCheck(value, "value");
+                var _index = this.indexOfKey(key);
+
+                if (_index >= 0) {
+                    $prop(this).values[_index] = value;
+                    return;
+                }
+
+                Insert(this, ~_index, key, value);
             },
 
             /**
             * Sets the capacity to the actual number of elements in the SortedList, if that number is less than 90 percent of current capacity.
             */
             trimExcess: function () {
+                var _source = $prop(this),
+                    _size = _source._size,
+                    _threshold = _source.keys.length * 0.9;
+
+                if (_size < _threshold) {
+                    this.capacity(_size);
+                }
             },
 
             /**
@@ -2012,8 +2153,16 @@
             * @returns {Boolean}
             */
             tryGetValue: function (key, callback) {
-                $nullCheck(key, "key");
-                $ensureType(callback, "callback", __function);
+                $ensureType(callback, FUNCTION);
+
+                var _index = this.indexOfKey(key);
+
+                if (_index >= 0) {
+                    callback($prop(this).values[_index]);
+                    return true;
+                }
+
+                return false;
             },
 
             /** 
@@ -2021,9 +2170,56 @@
             * @returns {Enumerator}
             */
             getEnumerator: function () {
-                return $enumerator(this.items());
+                var _source = $prop(this),
+                    _keys = _source.keys,
+                    _values = _source.values,
+                    _size = _source.size,
+                    _index = -1;
+
+                return new __Enumerator(function (yielder) {
+                    if (++_index < _size) {
+                        return yielder(new __KeyValuePair(_keys[_index], _values[_index]));
+                    }
+                });
             }
         });
+
+
+
+        /* SortedList Helper Functions
+        ---------------------------------------------------------------------- */
+
+        function Insert(list, index, key, value) {
+            var _source = $prop(list),
+                _size = _source.size,
+                _keys = _source.keys,
+                _values = _source.values;
+
+            if (_size == _keys.length) {
+                var _newCapacity = _keys.length === 0 ? 4 : _keys.length * 2,
+                    _max = NUMBER.MAX_VALUE,
+                    _min = _size + 1;
+
+                if (_newCapacity > _max) {
+                    _newCapacity = _max;
+                }
+
+                if (_newCapacity < _min) {
+                    _newCapacity = _min;
+                }
+
+                list.capacity(_newCapacity);
+            }
+
+            if (index < _size) {
+                _keys.splice(index, 0, key);
+                _values.splice(index, 0, value);
+            }
+
+            _source.size++;
+            _keys[index] = key;
+            _values[index] = value;
+        }
     })();
 
 
@@ -2066,9 +2262,9 @@
             var _args = arguments,
                 _dic = $is(_args, Dictionary) ? _args[0] : null,
                 _comparer = _dic ? _args[1] : $equalityComparer(_args[0]),
-                _table = _dic ? new __HashTable(_dic.count(), _comparer) : ($is(_args[0], __number) ? new __HashTable(_args[0], _comparer) : new __HashTable(_comparer));
+                _table = _dic ? new __HashTable(_dic.count(), _comparer) : ($is(_args[0], NUMBER) ? new __HashTable(_args[0], _comparer) : new __HashTable(_comparer));
 
-            $define(this, "table", { value: function () { return _table; } });
+            $prop(this, _table);
 
             if (_dic) {
                 var _e = $enumerator(_dic);
@@ -2086,9 +2282,9 @@
             * @param {Object} value The object to use as the value of the element to add.
             */
             add: function (key, value) {
-                $nullCheck(key, "key");
-                if (!this.table().add(key, value)) {
-                    throw new __error("An item with the same key has already been added.");
+                $nullCheck(key);
+                if (!$prop(this).add(key, value)) {
+                    $error(ERROR_DUPLICATE_KEY);
                 }
             },
 
@@ -2096,7 +2292,7 @@
             * Removes all keys and values from the Dictionary.
             */
             clear: function () {
-                this.table().clear();
+                $prop(this).clear();
             },
 
             /**
@@ -2104,7 +2300,7 @@
             * @returns {Number}
             */
             count: function () {
-                return this.table().count();
+                return $prop(this).count();
             },
 
             /**
@@ -2113,8 +2309,8 @@
             * @returns {Boolean}
             */
             containsKey: function (key) {
-                $nullCheck(key, "key");
-                return this.table().contains(key);
+                $nullCheck(key);
+                return $prop(this).contains(key);
             },
 
             /**
@@ -2123,7 +2319,7 @@
             * @returns {Boolean}
             */
             containsValue: function (value) {
-                var _e = $enumerator(this.table());
+                var _e = $enumerator($prop(this));
 
                 while (_e.next()) {
                     if ($equals(_e.current.value, value)) {
@@ -2148,7 +2344,7 @@
             * @returns {Array}
             */
             keys: function () {
-                return this.table().keys();
+                return $prop(this).keys();
             },
 
             /**
@@ -2156,7 +2352,7 @@
             * @returns {Array}
             */
             values: function () {
-                return this.table().values();
+                return $prop(this).values();
             },
 
             /**
@@ -2165,15 +2361,8 @@
             * @returns {Object}
             */
             get: function (key) {
-                $nullCheck(key, "key");
-
-                var _entry = this.table().get(key);
-
-                if (_entry == null) {
-                    throw new __error("The given key was not present in the collection.");
-                }
-
-                return _entry.value;
+                $nullCheck(key);
+                return $prop(this).get(key);
             },
 
             /**
@@ -2182,8 +2371,8 @@
             * @param {Object} value The object to use as the value of the element to set.
             */
             set: function (key, value) {
-                $nullCheck(key, "key");
-                this.table().set(key, value);
+                $nullCheck(key);
+                $prop(this).set(key, value);
             },
 
             /**
@@ -2194,10 +2383,10 @@
             * @returns {Boolean}
             */
             tryGetValue: function (key, callback) {
-                $nullCheck(key, "key");
-                $ensureType(callback, "callback", __function);
+                $nullCheck(key);
+                $ensureType(callback, FUNCTION);
 
-                var _entry = this.table().get(key);
+                var _entry = $prop(this).entry(key);
 
                 if (_entry != null) {
                     callback(_entry.value);
@@ -2212,8 +2401,8 @@
             * @returns {Boolean}
             */
             remove: function (key) {
-                $nullCheck(key, "key");
-                return this.table().remove(key);
+                $nullCheck(key);
+                return $prop(this).remove(key);
             },
 
             /** 
@@ -2221,7 +2410,7 @@
             * @returns {Enumerator}
             */
             getEnumerator: function () {
-                var _e = $enumerator(this.table());
+                var _e = $enumerator($prop(this));
 
                 return new __Enumerator(function (yielder) {
                     while (_e.next()) {
@@ -2251,24 +2440,24 @@
         function HashTable() {
 
             var _args = arguments,
-                _size = $is(_args[0], __number) ? getPrime(_args[0] / _fillFactor) : 0,
+                _size = $is(_args[0], NUMBER) ? getPrime(_args[0] / _fillFactor) : 0,
                 _comparer = $equalityComparer(_args.length === 2 ? _args[1] : _args[0]);
 
             initializeHashTable(this, _size, _comparer);
         }
 
         /**
-        * Initializes a new instance of the Bucket.
-        * @param {Object} key The key defined in each key/value bucket.
-        * @param {Object} value The value defined in each key/value bucket.
-        * @param {Number} hash The hash code of the key defined in each key/value bucket.
-        * @param {Bucket} next The next bucket in the chained bucket sequence when collision occures.
+        * Initializes a new instance of the HashTable Entry.
+        * @param {Number} hash The hash code of the key defined in each key/value entry.
+        * @param {Number} next The next entry index in the chained bucket sequence when collision occures.
+        * @param {Object} key The key defined in each key/value entry.
+        * @param {Object} value The value defined in each key/value entry.
         */
-        function Bucket(key, value, hash, next) {
-            this.key = key;
-            this.value = value;
-            this.hash = hash;
-            this.next = next;
+        function Entry(hash, next, key, value) {
+            this.hash = hash;       // item's key hash-code
+            this.next = next;       // index of the next bucket in the chained bucket list
+            this.key = key;         // item's key
+            this.value = value;     // item's value
         }
 
 
@@ -2277,23 +2466,25 @@
             /**
             * Gets the value associated with the specified key.
             * @param {Object} key The key whose value to get.
-            * @returns {Bucket}
+            * @returns {Object}
             */
             get: function (key) {
-                var _buckets = this._buckets,
-                    _comparer = this._comparer,
-                    _hashCode = _comparer.hash(key),
-                    _bucket = _buckets[_hashCode % _buckets.length];
-
-                while (_bucket != null) {
-                    if (_bucket.hash === _hashCode && _comparer.equals(_bucket.key, key)) {
-                        return _bucket;
-                    }
-
-                    _bucket = _bucket.next;
+                var _index = findEntry(this, key);
+                if (_index === -1) {
+                    $error(ERROR_KEY_NOT_FOUND);
                 }
 
-                return null;
+                return this._entries[_index].value;
+            },
+
+            /**
+            * Gets the entry associated with the specified key.
+            * @param {Object} key The key whose value to get.
+            * @returns {Entry}
+            */
+            entry: function (key) {
+                var _index = findEntry(this, key);
+                return _index >= 0 ? this._entries[_index] : null;
             },
 
             /**
@@ -2314,36 +2505,58 @@
             */
             add: function (key, value, overwrite) {
 
-                if (this._count > this._loadSize) {
-                    rehash(this, getPrime(this._buckets.length));
-                }
-
-                var _buckets = this._buckets,
+                var _entries = this._entries,
+                    _buckets = this._buckets,
                     _comparer = this._comparer,
-                    _hashCode = _comparer.hash(key),
-                    _hash = _hashCode % _buckets.length,
-                    _bucket = _buckets[_hash];
+                    _hash = _comparer.hash(key),            // hash code of the key
+                    _bucket = _hash % _buckets.length,      // bucket index
+                    _entry = null;
 
 
-                if (_bucket != null) {
-                    var _b = _bucket;
-                    do {
-                        if (_b.hash === _hashCode && _comparer.equals(_b.key, key)) {
-                            if (overwrite) {
-                                _b.value = value;
-                            }
-                            return false;
+                // check for item existance, freed entries have -1 hash-code value and do not need enumeration
+                for (var _index = _buckets[_bucket]; _index >= 0;) {
+                    _entry = _entries[_index];
+
+                    if (_entry.hash === _hash && _comparer.equals(_entry.key, key)) {
+                        if (overwrite) {
+                            _entry.value = value;
+                            return true;
                         }
 
-                        _b = _b.next;
+                        return false;
                     }
-                    while (_b != null);
+
+                    _index = _entry.next;
                 }
 
 
-                _buckets[_hash] = new Bucket(key, value, _hashCode, _bucket);
 
-                this._count++;
+                // item with the same key does not exists, add item
+
+                var _count = this._count,
+                    _freeCount = this._freeCount,
+                    _freeIndex = this._freeIndex,
+                    _index = 0;
+
+                // there's already a free index
+                if (_freeCount > 0) {
+                    _index = _freeIndex;                        // consume free index
+                    this._freeIndex = _entries[_index].next;    // save new free index
+                    this._freeCount--;                          // update number of free entries
+                }
+                else {
+                    if (_count === _entries.length) {
+                        _bucket = _hash % resize(this);         // resize HashTable
+                    }
+
+                    // find a new free index
+                    _index = _count;
+                    this._count++;
+                }
+
+                _entries[_index] = new Entry(_hash, _buckets[_bucket], key, value);
+                _buckets[_bucket] = _index;
+
                 return true;
             },
 
@@ -2353,33 +2566,43 @@
             * @returns {Boolean}
             */
             remove: function (key) {
-                var _buckets = this._buckets,
-                    _comparer = this._comparer,
-                    _size = _buckets.length,
-                    _hashCode = _comparer.hash(key),
-                    _hash = _hashCode % _size,
-                    _bucket = _buckets[_hash],
-                    _prevBucket = _bucket;
+                var _comparer = this._comparer,
+                    _buckets = this._buckets,
+                    _entries = this._entries,
+                    _hash = _comparer.hash(key),            // hash-code of the key
+                    _bucket = _hash % _buckets.length,      // bucket index
+                    _last = -1,
+                    _entry;
 
-                while (_bucket != null) {
+                // freed entries have -1 hash-code value and do not need enumeration
+                for (var _index = _buckets[_bucket]; _index >= 0;) {
+                    _entry = _entries[_index];
 
-                    if (_bucket.hash === _hashCode && _comparer.equals(_bucket.key, key)) {
+                    if (_entry.hash == _hash && _comparer.equals(_entry.key, key)) {
 
-                        /// first in the bucket list
-                        if (_prevBucket === _bucket) {
-                            _buckets[_hash] = _bucket.next;
+                        // last item in the chained bucket list
+                        if (_last < 0) {
+                            _buckets[_bucket] = _entry.next;
                         }
                         else {
-                            _prevBucket.next = _bucket.next;
+                            _entries[_last].next = _entry.next;
                         }
 
-                        this._count--;
+                        _entry.hash = -1;                   // release the entry
+                        _entry.next = this._freeIndex;      // save previous free index
+                        _entry.key = null;
+                        _entry.value = null;
+
+                        this._freeIndex = _index;           // save new free index
+                        this._freeCount++;                  // update number of free entries
                         return true;
                     }
 
-                    _prevBucket = _bucket;
-                    _bucket = _bucket.next;
+                    _last = _index;
+                    _index = _entry.next;
                 }
+
+                // item does not exist
                 return false;
             },
 
@@ -2395,7 +2618,7 @@
             * @returns {Number}
             */
             count: function () {
-                return this._count;
+                return this._count - this._freeCount;
             },
 
             /**
@@ -2404,7 +2627,7 @@
             * @returns {Boolean}
             */
             contains: function (key) {
-                return this.get(key) != null;
+                return findEntry(this, key) != -1;
             },
 
             /**
@@ -2420,12 +2643,18 @@
             * @returns {Array}
             */
             keys: function () {
-                var _arr = new __array(this._count),
-                    _e = $enumerator(this),
+                var _count = this._count,
+                    _arr = new ARRAY(this.count()),
+                    _entries = this._entries,
+                    _entry = null,
                     _index = 0;
 
-                while (_e.next()) {
-                    _arr[_index++] = _e.current.key;
+                for (var i = 0; i < _count; i++) {
+                    _entry = _entries[i];
+
+                    if (_entry.hash >= 0) {
+                        _arr[_index++] = _entry.key;
+                    }
                 }
 
                 return _arr;
@@ -2436,12 +2665,18 @@
             * @returns {Array}
             */
             values: function () {
-                var _arr = new __array(this._count),
-                    _e = $enumerator(this),
+                var _count = this._count,
+                    _arr = new ARRAY(this.count()),
+                    _entries = this._entries,
+                    _entry = null,
                     _index = 0;
 
-                while (_e.next()) {
-                    _arr[_index++] = _e.current.value;
+                for (var i = 0; i < _count; i++) {
+                    _entry = _entries[i];
+
+                    if (_entry.hash >= 0) {
+                        _arr[_index++] = _entry.value;
+                    }
                 }
 
                 return _arr;
@@ -2453,25 +2688,23 @@
             */
             getEnumerator: function () {
 
-                var _buckets = this._buckets,
+                var _index = 0,
+                    _entry = null,
                     _count = this._count,
-                    _size = _buckets.length,
-                    _index = 0,
-                    _bucket;
+                    _entries = this._entries;
 
                 return new __Enumerator(function (yielder) {
+                    while (_index < _count) {
 
-                    while (_index <= _size && _count > 0) {
-                        if (_bucket != null) {
-                            yielder(_bucket);
-                            _bucket = _bucket.next;
-                            _count--;
-                            return;
-                        }
-                        else {
-                            _bucket = _buckets[_index];
+                        _entry = _entries[_index];
+
+                        // freed entries have -1 as hashCode value and do not enumerate
+                        if (_entry.hash >= 0) {
                             _index++;
+                            return yielder(new __KeyValuePair(_entry.key, _entry.value));
                         }
+
+                        _index++;
                     }
                 });
             }
@@ -2483,10 +2716,9 @@
         ---------------------------------------------------------------------- */
 
         function getPrime(min) {
-            for (var i = 0; i < _primes.length; i++) {
-                var prime = _primes[i];
-                if (prime > min) {
-                    return prime;
+            for (var i = 0, _len = _primes.length; i < _len; i++) {
+                if (_primes[i] > min) {
+                    return _primes[i];
                 }
             }
 
@@ -2495,40 +2727,82 @@
 
         function initializeHashTable(table, size, comparer) {
             size = size || _primes[0];
-            comparer = comparer || table._comparer || __EqualityComparer.default;
+            comparer = comparer || table._comparer || __EqualityComparer.defaultComparer;
 
-            table._count = 0;
-            table._loadSize = size * _fillFactor;
-            table._buckets = new __array(size);
+            var _buckets = new ARRAY(size),     // bucket list. index: hash, value: entry index
+                _entries = new ARRAY(size);     // entry list. next: index of the next bucket
+
+            table._count = 0;                   // total number of entries, including release entries (freeCount)
+            table._freeIndex = -1;              // next free index in the bucket list
+            table._freeCount = 0;               // total number of release entries
+            table._buckets = _buckets;
+            table._entries = _entries;
             table._comparer = comparer;
-            table._keys = null;
-            table._values = null;
+
+
+            // reset bucket list
+            for (var i = 0; i < size; i++) {
+                _buckets[i] = -1;
+            }
         }
 
-        function rehash(table, newSize) {
-            var _buckets = table._buckets,
-                _newBuckets = new __array(newSize),
-                _size = _buckets.length,
-                _bucket,
-                _newBucket,
-                _hash;
+        function findEntry(table, key) {
+            var _comparer = table._comparer,
+                _buckets = table._buckets,
+                _entries = table._entries,
+                _hash = _comparer.hash(key),        // hash code of the key
+                _length = _buckets.length,          // total buckets
+                _entry = null;
 
-            for (var i = 0; i < _size; i++) {
-                _bucket = _buckets[i];
+            // freed entries have -1 hashCode and do not need enumeration
+            for (var _index = _buckets[_hash % _length]; _index >= 0;) {
+                _entry = _entries[_index];
 
-                while (_bucket != null) {
+                if (_entry.hash === _hash && _comparer.equals(_entry.key, key)) {
+                    return _index;
+                }
 
-                    _newBucket = _bucket;
-                    _bucket = _bucket.next;
+                _index = _entry.next;
+            }
 
-                    _hash = _newBucket.hash % newSize;
-                    _newBucket.next = _newBuckets[_hash];
-                    _newBuckets[_hash] = _newBucket;
+            // key not found
+            return -1;
+        }
+
+        function resize(table) {
+            var _count = table._count,
+                _newSize = getPrime(_count),
+                _buckets = table._buckets,
+                _entries = table._entries,
+                _entry = null,
+                _bucket = 0,
+                _hash = 0,
+                _index = 0;
+
+            _buckets.length = _newSize;         // expand buckets
+            _entries.length = _newSize;         // expand entries
+
+
+            // reset bucket list
+            for (_index = 0; _index < _newSize; _index++) {
+                _buckets[_index] = -1;
+            }
+
+
+            // rehash values & update buckets and entries
+            for (_index = 0; _index < _count; _index++) {
+
+                _entry = _entries[_index];
+
+                // freed entries have -1 hashCode value and do not need rehash
+                if ((_hash = _entry.hash) >= 0) {
+                    _bucket = _hash % _newSize;             // rehash
+                    _entry.next = _buckets[_bucket];        // update entry's next index in the bucket chain
+                    _buckets[_bucket] = _index;             // update bucket index
                 }
             }
 
-            table._loadSize = _fillFactor * newSize;
-            table._buckets = _newBuckets;
+            return _newSize;
         }
     })();
 
@@ -2550,10 +2824,10 @@
                 _comparer = $equalityComparer(_args.length === 1 && _enumerable == null ? _args[0] : _args[1]),
                 _table = new __HashTable(_collection ? _collection.count() : 0, _comparer);
 
-            $define(this, "table", { value: function () { return _table; } });
+            $prop(this, _table);
 
             if (_enumerable) {
-                var _buffer = $buffer(_args[0]);
+                var _buffer = $buffer(_args[0], false);
                 for (var i = 0, len = _buffer.length; i < len; i++) {
                     _table.add(_buffer[i], null);
                 }
@@ -2573,14 +2847,14 @@
             * @returns {Boolean}
             */
             add: function (item) {
-                return this.table().add(item, null);
+                return $prop(this).add(item, null);
             },
 
             /**
             * Removes all elements from a HashSet object.
             */
             clear: function () {
-                this.table().clear();
+                $prop(this).clear();
             },
 
             /**
@@ -2588,7 +2862,7 @@
             * @returns {Number}
             */
             count: function () {
-                return this.table().count();
+                return $prop(this).count();
             },
 
             /**
@@ -2597,17 +2871,16 @@
             * @returns {Boolean}
             */
             contains: function (item) {
-                return this.table().contains(item);
+                return $prop(this).contains(item);
             },
 
             /**
             * Copies the elements of a HashSet object to an array.
             * @param {Array} array The one-dimensional array that is the destination of the elements copied from the HashSet object.
             * @param {Number=} arrayIndex The zero-based index in array at which copying begins.
-            * @param {Number=} count The number of elements to copy to array.
             */
-            copyTo: function (array, arrayIndex, count) {
-                $bufferTo(this.table().keys(), array, arrayIndex, count);
+            copyTo: function (array, arrayIndex) {
+                $bufferTo($prop(this).keys(), array, arrayIndex);
             },
 
             /**
@@ -2615,7 +2888,7 @@
             * @returns {EqualityComparer}
             */
             comparer: function () {
-                return this.table().comparer();
+                return $prop(this).comparer();
             },
 
             /**
@@ -2624,7 +2897,7 @@
             * @returns {Boolean}
             */
             remove: function (item) {
-                return this.table().remove(item);
+                return $prop(this).remove(item);
             },
 
             /**
@@ -2634,11 +2907,11 @@
             */
             removeWhere: function (match) {
                 match = $lambda(match);
-                $ensureType(match, "match", __function);
+                $ensureType(match, FUNCTION);
 
                 var _count = this.count(),
-                    _table = this.table(),
-                    _buffer = $buffer(this),
+                    _table = $prop(this),
+                    _buffer = $buffer(this, false),
                     _removed = 0,
                     _item;
 
@@ -2659,7 +2932,7 @@
             * @param {Enumerable} other The collection of items to remove from the set.
             */
             exceptWith: function (other) {
-                $nullCheck(other, "other");
+                $nullCheck(other);
 
                 if (this.count() === 0) {
                     return;
@@ -2672,7 +2945,7 @@
 
                 else {
                     var _eOther = $enumerator(other),
-                        _table = this.table();
+                        _table = $prop(this);
 
                     while (_eOther.next()) {
                         _table.remove(_eOther.current);
@@ -2685,7 +2958,7 @@
             * @param {Enumerable} other The collection to compare to the current set.
             */
             intersectWith: function (other) {
-                $nullCheck(other, "other");
+                $nullCheck(other);
 
                 // intersection of anything with empty set is empty set, so return if count is 0
                 if (this.count() === 0) {
@@ -2707,9 +2980,9 @@
 
                     if (areEqualityComparersEqual(this, _collection)) {
                         var _count = this.count(),
-                            _table = this.table(),
+                            _table = $prop(this),
                             _otable = _collection.table(),
-                            _buffer = $buffer(this),
+                            _buffer = $buffer(this, false),
                             _item;
 
                         while (_count-- > 0) {
@@ -2731,7 +3004,7 @@
             * @returns {Boolean}
             */
             isProperSubsetOf: function (other) {
-                $nullCheck(other, "other");
+                $nullCheck(other);
 
                 var _collection = $collection(other);
 
@@ -2766,7 +3039,7 @@
             * @returns {Boolean}
             */
             isProperSupersetOf: function (other) {
-                $nullCheck(other, "other");
+                $nullCheck(other);
 
                 // the empty set isn't a proper superset of any set.
                 if (this.count() === 0) {
@@ -2805,7 +3078,7 @@
             * @returns {Boolean}
             */
             isSubsetOf: function (other) {
-                $nullCheck(other, "other");
+                $nullCheck(other);
 
                 // The empty set is a subset of any set
                 if (this.count() === 0) {
@@ -2833,7 +3106,7 @@
             * @returns {Boolean}
             */
             isSupersetOf: function (other) {
-                $nullCheck(other, "other");
+                $nullCheck(other);
 
                 var _collection = $collection(other);
 
@@ -2860,14 +3133,14 @@
             * @returns {Boolean}
             */
             overlaps: function (other) {
-                $nullCheck(other, "other");
+                $nullCheck(other);
 
                 if (this.count() === 0) {
                     return false;
                 }
 
                 var _eOther = $enumerator(other),
-                    _table = this.table();
+                    _table = $prop(this);
 
                 while (_eOther.next()) {
                     if (_table.contains(_eOther.current)) {
@@ -2883,7 +3156,7 @@
             * @returns {Boolean}
             */
             setEquals: function (other) {
-                $nullCheck(other, "other");
+                $nullCheck(other);
 
                 if (areEqualityComparersEqual(this, other)) {
                     if (this.count() !== other.count()) {
@@ -2916,7 +3189,7 @@
             * @param {Enumerable} other The collection to compare to the current set.
             */
             symmetricExceptWith: function (other) {
-                $nullCheck(other, "other");
+                $nullCheck(other);
 
                 if (this.count() === 0) {
                     this.unionWith(other);
@@ -2935,7 +3208,7 @@
 
                 if (areEqualityComparersEqual(this, other)) {
                     var _eOther = $enumerator(other),
-                        _table = this.table();
+                        _table = $prop(this);
 
                     while (_eOther.next()) {
                         if (!_table.remove(_eOther.current)) {
@@ -2954,10 +3227,10 @@
             * @param {Enumerable} other The collection to compare to the current set.
             */
             unionWith: function (other) {
-                $nullCheck(other, "other");
+                $nullCheck(other);
 
                 var _eOther = $enumerator(other),
-                    _table = this.table();
+                    _table = $prop(this);
 
                 while (_eOther.next()) {
                     _table.add(_eOther.current, null);
@@ -2969,7 +3242,7 @@
             * @returns {Enumerator}
             */
             getEnumerator: function () {
-                var _e = $enumerator(this.table());
+                var _e = $enumerator($prop(this));
                 return new __Enumerator(function (yielder) {
                     while (_e.next()) {
                         return yielder(_e.current.key);
@@ -3094,7 +3367,7 @@
             * @returns {LinkedListNode}
             */
             next: function () {
-                return this._next == null || this._next === this._list.head() ? null : this._next;
+                return this._next == null || this._next === $prop(this._list).head ? null : this._next;
             },
 
             /**
@@ -3102,7 +3375,7 @@
             * @returns {LinkedListNode}
             */
             previous: function () {
-                return this._prev == null || this === this._list.head() ? null : this._prev;
+                return this._prev == null || this === $prop(this._list).head ? null : this._prev;
             }
         });
     })();
@@ -3118,33 +3391,14 @@
         * @param {Enumerable=} collection The collection to copy elements from.
         */
         function LinkedList(collection) {
-            var _count = 0,
-                _head;
 
-            $define(this, "head", {
-                value: function () {
-                    var val = arguments[0];
-                    if ($is(val, __LinkedListNode) || val === null) {
-                        _head = val;
-                    }
-
-                    return _head;
-                }
-            });
-
-            $define(this, "count", {
-                value: function () {
-                    var val = arguments[0];
-                    if ($is(val, __number)) {
-                        _count = __math.max(val, 0);
-                    }
-
-                    return _count;
-                }
+            $prop(this, {
+                count: 0,
+                head: null
             });
 
             if (collection) {
-                var _buffer = $buffer(collection);
+                var _buffer = $buffer(collection, false);
                 for (var i = 0, len = _buffer.length; i < len; i++) {
                     this.addLast(_buffer[i]);
                 }
@@ -3166,16 +3420,17 @@
             * Removes all nodes from the LinkedList.
             */
             clear: function () {
-                var current = this.head();
+                var _source = $prop(this),
+                    _current = _source.head;
 
-                while (current != null) {
-                    var temp = current;
-                    current = current.next();   // use next() the instead of "_next", otherwise it will loop forever
+                while (_current != null) {
+                    var temp = _current;
+                    _current = _current.next();   // use next() the instead of "_next", otherwise it will loop forever
                     resetNode(temp);
                 }
 
-                this.head(null);
-                this.count(0);
+                _source.head = null;
+                _source.count = 0;
             },
 
             /**
@@ -3183,12 +3438,12 @@
             * @returns {Number}
             */
             count: function () {
-                return this.count();
+                return $prop(this).count;
             },
 
             /**
             * Determines whether a value is in the LinkedList.
-            * @param {Object} value The value to locate in the LinkedList. The value can be null for reference types.
+            * @param {Object} value The value to locate in the LinkedList.
             * @returns {Boolean}
             */
             contains: function (item) {
@@ -3209,7 +3464,7 @@
             * @returns {LinkedListNode}
             */
             getFirst: function () {
-                return this.head();
+                return $prop(this).head;
             },
 
             /**
@@ -3217,7 +3472,8 @@
             * @returns {LinkedListNode}
             */
             getLast: function () {
-                return this.head() == null ? null : this.head()._prev;
+                var _head = $prop(this).head;
+                return _head == null ? null : _head._prev;
             },
 
             /**
@@ -3228,7 +3484,7 @@
             */
             addAfter: function (node, value) {
 
-                $ensureType(node, "node", __LinkedListNode);
+                $ensureType(node, __LinkedListNode);
 
                 var _newNode;
 
@@ -3252,15 +3508,16 @@
             */
             addBefore: function (node, value) {
 
-                $ensureType(node, "node", __LinkedListNode);
+                $ensureType(node, __LinkedListNode);
 
-                var _newNode;
+                var _source = $prop(this),
+                    _newNode;
 
                 if ($is(value, __LinkedListNode)) {
                     _newNode = value;
                     insertNodeBefore(this, node, _newNode);
-                    if (node === this.head()) {
-                        this.head(_newNode);
+                    if (node === _source.head) {
+                        _source.head = _newNode;
                     }
                 }
                 else {
@@ -3278,16 +3535,19 @@
             */
             addFirst: function (value) {
 
-                var _node;
+                var _node,
+                    _source;
 
                 if ($is(value, __LinkedListNode)) {
                     _node = value;
-                    if (this.head() == null) {
+                    _source = $prop(this);
+
+                    if (_source.head == null) {
                         insertNodeToEmptyList(this, _node);
                     }
                     else {
-                        insertNodeBefore(this, this.head(), _node);
-                        this.head(_node);
+                        insertNodeBefore(this, _source.head, _node);
+                        _source.head = _node;
                     }
                 }
                 else {
@@ -3304,15 +3564,18 @@
             * @returns {LinkedListNode}
             */
             addLast: function (value) {
-                var _node;
+                var _node,
+                    _source;
 
                 if ($is(value, __LinkedListNode)) {
                     _node = value;
-                    if (this.head() == null) {
+                    _source = $prop(this);
+
+                    if (_source.head == null) {
                         insertNodeToEmptyList(this, _node);
                     }
                     else {
-                        insertNodeBefore(this, this.head(), _node);
+                        insertNodeBefore(this, _source.head, _node);
                     }
                 }
                 else {
@@ -3329,7 +3592,8 @@
             * @returns {LinkedListNode}
             */
             find: function (value) {
-                var _node = this.head();
+                var _source = $prop(this),
+                    _node = _source.head;
 
                 if (_node != null) {
                     if (value != null) {
@@ -3338,7 +3602,7 @@
                                 return _node;
                             }
                             _node = _node._next;
-                        } while (_node !== this.head());
+                        } while (_node !== _source.head);
                     }
                     else {
                         do {
@@ -3347,7 +3611,7 @@
                             }
 
                             _node = _node._next;
-                        } while (_node !== this.head());
+                        } while (_node !== _source.head);
                     }
                 }
                 return null;
@@ -3359,11 +3623,13 @@
             * @returns {LinkedListNode}
             */
             findLast: function (value) {
-                if (this.head() == null) {
+                var _source = $prop(this);
+
+                if (_source.head == null) {
                     return null;
                 }
 
-                var _last = this.head()._prev,
+                var _last = _source.head._prev,
                     _node = _last;
 
                 if (_node != null) {
@@ -3396,24 +3662,26 @@
             */
             remove: function (value) {
 
-                var _node;
+                var _node,
+                    _source;
 
                 if ($is(value, __LinkedListNode)) {
                     _node = value;
+                    _source = $prop(this);
 
                     if (_node._next === _node) {
-                        this.head(null);
+                        _source.head = null;
                     }
                     else {
                         _node._next._prev = _node._prev;
                         _node._prev._next = _node._next;
 
-                        if (this.head() === _node) {
-                            this.head(_node._next);
+                        if (_source.head === _node) {
+                            _source.head = _node._next;
                         }
                     }
                     resetNode(_node);
-                    this.count(this.count() - 1);
+                    _source.count--;
                 }
                 else {
                     if ((_node = this.find(value)) != null) {
@@ -3428,22 +3696,26 @@
             * Removes the node at the start of the LinkedList.
             */
             removeFirst: function () {
-                if (this.head() == null) {
-                    throw new __error("Linked list is empty.");
+                var _source = $prop(this);
+
+                if (_source.head == null) {
+                    $error(ERROR_EMPTY_LINKED_LIST);
                 }
 
-                this.remove(this.head());
+                this.remove(_source.head);
             },
 
             /**
             * Removes the node at the end of the LinkedList.
             */
             removeLast: function () {
-                if (this.head() == null) {
-                    throw new __error("Linked list is empty.");
+                var _source = $prop(this);
+
+                if (_source.head == null) {
+                    $error(ERROR_EMPTY_LINKED_LIST);
                 }
 
-                this.remove(this.head()._prev);
+                this.remove(_source.head._prev);
             },
 
             /** 
@@ -3451,7 +3723,7 @@
             * @returns {Enumerator}
             */
             getEnumerator: function () {
-                var _head = this.head(),
+                var _head = $prop(this).head,
                     _node = _head;
 
                 return new __Enumerator(function (yielder) {
@@ -3481,11 +3753,11 @@
         }
 
         function insertNodeBefore(list, node, newNode) {
-            $ensureType(node, "node", __LinkedListNode);
-            $ensureType(newNode, "newNode", __LinkedListNode);
+            $ensureType(node, __LinkedListNode);
+            $ensureType(newNode, __LinkedListNode);
 
             if (node._list !== list || newNode._list != null) {
-                throw new __error("Invalid node list.");
+                $error(ERROR_INVALID_LINKED_LIST_NODE);
             }
 
             newNode._list = list;
@@ -3494,21 +3766,24 @@
 
             node._prev._next = newNode;
             node._prev = newNode;
-            list.count(list.count() + 1);
+            $prop(list).count++;
         }
 
         function insertNodeToEmptyList(list, newNode) {
-            $ensureType(newNode, "newNode", __LinkedListNode);
+            $ensureType(newNode, __LinkedListNode);
 
             if (newNode._list != null) {
-                throw new __error("Invalid node list.");
+                $error(ERROR_INVALID_LINKED_LIST_NODE);
             }
+
+            var _source = $prop(list);
 
             newNode._list = list;
             newNode._next = newNode;
             newNode._prev = newNode;
-            list.head(newNode);
-            list.count(list.count() + 1);
+
+            _source.head = newNode;
+            _source.count++;
         }
     })();
 
@@ -3525,11 +3800,11 @@
         function Queue(collection) {
             var _items = [];
 
-            $define(this, "items", { value: function () { return _items; } });
-
             if (collection != null) {
                 _items = $buffer(collection);
             }
+
+            $prop(this, _items);
         }
 
         return $extend(Queue, __Collection, {
@@ -3538,7 +3813,7 @@
             * Removes all objects from the Queue.
             */
             clear: function () {
-                this.items().length = 0;
+                $prop(this).length = 0;
             },
 
             /**
@@ -3546,7 +3821,7 @@
             * @returns {Number}
             */
             count: function () {
-                return this.items().length;
+                return $prop(this).length;
             },
 
             /**
@@ -3555,7 +3830,7 @@
             * @returns {Boolean}
             */
             contains: function (item) {
-                return this.items().indexOf(item) !== -1;
+                return $prop(this).indexOf(item) !== -1;
             },
 
             /**
@@ -3564,7 +3839,7 @@
             * @param {Number} arrayIndex The zero-based index in array at which copying begins.
             */
             copyTo: function (array, arrayIndex) {
-                $bufferTo(this.items(), array, arrayIndex);
+                $bufferTo($prop(this), array, arrayIndex);
             },
 
             /**
@@ -3572,7 +3847,7 @@
             * @returns {Object}
             */
             dequeue: function () {
-                return this.items().shift();
+                return $prop(this).shift();
             },
 
             /**
@@ -3580,7 +3855,7 @@
             * @param {Object} item The object to add to the Queue.
             */
             enqueue: function (item) {
-                this.items().push(item);
+                $prop(this).push(item);
             },
 
             /**
@@ -3588,7 +3863,7 @@
             * @returns {Object}
             */
             peek: function () {
-                return this.items()[0];
+                return $prop(this)[0];
             },
 
             /**
@@ -3596,7 +3871,7 @@
             * @returns {Array}
             */
             toArray: function () {
-                return this.items().slice();
+                return $prop(this).slice();
             },
 
             /** 
@@ -3604,7 +3879,7 @@
             * @returns {Enumerator}
             */
             getEnumerator: function () {
-                return $enumerator(this.items());
+                return $enumerator($prop(this));
             }
         });
     })();
@@ -3622,11 +3897,11 @@
         function Stack(collection) {
             var _items = [];
 
-            $define(this, "items", { value: function () { return _items; } });
-
             if (collection != null) {
                 _items = $buffer(collection);
             }
+
+            $prop(this, _items);
         }
 
         return $extend(Stack, __Collection, {
@@ -3635,7 +3910,7 @@
             * Removes all objects from the Stack.
             */
             clear: function () {
-                this.items().length = 0;
+                $prop(this).length = 0;
             },
 
             /**
@@ -3643,7 +3918,7 @@
             * @returns {Number}
             */
             count: function () {
-                return this.items().length;
+                return $prop(this).length;
             },
 
             /**
@@ -3652,7 +3927,7 @@
             * @returns {Boolean}
             */
             contains: function (item) {
-                return this.items().indexOf(item) !== -1;
+                return $prop(this).indexOf(item) !== -1;
             },
 
             /**
@@ -3661,7 +3936,7 @@
             * @param {Number} arrayIndex The zero-based index in array at which copying begins.
             */
             copyTo: function (array, arrayIndex) {
-                $bufferTo(this.items(), array, arrayIndex);
+                $bufferTo($prop(this), array, arrayIndex);
             },
 
             /**
@@ -3669,7 +3944,7 @@
             * @returns {Object}
             */
             peek: function () {
-                return this.items()[this.count() - 1];
+                return $prop(this)[this.count() - 1];
             },
 
             /**
@@ -3677,7 +3952,7 @@
             *   @returns {Object}
             */
             pop: function () {
-                return this.items().pop();
+                return $prop(this).pop();
             },
 
             /**
@@ -3685,7 +3960,7 @@
             * @param {Object} item The object to push onto the Stack. 
             */
             push: function (item) {
-                this.items().push(item);
+                $prop(this).push(item);
             },
 
             /**
@@ -3693,7 +3968,7 @@
             *   @returns {Array}
             */
             toArray: function () {
-                return this.items().slice();
+                return $prop(this).slice();
             },
 
             /** 
@@ -3701,7 +3976,7 @@
             * @returns {Enumerator}
             */
             getEnumerator: function () {
-                return $enumerator(this.items());
+                return $enumerator($prop(this));
             }
         });
     })();
@@ -3712,20 +3987,49 @@
     */
     var __Lookup = (function () {
 
-        function Lookup(table) {
-            $ensureType(table, "table", __HashTable);
-            $define(this, "table", { value: function () { return table; } });
+        /**
+        * Represents a collection of keys each mapped to one or more values.
+        * @param {Enumerable} source An Enumerable object.
+        * @param {Enumerable} keySelector A function to extract the key from each element of the sequence. eg. function(outer)
+        * @param {Function} elementSelector A transform function to produce a result element value from each element. eg. function(item)
+        * @param {EqualityComparer} comparer An equality comparer to compare values.
+        */
+        function Lookup(source, keySelector, elementSelector, comparer) {
+
+            var _collection = $collection(source),
+                _table = new __HashTable(_collection ? _collection.count() : 0, comparer),
+                _buffer = $buffer(source, false),
+                _count = _buffer.length,
+                _item,
+                _key,
+                _entry,
+                _val;
+
+            for (var i = 0; i < _count; i++) {
+                _item = _buffer[i];
+                _key = keySelector(_item);
+                _entry = _table.entry(_key);
+                _val = elementSelector ? elementSelector(_item) : _item;
+
+                if (_entry == null) {
+                    _table.add(_key, new __Grouping(_key, [_val]));
+                }
+                else {
+                    _entry.value.elements.push(_val);
+                }
+            }
+
+            $prop(this, _table);
         }
 
-        return $extend(Lookup, __Collection,
-        {
+        return $extend(Lookup, __Collection, {
             /**
             * Determines whether a specified key exists in the Lookup.
             * @param {Object} key The key to search for in the Lookup.
             * @returns {Boolean}
             */
             contains: function (key) {
-                return this.table().contains(key);
+                return $prop(this).contains(key);
             },
 
             /**
@@ -3733,17 +4037,17 @@
             * @returns {Number}
             */
             count: function () {
-                return this.table().count();
+                return $prop(this).count();
             },
 
             /**
             * Gets the value associated with the specified key.
             * @param {Object} key The key of the element to add.
-            * @returns {Grouping}
+            * @returns {Enumerable}
             */
             get: function (key) {
-                var _entry = this.table().get(key);
-                return new __Grouping(_entry == null ? [] : _entry.value, key);
+                var _entry = $prop(this).entry(key);
+                return _entry == null ? __Enumerable.empty() : _entry.value;
             },
 
             /**
@@ -3751,47 +4055,15 @@
             * @returns {Enumerable}
             */
             getEnumerator: function () {
-                var _e = $enumerator(this.table());
+                var _e = $enumerator($prop(this));
                 return new __Enumerator(function (yielder) {
                     while (_e.next()) {
-                        return yielder(new __Grouping(_e.current.value, _e.current.key));
+                        return yielder(_e.current.value);
                     }
                 });
             }
-        },
-        {
-            create: function (source, keySelector, elementSelector, comparer) {
-                keySelector = $lambda(keySelector);
-                $ensureType(keySelector, "keySelector", __function);
-
-                var _e = $enumerator(source),
-                    _collection = $collection(source),
-                    _table = new __HashTable(_collection ? _collection.count() : 0, comparer),
-                    _lookup = new Lookup(_table);
-
-
-                if (elementSelector) {
-                    elementSelector = $lambda(elementSelector);
-                    $ensureType(elementSelector, "elementSelector", __function);
-                }
-
-                while (_e.next()) {
-                    var _current = _e.current,
-                        _key = keySelector(_current),
-                        _entry = _table.get(_key),
-                        _val = elementSelector ? elementSelector(_current) : _current;
-
-                    if (_entry == null) {
-                        _table.add(_key, [_val]);
-                    }
-                    else {
-                        _entry.value.push(_val);
-                    }
-                }
-
-                return _lookup;
-            }
         });
+
     })();
 
 
@@ -3800,14 +4072,13 @@
     */
     var __Grouping = (function () {
 
-        function Grouping(buffer, key) {
+        function Grouping(key, buffer) {
 
             /**
             * Gets the key of the Grouping.
             */
             this.key = key;
             this.elements = buffer;
-
             $freeze(this);
         }
 
@@ -3841,7 +4112,7 @@
             var _comparer = $comparer(comparer);
 
             keySelector = $lambda(keySelector);
-            $ensureType(keySelector, "keySelector", __function);
+            $ensureType(keySelector, FUNCTION);
 
             $mixin(this, {
                 source: function () {
@@ -3869,7 +4140,7 @@
 
         $extend(EnumerableSorter, {
             computeKeys: function (elements, count) {
-                var _keys = new __array(count),
+                var _keys = new ARRAY(count),
                     _selector = this.keySelector;
 
                 for (var i = 0; i < count; i++) {
@@ -3898,7 +4169,7 @@
 
             sort: function (elements, count) {
                 this.computeKeys(elements, count);
-                var _map = new __array(count);
+                var _map = new ARRAY(count);
 
                 for (var i = 0; i < count; i++) {
                     _map[i] = i;
@@ -4032,30 +4303,32 @@
             aggregate: function (funcOrSeed, func, resultSelector) {
 
                 var _args = arguments,
-                    _result,
-                    _e = $enumerator(this),
                     _func = _args.length === 1 ? $lambda(funcOrSeed) : $lambda(func),
-                    _seed = _args.length === 1 ? __undefined : funcOrSeed;
+                    _seed = _args.length === 1 ? UNDEFINED : funcOrSeed,
+                    _buffer = $buffer(this, false),
+                    _len = _buffer.length,
+                    _index = 0,
+                    _result;
 
-                $ensureType(_func, "func", __function);
+                $ensureType(_func, FUNCTION);
 
                 if (resultSelector) {
                     resultSelector = $lambda(resultSelector);
-                    $ensureType(resultSelector, "resultSelector", __function);
+                    $ensureType(resultSelector, FUNCTION);
                 }
 
-                if (_seed === __undefined) {
-                    if (!_e.next()) {
-                        throw noMatchError();
+                if (_seed === UNDEFINED) {
+                    if (_len === 0) {
+                        $error(ERROR_NO_MATCH);
                     }
-                    _result = _e.current;
+                    _result = _buffer[_index++];
                 }
                 else {
                     _result = _seed;
                 }
 
-                while (_e.next()) {
-                    _result = _func(_result, _e.current);
+                for (; _index < _len; _index++) {
+                    _result = _func(_result, _buffer[_index]);
                 }
 
                 return resultSelector ? resultSelector(_result) : _result;
@@ -4069,13 +4342,24 @@
             */
             all: function (predicate) {
                 predicate = $lambda(predicate);
-                $ensureType(predicate, "predicate", __function);
+                $ensureType(predicate, FUNCTION);
 
-                var _e = $enumerator(this);
+                // fast iteration for array-like enumerables
+                var _arr = asArrayLike(this);
+                if (_arr) {
+                    for (var _i = 0, _len = _arr.length; _i < _len; _i++) {
+                        if (predicate(_arr[_i]) === false) {
+                            return false;
+                        }
+                    }
+                }
+                else {
+                    var _e = $enumerator(this);
 
-                while (_e.next()) {
-                    if (predicate(_e.current) === false) {
-                        return false;
+                    while (_e.next()) {
+                        if (predicate(_e.current) === false) {
+                            return false;
+                        }
                     }
                 }
 
@@ -4094,11 +4378,22 @@
 
                 if (predicate) {
                     predicate = $lambda(predicate);
-                    $ensureType(predicate, "predicate", __function);
+                    $ensureType(predicate, FUNCTION);
 
-                    while (_e.next()) {
-                        if (predicate(_e.current) === true) {
-                            return true;
+                    // fast iteration for array-like enumerables
+                    var _arr = asArrayLike(this);
+                    if (_arr) {
+                        for (var _i = 0, _len = _arr.length; _i < _len; _i++) {
+                            if (predicate(_arr[_i]) === true) {
+                                return true;
+                            }
+                        }
+                    }
+                    else {
+                        while (_e.next()) {
+                            if (predicate(_e.current) === true) {
+                                return true;
+                            }
                         }
                     }
 
@@ -4127,35 +4422,27 @@
 
                 if (selector) {
                     selector = $lambda(selector);
-                    $ensureType(selector, "selector", __function);
+                    $ensureType(selector, FUNCTION);
                     return $enumerable(this).select(selector).average();
                 }
 
-                if ($is(this, __array) && $isFunc(this.reduce)) {
+                var _buffer = $buffer(this, false),
+                    _len = _buffer.length,
+                    _sum = 0;
 
-                    if (this.length == 0) throw new noElementsError();
-                    return this.sum() / this.length;
+                if (_len === 0) {
+                    $error(ERROR_NO_ELEMENTS);
                 }
 
-                var _e = $enumerator(this),
-                    _sum = 0,
-                    _count = 0;
-
-                while (_e.next()) {
-
-                    if (isNaN(_e.current)) {
-                        throw numericTypeError();
-                    }
-
-                    _sum += _e.current;
-                    _count++;
+                while (_len-- > 0) {
+                    _sum += _buffer[_len];
                 }
 
-                if (_count === 0) {
-                    throw noElementsError();
+                if (isNaN(_sum)) {
+                    $error(ERROR_NON_NUMERIC_TYPE);
                 }
 
-                return _sum / _count;
+                return _sum / _buffer.length;
             },
 
             /**
@@ -4164,7 +4451,7 @@
             * @returns {Enumerable}
             */
             concat: function (second) {
-                $nullCheck(second, "second");
+                $nullCheck(second);
 
                 var _source = this;
 
@@ -4216,22 +4503,19 @@
 
                 if (predicate) {
                     predicate = $lambda(predicate);
-                    $ensureType(predicate, "predicate", __function);
+                    $ensureType(predicate, FUNCTION);
                     return $enumerable(this).where(predicate).count();
                 }
 
-                if (isArrayLike(this)) {
-                    return this.length;
+                var _arr = asArrayLike(this);
+
+                // fast count for array-like enumerables
+                if (_arr) {
+                    return _arr.length;
                 }
                 else {
-                    var _e = $enumerator(this),
-                        _index = 0;
-
-                    while (_e.next()) {
-                        _index++;
-                    }
-
-                    return _index;
+                    var _buffer = $buffer(this, false);
+                    return _buffer.length;
                 }
             },
 
@@ -4244,16 +4528,18 @@
                 var _source = this;
 
                 return new __Enumerable(function () {
-                    var _e = $enumerator(_source);
+                    var _e = $enumerator(_source),
+                        _empty = true;
 
                     return new __Enumerator(function (yielder) {
                         if (_e.next()) {
+                            _empty = false;
                             do {
                                 return yielder(_e.current);
                             } while (_e.next());
                         }
-                        else {
-                            _e = null;
+                        else if (_empty) {
+                            _empty = false;
                             return yielder(defaultValue == null ? null : defaultValue);
                         }
                     });
@@ -4316,15 +4602,18 @@
             * @returns {Object}
             */
             elementAt: function (index) {
-                $ensureType(index, "index", __number);
+                $ensureType(index, NUMBER);
 
                 if (index < 0) {
-                    throw argumentOutOfRangeError("index");
+                    $error(ERROR_ARGUMENT_OUT_OF_RANGE);
                 }
 
-                if (isArrayLike(this)) {
-                    if (index < this.length) {
-                        return this[index];
+                var _arr = asArrayLike(this);
+
+                // fast find for array-like enumerables
+                if (_arr) {
+                    if (index < _arr.length) {
+                        return _arr[index];
                     }
                 }
                 else {
@@ -4338,7 +4627,7 @@
                     }
                 }
 
-                throw argumentOutOfRangeError("index");
+                $error(ERROR_ARGUMENT_OUT_OF_RANGE);
             },
 
             /**
@@ -4348,34 +4637,44 @@
             */
             first: function (predicate) {
 
-                var _e = $enumerator(this);
+                var _arr = asArrayLike(this),
+                    _e = $enumerator(this);
+
+                predicate = $lambda(predicate);
+
 
                 if (predicate) {
 
-                    predicate = $lambda(predicate);
-                    $ensureType(predicate, "predicate", __function);
-
-                    while (_e.next()) {
-                        if (predicate(_e.current)) {
-                            return _e.current;
+                    // fast iteration for array-like enumerables
+                    if (_arr) {
+                        for (var _i = 0, _len = _arr.length; _i < _len; _i++) {
+                            if (predicate(_arr[_i])) {
+                                return _arr[_i];
+                            }
+                        }
+                    }
+                    else {
+                        while (_e.next()) {
+                            if (predicate(_e.current)) {
+                                return _e.current;
+                            }
                         }
                     }
 
-                    throw noMatchError();
+                    $error(ERROR_NO_MATCH);
                 }
                 else {
-                    if (isArrayLike(this)) {
-                        if (this.length > 0) {
-                            return this[0];
+                    if (_arr) {
+                        if (_arr.length > 0) {
+                            return _arr[0];
                         }
                     }
-
                     else if (_e.next()) {
                         return _e.current;
                     }
-                }
 
-                throw noMatchError();
+                    $error(ERROR_NO_ELEMENTS);
+                }
             },
 
             /**
@@ -4386,25 +4685,36 @@
             */
             firstOrDefault: function (predicate, defaultValue) {
 
-                var _e = $enumerator(this);
+                var _arr = asArrayLike(this),
+                    _e = $enumerator(this);
+
+                predicate = $lambda(predicate);
+
 
                 if (predicate) {
-                    predicate = $lambda(predicate);
-                    $ensureType(predicate, "predicate", __function);
 
-                    while (_e.next()) {
-                        if (predicate(_e.current)) {
-                            return _e.current;
+                    // fast iteration for array-like enumerables
+                    if (_arr) {
+                        for (var _i = 0, _len = _arr.length; _i < _len; _i++) {
+                            if (predicate(_arr[_i])) {
+                                return _arr[_i];
+                            }
+                        }
+                    }
+                    else {
+                        while (_e.next()) {
+                            if (predicate(_e.current)) {
+                                return _e.current;
+                            }
                         }
                     }
                 }
                 else {
-                    if (isArrayLike(this)) {
-                        if (this.length > 0) {
-                            return this[0];
+                    if (_arr) {
+                        if (_arr.length > 0) {
+                            return _arr[0];
                         }
                     }
-
                     else if (_e.next()) {
                         return _e.current;
                     }
@@ -4419,13 +4729,22 @@
             */
             forEach: function (action) {
                 action = $lambda(action);
-                $ensureType(action, "action", __function);
+                $ensureType(action, FUNCTION);
 
-                var _e = $enumerator(this),
-                    _index = 0;
+                var _arr = asArrayLike(this);
 
-                while (_e.next()) {
-                    action(_e.current, _index++);
+                if (_arr) {
+                    for (var _i = 0, _len = _arr.length; _i < _len; _i++) {
+                        action(_arr[_i], _i);
+                    }
+                }
+                else {
+                    var _e = $enumerator(this),
+                        _i = 0;
+
+                    while (_e.next()) {
+                        action(_e.current, _i++);
+                    }
                 }
             },
 
@@ -4440,7 +4759,7 @@
             groupBy: function (keySelector) {
 
                 keySelector = $lambda(keySelector);
-                $ensureType(keySelector, "keySelector", __function);
+                $ensureType(keySelector, FUNCTION);
 
                 var _args = arguments,
                     _elementSelector = $lambda(_args[2]),
@@ -4450,7 +4769,7 @@
 
                 return new __Enumerable(function () {
 
-                    var _e = $enumerator(__Lookup.create(_source, keySelector, _elementSelector, _comparer));
+                    var _e = $enumerator(new __Lookup(_source, keySelector, _elementSelector, _comparer));
 
                     return new __Enumerator(function (yielder) {
 
@@ -4482,20 +4801,21 @@
                 innerKeySelector = $lambda(innerKeySelector);
                 resultSelector = $lambda(resultSelector);
 
-                $nullCheck(inner, "inner");
-                $ensureType(outerKeySelector, "outerKeySelector", __function);
-                $ensureType(innerKeySelector, "innerKeySelector", __function);
-                $ensureType(resultSelector, "resultSelector", __function);
+                $nullCheck(inner);
+                $ensureType(outerKeySelector, FUNCTION);
+                $ensureType(innerKeySelector, FUNCTION);
+                $ensureType(resultSelector, FUNCTION);
 
                 var _source = this;
 
                 return new __Enumerable(function () {
                     var _e = $enumerator(_source),
-                        _lookup = __Lookup.create(inner, innerKeySelector, null, comparer);
+                        _table = createLookupTable(inner, innerKeySelector, comparer);
 
                     return new __Enumerator(function (yielder) {
                         while (_e.next()) {
-                            return yielder(resultSelector(_e.current, _lookup.get(outerKeySelector(_e.current))));
+                            var _entry = _table.entry(outerKeySelector(_e.current));
+                            return yielder(resultSelector(_e.current, _entry ? new __Enumerable(_entry.value) : __Enumerable.empty()));
                         }
                     });
                 });
@@ -4540,37 +4860,41 @@
                 innerKeySelector = $lambda(innerKeySelector);
                 resultSelector = $lambda(resultSelector);
 
-                $nullCheck(inner, "inner");
-                $ensureType(outerKeySelector, "outerKeySelector", __function);
-                $ensureType(innerKeySelector, "innerKeySelector", __function);
-                $ensureType(resultSelector, "resultSelector", __function);
+                $nullCheck(inner);
+                $ensureType(outerKeySelector, FUNCTION);
+                $ensureType(innerKeySelector, FUNCTION);
+                $ensureType(resultSelector, FUNCTION);
 
                 var _source = this;
 
                 return new __Enumerable(function () {
                     var _eOuter = $enumerator(_source),
-                        _lookup,
+                        _table = createLookupTable(inner, innerKeySelector, comparer),
+                        _elements,
                         _entry,
                         _index = 0;
 
+                    if (!_eOuter.next()) {
+                        return __Enumerable.empty().getEnumerator();
+                    }
+
                     return new __Enumerator(function (yielder) {
 
-                        if (_lookup == null) {
-                            _lookup = __Lookup.create(inner, innerKeySelector, null, comparer);
-                            if (!_eOuter.next()) {
-                                return;
-                            }
-                        }
-
                         do {
-                            _entry = _entry || _lookup.get(outerKeySelector(_eOuter.current));
+                            if (_elements == null) {
+                                _entry = _table.entry(outerKeySelector(_eOuter.current));
+                                if (_entry == null) {
+                                    continue;
+                                }
+                                _elements = _entry.value;
+                            }
 
-                            if (_index < _entry.count()) {
-                                return yielder(resultSelector(_eOuter.current, _entry.elements[_index++]));
+                            if (_index < _elements.length) {
+                                return yielder(resultSelector(_eOuter.current, _elements[_index++]));
                             }
                             else {
                                 _index = 0;
-                                _entry = null;
+                                _elements = null;
                             }
                         }
                         while (_eOuter.next());
@@ -4585,35 +4909,47 @@
             */
             last: function (predicate) {
 
-                var _e = $enumerator(this),
+                var _arr = asArrayLike(this),
+                    _e = $enumerator(this),
                     _result;
 
+                predicate = $lambda(predicate);
+
+
                 if (predicate) {
-                    predicate = $lambda(predicate);
-                    $ensureType(predicate, "predicate", __function);
 
-                    var _found = false;
+                    // fast iteration for array-like enumerables
+                    if (_arr) {
+                        var _len = _arr.length;
+                        while (_len--) {
+                            if (predicate(_arr[_len])) {
+                                return _arr[_len];
+                            }
+                        }
+                    }
+                    else {
+                        var _found = false;
 
-                    while (_e.next()) {
-                        if (predicate(_e.current)) {
-                            _result = _e.current;
-                            _found = true;
+                        while (_e.next()) {
+                            if (predicate(_e.current)) {
+                                _result = _e.current;
+                                _found = true;
+                            }
+                        }
+
+                        if (_found) {
+                            return _result;
                         }
                     }
 
-                    if (_found) {
-                        return _result;
-                    }
-
-                    throw noMatchError();
+                    $error(ERROR_NO_MATCH);
                 }
                 else {
-                    if (isArrayLike(this)) {
-                        if (this.length > 0) {
-                            return this[this.length - 1];
+                    if (_arr) {
+                        if (_arr.length > 0) {
+                            return _arr[_arr.length - 1];
                         }
                     }
-
                     else if (_e.next()) {
                         do {
                             _result = _e.current;
@@ -4621,9 +4957,9 @@
 
                         return _result;
                     }
-                }
 
-                throw noMatchError();
+                    $error(ERROR_NO_ELEMENTS);
+                }
             },
 
             /**
@@ -4634,26 +4970,38 @@
             */
             lastOrDefault: function (predicate, defaultValue) {
 
-                var _e = $enumerator(this),
-                    _result = defaultValue || null;
+                var _arr = asArrayLike(this),
+                    _e = $enumerator(this),
+                    _result;
+
+                predicate = $lambda(predicate);
+
 
                 if (predicate) {
-                    predicate = $lambda(predicate);
-                    $ensureType(predicate, "predicate", __function);
 
-                    while (_e.next()) {
-                        if (predicate(_e.current)) {
-                            _result = _e.current;
+                    // fast iteration for array-like enumerables
+                    if (_arr) {
+                        var _len = _arr.length;
+                        while (_len--) {
+                            if (predicate(_arr[_len])) {
+                                return _arr[_len];
+                            }
+                        }
+                    }
+                    else {
+                        while (_e.next()) {
+                            if (predicate(_e.current)) {
+                                _result = _e.current;
+                            }
                         }
                     }
                 }
                 else {
-                    if (isArrayLike(this)) {
-                        if (this.length > 0) {
-                            return this[this.length - 1];
+                    if (_arr) {
+                        if (_arr.length > 0) {
+                            return _arr[_arr.length - 1];
                         }
                     }
-
                     else if (_e.next()) {
                         do {
                             _result = _e.current;
@@ -4661,7 +5009,7 @@
                     }
                 }
 
-                return _result;
+                return _result || defaultValue || null;
             },
 
             /**
@@ -4673,35 +5021,27 @@
 
                 if (selector) {
                     selector = $lambda(selector);
-                    $ensureType(selector, "selector", __function);
+                    $ensureType(selector, FUNCTION);
                     return $enumerable(this).select(selector).max();
                 }
 
-                if ($is(this, __array) && $isFunc(this.reduce)) {
+                var _buffer = $buffer(this, false),
+                    _len = _buffer.length;
 
-                    if (this.length == 0) throw new noElementsError();
-
-                    return this.reduce(function (a, b) {
-                        return $computeCompare(a, b) > 0 ? a : b;
-                    }, this[0]);
-                }
-
-                var _e = $enumerator(this),
-                    _value = null;
-
-                if (_e.next()) {
-                    do {
-                        if (_e.current != null && (_value == null || $computeCompare(_e.current, _value) > 0)) {
-                            _value = _e.current;
-                        }
-                    }
-                    while (_e.next());
+                if (_len === 0) {
+                    $error(ERROR_NO_ELEMENTS);
                 }
                 else {
-                    throw new noElementsError();
-                }
+                    var _value = _buffer[--_len];
 
-                return _value;
+                    while (_len-- > 0) {
+                        if ($computeCompare(_buffer[_len], _value) > 0) {
+                            _value = _buffer[_len];
+                        }
+                    }
+
+                    return _value;
+                }
             },
 
             /**
@@ -4713,36 +5053,27 @@
 
                 if (selector) {
                     selector = $lambda(selector);
-                    $ensureType(selector, "selector", __function);
+                    $ensureType(selector, FUNCTION);
                     return $enumerable(this).select(selector).min();
                 }
 
-                if ($is(this, __array) && $isFunc(this.reduce)) {
+                var _buffer = $buffer(this, false),
+                    _len = _buffer.length;
 
-                    if (this.length == 0) throw new noElementsError();
-
-                    return this.reduce(function (a, b) {
-                        return $computeCompare(a, b) < 0 ? a : b;
-                    }, this[0]);
-                }
-
-                var _e = $enumerator(this),
-                    _value = null;
-
-                if (_e.next()) {
-                    do {
-
-                        if (_e.current != null && (_value == null || $computeCompare(_e.current, _value) < 0)) {
-                            _value = _e.current;
-                        }
-                    }
-                    while (_e.next());
+                if (_len === 0) {
+                    $error(ERROR_NO_ELEMENTS);
                 }
                 else {
-                    throw new noElementsError();
-                }
+                    var _value = _buffer[--_len];
 
-                return _value;
+                    while (_len-- > 0) {
+                        if ($computeCompare(_buffer[_len], _value) < 0) {
+                            _value = _buffer[_len];
+                        }
+                    }
+
+                    return _value;
+                }
             },
 
             /**
@@ -4751,7 +5082,7 @@
             * @returns {Enumerable}
             */
             ofType: function (type) {
-                $ensureType(type, "type", __function);
+                $ensureType(type, FUNCTION);
 
                 var _source = this;
 
@@ -4805,17 +5136,17 @@
             */
             sequenceEqual: function (second, comparer) {
 
-                var _arr1 = $buffer(this),
-                    _arr2 = $buffer(second),
+                var _arr1 = $buffer(this, false),
+                    _arr2 = $buffer(second, false),
                     _comparer = $equalityComparer(comparer),
                     _len = _arr1.length;
 
                 if (_len === _arr2.length) {
-                    for (; _len--;) {
-                        var _item1 = _arr1[_len],
-                            _item2 = _arr2[_len];
+                    for (var i = 0; i < _len; i++) {
+                        var _item1 = _arr1[i],
+                            _item2 = _arr2[i];
 
-                        if ($equals(_item1, _item2, _comparer)) {
+                        if (!$equals(_item1, _item2, _comparer)) {
                             return false;
                         }
                     }
@@ -4833,7 +5164,7 @@
             */
             select: function (selector) {
                 selector = $lambda(selector);
-                $ensureType(selector, "selector", __function);
+                $ensureType(selector, FUNCTION);
 
                 var _source = this;
 
@@ -4857,11 +5188,11 @@
             */
             selectMany: function (collectionSelector, resultSelector) {
                 collectionSelector = $lambda(collectionSelector);
-                $ensureType(collectionSelector, "collectionSelector", __function);
+                $ensureType(collectionSelector, FUNCTION);
 
                 if (resultSelector) {
                     resultSelector = $lambda(resultSelector);
-                    $ensureType(resultSelector, "resultSelector", __function);
+                    $ensureType(resultSelector, FUNCTION);
                 }
 
                 var _source = this;
@@ -4892,53 +5223,71 @@
             */
             single: function (predicate) {
 
-                var _e = $enumerator(this),
-                    _count = -1,
+                var _arr = asArrayLike(this),
+                    _e = $enumerator(this),
+                    _count = 0,
                     _result;
 
+                predicate = $lambda(predicate);
+
+
                 if (predicate) {
-                    predicate = $lambda(predicate);
-                    $ensureType(predicate, "predicate", __function);
 
-                    _count = 0;
+                    // fast iteration for array-like enumerables
+                    if (_arr) {
+                        for (var _i = 0, _len = _arr.length; _i < _len; _i++) {
+                            if (predicate(_arr[_i])) {
 
-                    while (_e.next()) {
-                        if (_count > 1) {
-                            break;
+                                if (_count > 1) {
+                                    break;
+                                }
+
+                                _result = _arr[_i];
+                                _count++;
+                            }
                         }
+                    }
+                    else {
+                        while (_e.next()) {
+                            if (predicate(_e.current)) {
 
-                        if (predicate(_e.current)) {
-                            _result = _e.current;
-                            _count++;
+                                if (_count == 1) {
+                                    break;
+                                }
+
+                                _result = _e.current;
+                                _count++;
+                            }
                         }
                     }
 
                     switch (_count) {
-                        case 0: throw noMatchError();
+                        case 0: return $error(ERROR_NO_MATCH);
                         case 1: return _result;
                     }
 
-                    throw moreThanOneMatchError();
+                    $error(ERROR_MORE_THAN_ONE_MATCH);
                 }
                 else {
-                    if (isArrayLike(this)) {
-                        switch (this.length) {
-                            case 0: throw noMatchError();
-                            case 1: return this[0];
+                    if (_arr) {
+                        switch (_arr.length) {
+                            case 0: return $error(ERROR_NO_MATCH);
+                            case 1: return _arr[0];
+                        }
+                    }
+                    else {
+                        if (!_e.next()) {
+                            $error(ERROR_NO_MATCH);
+                        }
+
+                        _result = _e.current;
+
+                        if (!_e.next()) {
+                            return _result;
                         }
                     }
 
-                    if (!_e.next()) {
-                        throw noMatchError();
-                    }
-
-                    _result = _e.current;
-
-                    if (!_e.next()) {
-                        return _result;
-                    }
-
-                    throw new moreThanOneElementError();
+                    $error(ERROR_MORE_THAN_ONE_ELEMENT);
                 }
             },
 
@@ -4950,23 +5299,42 @@
             */
             singleOrDefault: function (predicate, defaultValue) {
 
-                var _e = $enumerator(this),
+                var _arr = asArrayLike(this),
+                    _e = $enumerator(this),
+                    _count = 0,
                     _result = defaultValue || null;
 
+                predicate = $lambda(predicate);
+
+
+
                 if (predicate) {
-                    predicate = $lambda(predicate);
-                    $ensureType(predicate, "predicate", __function);
 
-                    var _count = 0;
+                    // fast iteration for array-like enumerables
+                    if (_arr) {
+                        for (var _i = 0, _len = _arr.length; _i < _len; _i++) {
+                            if (predicate(_arr[_i])) {
 
-                    while (_e.next()) {
-                        if (predicate(_e.current)) {
-                            if (_count > 1) {
-                                break;
+                                if (_count > 1) {
+                                    break;
+                                }
+
+                                _result = _arr[_i];
+                                _count++;
                             }
+                        }
+                    }
+                    else {
+                        while (_e.next()) {
+                            if (predicate(_e.current)) {
 
-                            _result = _e.current;
-                            _count++;
+                                if (_count == 1) {
+                                    break;
+                                }
+
+                                _result = _e.current;
+                                _count++;
+                            }
                         }
                     }
 
@@ -4974,27 +5342,28 @@
                         return _result;
                     }
 
-                    throw moreThanOneMatchError();
+                    $error(ERROR_MORE_THAN_ONE_MATCH);
                 }
                 else {
-                    if (isArrayLike(this)) {
-                        switch (this.length) {
+                    if (_arr) {
+                        switch (_arr.length) {
                             case 0: return _result;
-                            case 1: return this[0];
+                            case 1: return _arr[0];
+                        }
+                    }
+                    else {
+                        if (!_e.next()) {
+                            return _result;
+                        }
+
+                        _result = _e.current;
+
+                        if (!_e.next()) {
+                            return _result;
                         }
                     }
 
-                    if (!_e.next()) {
-                        return _result;
-                    }
-
-                    _result = _e.current;
-
-                    if (!_e.next()) {
-                        return _result;
-                    }
-
-                    throw new moreThanOneElementError();
+                    $error(ERROR_MORE_THAN_ONE_ELEMENT);
                 }
             },
 
@@ -5004,22 +5373,29 @@
             * @returns {Enumerable}
             */
             skip: function (count) {
-                $ensureType(count, "count", __number);
+                $ensureType(count, NUMBER);
 
-                var _source = this;
+                var _source = this,
+                    _arr = asArrayLike(this);
 
-                return new __Enumerable(function () {
-                    var _e = $enumerator(_source),
-                        _index = 0;
+                if (_arr) {
+                    _arr = $buffer(_arr, false);
+                    return $enumerable(_arr.slice(count));
+                }
+                else {
+                    return new __Enumerable(function () {
+                        var _e = $enumerator(_source),
+                            _index = 0;
 
-                    return new __Enumerator(function (yielder) {
-                        while (_e.next()) {
-                            if (_index++ >= count) {
-                                return yielder(_e.current);
+                        return new __Enumerator(function (yielder) {
+                            while (_e.next()) {
+                                if (_index++ >= count) {
+                                    return yielder(_e.current);
+                                }
                             }
-                        }
+                        });
                     });
-                });
+                }
             },
 
             /**
@@ -5030,7 +5406,7 @@
             skipWhile: function (predicate) {
 
                 predicate = $lambda(predicate);
-                $ensureType(predicate, "predicate", __function);
+                $ensureType(predicate, FUNCTION);
 
                 var _source = this;
 
@@ -5064,26 +5440,20 @@
 
                 if (selector) {
                     selector = $lambda(selector);
-                    $ensureType(selector, "selector", __function);
+                    $ensureType(selector, FUNCTION);
                     return $enumerable(this).select(selector).sum();
                 }
 
-                if ($is(this, __array) && $isFunc(this.reduce)) {
-                    return this.reduce(function (a, b) {
-                        return a + b;
-                    }, 0);
-                }
-
-                var _e = $enumerator(this),
+                var _buffer = $buffer(this, false),
+                    _len = _buffer.length,
                     _sum = 0;
 
-                while (_e.next()) {
+                while (_len-- > 0) {
+                    _sum += _buffer[_len];
+                }
 
-                    if (isNaN(_e.current)) {
-                        throw numericTypeError();
-                    }
-
-                    _sum += _e.current;
+                if (isNaN(_sum)) {
+                    $error(ERROR_NON_NUMERIC_TYPE);
                 }
 
                 return _sum;
@@ -5095,20 +5465,27 @@
             * @returns {Enumerable}
             */
             take: function (count) {
-                $ensureType(count, "count", __number);
+                $ensureType(count, NUMBER);
 
-                var _source = this;
+                var _source = this,
+                    _arr = asArrayLike(this);
 
-                return new __Enumerable(function () {
-                    var _e = $enumerator(_source),
-                        _index = 0;
+                if (_arr) {
+                    _arr = $buffer(_arr, false);
+                    return $enumerable(_arr.slice(0, count));
+                }
+                else {
+                    return new __Enumerable(function () {
+                        var _e = $enumerator(_source),
+                            _index = 0;
 
-                    return new __Enumerator(function (yielder) {
-                        while (_index++ < count && _e.next()) {
-                            return yielder(_e.current);
-                        }
+                        return new __Enumerator(function (yielder) {
+                            while (_index++ < count && _e.next()) {
+                                return yielder(_e.current);
+                            }
+                        });
                     });
-                });
+                }
             },
 
             /**
@@ -5119,7 +5496,7 @@
             takeWhile: function (predicate) {
 
                 predicate = $lambda(predicate);
-                $ensureType(predicate, "predicate", __function);
+                $ensureType(predicate, FUNCTION);
 
                 var _source = this;
 
@@ -5159,22 +5536,23 @@
             toDictionary: function (keySelector) {
 
                 keySelector = $lambda(keySelector);
-                $ensureType(keySelector, "keySelector", __function);
+                $ensureType(keySelector, FUNCTION);
 
                 var _args = arguments,
                     _elementSelector = $lambda(_args[1]),
                     _comparer = _args.length === 2 && !_elementSelector ? _args[1] : _args[2],
                     _dic = new __Dictionary(_comparer),
-                    _e = $enumerator(this);
+                    _e = $enumerator(this),
+                    _arr = asArrayLike(this);
 
-                if (_elementSelector) {
-                    while (_e.next()) {
-                        _dic.add(keySelector(_e.current), _elementSelector(_e.current));
+                if (_arr) {
+                    for (var i = 0, _len = _arr.length; i < _len; i++) {
+                        _dic.add(keySelector(_arr[i]), _elementSelector ? _elementSelector(_arr[i]) : _arr[i]);
                     }
                 }
                 else {
                     while (_e.next()) {
-                        _dic.add(keySelector(_e.current), _e.current);
+                        _dic.add(keySelector(_e.current), _elementSelector ? _elementSelector(_e.current) : _e.current);
                     }
                 }
 
@@ -5197,14 +5575,14 @@
             * @returns {Lookup}
             */
             toLookup: function (keySelector) {
-                keySelector = $lambda(keySelector);
-                $ensureType(keySelector, "keySelector", __function);
+                keySelector = $lambda(keySelector || "t => t");
+                $ensureType(keySelector, FUNCTION);
 
                 var _args = arguments,
                     _elementSelector = $lambda(_args[1]),
                     _comparer = _args.length === 2 && !_elementSelector ? _args[1] : _args[2];
 
-                return __Lookup.create(this, keySelector, _elementSelector, _comparer);
+                return new __Lookup(this, keySelector, _elementSelector, _comparer);
             },
 
             /**
@@ -5246,7 +5624,7 @@
             */
             where: function (predicate) {
                 predicate = $lambda(predicate);
-                $ensureType(predicate, "predicate", __function);
+                $ensureType(predicate, FUNCTION);
 
                 var _source = this;
 
@@ -5274,7 +5652,7 @@
             zip: function (second, resultSelector) {
 
                 resultSelector = $lambda(resultSelector);
-                $ensureType(resultSelector, "resultSelector", __function);
+                $ensureType(resultSelector, FUNCTION);
 
                 var _source = this;
 
@@ -5293,74 +5671,86 @@
             },
         };
 
+
         /**
-        * Returns true if the value is Array, String, List or Array-like, otherwise false
+        * Returns array-like object if the value is Array, String, List or Array-like, otherwise null
         * @param {Enumerable} value An Enumerable object.
-        * @returns {Boolean}
+        * @returns {Array}
         */
-        function isArrayLike(value) {
-            if ($is(value, __array) || $is(value, __string) || $is(value, __List)) {
-                return true;
+        function asArrayLike(value) {
+            if ($is(value, ARRAY) ||
+                $is(value, STRING) ||
+                $is(value, __List) ||
+                $is(value, __ReadOnlyCollection)) {
+                return value;
             }
 
-            return value && value.length != null && $isFunc(value.splice);
+            var _source = $prop(value);
+
+            if (_source) {
+                if ($is(_source, ARRAY) ||
+                    $is(_source, STRING) ||
+                    ($is(_source.length, NUMBER) && $isFunc(_source.splice))) {
+                    return _source;
+                }
+            }
+
+            return null;
         }
 
-        /**
-        * Creates a new MoreThanOneElementError.
-        * @returns {Error}
-        */
-        function moreThanOneElementError() {
-            return new __error("Sequence contains more than one element.");
-        }
 
         /**
-        * Creates a new MoreThanOneMatchError.
-        * @returns {Error}
+        * Creates a lookup-like HashTable to use in join operations
+        * @param {Enumerable} source An Enumerable object.
+        * @param {Enumerable} keySelector A function to extract the key from each element of the sequence. eg. function(outer)
+        * @param {EqualityComparer} comparer An equality comparer to compare values.
+        * @returns {HashTable}
         */
-        function moreThanOneMatchError() {
-            return new __error("Sequence contains more than one match.");
-        }
+        function createLookupTable(source, keySelector, comparer) {
 
-        /**
-        * Creates a new NoMatchError.
-        * @returns {Error}
-        */
-        function noMatchError() {
-            return new __error("Sequence contains no matching element.");
-        }
+            var _arr = asArrayLike(source),
+                _collection = $collection(source),
+                _table = new __HashTable(_collection ? _collection.count() : 0, comparer);
 
-        /**
-        * Creates a new NoElementsError.
-        * @returns {Error}
-        */
-        function noElementsError() {
-            return new __error("Sequence contains no elements.");
-        }
+            if (_arr) {
+                var _buffer = $buffer(_arr, false);
 
-        /**
-        * Creates a new ArgumentOutOfRangeError.
-        * @param {String} name Name of the parameter.
-        * @returns {Error}
-        */
-        function argumentOutOfRangeError(name) {
-            return new __error("Specified argument was out of the range of valid values. Parameter name: " + name);
-        }
+                for (var i = 0, _len = _buffer.length; i < _len; i++) {
+                    var _val = _buffer[i],
+                        _key = keySelector(_val),
+                        _entry = _table.entry(_key);
 
-        /**
-        * Creates a new NumericTypeError.
-        * @returns {Error}
-        */
-        function numericTypeError() {
-            return new __error("Value is not a number.");
+                    if (_entry == null) {
+                        _table.add(_key, [_val]);
+                    }
+                    else {
+                        _entry.value.push(_val);
+                    }
+                }
+            }
+            else {
+                var _e = $enumerator(source);
+
+                while (_e.next()) {
+                    var _val = _e.current,
+                        _key = keySelector(_val),
+                        _entry = _table.entry(_key);
+
+                    if (_entry == null) {
+                        _table.add(_key, [_val]);
+                    }
+                    else {
+                        _entry.value.push(_val);
+                    }
+                }
+            }
+
+            return _table;
         }
 
 
         return extensions;
     })();
-
-
-
 
 
 
@@ -5400,7 +5790,7 @@
             return value;
         }
 
-        else if ($is(value, __array) || $is(value, __string)) {
+        else if ($is(value, ARRAY) || $is(value, STRING)) {
             return new __Stack(value);
         }
 
@@ -5413,42 +5803,58 @@
     /**
     * Buffers an Enumerable object into an array.
     * @param {Enumerable} value An Enumerable object.
+    * @param {Boolean=} copy When true returns a copy of the Array Collections. default value is true.
     * @returns {Array}
     */
-    function $buffer(value) {
+    function $buffer(value, copy) {
 
-        if ($is(value, __array)) {              // fast buffering arrays
-            return value.slice(0);
+        if ($is(value, ARRAY)) {                                      // fast buffer arrays
+            return copy === false ? value : value.slice(0);
         }
 
-        else if ($is(value, __string)) {        // fast buffering strings
+        else if ($is(value, STRING)) {                                // fast buffer strings
             return value.split("");
         }
 
         else {
-            var _arr = new __array(4),
-                _e = $enumerator(value),
-                _count = 0;
 
-            // collections have fixed element count
-            if ($is(value, __Collection)) {
-                _arr.length = value.count();
-                while (_e.next()) {
-                    _arr[_count++] = _e.current;
-                }
+            var _source = $prop(value);
 
-                return _arr;
+            if ($is(_source, ARRAY) || $is(_source, STRING)) {      // fast buffer array/string enumerable
+                return $buffer(_source, copy);
             }
-            else {
-                while (_e.next()) {
-                    if (_count >= _arr.length) {
-                        _arr.length *= 4;
+            else if (_source && $isFunc(_source.slice)) {           // fast buffer enumerable with slice function: List
+                return _source.slice(0);
+            }
+            else {                                                  // do it the hard way
+                var _e = $enumerator(value),
+                    _count = 0,
+                    _arr;
+
+
+                // collections have fixed element count
+                if ($is(value, __Collection)) {
+                    _arr = new ARRAY(value.count());
+
+                    while (_e.next()) {
+                        _arr[_count++] = _e.current;
                     }
 
-                    _arr[_count++] = _e.current;
+                    return _arr;
                 }
+                else {
+                    _arr = new ARRAY(4);
 
-                return _arr.slice(0, _count);
+                    while (_e.next()) {
+                        if (_count >= _arr.length) {
+                            _arr.length *= 4;
+                        }
+
+                        _arr[_count++] = _e.current;
+                    }
+
+                    return _arr.length === _count ? _arr : _arr.slice(0, _count);
+                }
             }
         }
     }
@@ -5458,37 +5864,59 @@
     * Buffers an Enumerable instance into a given array.
     * @param {Enumerable} value An Enumerable object.
     * @param {Array} array The one-dimensional Array that is the destination of the elements copied from Dictionary keys.
-    * @param {Number} arrayIndex The zero-based index in array at which copying begins.
-    * @param {Number=} count The number of elements to copy.
+    * @param {Number} index The zero-based index in array at which copying begins.
     */
-    function $bufferTo(value, array, arrayIndex, count) {
+    function $bufferTo(value, array, index) {
 
-        count = count || value.count();
+        $nullCheck(array);
+        $ensureType(index, NUMBER);
 
-        $nullCheck(array, "array");
-        $ensureType(arrayIndex, "arrayIndex", __number);
-        $ensureType(count, "count", __number);
-
-        if (arrayIndex > array.length || count > array.length - arrayIndex) {
-            throw new __error("The number of elements in the source is greater than the number of elements that the destination array can contain.");
+        if (index > array.length) {
+            $error(ERROR_ARRAY_SIZE);
         }
 
-        var _index = -1;
+        var _buffer = $buffer(value),
+            _count = _buffer.length,
+            _index = -1;
 
-        // fast copy of array/string/list objects
-        if ($is(value, __array) || $is(value, __string) || $is(value, __List)) {
-            while (_index++ < count) {
-                array[arrayIndex + _index] = value[_index];
+        while (++_index < _count) {
+            array[index + _index] = _buffer[_index];
+        }
+    }
+
+
+    /**
+    * Searches a range of elements in a sorted Array for an element using the specified comparer and returns the zero-based index of the element.
+    * @param {Array} array The sorted array to find value.
+    * @param {Number} index The zero-based starting index of the range to search.
+    * @param {Number} length The length of the range to search.
+    * @param {Object} value The value to locate.
+    * @param {Comparer} comparer The Comparer implementation to use when comparing elements.
+    * @returns {Number}
+    */
+    function $binarySearch(array, index, length, value, comparer) {
+        var _compare = comparer.compare,
+            _lo = index,
+            _hi = index + length - 1,
+            _order = 0,
+            _i = 0;
+
+        while (_lo <= _hi) {
+            _i = _lo + ((_hi - _lo) >> 1);
+            _order = _compare(array[_i], value);
+
+            if (_order === 0) {
+                return _i;
+            }
+            else if (_order < 0) {
+                _lo = _i + 1;
+            }
+            else {
+                _hi = _i - 1;
             }
         }
 
-            // do it the hard way
-        else {
-            var _e = $enumerator(value);
-            while (_e.next() && _index++ < count) {
-                array[arrayIndex + _index] = _e.current;
-            }
-        }
+        return ~_lo;
     }
 
 
@@ -5507,7 +5935,7 @@
         }
 
         else {
-            return __Comparer.default;
+            return __Comparer.defaultComparer;
         }
     }
 
@@ -5527,7 +5955,7 @@
         }
 
         else {
-            return __EqualityComparer.default;
+            return __EqualityComparer.defaultComparer;
         }
     }
 
@@ -5537,11 +5965,15 @@
     * @param {Function} type The type to extend.
     */
     function $enumerableExtend(type) {
-        $ensureType(type, "type", __function);
-        $mixin(type.prototype, __EnumerableExtensions);
+        var _proto = type.prototype;
+
+        $ensureType(type, FUNCTION);
+        $mixin(_proto, __EnumerableExtensions);
+
+        if (!$isFunc(_proto.getEnumerator)) {
+            $define(_proto, "getEnumerator", { value: function () { return $enumerator(this); } });
+        }
     }
-
-
 
 
 
@@ -5550,8 +5982,8 @@
     /* Modules
     ---------------------------------------------------------------------- */
 
-    $enumerableExtend(__array);
-    $enumerableExtend(__string);
+    $enumerableExtend(ARRAY);
+    $enumerableExtend(STRING);
     $enumerableExtend(__Enumerable);
 
 
@@ -5622,6 +6054,7 @@
         Comparer: __Comparer,
         EqualityComparer: __EqualityComparer,
     });
+
 
 
 })(window || this);

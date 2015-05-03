@@ -1,6 +1,6 @@
 ﻿/*--------------------------------------------------------------------------
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Ver 0.9.1 (March 28, 2015)
+* Ver 0.9.2 (May 1, 2015)
 *
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under Apache License Version 2.0
@@ -314,7 +314,7 @@ declare module mx {
         /**
         * Returns a default sort order comparer for the type specified by the generic argument.
         */
-        default: IComparer<any>;
+        defaultComparer: IComparer<any>;
 
         /**
         * Creates a comparer by using the specified comparison.
@@ -359,7 +359,7 @@ declare module mx {
         /**
         * Gets a default equality comparer for the type specified by the generic argument.
         */
-        default: IEqualityComparer<any>;
+        defaultComparer: IEqualityComparer<any>;
 
 
         /**
@@ -874,13 +874,13 @@ declare module mx {
         /**
         * Gets a collection containing the keys in the SortedList, in sorted order.
         */
-        keys(): IList<TKey>
+        keys(): TKey[]
 
 
         /**
         * Gets a collection containing the values in the SortedLis.
         */
-        values(): IList<TValue>
+        values(): TValue[]
 
 
         /**
@@ -1702,7 +1702,7 @@ declare module mx {
         * Gets the value associated with the specified key.
         * @param key The key of the element to add.
         */
-        get(key: TKey): IGrouping<TKey, TElement>
+        get(key: TKey): IEnumerable<TElement>
     }
 
 

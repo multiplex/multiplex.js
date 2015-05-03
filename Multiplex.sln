@@ -3,44 +3,20 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.22310.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{DC0E32DD-78D0-42FE-B07A-6E17D323D034}"
-	ProjectSection(SolutionItems) = preProject
-		.gitattributes = .gitattributes
-		.gitignore = .gitignore
-		Gruntfile.js = Gruntfile.js
-		LICENSE.txt = LICENSE.txt
-		package.json = package.json
-		README.md = README.md
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2C41D728-E27C-4CE2-8982-B07583082DF3}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0AFF5CA7-3C69-45F3-A1B7-E6681E8D880C}"
-	ProjectSection(SolutionItems) = preProject
-		tests\qunit.css = tests\qunit.css
-		tests\qunit.js = tests\qunit.js
-		tests\runtime.html = tests\runtime.html
-		tests\setup.js = tests\setup.js
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "javascript", "javascript", "{9AC4F91F-D8F1-4E0D-AE8A-AC456F610F48}"
-	ProjectSection(SolutionItems) = preProject
-		src\javascript\multiplex.intellisense.js = src\javascript\multiplex.intellisense.js
-		src\javascript\multiplex.js = src\javascript\multiplex.js
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "typescript", "typescript", "{87C1D777-B6AF-4EC6-B46D-BF37DA9B60D1}"
-	ProjectSection(SolutionItems) = preProject
-		src\typescript\_references.ts = src\typescript\_references.ts
-		src\typescript\multiplex.d.ts = src\typescript\multiplex.d.ts
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Multiplex", "Multiplex.csproj", "{C2986D2F-F1EB-49C0-A428-31AE818B36B4}"
 EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C2986D2F-F1EB-49C0-A428-31AE818B36B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2986D2F-F1EB-49C0-A428-31AE818B36B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2986D2F-F1EB-49C0-A428-31AE818B36B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2986D2F-F1EB-49C0-A428-31AE818B36B4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{9AC4F91F-D8F1-4E0D-AE8A-AC456F610F48} = {2C41D728-E27C-4CE2-8982-B07583082DF3}
-		{87C1D777-B6AF-4EC6-B46D-BF37DA9B60D1} = {2C41D728-E27C-4CE2-8982-B07583082DF3}
 	EndGlobalSection
 EndGlobal

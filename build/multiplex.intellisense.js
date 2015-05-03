@@ -1039,7 +1039,6 @@ intellisense.annotate(mx.extensions, {
         ///   <returns type="Dictionary" />
         /// </signature>
         /// <signature>
-        /// <signature>
         ///   <summary>Creates a Dictionary from an Enumerable according to specified key selector and element selector functions.</summary>
         ///   <param name="keySelector" type="function(item)">A function to extract a key from each element. eg. function(item)</param>
         ///   <param name="elementSelector" type="Function">A transform function to produce a result element value from each element. eg. function(item)</param>
@@ -1221,7 +1220,7 @@ intellisense.annotate(Array.prototype, mx.extensions);
 ---------------------------------------------------------------------- */
 intellisense.annotate(mx.Comparer, {
     /// <field type="Comparer">Gets a default sort order comparer for the type specified by the generic argument.</field>
-    "default": {},
+    "defaultComparer": {},
     "create": function () {
         /// <signature>
         ///     <summary>
@@ -1262,7 +1261,7 @@ intellisense.annotate(mx.Comparer.prototype, {
 ---------------------------------------------------------------------- */
 intellisense.annotate(mx.EqualityComparer, {
     /// <field type="EqualityComparer">Gets a default equality comparer for the type specified by the generic argument.</field>
-    "default": {},
+    "defaultComparer": {},
     "create": function () {
         /// <signature>
         ///     <summary>
@@ -1306,8 +1305,6 @@ intellisense.annotate(mx.EqualityComparer.prototype, {
 /* ReadOnlyCollection
 ---------------------------------------------------------------------- */
 intellisense.annotate(mx.Collection.prototype, {
-    /// <field name="length" type="Number">Gets the number of elements contained in the Collection.</field>
-    "length": 0,
     "count": function () {
         /// <signature>
         ///     <summary>
@@ -1435,7 +1432,7 @@ intellisense.annotate(mx.List.prototype, {
         ///         that is the  bitwise complement of the index of the  next element that is larger than item or, if there is no larger element, 
         ///         the bitwise complement of List.count().
         ///     </summary>
-        ///     <param name="item" type="Object">The object to locate. The value can be null for reference types.</param>
+        ///     <param name="item" type="Object">The object to locate.</param>
         ///     <returns type="Number" />
         /// </signature>
         /// <signature>
@@ -1445,7 +1442,7 @@ intellisense.annotate(mx.List.prototype, {
         ///         that is the  bitwise complement of the index of the  next element that is larger than item or, if there is no larger element, 
         ///         the bitwise complement of List.count().
         ///     </summary>
-        ///     <param name="item" type="Object">The object to locate. The value can be null for reference types.</param>
+        ///     <param name="item" type="Object">The object to locate.</param>
         ///     <param name="comparer" type="Comparer">The Comparer implementation to use when comparing elements.</param>
         ///     <returns type="Number" />
         /// </signature>
@@ -1456,7 +1453,7 @@ intellisense.annotate(mx.List.prototype, {
         ///         that is the  bitwise complement of the index of the  next element that is larger than item or, if there is no larger element, 
         ///         the bitwise complement of List.count().
         ///     </summary>
-        ///     <param name="item" type="Object">The object to locate. The value can be null for reference types.</param>
+        ///     <param name="item" type="Object">The object to locate.</param>
         ///     <param name="index" type="Number">The zero-based starting index of the range to search.</param>
         ///     <param name="count" type="Number">The length of the range to search.</param>
         ///     <param name="comparer" type="Comparer">The Comparer implementation to use when comparing elements.</param>
@@ -1646,7 +1643,7 @@ intellisense.annotate(mx.List.prototype, {
         ///         Inserts an element into the List at the specified index.
         ///     </summary>
         ///     <param name="index" type="Number">The zero-based index at which item should be inserted.</param>
-        ///     <param name="item" type="Object">The object to insert. The value can be null for reference types.</param>
+        ///     <param name="item" type="Object">The object to insert.</param>
         /// </signature>
     },
     "insertRange": function () {
@@ -1801,7 +1798,7 @@ intellisense.annotate(mx.SortedList.prototype, {
         ///         Adds an element with the specified key and value into the SortedList.
         ///     </summary>
         ///     <param name="key" type="Object">The key of the element to add.</param>
-        ///     <param name="value" type="Object">The value of the element to add. The value can be null for reference types.</param>
+        ///     <param name="value" type="Object">The value of the element to add.</param>
         /// </signature>
     },
     "get": function () {
@@ -1868,7 +1865,7 @@ intellisense.annotate(mx.SortedList.prototype, {
         ///     <summary>
         ///         Gets a collection containing the keys in the SortedList, in sorted order.
         ///     </summary>
-        ///     <returns type="List" />
+        ///     <returns type="Array" />
         /// </signature>
     },
     "values": function () {
@@ -1876,7 +1873,7 @@ intellisense.annotate(mx.SortedList.prototype, {
         ///     <summary>
         ///         Gets a collection containing the values in the SortedLis.
         ///     </summary>
-        ///     <returns type="List" />
+        ///     <returns type="Array" />
         /// </signature>
     },
     "indexOfKey": function () {
@@ -2142,14 +2139,6 @@ intellisense.annotate(mx.HashSet.prototype, {
         ///     <param name="array" type="Array">The one-dimensional array that is the destination of the elements copied from the HashSet object.</param>
         ///     <param name="arrayIndex" type="Number">The zero-based index in array at which copying begins.</param>
         /// </signature>
-        /// <signature>
-        ///     <summary>
-        ///         Copies the specified number of elements of a HashSet object to an array, starting at the specified array index.
-        ///     </summary>
-        ///     <param name="array" type="Array">The one-dimensional array that is the destination of the elements copied from the HashSet object.</param>
-        ///     <param name="arrayIndex" type="Number">The zero-based index in array at which copying begins.</param>
-        ///     <param name="count" type="Number">The number of elements to copy to array.</param>
-        /// </signature>
     },
     "comparer": function () {
         /// <signature>
@@ -2347,7 +2336,7 @@ intellisense.annotate(mx.LinkedList.prototype, {
         ///     <summary>
         ///         Determines whether a value is in the LinkedList.
         ///     </summary>
-        ///     <param name="value" type="Object">The value to locate in the LinkedList. The value can be null for reference types.</param>
+        ///     <param name="value" type="Object">The value to locate in the LinkedList.</param>
         ///     <returns type="Boolean" />
         /// </signature>
     },
@@ -2699,7 +2688,7 @@ intellisense.annotate(mx.Lookup.prototype, {
         /// <signature>
         ///   <summary>Gets the value associated with the specified key.</summary>
         ///   <param name="key" type="Object">The key of the element to add.</param>
-        ///   <returns type="Grouping" />
+        ///   <returns type="Enumerable" />
         /// </signature>
     },
     "getEnumerator": function () {
