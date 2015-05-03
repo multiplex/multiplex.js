@@ -364,7 +364,7 @@
     * Gets or sets object private property.
     */
     var $prop = (function () {
-        if ($isFunc(WEAKMAP)) {
+        if (!$isFunc(WEAKMAP)) {
             var _map = new WEAKMAP();
 
             return function (obj, value) {
@@ -377,14 +377,13 @@
             };
         }
         else {
-            var _source = "__props__";
             return function (obj, value) {
                 if (value) {
-                    $define(obj, _source, { value: function () { return value; } });
+                    obj.__props__ = value;
                     return value;
                 }
 
-                return obj[_source]();
+                return obj.__props__;
             };
         }
     })();
@@ -4374,8 +4373,6 @@
             */
             any: function (predicate) {
 
-                var _e = $enumerator(this);
-
                 if (predicate) {
                     predicate = $lambda(predicate);
                     $ensureType(predicate, FUNCTION);
@@ -4398,8 +4395,12 @@
                     }
 
                 }
-                else if (_e.next()) {
-                    return true;
+                else
+                {
+                    var _e = $enumerator(this);
+                    if (_e.next()) {
+                        return true;
+                    }
                 }
 
                 return false;
