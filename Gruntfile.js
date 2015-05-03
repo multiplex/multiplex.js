@@ -10,7 +10,7 @@
         },
         clean: {
             build: {
-                src: ['<%= dirs.release %>']
+                src: ['<%= dirs.release %>/*']
             }
         },
         copy: {
@@ -39,6 +39,7 @@
                 unused: true,
                 globals: {
                     'window': true,
+                    'console': true,
                     'define': true,
                     'module': true,
                     'intellisense': true,
@@ -62,21 +63,21 @@
                 screwIE8: true,
                 preserveComments: false,
                 report: "min",
-                sourceMapName: '<%= dirs.release %>/<%= pkg.name %>.map',
+                sourceMapName: '<%= dirs.release %>/multiplex.map',
                 banner:
-                    [
-                        '/*--------------------------------------------------------------------------',
-                        '',
-                        '* <%= pkg.title %> - <%= pkg.description %>',
-                        '* Ver <%= pkg.version %> (<%= grunt.template.today("mmmm dd, yyyy") %>)',
-                        '',
-                        '* Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>',
-                        '* Licensed under Apache License Version 2.0',
-                        '* https://github.com/multiplex/multiplex.js',
-                        '',
-                        '*--------------------------------------------------------------------------*/',
-                        ''
-                    ].join('\n'),
+                [
+                    '/*--------------------------------------------------------------------------',
+                    '',
+                    '* <%= pkg.title %> - <%= pkg.description %>',
+                    '* Ver <%= pkg.version %> (<%= grunt.template.today("mmmm dd, yyyy") %>)',
+                    '',
+                    '* Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>',
+                    '* Licensed under Apache License Version 2.0',
+                    '* https://github.com/multiplex/multiplex.js',
+                    '',
+                    '*--------------------------------------------------------------------------*/',
+                    ''
+                ].join('\n'),
                 mangle: {
                     sort: true,
                     eval: true,
@@ -107,7 +108,7 @@
             },
             dist: {
                 files: {
-                    '<%= dirs.release %>/<%= pkg.name %>.min.js': ['<%= dirs.source %>/javascript/multiplex.js']
+                    '<%= dirs.release %>/multiplex.min.js': ['<%= dirs.release %>/multiplex.js']
                 }
             }
         }
@@ -122,4 +123,5 @@
 
     grunt.registerTask('dev', ['jshint']);
     grunt.registerTask('default', ['clean', 'copy', 'jshint', 'uglify']);
+
 };
