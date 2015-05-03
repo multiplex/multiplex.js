@@ -1,5 +1,16 @@
+# User-specific files
 *.suo
+*.ide
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
 *.dll
+[Bb]in/
+[Oo]bj/
+/build/[Bb]in
+
+# Others
 /node_modules
 /assets
-/Multiplex.sln.ide
