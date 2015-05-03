@@ -1,4 +1,4 @@
-﻿/// <reference path="..\src\javascript\multiplex.js" />
+﻿/// <reference path="_references.js" />
 
 // class without equality-comparer
 function Foo() {

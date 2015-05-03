@@ -508,4 +508,5 @@
         assert.ok(mx([1, 2]).zip([3, 4], "(t, u) => t + u").first() == 4, "Zip two numeric array!");
         assert.ok(mx([1, 2]).zip([3], "(t, u) => t + u").count() == 1, "Zip two inharmonic numeric array!");
     });
+
 })();
