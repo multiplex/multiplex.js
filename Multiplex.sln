@@ -17,6 +17,6 @@ Global
 		{C2986D2F-F1EB-49C0-A428-31AE818B36B4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
+		HideSolutionNode = TRUE
 	EndGlobalSection
 EndGlobal
