@@ -12,5 +12,5 @@
 /build/[Bb]in
 
 # Others
+/_other
 /node_modules
-/assets
