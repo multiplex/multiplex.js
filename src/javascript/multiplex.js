@@ -1373,7 +1373,7 @@
                 var _args = arguments,
                     _index = $is(_args[1], NUMBER) ? _args[1] : 0,
                     _count = $is(_args[1], NUMBER) ? _args[2] : this.length,
-                    _comparer = $comparer(_args.length === 4 ? _args[3] : _args[2]);
+                    _comparer = $comparer(_args.length === 4 ? _args[3] : _args[1]);
 
                 return $binarySearch(this, _index, _count, item, _comparer);
             },
@@ -5638,15 +5638,14 @@
     * @returns {Number}
     */
     function $binarySearch(array, index, length, value, comparer) {
-        var _compare = comparer.compare,
-            _lo = index,
+        var _lo = index,
             _hi = index + length - 1,
             _order = 0,
             _i = 0;
 
         while (_lo <= _hi) {
             _i = _lo + ((_hi - _lo) >> 1);
-            _order = _compare(array[_i], value);
+            _order = comparer.compare(array[_i], value);
 
             if (_order === 0) {
                 return _i;
