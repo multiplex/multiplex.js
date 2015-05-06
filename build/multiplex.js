@@ -407,9 +407,6 @@
         * @returns {Number}
         */
         function computeHash(obj, override) {
-            if (obj == null) {                      // null/undefined hash is 0
-                return 0;
-            }
 
             switch (typeof obj) {
                 case TYPE_NUMBER:
@@ -423,7 +420,11 @@
 
                 default:
 
-                    if (obj instanceof DATE) {
+                    if (obj == null) {                      // null/undefined hash is 0
+                        return 0;
+                    }
+
+                    else if (obj instanceof DATE) {
                         return compute31BitDateHash(obj);               // Compute "Date" object type hash
                     }
 
@@ -460,13 +461,13 @@
 
         /// Creates a HashCode for a Number.
         function compute31BitNumberHash(obj) {
-            var _hash = 0;
 
             if (obj % 1 === 0) {            // integer number
-                _hash = obj >> 32;
+                return obj >> 32;
             }
 
             else {                          // decimal number
+                var _hash = 0;
                 switch (obj) {
                     case NUMBER.POSITIVE_INFINITY: _hash = 0x7F800000; break;
                     case NUMBER.NEGATIVE_INFINITY: _hash = 0xFF800000; break;
@@ -497,8 +498,9 @@
                         _hash = _hash | (_significand & ~(-1 << 23));
                         break;
                 }
+
+                return _hash & _lower31BitMask;
             }
-            return _hash & _lower31BitMask;
         }
 
 
@@ -798,7 +800,7 @@
                 * @returns {Boolean}
                 */
                 value: function () {
-                    _current = UNDEFINED;     // reset "current"
+                    _current = undefined;       // reset "current"
                     _next = false;              // reset "next"
 
                     factory(_yielder);
@@ -1463,7 +1465,8 @@
                     }
                 }
 
-                return new __List(_arr.slice(0, _count));
+                _arr.length = _count;
+                return new __List(_arr);
             },
 
             /**
@@ -2427,8 +2430,7 @@
     var __HashTable = (function () {
 
         /// Array of primes larger than: 2 ^ (4 x n)
-        var _primes = [17, 67, 257, 1031, 4099, 16411, 65537, 262147, 1048583, 4194319, 16777259],
-            _fillFactor = 0.72;
+        var _primes = [17, 67, 257, 1031, 4099, 16411, 65537, 262147, 1048583, 4194319, 16777259];
 
 
         /**
@@ -2439,7 +2441,7 @@
         function HashTable() {
 
             var _args = arguments,
-                _size = $is(_args[0], NUMBER) ? getPrime(_args[0] / _fillFactor) : 0,
+                _size = $is(_args[0], NUMBER) && _args[0] > _primes[0] ? getPrime(_args[0]) : _primes[0],
                 _comparer = $equalityComparer(_args.length === 2 ? _args[1] : _args[0]);
 
             initializeHashTable(this, _size, _comparer);
@@ -2819,9 +2821,8 @@
         function HashSet() {
             var _args = arguments,
                 _enumerable = __Enumerable.is(_args[0]) ? $enumerable(_args[0]) : null,
-                _collection = $collection(_args[0]),
                 _comparer = $equalityComparer(_args.length === 1 && _enumerable == null ? _args[0] : _args[1]),
-                _table = new __HashTable(_collection ? _collection.count() : 0, _comparer);
+                _table = new __HashTable($count(_args[0]), _comparer);
 
             $prop(this, _table);
 
@@ -2964,10 +2965,10 @@
                     return;
                 }
 
-                var _collection = $collection(other);
+                var _count = $count(other);
 
-                if (_collection != null) {
-                    if (_collection.count() === 0) {
+                if (_count !== -1) {
+                    if (_count === 0) {
                         this.clear();
                         return;
                     }
@@ -2977,10 +2978,9 @@
                     // will fail. So first check if other is a hashset using the same equality comparer;
                     // intersect is a lot faster if we can assume uniqueness.
 
-                    if (areEqualityComparersEqual(this, _collection)) {
-                        var _count = this.count(),
-                            _table = $prop(this),
-                            _otable = _collection.table(),
+                    if (areEqualityComparersEqual(this, other)) {
+                        var _table = $prop(this),
+                            _otable = other.table(),
                             _buffer = $buffer(this, false),
                             _item;
 
@@ -3005,24 +3005,24 @@
             isProperSubsetOf: function (other) {
                 $nullCheck(other);
 
-                var _collection = $collection(other);
+                var _count = $count(other);
 
-                if (_collection != null) {
+                if (_count !== -1) {
 
                     if (this.count() === 0) {
-                        return _collection.count() > 0;
+                        return _count > 0;
                     }
 
                         // faster if other is a hashset (and we're using same equality comparer)
-                    else if (areEqualityComparersEqual(this, _collection)) {
-                        if (this.count() >= _collection.count()) {
+                    else if (areEqualityComparersEqual(this, other)) {
+                        if (this.count() >= _count) {
                             return false;
                         }
 
                             // this has strictly less than number of items in other, so the following
                             // check suffices for proper subset.
                         else {
-                            return isSubsetOfHashSetWithSameEC(this, _collection);
+                            return isSubsetOfHashSetWithSameEC(this, other);
                         }
                     }
                 }
@@ -3045,23 +3045,23 @@
                     return false;
                 }
 
-                var _collection = $collection(other);
+                var _count = $count(other);
 
-                if (_collection != null) {
+                if (_count !== -1) {
 
                     // if other is the empty set then this is a superset
-                    if (_collection.count() === 0) {
+                    if (_count === 0) {
                         return true;
                     }
 
                         // faster if other is a hashset with the same equality comparer
-                    else if (areEqualityComparersEqual(this, _collection)) {
-                        if (_collection.count() >= this.count()) {
+                    else if (areEqualityComparersEqual(this, other)) {
+                        if (_count >= this.count()) {
                             return false;
                         }
 
                         else {
-                            return containsAllElements(this, _collection);
+                            return containsAllElements(this, other);
                         }
                     }
                 }
@@ -3107,17 +3107,17 @@
             isSupersetOf: function (other) {
                 $nullCheck(other);
 
-                var _collection = $collection(other);
+                var _count = $count(other);
 
-                if (_collection != null) {
+                if (_count !== -1) {
 
                     // if other is the empty set then this is a superset
-                    if (_collection.count() === 0) {
+                    if (_count === 0) {
                         return true;
                     }
 
-                    else if (areEqualityComparersEqual(this, _collection)) {
-                        if (_collection.count() > this.count()) {
+                    else if (areEqualityComparersEqual(this, other)) {
+                        if (_count > this.count()) {
                             return false;
                         }
                     }
@@ -3168,12 +3168,12 @@
                     return containsAllElements(this, other);
                 }
 
-                var _collection = $collection(other);
+                var _count = $count(other);
 
-                if (_collection != null) {
+                if (_count !== -1) {
 
                     // if this count is 0 but other contains at least one element, they can't be equal
-                    if (this.count() === 0 && _collection.count() > 0) {
+                    if (this.count() === 0 && _count > 0) {
                         return false;
                     }
                 }
@@ -3995,8 +3995,7 @@
         */
         function Lookup(source, keySelector, elementSelector, comparer) {
 
-            var _collection = $collection(source),
-                _table = new __HashTable(_collection ? _collection.count() : 0, comparer),
+            var _table = new __HashTable($count(source), comparer),
                 _buffer = $buffer(source, false),
                 _count = _buffer.length,
                 _item,
@@ -4343,26 +4342,9 @@
                 predicate = $lambda(predicate);
                 $ensureType(predicate, FUNCTION);
 
-                // fast iteration for array-like enumerables
-                var _arr = asArrayLike(this);
-                if (_arr) {
-                    for (var _i = 0, _len = _arr.length; _i < _len; _i++) {
-                        if (predicate(_arr[_i]) === false) {
-                            return false;
-                        }
-                    }
-                }
-                else {
-                    var _e = $enumerator(this);
-
-                    while (_e.next()) {
-                        if (predicate(_e.current) === false) {
-                            return false;
-                        }
-                    }
-                }
-
-                return true;
+                return iterate(this, function (item) {
+                    return predicate(item) === true;
+                });
             },
 
             /**
@@ -4373,37 +4355,11 @@
             */
             any: function (predicate) {
 
-                if (predicate) {
-                    predicate = $lambda(predicate);
-                    $ensureType(predicate, FUNCTION);
+                predicate = $lambda(predicate);
 
-                    // fast iteration for array-like enumerables
-                    var _arr = asArrayLike(this);
-                    if (_arr) {
-                        for (var _i = 0, _len = _arr.length; _i < _len; _i++) {
-                            if (predicate(_arr[_i]) === true) {
-                                return true;
-                            }
-                        }
-                    }
-                    else {
-                        while (_e.next()) {
-                            if (predicate(_e.current) === true) {
-                                return true;
-                            }
-                        }
-                    }
-
-                }
-                else
-                {
-                    var _e = $enumerator(this);
-                    if (_e.next()) {
-                        return true;
-                    }
-                }
-
-                return false;
+                return !iterate(this, function (item) {
+                    return predicate ? predicate(item) === false : false;
+                });
             },
 
             /**
@@ -4508,15 +4464,21 @@
                     return $enumerable(this).where(predicate).count();
                 }
 
-                var _arr = asArrayLike(this);
+                var _count = $count(this);
 
                 // fast count for array-like enumerables
-                if (_arr) {
-                    return _arr.length;
+                if (_count !== -1) {
+                    return _count;
                 }
                 else {
-                    var _buffer = $buffer(this, false);
-                    return _buffer.length;
+                    var _e = $enumerator(this),
+                        _count = 0;
+
+                    while (_e.next()) {
+                        _count++;
+                    }
+
+                    return _count;
                 }
             },
 
@@ -4559,8 +4521,7 @@
                 return new __Enumerable(function () {
 
                     var _e = $enumerator(_source),
-                        _collection = $collection(_source),
-                        _table = new __HashTable(_collection ? _collection.count() : 0, comparer);
+                        _table = new __HashTable($count(_source), comparer);
 
                     return new __Enumerator(function (yielder) {
                         while (_e.next()) {
@@ -4638,44 +4599,14 @@
             */
             first: function (predicate) {
 
-                var _arr = asArrayLike(this),
-                    _e = $enumerator(this);
+                var _default = {},
+                    _result = this.firstOrDefault(predicate, _default);
 
-                predicate = $lambda(predicate);
-
-
-                if (predicate) {
-
-                    // fast iteration for array-like enumerables
-                    if (_arr) {
-                        for (var _i = 0, _len = _arr.length; _i < _len; _i++) {
-                            if (predicate(_arr[_i])) {
-                                return _arr[_i];
-                            }
-                        }
-                    }
-                    else {
-                        while (_e.next()) {
-                            if (predicate(_e.current)) {
-                                return _e.current;
-                            }
-                        }
-                    }
-
-                    $error(ERROR_NO_MATCH);
+                if (_result === _default) {
+                    $error(predicate ? ERROR_NO_MATCH : ERROR_NO_ELEMENTS);
                 }
-                else {
-                    if (_arr) {
-                        if (_arr.length > 0) {
-                            return _arr[0];
-                        }
-                    }
-                    else if (_e.next()) {
-                        return _e.current;
-                    }
 
-                    $error(ERROR_NO_ELEMENTS);
-                }
+                return _result;
             },
 
             /**
@@ -4686,42 +4617,17 @@
             */
             firstOrDefault: function (predicate, defaultValue) {
 
-                var _arr = asArrayLike(this),
-                    _e = $enumerator(this);
-
+                var _result = defaultValue || null;
                 predicate = $lambda(predicate);
 
+                iterate(this, function (item) {
+                    if (predicate == null || predicate(item)) {
+                        _result = item;
+                        return false;
+                    }
+                });
 
-                if (predicate) {
-
-                    // fast iteration for array-like enumerables
-                    if (_arr) {
-                        for (var _i = 0, _len = _arr.length; _i < _len; _i++) {
-                            if (predicate(_arr[_i])) {
-                                return _arr[_i];
-                            }
-                        }
-                    }
-                    else {
-                        while (_e.next()) {
-                            if (predicate(_e.current)) {
-                                return _e.current;
-                            }
-                        }
-                    }
-                }
-                else {
-                    if (_arr) {
-                        if (_arr.length > 0) {
-                            return _arr[0];
-                        }
-                    }
-                    else if (_e.next()) {
-                        return _e.current;
-                    }
-                }
-
-                return defaultValue || null;
+                return _result;
             },
 
             /**
@@ -4732,21 +4638,11 @@
                 action = $lambda(action);
                 $ensureType(action, FUNCTION);
 
-                var _arr = asArrayLike(this);
+                var _i = 0;
 
-                if (_arr) {
-                    for (var _i = 0, _len = _arr.length; _i < _len; _i++) {
-                        action(_arr[_i], _i);
-                    }
-                }
-                else {
-                    var _e = $enumerator(this),
-                        _i = 0;
-
-                    while (_e.next()) {
-                        action(_e.current, _i++);
-                    }
-                }
+                iterate(this, function (item) {
+                    action(item, _i++);
+                });
             },
 
             /**
@@ -4910,57 +4806,14 @@
             */
             last: function (predicate) {
 
-                var _arr = asArrayLike(this),
-                    _e = $enumerator(this),
-                    _result;
+                var _default = {},
+                    _result = this.lastOrDefault(predicate, _default);
 
-                predicate = $lambda(predicate);
-
-
-                if (predicate) {
-
-                    // fast iteration for array-like enumerables
-                    if (_arr) {
-                        var _len = _arr.length;
-                        while (_len--) {
-                            if (predicate(_arr[_len])) {
-                                return _arr[_len];
-                            }
-                        }
-                    }
-                    else {
-                        var _found = false;
-
-                        while (_e.next()) {
-                            if (predicate(_e.current)) {
-                                _result = _e.current;
-                                _found = true;
-                            }
-                        }
-
-                        if (_found) {
-                            return _result;
-                        }
-                    }
-
-                    $error(ERROR_NO_MATCH);
+                if (_result === _default) {
+                    $error(predicate ? ERROR_NO_MATCH : ERROR_NO_ELEMENTS);
                 }
-                else {
-                    if (_arr) {
-                        if (_arr.length > 0) {
-                            return _arr[_arr.length - 1];
-                        }
-                    }
-                    else if (_e.next()) {
-                        do {
-                            _result = _e.current;
-                        } while (_e.next());
 
-                        return _result;
-                    }
-
-                    $error(ERROR_NO_ELEMENTS);
-                }
+                return _result;
             },
 
             /**
@@ -4971,46 +4824,35 @@
             */
             lastOrDefault: function (predicate, defaultValue) {
 
-                var _arr = asArrayLike(this),
-                    _e = $enumerator(this),
-                    _result;
-
                 predicate = $lambda(predicate);
 
+                var _result = defaultValue || null,
+                    _arr = asArrayLike(this);
 
-                if (predicate) {
+                // fast iteration for array-like enumerables
+                if (_arr) {
+                    var _len = _arr.length;
 
-                    // fast iteration for array-like enumerables
-                    if (_arr) {
-                        var _len = _arr.length;
+                    if (predicate) {
                         while (_len--) {
                             if (predicate(_arr[_len])) {
                                 return _arr[_len];
                             }
                         }
                     }
-                    else {
-                        while (_e.next()) {
-                            if (predicate(_e.current)) {
-                                _result = _e.current;
-                            }
-                        }
+                    else if (_len > 0) {
+                        return _arr[_len - 1];
                     }
                 }
                 else {
-                    if (_arr) {
-                        if (_arr.length > 0) {
-                            return _arr[_arr.length - 1];
+                    iterate(this, function (item) {
+                        if (predicate == null || predicate(item)) {
+                            _result = item;
                         }
-                    }
-                    else if (_e.next()) {
-                        do {
-                            _result = _e.current;
-                        } while (_e.next());
-                    }
+                    });
                 }
 
-                return _result || defaultValue || null;
+                return _result;
             },
 
             /**
@@ -5223,73 +5065,14 @@
             * @returns {Object}
             */
             single: function (predicate) {
+                var _default = {},
+                    _result = this.singleOrDefault(predicate, _default);
 
-                var _arr = asArrayLike(this),
-                    _e = $enumerator(this),
-                    _count = 0,
-                    _result;
-
-                predicate = $lambda(predicate);
-
-
-                if (predicate) {
-
-                    // fast iteration for array-like enumerables
-                    if (_arr) {
-                        for (var _i = 0, _len = _arr.length; _i < _len; _i++) {
-                            if (predicate(_arr[_i])) {
-
-                                if (_count > 1) {
-                                    break;
-                                }
-
-                                _result = _arr[_i];
-                                _count++;
-                            }
-                        }
-                    }
-                    else {
-                        while (_e.next()) {
-                            if (predicate(_e.current)) {
-
-                                if (_count == 1) {
-                                    break;
-                                }
-
-                                _result = _e.current;
-                                _count++;
-                            }
-                        }
-                    }
-
-                    switch (_count) {
-                        case 0: return $error(ERROR_NO_MATCH);
-                        case 1: return _result;
-                    }
-
-                    $error(ERROR_MORE_THAN_ONE_MATCH);
+                if (_result === _default) {
+                    $error(predicate ? ERROR_NO_MATCH : ERROR_NO_ELEMENTS);
                 }
-                else {
-                    if (_arr) {
-                        switch (_arr.length) {
-                            case 0: return $error(ERROR_NO_MATCH);
-                            case 1: return _arr[0];
-                        }
-                    }
-                    else {
-                        if (!_e.next()) {
-                            $error(ERROR_NO_MATCH);
-                        }
 
-                        _result = _e.current;
-
-                        if (!_e.next()) {
-                            return _result;
-                        }
-                    }
-
-                    $error(ERROR_MORE_THAN_ONE_ELEMENT);
-                }
+                return _result;
             },
 
             /**
@@ -5300,72 +5083,28 @@
             */
             singleOrDefault: function (predicate, defaultValue) {
 
-                var _arr = asArrayLike(this),
-                    _e = $enumerator(this),
-                    _count = 0,
+                var _count = 0,
                     _result = defaultValue || null;
 
                 predicate = $lambda(predicate);
 
+                iterate(this, function (item) {
+                    if (predicate == null || predicate(item)) {
 
-
-                if (predicate) {
-
-                    // fast iteration for array-like enumerables
-                    if (_arr) {
-                        for (var _i = 0, _len = _arr.length; _i < _len; _i++) {
-                            if (predicate(_arr[_i])) {
-
-                                if (_count > 1) {
-                                    break;
-                                }
-
-                                _result = _arr[_i];
-                                _count++;
-                            }
+                        if (_count > 1) {
+                            return false;
                         }
+
+                        _result = item;
+                        _count++;
                     }
-                    else {
-                        while (_e.next()) {
-                            if (predicate(_e.current)) {
+                });
 
-                                if (_count == 1) {
-                                    break;
-                                }
-
-                                _result = _e.current;
-                                _count++;
-                            }
-                        }
-                    }
-
-                    if (_count < 2) {
-                        return _result;
-                    }
-
-                    $error(ERROR_MORE_THAN_ONE_MATCH);
+                if (_count < 2) {
+                    return _result;
                 }
-                else {
-                    if (_arr) {
-                        switch (_arr.length) {
-                            case 0: return _result;
-                            case 1: return _arr[0];
-                        }
-                    }
-                    else {
-                        if (!_e.next()) {
-                            return _result;
-                        }
 
-                        _result = _e.current;
-
-                        if (!_e.next()) {
-                            return _result;
-                        }
-                    }
-
-                    $error(ERROR_MORE_THAN_ONE_ELEMENT);
-                }
+                $error(predicate ? ERROR_MORE_THAN_ONE_MATCH : ERROR_MORE_THAN_ONE_ELEMENT);
             },
 
             /**
@@ -5380,8 +5119,7 @@
                     _arr = asArrayLike(this);
 
                 if (_arr) {
-                    _arr = $buffer(_arr, false);
-                    return $enumerable(_arr.slice(count));
+                    return new __Enumerable($buffer(_arr, false).slice(count));
                 }
                 else {
                     return new __Enumerable(function () {
@@ -5472,8 +5210,7 @@
                     _arr = asArrayLike(this);
 
                 if (_arr) {
-                    _arr = $buffer(_arr, false);
-                    return $enumerable(_arr.slice(0, count));
+                    return new __Enumerable($buffer(_arr, false).slice(0, count));
                 }
                 else {
                     return new __Enumerable(function () {
@@ -5542,20 +5279,11 @@
                 var _args = arguments,
                     _elementSelector = $lambda(_args[1]),
                     _comparer = _args.length === 2 && !_elementSelector ? _args[1] : _args[2],
-                    _dic = new __Dictionary(_comparer),
-                    _e = $enumerator(this),
-                    _arr = asArrayLike(this);
+                    _dic = new __Dictionary(_comparer);
 
-                if (_arr) {
-                    for (var i = 0, _len = _arr.length; i < _len; i++) {
-                        _dic.add(keySelector(_arr[i]), _elementSelector ? _elementSelector(_arr[i]) : _arr[i]);
-                    }
-                }
-                else {
-                    while (_e.next()) {
-                        _dic.add(keySelector(_e.current), _elementSelector ? _elementSelector(_e.current) : _e.current);
-                    }
-                }
+                iterate(this, function (item) {
+                    return _dic.add(keySelector(item), _elementSelector ? _elementSelector(item) : item);
+                });
 
                 return _dic;
             },
@@ -5674,6 +5402,36 @@
 
 
         /**
+        * Iterates over an Enumerable, executes a callback function in each iteration, returns false when callback function fails
+        * @param {Enumerable} value An Enumerable object.
+        * @param {Function} action The action function to perform on each element of an Enumerable.
+        * @returns {Boolean}
+        */
+        function iterate(value, action) {
+            var _arr = asArrayLike(value);
+
+            if (_arr) {
+                for (var i = 0, _len = _arr.length; i < _len; i++) {
+                    if (action(_arr[i]) === false) {
+                        return false;
+                    }
+                }
+
+            }
+            else {
+                var _e = $enumerator(value);
+                while (_e.next()) {
+                    if (action(_e.current) === false) {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+
+        /**
         * Returns array-like object if the value is Array, String, List or Array-like, otherwise null
         * @param {Enumerable} value An Enumerable object.
         * @returns {Array}
@@ -5709,42 +5467,19 @@
         */
         function createLookupTable(source, keySelector, comparer) {
 
-            var _arr = asArrayLike(source),
-                _collection = $collection(source),
-                _table = new __HashTable(_collection ? _collection.count() : 0, comparer);
+            var _table = new __HashTable($count(source), comparer);
 
-            if (_arr) {
-                var _buffer = $buffer(_arr, false);
+            iterate(source, function (item) {
+                var _key = keySelector(item),
+                    _entry = _table.entry(_key);
 
-                for (var i = 0, _len = _buffer.length; i < _len; i++) {
-                    var _val = _buffer[i],
-                        _key = keySelector(_val),
-                        _entry = _table.entry(_key);
-
-                    if (_entry == null) {
-                        _table.add(_key, [_val]);
-                    }
-                    else {
-                        _entry.value.push(_val);
-                    }
+                if (_entry == null) {
+                    _table.add(_key, [item]);
                 }
-            }
-            else {
-                var _e = $enumerator(source);
-
-                while (_e.next()) {
-                    var _val = _e.current,
-                        _key = keySelector(_val),
-                        _entry = _table.entry(_key);
-
-                    if (_entry == null) {
-                        _table.add(_key, [_val]);
-                    }
-                    else {
-                        _entry.value.push(_val);
-                    }
+                else {
+                    _entry.value.push(item);
                 }
-            }
+            });
 
             return _table;
         }
@@ -5781,23 +5516,27 @@
 
 
     /**
-    * Gets or creates a new Collection instance if the value is Collection, otherwise returns null.
+    * Gets number of items if the value is a Collection, Array or an Array-like, otherwise returns -1.
     * @param {Enumerable} value An Enumerable object.
-    * @returns {Collection}
+    * @returns {Number}
     */
-    function $collection(value) {
+    function $count(value) {
 
-        if ($is(value, __Collection)) {
-            return value;
+        if ($is(value, ARRAY) || $is(value, STRING)) {
+            return value.length;
+        }
+        else if ($is(value, __Collection)) {
+            return value.count();
+        }
+        else if ($is(value, __Enumerable)) {
+            var _source = $prop(value);
+
+            if (_source && !$isFunc(_source) && $is(_source.length, NUMBER)) {
+                return _source.length;
+            }
         }
 
-        else if ($is(value, ARRAY) || $is(value, STRING)) {
-            return new __Stack(value);
-        }
-
-        else {
-            return null;
-        }
+        return -1;
     }
 
 
@@ -5809,8 +5548,8 @@
     */
     function $buffer(value, copy) {
 
-        if ($is(value, ARRAY)) {                                      // fast buffer arrays
-            return copy === false ? value : value.slice(0);
+        if ($is(value, ARRAY)) {                                    // fast buffer arrays
+            return copy === false ? value : value.concat();         // 'concat' is fastest way to duplicate an array
         }
 
         else if ($is(value, STRING)) {                                // fast buffer strings
@@ -5829,6 +5568,7 @@
             }
             else {                                                  // do it the hard way
                 var _e = $enumerator(value),
+                    _length = 16,
                     _count = 0,
                     _arr;
 
@@ -5844,17 +5584,19 @@
                     return _arr;
                 }
                 else {
-                    _arr = new ARRAY(4);
+                    _arr = new ARRAY(_length);
 
                     while (_e.next()) {
-                        if (_count >= _arr.length) {
-                            _arr.length *= 4;
+                        if (_count >= _length) {
+                            _length *= 4;
+                            _arr.length = _length;
                         }
 
                         _arr[_count++] = _e.current;
                     }
 
-                    return _arr.length === _count ? _arr : _arr.slice(0, _count);
+                    _arr.length = _count;
+                    return _arr;
                 }
             }
         }
