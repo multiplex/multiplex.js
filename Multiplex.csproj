@@ -61,7 +61,9 @@
     <Content Include="LICENSE" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <Content Include="tests\list.html" />
     <Content Include="tests\linq.html" />
+    <Content Include="tests\unit\list.js" />
     <Content Include="tests\unit\linq.js" />
     <Content Include="tests\unit\mx.js" />
     <None Include="src\javascript\multiplex.intellisense.js" />
