@@ -10,10 +10,10 @@
 
 
     QUnit.test("constructor", function (assert) {
-        assert.ok(new List().count() === 0, "An empty list!");
-        assert.ok(new List(10).count() === 10, "An empty list with initial capacity!");
-        assert.ok(new List(1, 2, 3, 4, 5).count() === 5, "List initializer!");
-        assert.ok(new List(mx.range(0, 10)).count() === 10, "List from an Enumerable!");
+        assert.ok(new List().count() === 0, "an empty list!");
+        assert.ok(new List(10).count() === 10, "an empty list with initial capacity!");
+        assert.ok(new List(1, 2, 3, 4, 5).count() === 5, "list initializer!");
+        assert.ok(new List(mx.range(0, 10)).count() === 10, "list from an Enumerable!");
     });
 
 
@@ -21,10 +21,10 @@
 
         var _list = new List(1, 2, 3, 4, 5);
 
-        assert.ok(_list[0] === 1, "Indexer get!");
+        assert.ok(_list[0] === 1, "indexer get!");
 
         _list[0] = 0;
-        assert.ok(_list[0] === 0 && _list.first() === 0, "Indexer set!");
+        assert.ok(_list[0] === 0 && _list.first() === 0, "indexer set!");
     });
 
 
@@ -33,8 +33,8 @@
         var _list = new List();
 
         _list.add(1);
-        assert.ok(_list[0] === 1, "Add!");
-        assert.ok(_list.count() === 1, "Add count!");
+        assert.ok(_list[0] === 1, "add!");
+        assert.ok(_list.count() === 1, "add count!");
     });
 
 
@@ -43,7 +43,7 @@
         var _list = new List();
 
         _list.addRange(mx.range(0, 10));
-        assert.ok(_list.count() === 10, "Add range of numbers!");
+        assert.ok(_list.count() === 10, "add range of numbers!");
     });
 
 
@@ -51,11 +51,11 @@
 
         var _rlist = new List(mx.range(0, 10)).asReadOnly();
 
-        assert.ok(_rlist.count() === 10, "ReadOnlyCollection count!");
-        assert.ok(_rlist[0] === 0, "ReadOnlyCollection get!");
+        assert.ok(_rlist.count() === 10, "readOnlyCollection count!");
+        assert.ok(_rlist[0] === 0, "readOnlyCollection get!");
 
         _rlist[0] = 100;
-        assert.ok(_rlist[0] === 0, "ReadOnlyCollection set!");
+        assert.ok(_rlist[0] === 0, "readOnlyCollection set!");
     });
 
 
