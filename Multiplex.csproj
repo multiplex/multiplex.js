@@ -34,7 +34,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>0</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:41696/</IISUrl>
+          <IISUrl>http://localhost:8600/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
@@ -61,8 +61,9 @@
     <Content Include="LICENSE" />
     <Content Include="package.json" />
     <Content Include="README.md" />
-    <Content Include="test\unit\list.js" />
-    <Content Include="test\unit\linq.js" />
+    <Content Include="test\unit\ReadOnlyCollection.js" />
+    <Content Include="test\unit\List.js" />
+    <Content Include="test\unit\LINQ.js" />
     <Content Include="test\unit\mx.js" />
     <None Include="src\javascript\multiplex.intellisense.js" />
     <Content Include="src\javascript\multiplex.js" />

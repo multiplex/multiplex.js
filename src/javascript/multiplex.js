@@ -222,7 +222,7 @@
             _super = $isFunc(extender) ? extender : null,
             _proto = _args.length === 4 || _super ? _args[2] : extender,
             _static = _args.length === 4 || _super ? _args[3] : _args[2],
-            _str = "function " + (type.name || type.toString().match(/function (.+)\(.*?\)/)[1]) + " {...}";
+            _str = "function " + (type.name || type.toString().match(/function (.+)\(.*?\)/)[1]) + "() {...}";
 
         $defineProperty(type, "toString", { value: function () { return _str; } });
 
@@ -5553,7 +5553,7 @@
     * @returns {Array}
     */
     function $buffer(value, copy) {
-
+        
         if ($is(value, ARRAY)) {                                    // fast buffer arrays
             return copy === false ? value : value.concat();         // 'concat' is fastest way to duplicate an array
         }
@@ -5611,16 +5611,16 @@
 
     /**
     * Buffers an Enumerable instance into a given array.
-    * @param {Enumerable} value An Enumerable object.
+    * @param {mx.Collection} value A Collection object.
     * @param {Array} array The one-dimensional Array that is the destination of the elements copied from Dictionary keys.
     * @param {Number} index The zero-based index in array at which copying begins.
     */
     function $bufferTo(value, array, index) {
-
+        
         $nullCheck(array);
         $ensureType(index, NUMBER);
-
-        if (index > array.length) {
+        
+        if (index > array.length || value.count() > array.length) {
             $error(ERROR_ARRAY_SIZE);
         }
 

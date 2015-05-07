@@ -175,7 +175,7 @@
         assert.ok(_list.get(1) === 2, "get item at index 1 from a list of 5 numbers!");
         assert.throws(function () {
             _list.get(10);
-        }, "throws error getting item at index 10 from a list of 5 numbers!");
+        }, "throws an error when the number of elements is greater than the number of elements that the destination array can contain!");
     });
 
 
@@ -186,7 +186,7 @@
         assert.deepEqual(_list.getRange(0, 3).toArray(), [1, 2, 3], "get range of first 3 items of a list of first 5 numbers!");
         assert.throws(function () {
             _list.getRange(0, 10);
-        }, "throws error getting first 10 items from a list of 5 numbers!");
+        }, "throws an error getting first 10 items from a list of 5 numbers!");
     });
 
 
@@ -210,7 +210,7 @@
         assert.ok(_list[3] === 0, "insert an item in a list of 5 numbers, get item!");
         assert.throws(function () {
             _list.insert(10, 0);
-        }, "throws an exception inserting in 10th index of a list of 5 numbers!");
+        }, "throws an error inserting in 10th index of a list of 5 numbers!");
     });
 
 
@@ -224,7 +224,7 @@
         assert.ok(_list[3] === 0 && _list[4] === 1 && _list[5] === 2, "insert range of items in a list of 5 numbers, get items!");
         assert.throws(function () {
             _list.insertRange(10, mx.range(0, 3));
-        }, "throws an exception inserting range of items in 10th index of a list of 5 numbers!");
+        }, "throws an error inserting range of items in 10th index of a list of 5 numbers!");
     });
 
 
@@ -265,7 +265,7 @@
         assert.ok(_list[2] === 4 && _list.count() === 4, "remove item from 2nd index of a list of first 5 numbers, get count!");
         assert.throws(function () {
             _list.removeAt(10);
-        }, "throws error removing item from 10th index of a list of first 5 numbers!");
+        }, "throws an error removing item from 10th index of a list of first 5 numbers!");
     });
 
 
@@ -278,7 +278,7 @@
         assert.ok(_list[0] === 1 && _list[1] === 5 && _list.count() === 2, "remove range of 3 items, starting from 1st index from a list of first 5 numbers, get count!");
         assert.throws(function () {
             _list.removeRange(10, 10);
-        }, "throws error removing a range of items starting from 10th index of a list of first 5 numbers!");
+        }, "throws an error removing a range of items starting from 10th index of a list of first 5 numbers!");
     });
 
 
@@ -305,7 +305,7 @@
         assert.ok(_list[1] === 0, "set value at index 1 of a list!");
         assert.throws(function () {
             _list.set(10, 1);
-        }, "throws error setting item at index 10 from a list of 5 numbers!");
+        }, "throws an error setting item at index 10 from a list of 5 numbers!");
     });
 
 
