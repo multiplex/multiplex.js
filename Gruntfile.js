@@ -10,7 +10,10 @@
         },
         clean: {
             build: {
-                src: ['<%= dirs.release %>/*']
+                src: ['<%= dirs.release %>/*.*']
+            },
+            options: {
+                force: true
             }
         },
         copy: {
