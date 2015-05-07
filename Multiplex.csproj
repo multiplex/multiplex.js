@@ -61,23 +61,21 @@
     <Content Include="LICENSE" />
     <Content Include="package.json" />
     <Content Include="README.md" />
-    <Content Include="tests\list.html" />
-    <Content Include="tests\linq.html" />
-    <Content Include="tests\unit\list.js" />
-    <Content Include="tests\unit\linq.js" />
-    <Content Include="tests\unit\mx.js" />
+    <Content Include="test\unit\list.js" />
+    <Content Include="test\unit\linq.js" />
+    <Content Include="test\unit\mx.js" />
     <None Include="src\javascript\multiplex.intellisense.js" />
     <Content Include="src\javascript\multiplex.js" />
-    <Content Include="tests\mx.html" />
-    <Content Include="tests\data\qunit.css" />
-    <Content Include="tests\data\qunit.js" />
-    <Content Include="tests\runtime.html" />
-    <Content Include="tests\data\setup.js" />
+    <Content Include="test\mx.html" />
+    <Content Include="test\data\qunit.css" />
+    <Content Include="test\data\qunit.js" />
+    <Content Include="test\runtime.html" />
+    <Content Include="test\data\setup.js" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\typescript\multiplex.d.ts" />
     <TypeScriptCompile Include="src\typescript\_references.ts" />
-    <Content Include="tests\data\_references.js" />
+    <Content Include="test\data\_references.js" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -93,6 +91,6 @@
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>grunt</PostBuildEvent>
+    <PostBuildEvent>grunt release</PostBuildEvent>
   </PropertyGroup>
 </Project>
