@@ -597,7 +597,6 @@
         $define(NUMBER.prototype, _hashSymbol, { value: function () { return compute31BitNumberHash(this.valueOf()); } });
         $define(STRING.prototype, _hashSymbol, { value: function () { return compute31BitStringHash(this.valueOf()); } });
         $define(BOOLEAN.prototype, _hashSymbol, { value: function () { return this.valueOf() === true ? 1 : 0; } });
-        //$define(OBJECT.prototype, _hashSymbol, { value: function () { return compute31BitObjecHash(this); } });
 
 
         return computeHash;
@@ -684,8 +683,16 @@
                 /// regular "class" instances have different hash code, hence do not fall into following code.
                 /// object objA is direct descendant of Object hence no need to check "hasOwnProperty"
 
+                var _val;
+
                 for (var _prop in objA) {
-                    if (!$computeEquals(objA[_prop], objB[_prop])) {
+
+                    /// Object methods are not considered for equality
+                    if (typeof (_val = objA[_prop]) === TYPE_FUNCTION) {
+                        continue;
+                    }
+
+                    if (!$computeEquals(_val, objB[_prop])) {
                         return false;
                     }
                 }
@@ -708,7 +715,6 @@
         $define(NUMBER.prototype, _equalsSymbol, { value: function (obj) { return computePrimitiveEquals(this, obj); } });
         $define(STRING.prototype, _equalsSymbol, { value: function (obj) { return computePrimitiveEquals(this, obj); } });
         $define(BOOLEAN.prototype, _equalsSymbol, { value: function (obj) { return computePrimitiveEquals(this, obj); } });
-        //$define(OBJECT.prototype, _equalsSymbol, { value: function (obj) { return computeObjectEquals(this, obj); } });
 
 
         return computeEquals;
@@ -5752,6 +5758,10 @@
 
         hash: $hash,
         equals: $equals,
+        range: __Enumerable.range,
+        repeat: __Enumerable.repeat,
+        empty: __Enumerable.empty,
+        is: __Enumerable.is,
         extend: $enumerableExtend,
 
         Enumerator: __Enumerator,

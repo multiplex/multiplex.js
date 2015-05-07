@@ -42,6 +42,43 @@ intellisense.annotate(mx, {
         ///     <returns type="Boolean" />
         /// </signature>
     },
+    "empty": function () {
+        /// <signature>
+        ///     <summary>
+        ///         Returns an empty Enumerable.
+        ///     </summary>
+        ///     <returns type="Enumerable" />
+        /// </signature>
+    },
+    "range": function () {
+        /// <signature>
+        ///     <summary>
+        ///         Generates a sequence of integral numbers within a specified range.
+        ///     </summary>
+        ///     <param name="start" type="Number">The value of the first integer in the sequence.</param>
+        ///     <param name="count" type="Number">The number of sequential integers to generate.</param>
+        ///     <returns type="Enumerable" />
+        /// </signature>
+    },
+    "repeat": function () {
+        /// <signature>
+        ///     <summary>
+        ///         Generates a sequence that contains one repeated value.
+        ///     </summary>
+        ///     <param name="element" type="Object">The value to be repeated.</param>
+        ///     <param name="count" type="Number">The number of sequential integers to generate.</param>
+        ///     <returns type="Enumerable" />
+        /// </signature>
+    },
+    "is": function () {
+        /// <signature>
+        ///     <summary>
+        ///         Detects if an object is Enumerable.
+        ///     </summary>
+        ///     <param name="obj" type="Object">An object to check its Enumerability.</param>
+        ///     <returns type="Boolean" />
+        /// </signature>
+    },
     "extend": function () {
         /// <signature>
         ///     <summary>
