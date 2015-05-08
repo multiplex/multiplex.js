@@ -19,7 +19,14 @@
         copy: {
             main: {
                 files: [
-                  { expand: true, flatten: true, cwd: '<%= dirs.source %>/', src: ['**/*.{js,d.ts}'], dest: '<%= dirs.release %>/', filter: 'isFile' }
+                  {
+                      expand: true,
+                      flatten: true,
+                      cwd: '<%= dirs.source %>/',
+                      src: ['**/*.{js,d.ts}'],
+                      dest: '<%= dirs.release %>/',
+                      filter: 'isFile'
+                  }
                 ],
             },
         },
