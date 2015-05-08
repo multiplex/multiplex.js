@@ -62,6 +62,8 @@
         ERROR_KEY_NOT_FOUND = "The given key was not present in the collection.",
         ERROR_DUPLICATE_KEY = "An item with the same key has already been added.",
         ERROR_EMPTY_LINKED_LIST = "Linked list is empty.",
+        ERROR_EMPTY_STACK = "Stack is empty.",
+        ERROR_EMPTY_QUEUE = "Queue is empty.",
         ERROR_INVALID_LINKED_LIST_NODE = "Invalid node list.",
         ERROR_MORE_THAN_ONE_ELEMENT = "Sequence contains more than one element.",
         ERROR_MORE_THAN_ONE_MATCH = "Sequence contains more than one match.",
@@ -3852,7 +3854,14 @@
             * @returns {Object}
             */
             dequeue: function () {
-                return $prop(this).shift();
+                var _source = $prop(this),
+                    _length = _source.length;
+
+                if (_length > 0) {
+                    return _source.shift();
+                }
+
+                $error(ERROR_EMPTY_QUEUE);
             },
 
             /**
@@ -3868,7 +3877,14 @@
             * @returns {Object}
             */
             peek: function () {
-                return $prop(this)[0];
+                var _source = $prop(this),
+                    _length = _source.length;
+
+                if (_length > 0) {
+                    return _source[0];
+                }
+
+                $error(ERROR_EMPTY_QUEUE);
             },
 
             /**
@@ -3949,7 +3965,14 @@
             * @returns {Object}
             */
             peek: function () {
-                return $prop(this)[this.count() - 1];
+                var _source = $prop(this),
+                    _length = _source.length;
+
+                if (_length > 0) {
+                    return _source[_length - 1];
+                }
+
+                $error(ERROR_EMPTY_STACK);
             },
 
             /**
@@ -3957,7 +3980,14 @@
             *   @returns {Object}
             */
             pop: function () {
-                return $prop(this).pop();
+                var _source = $prop(this),
+                    _length = _source.length;
+
+                if (_length > 0) {
+                    return _source.pop();
+                }
+
+                $error(ERROR_EMPTY_STACK);
             },
 
             /**
@@ -5553,7 +5583,7 @@
     * @returns {Array}
     */
     function $buffer(value, copy) {
-        
+
         if ($is(value, ARRAY)) {                                    // fast buffer arrays
             return copy === false ? value : value.concat();         // 'concat' is fastest way to duplicate an array
         }
@@ -5616,10 +5646,10 @@
     * @param {Number} index The zero-based index in array at which copying begins.
     */
     function $bufferTo(value, array, index) {
-        
+
         $nullCheck(array);
         $ensureType(index, NUMBER);
-        
+
         if (index > array.length || value.count() > array.length) {
             $error(ERROR_ARRAY_SIZE);
         }
