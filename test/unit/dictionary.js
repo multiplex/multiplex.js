@@ -5,6 +5,7 @@
 
     var Dictionary = mx.Dictionary,
         Comparer = mx.Comparer,
+        KeyValuePair = mx.KeyValuePair,
         NumericComparer = Comparer.create(function (a, b) {
             return a - b;
         });
@@ -171,6 +172,22 @@
 
         assert.ok(_dic.remove(1) === true && _dic.count() === 4, "dictionary remove key!");
         assert.ok(_dic.remove(10) === false && _dic.count() === 4, "dictionary remove non existing key!");
+    });
+
+
+    QUnit.test("key-value pair", function (assert) {
+
+        var _pair1 = new KeyValuePair(1, "A"),
+            _pair2 = new KeyValuePair(1, "A");
+
+        assert.ok(_pair1.key === 1 && _pair1.value === "A", "KeyValuePair get key/value!");
+
+        _pair1.key = 2;
+        _pair1.value = "B";
+        assert.ok(_pair1.key === 1 && _pair1.value === "A", "KeyValuePair key/value immutable!");
+
+        assert.ok(mx.hash(_pair1) === mx.hash(_pair2), "KeyValuePair get hash code!");
+        assert.ok(mx.equals(_pair1, _pair2), "KeyValuePair equality check!");
     });
 
 
