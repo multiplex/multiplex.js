@@ -61,6 +61,7 @@
     <Content Include="LICENSE" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <Content Include="test\unit\sortedlist.js" />
     <Content Include="test\unit\readonlycollection.js" />
     <Content Include="test\unit\list.js" />
     <Content Include="test\unit\linq.js" />
