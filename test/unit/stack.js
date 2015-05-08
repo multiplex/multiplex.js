@@ -10,6 +10,7 @@
         return new Stack(mx.range(1, 5));
     }
 
+
     QUnit.module("Stack");
 
 
@@ -87,6 +88,13 @@
 
         var _stack = CreateStack();
         assert.deepEqual(_stack.toArray(), [1, 2, 3, 4, 5], "stack to array!");
+    });
+
+
+    QUnit.test("stack enumerable", function (assert) {
+
+        var _stack = CreateStack();
+        assert.deepEqual(_stack.select("t => t * 2").where("t => t > 5").toArray(), [6, 8, 10], "select-where-toArray over a stack!");
     });
 
 })(window);

@@ -10,6 +10,7 @@
         return new Queue(mx.range(1, 5));
     }
 
+
     QUnit.module("Queue");
 
 
@@ -87,6 +88,13 @@
 
         var _queue = CreateQueue();
         assert.deepEqual(_queue.toArray(), [1, 2, 3, 4, 5], "queue to array!");
+    });
+
+
+    QUnit.test("queue enumerable", function (assert) {
+
+        var _queue = CreateQueue();
+        assert.deepEqual(_queue.select("t => t * 2").where("t => t > 5").toArray(), [6, 8, 10], "select-where-toArray over a queue!");
     });
 
 })(window);

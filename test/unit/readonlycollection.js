@@ -82,4 +82,12 @@
     });
 
 
+    QUnit.test("items", function (assert) {
+
+        var _col = Create();
+
+        assert.deepEqual(_col.items(), [1, 2, 3, 4, 5], "get collection items!");
+    });
+
+
 })(window);
