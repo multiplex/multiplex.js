@@ -2270,7 +2270,7 @@
         */
         function Dictionary() {
             var _args = arguments,
-                _dic = $is(_args, Dictionary) ? _args[0] : null,
+                _dic = $is(_args[0], __Dictionary) ? _args[0] : null,
                 _comparer = _dic ? _args[1] : $equalityComparer(_args[0]),
                 _table = _dic ? new __HashTable(_dic.count(), _comparer) : ($is(_args[0], NUMBER) ? new __HashTable(_args[0], _comparer) : new __HashTable(_comparer));
 
