@@ -61,6 +61,12 @@
     <Content Include="LICENSE" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <Content Include="test\unit\dictionary.js" />
+    <Content Include="test\unit\hashset.js" />
+    <Content Include="test\unit\linkedlist.js" />
+    <Content Include="test\unit\lookup.js" />
+    <Content Include="test\unit\stack.js" />
+    <Content Include="test\unit\queue.js" />
     <Content Include="test\unit\sortedlist.js" />
     <Content Include="test\unit\readonlycollection.js" />
     <Content Include="test\unit\list.js" />
