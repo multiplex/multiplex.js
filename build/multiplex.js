@@ -2254,7 +2254,10 @@
             $freeze(this);
         }
 
-        return KeyValuePair;
+        return $extend(KeyValuePair, {
+            __hash__: function () { return $hash(this.key, this.value); },
+            __equals__: function (obj) { return $equals(this.key, obj.key) && $equals(this.value, obj.value); },
+        });
     })();
 
 
