@@ -65,6 +65,7 @@
     <Content Include="test\unit\hashset.js" />
     <Content Include="test\unit\linkedlist.js" />
     <Content Include="test\unit\lookup.js" />
+    <Content Include="test\unit\runtime.js" />
     <Content Include="test\unit\stack.js" />
     <Content Include="test\unit\queue.js" />
     <Content Include="test\unit\sortedlist.js" />

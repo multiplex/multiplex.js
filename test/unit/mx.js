@@ -27,8 +27,6 @@
 
     QUnit.test("Multiplex Array", function (assert) {
 
-        assert.ok(mx.equals({}, {}), "kamy!");
-
         var _source = mx([1, 2, 3, 4]);
         assert.ok(MxCount(_source) === 4, "Passed!");
     });
