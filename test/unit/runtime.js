@@ -5,8 +5,7 @@
 
     var Foo = global.Foo,
         FooWithEqualityComparer = global.FooWithEqualityComparer,
-        EqualityComparer = mx.EqualityComparer,
-        Comparer = mx.Comparer;
+        EqualityComparer = mx.EqualityComparer;
 
 
 
@@ -33,16 +32,16 @@
 
         assert.ok(mx.equals(null, null) === true, "equals null!");
         assert.ok(mx.equals(undefined, undefined) === true, "equals undefined!");
-        assert.ok(mx.equals(10, new Number(10)), "equals integer number!");
-        assert.ok(mx.equals(10.5, new Number(10.5)), "equals float number!");
-        assert.ok(mx.equals("string", new String("string")), "equals string!");
-        assert.ok(mx.equals(true, new Boolean(true)), "equals boolean!");
+        assert.ok(mx.equals(10, 10), "equals integer number!");
+        assert.ok(mx.equals(10.5, 10.5), "equals float number!");
+        assert.ok(mx.equals("string", "string"), "equals string!");
+        assert.ok(mx.equals(true, true), "equals boolean!");
         assert.ok(mx.equals(new Date(2015, 0, 1), new Date(2015, 0, 1)), "equals date!");
         assert.ok(mx.equals({ name: "A" }, { name: "A" }), "equals object literal!");
         assert.ok(mx.equals(new Foo(), new Foo()) === false, "equals class instance!");
         assert.ok(mx.equals(new Foo(), new Foo(), EqualityComparer.create(
             function () { return 0; },
-            function () { return true }
+            function () { return true; }
         )), "equals class instance using comparer!");
         assert.ok(mx.equals(new FooWithEqualityComparer(10), new FooWithEqualityComparer(10)), "equals class instance overriding __equals__ method!");
     });
