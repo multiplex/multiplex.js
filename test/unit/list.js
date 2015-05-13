@@ -6,6 +6,11 @@
     var List = mx.List;
 
 
+    function CreateList() {
+        return new List(1, 2, 3, 4, 5);
+    }
+
+
     QUnit.module("List");
 
 
@@ -19,7 +24,7 @@
 
     QUnit.test("indexer", function (assert) {
 
-        var _list = new List(1, 2, 3, 4, 5);
+        var _list = CreateList();
 
         assert.ok(_list[0] === 1, "indexer get!");
 
@@ -83,7 +88,7 @@
 
     QUnit.test("clear", function (assert) {
 
-        var _list = new List(1, 2, 3, 4, 5);
+        var _list = CreateList();
 
         _list.clear();
         assert.ok(_list.count() === 0, "Clear list!");
@@ -92,7 +97,7 @@
 
     QUnit.test("contains", function (assert) {
 
-        var _list = new List(1, 2, 3, 4, 5);
+        var _list = CreateList();
 
         assert.ok(_list.contains(3) === true, "list contains!");
         assert.ok(_list.contains(6) === false, "list not containing!");
@@ -101,7 +106,7 @@
 
     QUnit.test("copyTo", function (assert) {
 
-        var _list = new List(1, 2, 3, 4, 5),
+        var _list = CreateList(),
             _arr = new Array(_list.count());
 
         _list.copyTo(_arr, 0);
@@ -112,7 +117,7 @@
 
     QUnit.test("exists", function (assert) {
 
-        var _list = new List(1, 2, 3, 4, 5);
+        var _list = CreateList();
 
         assert.ok(_list.exists("t => t % 2 === 0"), "an even number exists in a list of the first 5 number!");
         assert.ok(_list.exists("t => t > 5") === false, "6 exists in a list of the first 5 number!");
@@ -121,7 +126,7 @@
 
     QUnit.test("find", function (assert) {
 
-        var _list = new List(1, 2, 3, 4, 5);
+        var _list = CreateList();
 
         assert.ok(_list.find("t => t % 2 === 0") === 2, "find an even number in a list of the first 5 number!");
         assert.ok(_list.find("t => t > 5") === null, "find a number greater than 5 in a list of the first 5 number!");
@@ -130,7 +135,7 @@
 
     QUnit.test("findIndex", function (assert) {
 
-        var _list = new List(1, 2, 3, 4, 5);
+        var _list = CreateList();
 
         assert.ok(_list.findIndex("t => t % 2 === 0") === 1, "find index of an even numbers in a list of the first 5 number!");
         assert.ok(_list.findIndex(2, "t => t % 2 === 0") === 3, "find index of an even numbers in a list of the first 5 number, starting from 2!");
@@ -140,7 +145,7 @@
 
     QUnit.test("findLast", function (assert) {
 
-        var _list = new List(1, 2, 3, 4, 5);
+        var _list = CreateList();
 
         assert.ok(_list.findLast("t => t % 2 === 0") === 4, "find last even number in a list of the first 5 number!");
         assert.ok(_list.findLast("t => t > 5") === null, "find last number greater than 5 in a list of the first 5 number!");
@@ -159,7 +164,7 @@
 
     QUnit.test("forEach", function (assert) {
 
-        var _list = new List(1, 2, 3, 4, 5),
+        var _list = CreateList(),
             _count = 0;
 
         _list.forEach(function (t) { _count += t; });
@@ -170,7 +175,7 @@
 
     QUnit.test("get", function (assert) {
 
-        var _list = new List(1, 2, 3, 4, 5);
+        var _list = CreateList();
 
         assert.ok(_list.get(1) === 2, "get item at index 1 from a list of 5 numbers!");
         assert.throws(function () {
@@ -181,7 +186,7 @@
 
     QUnit.test("getRange", function (assert) {
 
-        var _list = new List(1, 2, 3, 4, 5);
+        var _list = CreateList();
 
         assert.deepEqual(_list.getRange(0, 3).toArray(), [1, 2, 3], "get range of first 3 items of a list of first 5 numbers!");
         assert.throws(function () {
@@ -192,7 +197,7 @@
 
     QUnit.test("indexOf", function (assert) {
 
-        var _list = new List(1, 2, 3, 4, 5);
+        var _list = CreateList();
 
         assert.ok(_list.indexOf(3) === 2, "get index of 3 in a list of first 5 numbers!");
         assert.ok(_list.indexOf(10) === -1, "get index of 10 in a list of first 5 numbers!");
@@ -202,7 +207,7 @@
 
     QUnit.test("insert", function (assert) {
 
-        var _list = new List(1, 2, 3, 4, 5);
+        var _list = CreateList();
 
         _list.insert(3, 0);
 
@@ -216,7 +221,7 @@
 
     QUnit.test("insertRange", function (assert) {
 
-        var _list = new List(1, 2, 3, 4, 5);
+        var _list = CreateList();
 
         _list.insertRange(3, mx.range(0, 3));
 
@@ -230,7 +235,7 @@
 
     QUnit.test("lastIndexOf", function (assert) {
 
-        var _list = new List(1, 2, 3, 4, 5);
+        var _list = CreateList();
 
         assert.ok(_list.lastIndexOf(3) === 2, "get last index of 3 in a list of first 5 numbers!");
         assert.ok(_list.lastIndexOf(10) === -1, "get last index of 10 in a list of first 5 numbers!");
@@ -240,7 +245,7 @@
 
     QUnit.test("remove", function (assert) {
 
-        var _list = new List(1, 2, 3, 4, 5);
+        var _list = CreateList();
         
         assert.ok(_list.remove(2) === true && _list.count() === 4, "remove an item from a list, get count!");
         assert.ok(_list.remove(10) === false && _list.count() === 4, "remove an item which does not exist in a list, get count!");
@@ -249,7 +254,7 @@
 
     QUnit.test("removeAll", function (assert) {
 
-        var _list = new List(1, 2, 3, 4, 5);
+        var _list = CreateList();
 
         assert.ok(_list.removeAll("t => t % 2 === 0") === 2 && _list.count() === 3, "remove all even numbers from a list of first 5 numbers, get count!");
         assert.ok(_list.removeAll("t => t % 2 === 0") === 0 && _list.count() === 3, "remove all even numbers from a list of first 3 odd numbers, get count!");
@@ -258,7 +263,7 @@
 
     QUnit.test("removeAt", function (assert) {
 
-        var _list = new List(1, 2, 3, 4, 5);
+        var _list = CreateList();
 
         _list.removeAt(2);
 
@@ -271,7 +276,7 @@
 
     QUnit.test("removeRange", function (assert) {
 
-        var _list = new List(1, 2, 3, 4, 5);
+        var _list = CreateList();
 
         _list.removeRange(1, 3);
 
@@ -298,7 +303,7 @@
 
     QUnit.test("set", function (assert) {
 
-        var _list = new List(1, 2, 3, 4, 5);
+        var _list = CreateList();
 
         _list.set(1, 0);
 
@@ -335,7 +340,7 @@
 
     QUnit.test("toArray", function (assert) {
 
-        var _list = new List(1, 2, 3, 4, 5);
+        var _list = CreateList();
 
         assert.deepEqual(_list.toArray(), [1, 2, 3, 4, 5], "converts a list of numbers to an array!");
     });
@@ -343,9 +348,17 @@
 
     QUnit.test("trueForAll", function (assert) {
 
-        var _list = new List(1, 2, 3, 4, 5);
+        var _list = CreateList();
 
         assert.ok(_list.trueForAll("t => t < 10") === true, "checks whether all items in a list of 5 first numbers are less than 10!");
         assert.ok(_list.trueForAll("t => t < 3") === false, "checks whether all items in a list of 5 first numbers are less than 3!");
+    });
+
+
+    QUnit.test("list enumerable", function (assert) {
+
+        var _list = CreateList();
+
+        assert.deepEqual(_list.select("t => t * 2").where("t => t > 5").toArray(), [6, 8, 10], "select-where-toArray over a list!");
     });
 })(window);

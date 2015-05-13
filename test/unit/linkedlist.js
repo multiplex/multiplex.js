@@ -6,6 +6,7 @@
     var LinkedList = mx.LinkedList,
         LinkedListNode = mx.LinkedListNode;
 
+
     function CreateLinkedList() {
         return new LinkedList(mx.range(1, 5));
     }
