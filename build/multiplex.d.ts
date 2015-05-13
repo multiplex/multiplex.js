@@ -129,7 +129,7 @@ declare module mx {
     * @param objB The second object to compare.
     * @param comparer An equality comparer to compare values.
     */
-    function equals(objA: any, objB: any, comparer: IEqualityComparer<any>): boolean;
+    function equals(objA: any, objB: any, comparer: EqualityComparer<any>): boolean;
 
 
     /**
@@ -137,6 +137,35 @@ declare module mx {
     * @param type The type to extend.
     */
     function enumerableExtend(type: Function): void;
+
+
+    /**
+    * Returns an empty Enumerable.
+    */
+    function empty<T>(): IEnumerable<T>;
+
+
+    /**
+    * Detects if an object is Enumerable.
+    * @param obj An object to check its Enumerability.
+    */
+    function is(obj: any): boolean;
+
+
+    /**
+    * Generates a sequence of integral numbers within a specified range.
+    * @param start The value of the first integer in the sequence.
+    * @param count The number of sequential integers to generate.
+    */
+    function range(start: number, count: number): IEnumerable<number>;
+
+
+    /**
+    * Generates a sequence that contains one repeated value.
+    * @param element The value to be repeated.
+    * @param count The number of times to repeat the value in the generated sequence.
+    */
+    function repeat<T>(element: T, count: number): IEnumerable<T>;
 
 
 
@@ -291,7 +320,7 @@ declare module mx {
     /**
     * Defines a method that a type implements to compare two objects.
     */
-    interface IComparer<T> {
+    interface Comparer<T> {
         /**
         * Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
         * returns An integer that indicates the relative values of x and y, as shown in the following table:
@@ -307,20 +336,20 @@ declare module mx {
 
 
     /**
-    * Provides a base class for implementations of IComparer<T> generic interface.
+    * Provides a base class for implementations of Comparer<T> generic interface.
     */
     var Comparer: {
 
         /**
         * Returns a default sort order comparer for the type specified by the generic argument.
         */
-        defaultComparer: IComparer<any>;
+        defaultComparer: Comparer<any>;
 
         /**
         * Creates a comparer by using the specified comparison.
         * @param comparison The comparison to use.
         */
-        create<T>(comparison: (x: T, y: T) => number): IComparer<T>;
+        create<T>(comparison: (x: T, y: T) => number): Comparer<T>;
     }
 
 
@@ -333,7 +362,7 @@ declare module mx {
     /**
     * Provides a base class for implementations of the EqualityComparer.
     */
-    interface IEqualityComparer<T> {
+    interface EqualityComparer<T> {
 
         /**
         * Determines whether the specified objects are equal.
@@ -359,7 +388,7 @@ declare module mx {
         /**
         * Gets a default equality comparer for the type specified by the generic argument.
         */
-        defaultComparer: IEqualityComparer<any>;
+        defaultComparer: EqualityComparer<any>;
 
 
         /**
@@ -367,7 +396,7 @@ declare module mx {
         * @param hashCodeProvider The hashCodeProvider to use for a hash code is to be returned.
         * @param equality The equality function.
         */
-        create<T>(hashCodeProvider: (obj: T) => number, equality: (x: T, y: T) => boolean): IEqualityComparer<T>;
+        create<T>(hashCodeProvider: (obj: T) => number, equality: (x: T, y: T) => boolean): EqualityComparer<T>;
     }
 
 
@@ -380,7 +409,7 @@ declare module mx {
     /**
     * Initializes a new instance of the abstract Collection class.
     */
-    interface ICollection<T> extends IEnumerable<T> {
+    interface Collection<T> extends IEnumerable<T> {
 
         /**
         * Gets the number of elements contained in the Collection.
@@ -406,7 +435,7 @@ declare module mx {
     /**
     * Initializes a new instance of the abstract Collection class.
     */
-    interface IReadOnlyCollection<T> extends ICollection<T> {
+    interface ReadOnlyCollection<T> extends Collection<T> {
 
         /**
         * Gets the element at the specified index.
@@ -443,7 +472,7 @@ declare module mx {
         * Initializes a new instance of the ReadOnlyCollection class that is a read-only wrapper around the specified list.
         * @param list The list to wrap.
         */
-        new <T>(list: IList<T>): IReadOnlyCollection<T>
+        new <T>(list: List<T>): ReadOnlyCollection<T>
     }
 
 
@@ -456,7 +485,7 @@ declare module mx {
     /**
     * Represents a strongly typed list of objects that can be accessed by index.
     */
-    interface IList<T> extends ICollection<T> {
+    interface List<T> extends Collection<T> {
 
         /**
         * Gets the element at the specified index.
@@ -482,7 +511,7 @@ declare module mx {
         /**
         * Returns a read-only wrapper for the current list.
         */
-        asReadOnly(): IReadOnlyCollection<T>
+        asReadOnly(): ReadOnlyCollection<T>
 
 
         /**
@@ -515,7 +544,7 @@ declare module mx {
         * @param index The zero-based starting index of the range to search.
         * @param comparer The Comparer implementation to use when comparing elements.
         */
-        binarySearch(item: T, index: number, comparer: IComparer<T>): number
+        binarySearch(item: T, index: number, comparer: Comparer<T>): number
 
 
         /**
@@ -542,7 +571,7 @@ declare module mx {
         * Retrieves all the elements that match the conditions defined by the specified predicate.
         * @param match The predicate function that defines the conditions of the elements to search for.
         */
-        findAll(match: (item: T) => boolean): IList<T>
+        findAll(match: (item: T) => boolean): List<T>
 
 
         /**
@@ -630,7 +659,7 @@ declare module mx {
         * @param index The zero-based List index at which the range starts.
         * @param count The number of elements in the range.
         */
-        getRange(index: number, count: number): IList<T>
+        getRange(index: number, count: number): List<T>
 
 
         /**
@@ -755,7 +784,7 @@ declare module mx {
         * Sorts the elements in the entire List using the specified comparer.
         * @param comparer The Comparer implementation to use when comparing elements.
         */
-        sort(comparer: IComparer<T>): void
+        sort(comparer: Comparer<T>): void
 
 
         /**
@@ -764,7 +793,7 @@ declare module mx {
         * @param count The length of the range to sort.
         * @param comparer The Comparer implementation to use when comparing elements.
         */
-        sort(index: number, count: number, comparer: IComparer<T>): void
+        sort(index: number, count: number, comparer: Comparer<T>): void
 
 
         /**
@@ -786,21 +815,21 @@ declare module mx {
         /**
         * Initializes a new instance of the List class that is empty.
         */
-        new <T>(): IList<T>
+        new <T>(): List<T>
 
 
         /**
         * Initializes a new instance of the List class that is empty and has the specified initial capacity.
         * @param capacity The number of elements that the new list can initially store.
         */
-        new <T>(capacity: number): IList<T>
+        new <T>(capacity: number): List<T>
 
 
         /**
         * Initializes a new instance of the List class that contains elements copied from the specified arguments
         * @param args Arbitrary number of arguments to copy to the new list.
         */
-        new <T>(...args: T[]): IList<T>
+        new <T>(...args: T[]): List<T>
 
 
         /**
@@ -808,7 +837,7 @@ declare module mx {
         * and has sufficient capacity to accommodate the number of elements copied.
         * @param collection The collection whose elements are copied to the new list.
         */
-        new <T>(collection: IEnumerable<T>): IList<T>
+        new <T>(collection: IEnumerable<T>): List<T>
     }
 
 
@@ -821,7 +850,7 @@ declare module mx {
     /**
     * Represents a collection of key/value pairs that are sorted by key based on the associated Comparer implementation.
     */
-    interface ISortedList<TKey, TValue> extends ICollection<KeyValuePair<TKey, TValue>> {
+    interface SortedList<TKey, TValue> extends Collection<KeyValuePair<TKey, TValue>> {
 
         /**
         * Adds an element with the specified key and value into the SortedList.
@@ -854,7 +883,7 @@ declare module mx {
         /**
         * Gets the Comparer for the sorted list.
         */
-        comparer(): IEqualityComparer<TKey>
+        comparer(): EqualityComparer<TKey>
 
 
         /**
@@ -942,7 +971,7 @@ declare module mx {
         * Initializes a new instance of the SortedList class that is empty, 
         * has the default initial capacity, and uses the default Comparer.
         */
-        new <TKey, TValue>(): ISortedList<TKey, TValue>
+        new <TKey, TValue>(): SortedList<TKey, TValue>
 
 
         /**
@@ -950,7 +979,7 @@ declare module mx {
         * has sufficient capacity to accommodate the number of elements copied,  and uses the default Comparer.
         * @param dictionary The Dictionary whose elements are copied to the new SortedList.
         */
-        new <TKey, TValue>(dictionary: IDictionary<TKey, TValue>): ISortedList<TKey, TValue>
+        new <TKey, TValue>(dictionary: Dictionary<TKey, TValue>): SortedList<TKey, TValue>
 
 
         /**
@@ -958,7 +987,7 @@ declare module mx {
         * has the default initial capacity, and uses the specified Comparer.
         * @param comparer The Comparer implementation to use when comparing keys.-or-null to use the default Comparer for the type of the key.
         */
-        new <TKey, TValue>(comparer: IComparer<TKey>): ISortedList<TKey, TValue>
+        new <TKey, TValue>(comparer: Comparer<TKey>): SortedList<TKey, TValue>
 
 
         /**
@@ -966,7 +995,7 @@ declare module mx {
         * has the specified initial capacity, and uses the default Comparer.
         * @param capacity The initial number of elements that the SortedList can contain.
         */
-        new <TKey, TValue>(capacity: number): ISortedList<TKey, TValue>
+        new <TKey, TValue>(capacity: number): SortedList<TKey, TValue>
 
 
         /**
@@ -975,7 +1004,7 @@ declare module mx {
         * @param dictionary The Dictionary whose elements are copied to the new SortedList.
         * @param comparer The Comparer implementation to use when comparing keys.-or-null to use the default Comparer for the type of the key.
         */
-        new <TKey, TValue>(dictionary: IDictionary<TKey, TValue>, comparer: IComparer<TKey>): ISortedList<TKey, TValue>
+        new <TKey, TValue>(dictionary: Dictionary<TKey, TValue>, comparer: Comparer<TKey>): SortedList<TKey, TValue>
 
 
         /**
@@ -984,7 +1013,7 @@ declare module mx {
         * @param capacity The initial number of elements that the SortedList can contain.
         * @param comparer The Comparer implementation to use when comparing keys.-or-null to use the default Comparer for the type of the key.
         */
-        new <TKey, TValue>(capacity: number, comparer: IComparer<TKey>): ISortedList<TKey, TValue>
+        new <TKey, TValue>(capacity: number, comparer: Comparer<TKey>): SortedList<TKey, TValue>
     }
 
 
@@ -1028,7 +1057,7 @@ declare module mx {
     /**
     * Initializes a new instance of the abstract Collection class.
     */
-    interface IDictionary<TKey, TValue> extends ICollection<KeyValuePair<TKey, TValue>> {
+    interface Dictionary<TKey, TValue> extends Collection<KeyValuePair<TKey, TValue>> {
 
         /**
         * Adds an element with the provided key and value to the Dictionary.
@@ -1116,7 +1145,7 @@ declare module mx {
         /**
         * Initializes a new instance of the Dictionary class that is empty, 
         */
-        new <TKey, TValue>(): IDictionary<TKey, TValue>
+        new <TKey, TValue>(): Dictionary<TKey, TValue>
 
 
         /**
@@ -1124,21 +1153,21 @@ declare module mx {
         * from the specified Dictionary and uses the default equality comparer for the key type.
         * @param dictionary The Dictionary whose elements are copied to the new Dictionary.
         */
-        new <TKey, TValue>(dictionary: IDictionary<TKey, TValue>): IDictionary<TKey, TValue>
+        new <TKey, TValue>(dictionary: Dictionary<TKey, TValue>): Dictionary<TKey, TValue>
 
 
         /**
         * Initializes a new instance of the Dictionary class that is empty, and uses the specified EqualityComparer.
         * @param comparer The EqualityComparer implementation to use when comparing keys.
         */
-        new <TKey, TValue>(comparer: IEqualityComparer<TKey>): IDictionary<TKey, TValue>
+        new <TKey, TValue>(comparer: EqualityComparer<TKey>): Dictionary<TKey, TValue>
 
 
         /**
         * Initializes a new instance of the Dictionary class that is empty, has the specified initial capacity, and uses the default equality comparer for the key type.
         * @param capacity The initial number of elements that the Dictionary can contain.
         */
-        new <TKey, TValue>(capacity: number): IDictionary<TKey, TValue>
+        new <TKey, TValue>(capacity: number): Dictionary<TKey, TValue>
 
 
         /**
@@ -1146,7 +1175,7 @@ declare module mx {
         * @param capacity The initial number of elements that the Dictionary can contain.
         * @param comparer The EqualityComparer implementation to use when comparing keys.
         */
-        new <TKey, TValue>(capacity: number, comparer: IEqualityComparer<TKey>): IDictionary<TKey, TValue>
+        new <TKey, TValue>(capacity: number, comparer: EqualityComparer<TKey>): Dictionary<TKey, TValue>
 
 
         /**
@@ -1155,7 +1184,7 @@ declare module mx {
         * @param dictionary The Dictionary whose elements are copied to the new Dictionary.
         * @param comparer The EqualityComparer implementation to use when comparing keys.
         */
-        new <TKey, TValue>(dictionary: IDictionary<TKey, TValue>, comparer: IEqualityComparer<TKey>): IDictionary<TKey, TValue>
+        new <TKey, TValue>(dictionary: Dictionary<TKey, TValue>, comparer: EqualityComparer<TKey>): Dictionary<TKey, TValue>
     }
 
 
@@ -1168,7 +1197,7 @@ declare module mx {
     /**
     * Represents a set of values.
     */
-    interface IHashSet<T> extends ICollection<T> {
+    interface HashSet<T> extends Collection<T> {
 
         /**
         * Adds an element to the current set.
@@ -1210,7 +1239,7 @@ declare module mx {
         /**
         * Gets the EqualityComparer object that is used to determine equality for the values in the set.
         */
-        comparer(): IEqualityComparer<T>
+        comparer(): EqualityComparer<T>
 
 
         /**
@@ -1306,7 +1335,7 @@ declare module mx {
         /**
         * Initializes a new instance of the HashSet class that is empty and uses the default equality comparer for the set type.
         */
-        new <T>(): IHashSet<T>
+        new <T>(): HashSet<T>
 
 
         /**
@@ -1314,14 +1343,14 @@ declare module mx {
         * and contains elements copied from the specified collection.
         * @param collection The collection whose elements are copied to the new set.
         */
-        new <T>(collection: IEnumerable<T>): IHashSet<T>
+        new <T>(collection: IEnumerable<T>): HashSet<T>
 
 
         /**
         * Initializes a new instance of the HashSet class that is empty and uses the specified equality comparer for the set type.
         * @param comparer The EqualityComparer implementation to use when comparing values in the set.
         */
-        new <T>(comparer: IEqualityComparer<T>): IHashSet<T>
+        new <T>(comparer: EqualityComparer<T>): HashSet<T>
 
 
         /**
@@ -1330,7 +1359,7 @@ declare module mx {
         * @param collection The collection whose elements are copied to the new set.
         * @param comparer The EqualityComparer implementation to use when comparing values in the set.
         */
-        new <T>(collection: IEnumerable<T>, comparer: IEqualityComparer<T>): IHashSet<T>
+        new <T>(collection: IEnumerable<T>, comparer: EqualityComparer<T>): HashSet<T>
     }
 
 
@@ -1361,7 +1390,7 @@ declare module mx {
         /**
         * Gets the LinkedList that the LinkedListNode belongs to.
         */
-        public list(): ILinkedList<T>
+        public list(): LinkedList<T>
 
 
         /**
@@ -1386,7 +1415,7 @@ declare module mx {
     /**
     * Represents a doubly linked list.
     */
-    interface ILinkedList<T> extends ICollection<T> {
+    interface LinkedList<T> extends Collection<T> {
 
         /**
         * Adds an item to the LinkedList.
@@ -1536,14 +1565,14 @@ declare module mx {
         /**
         * Initializes a new instance of the LinkedList class that is empty.
         */
-        new <T>(): ILinkedList<T>
+        new <T>(): LinkedList<T>
 
 
         /**
         * Initializes a new instance of the LinkedList class that contains elements copied from the specified Enumerable.
         * @param collection The collection to copy elements from.
         */
-        new <T>(collection: IEnumerable<T>): ILinkedList<T>
+        new <T>(collection: IEnumerable<T>): LinkedList<T>
     }
 
 
@@ -1556,7 +1585,7 @@ declare module mx {
     /**
     * Represents a first-in, first-out collection of objects.
     */
-    interface IQueue<T> extends ICollection<T> {
+    interface Queue<T> extends Collection<T> {
 
         /**
         * Removes all objects from the Queue.
@@ -1601,14 +1630,14 @@ declare module mx {
         /**
         * Initializes a new instance of the Queue class that is empty.
         */
-        new <T>(): IQueue<T>
+        new <T>(): Queue<T>
 
 
         /**
         * Initializes a new instance of the Queue class that contains elements copied from the specified collection.
         * @param collection The collection to copy elements from.
         */
-        new <T>(collection: IEnumerable<T>): IQueue<T>
+        new <T>(collection: IEnumerable<T>): Queue<T>
     }
 
 
@@ -1621,7 +1650,7 @@ declare module mx {
     /**
     * Represents a variable size last-in-first-out (LIFO) collection of instances of the same arbitrary type.
     */
-    interface IStack<T> extends ICollection<T> {
+    interface Stack<T> extends Collection<T> {
 
         /**
         * Removes all objects from the Stack.
@@ -1667,14 +1696,14 @@ declare module mx {
         /**
         * Initializes a new instance of the Stack class that is empty.
         */
-        new <T>(): IStack<T>
+        new <T>(): Stack<T>
 
 
         /**
         * Initializes a new instance of the Stack class that contains elements copied from the specified collection.
         * @param collection The collection to copy elements from.
         */
-        new <T>(collection: IEnumerable<T>): IStack<T>
+        new <T>(collection: IEnumerable<T>): Stack<T>
     }
 
 
@@ -1687,14 +1716,14 @@ declare module mx {
     /**
     * Defines a data structures that map keys to Enumerable sequences of values.
     */
-    interface ILookup<TKey, TElement> extends ICollection<IGrouping<TKey, TElement>> {
+    interface Lookup<TKey, TElement> extends Collection<Grouping<TKey, TElement>> {
 
         /**
         * Determines whether a specified key exists in the Lookup.
         * @param key The key to search for in the Lookup.
         */
         contains(key: TKey): boolean
-        contains(item: IGrouping<TKey, TElement>): boolean
+        contains(item: Grouping<TKey, TElement>): boolean
 
 
 
@@ -1715,7 +1744,7 @@ declare module mx {
     /**
     * Represents a collection of objects that have a common key.
     */
-    interface IGrouping<TKey, TElement> extends ICollection<TElement> {
+    interface Grouping<TKey, TElement> extends Collection<TElement> {
 
         /**
         * Gets the key of the Grouping.
@@ -1733,15 +1762,15 @@ declare module mx {
     /**
     * Exposes the enumerator, which supports a simple iteration over a collection of a specified type.
     */
-    interface IOrderedEnumerable<TElement> extends IEnumerable<TElement> {
+    interface OrderedEnumerable<TElement> extends IEnumerable<TElement> {
 
         /**
-        * Performs a subsequent ordering on the elements of an IOrderedEnumerable<TElement> according to a key.
+        * Performs a subsequent ordering on the elements of an OrderedEnumerable<TElement> according to a key.
         * @param keySelector The selector used to extract the key for each element.
         * @param comparer The Comparer used to compare keys for placement in the returned sequence.
         * @param descending true to sort the elements in descending order; false to sort the elements in ascending order.
         */
-        createOrderedEnumerable<TKey>(keySelector: (item: TElement) => TKey, comparer: IComparer<TKey>, descending: boolean): IOrderedEnumerable<TElement>
+        createOrderedEnumerable<TKey>(keySelector: (item: TElement) => TKey, comparer: Comparer<TKey>, descending: boolean): OrderedEnumerable<TElement>
 
 
         /**
@@ -1749,7 +1778,7 @@ declare module mx {
         * Returns an OrderedEnumerable whose elements are sorted in descending order according to a key.
         * @param keySelector A function to extract a key from each element.
         */
-        thenBy<TKey>(keySelector: (item: TElement) => TKey): IOrderedEnumerable<TElement>
+        thenBy<TKey>(keySelector: (item: TElement) => TKey): OrderedEnumerable<TElement>
 
 
         /**
@@ -1758,7 +1787,7 @@ declare module mx {
         * @param keySelector A function to extract a key from each element.
         * @param comparer A Comparer to compare keys.
         */
-        thenBy<TKey>(keySelector: (item: TElement) => TKey, comparer: IComparer<TKey>): IOrderedEnumerable<TElement>
+        thenBy<TKey>(keySelector: (item: TElement) => TKey, comparer: Comparer<TKey>): OrderedEnumerable<TElement>
 
 
         /**
@@ -1766,7 +1795,7 @@ declare module mx {
         * Returns an OrderedEnumerable whose elements are sorted in descending order according to a key.
         * @param keySelector A function to extract a key from each element.
         */
-        thenByDescending<TKey>(keySelector: (item: TElement) => TKey): IOrderedEnumerable<TElement>
+        thenByDescending<TKey>(keySelector: (item: TElement) => TKey): OrderedEnumerable<TElement>
 
 
         /**
@@ -1775,7 +1804,7 @@ declare module mx {
         * @param keySelector A function to extract a key from each element. 
         * @param comparer A Comparer to compare keys.
         */
-        thenByDescending<TKey>(keySelector: (item: TElement) => TKey, comparer: IComparer<TKey>): IOrderedEnumerable<TElement>
+        thenByDescending<TKey>(keySelector: (item: TElement) => TKey, comparer: Comparer<TKey>): OrderedEnumerable<TElement>
     }
 
 
@@ -1879,7 +1908,7 @@ declare module mx {
         * @param value The value to locate in the sequence.
         * @param comparer An equality comparer to compare values.
         */
-        contains(value: T, comparer: IEqualityComparer<T>): boolean
+        contains(value: T, comparer: EqualityComparer<T>): boolean
 
 
         /**
@@ -1918,7 +1947,7 @@ declare module mx {
         * Produces the set difference of two sequences by using the EqualityComparer to compare values.
         * @param comparer An EqualityComparer to compare values.
         */
-        distinct(comparer: IEqualityComparer<T>): IEnumerable<T>
+        distinct(comparer: EqualityComparer<T>): IEnumerable<T>
 
 
         /**
@@ -1933,7 +1962,7 @@ declare module mx {
         * @param second An Enumerable whose elements that also occur in the first sequence will cause those elements to be removed from the returned sequence.
         * @param comparer An EqualityComparer to compare values.
         */
-        except(second: IEnumerable<T>, comparer: IEqualityComparer<T>): IEnumerable<T>
+        except(second: IEnumerable<T>, comparer: EqualityComparer<T>): IEnumerable<T>
 
 
         /**
@@ -1995,7 +2024,7 @@ declare module mx {
         * Groups the elements of a sequence according to a specified key selector function.
         * @param keySelector A function to extract the key for each element.
         */
-        groupBy<TKey>(keySelector: (item: T) => TKey): IEnumerable<IGrouping<TKey, T>>;
+        groupBy<TKey>(keySelector: (item: T) => TKey): IEnumerable<Grouping<TKey, T>>;
 
 
         /**
@@ -2003,7 +2032,7 @@ declare module mx {
         * @param keySelector A function to extract the key for each element.
         * @param comparer An equality comparer to compare values.
         */
-        groupBy<TKey>(keySelector: (item: T) => TKey, comparer: IEqualityComparer<TKey>): IEnumerable<IGrouping<TKey, T>>;
+        groupBy<TKey>(keySelector: (item: T) => TKey, comparer: EqualityComparer<TKey>): IEnumerable<Grouping<TKey, T>>;
 
 
         /**
@@ -2011,7 +2040,7 @@ declare module mx {
         * @param keySelector A function to extract the key for each element.
         * @param elementSelector A function to map each source element to an element in the Grouping.
         */
-        groupBy<TKey, TElement>(keySelector: (item: T) => TKey, elementSelector: (item: T) => TElement): IEnumerable<IGrouping<TKey, TElement>>;
+        groupBy<TKey, TElement>(keySelector: (item: T) => TKey, elementSelector: (item: T) => TElement): IEnumerable<Grouping<TKey, TElement>>;
 
 
         /**
@@ -2021,7 +2050,7 @@ declare module mx {
         * @param elementSelector A function to map each source element to an element in the Grouping.
         * @param comparer An equality comparer to compare values.
         */
-        groupBy<TKey, TElement>(keySelector: (item: T) => TKey, elementSelector: (item: T) => TElement, comparer: IEqualityComparer<TKey>): IEnumerable<IGrouping<TKey, TElement>>;
+        groupBy<TKey, TElement>(keySelector: (item: T) => TKey, elementSelector: (item: T) => TElement, comparer: EqualityComparer<TKey>): IEnumerable<Grouping<TKey, TElement>>;
 
 
         /**
@@ -2041,7 +2070,7 @@ declare module mx {
         * @param resultSelector A function to extract the key for each element.
         * @param comparer An equality comparer to compare values.
         */
-        groupBy<TKey, TElement, TResult>(keySelector: (item: T) => TKey, elementSelector: (item: T) => TElement, resultSelector: (key: TKey, elements: IEnumerable<TElement>) => TResult, comparer: IEqualityComparer<TKey>): IEnumerable<TResult>;
+        groupBy<TKey, TElement, TResult>(keySelector: (item: T) => TKey, elementSelector: (item: T) => TElement, resultSelector: (key: TKey, elements: IEnumerable<TElement>) => TResult, comparer: EqualityComparer<TKey>): IEnumerable<TResult>;
 
 
         /**
@@ -2062,7 +2091,7 @@ declare module mx {
         * @param resultSelector A function to create a result element from an element from the first sequence and a collection of matching elements from the second sequence.
         * @param comparer An equality comparer to compare values.
         */
-        groupJoin<TInner, TKey, TResult>(inner: IEnumerable<TInner>, outerKeySelector: (item: T) => TKey, innerKeySelector: (item: TInner) => TKey, resultSelector: (outer: T, inner: IEnumerable<TInner>) => TResult, comparer: IEqualityComparer<TKey>): IEnumerable<TResult>;
+        groupJoin<TInner, TKey, TResult>(inner: IEnumerable<TInner>, outerKeySelector: (item: T) => TKey, innerKeySelector: (item: TInner) => TKey, resultSelector: (outer: T, inner: IEnumerable<TInner>) => TResult, comparer: EqualityComparer<TKey>): IEnumerable<TResult>;
 
 
         /**
@@ -2077,7 +2106,7 @@ declare module mx {
         * @param second An Enumerable whose distinct elements that also appear in the first sequence will be returned.
         * @param comparer An EqualityComparer to compare values.
         */
-        intersect(second: IEnumerable<T>, comparer: IEqualityComparer<T>): IEnumerable<T>;
+        intersect(second: IEnumerable<T>, comparer: EqualityComparer<T>): IEnumerable<T>;
 
 
         /**
@@ -2098,7 +2127,7 @@ declare module mx {
         * @param resultSelector A function to create a result element from an element from the first sequence and a collection of matching elements from the second sequence.
         * @param comparer An equality comparer to compare values.
         */
-        join<TInner, TKey, TResult>(inner: IEnumerable<TInner>, outerKeySelector: (item: T) => TKey, innerKeySelector: (item: TInner) => TKey, resultSelector: (outer: T, inner: TInner) => TResult, comparer: IEqualityComparer<TKey>): IEnumerable<TResult>;
+        join<TInner, TKey, TResult>(inner: IEnumerable<TInner>, outerKeySelector: (item: T) => TKey, innerKeySelector: (item: TInner) => TKey, resultSelector: (outer: T, inner: TInner) => TResult, comparer: EqualityComparer<TKey>): IEnumerable<TResult>;
 
 
         /**
@@ -2172,7 +2201,7 @@ declare module mx {
         * Sorts the elements of a sequence in ascending order by using a specified comparer.
         * @param keySelector A function to extract a key from each element.
         */
-        orderBy<TKey>(keySelector: (item: T) => TKey): IOrderedEnumerable<T>
+        orderBy<TKey>(keySelector: (item: T) => TKey): OrderedEnumerable<T>
 
 
         /**
@@ -2181,7 +2210,7 @@ declare module mx {
         * @param keySelector A function to extract a key from each element.
         * @param comparer A Comparer to compare keys.
         */
-        orderBy<TKey>(keySelector: (item: T) => TKey, comparer: IEqualityComparer<TKey>): IOrderedEnumerable<T>
+        orderBy<TKey>(keySelector: (item: T) => TKey, comparer: EqualityComparer<TKey>): OrderedEnumerable<T>
 
 
         /**
@@ -2190,7 +2219,7 @@ declare module mx {
         * Returns an OrderedEnumerable whose elements are sorted in descending order according to a key.
         * @param keySelector A function to extract a key from each element.
         */
-        orderByDescending<TKey>(keySelector: (item: T) => TKey): IOrderedEnumerable<T>
+        orderByDescending<TKey>(keySelector: (item: T) => TKey): OrderedEnumerable<T>
 
 
         /**
@@ -2199,7 +2228,7 @@ declare module mx {
         * @param keySelector A function to extract a key from each element.
         * @param comparer A Comparer to compare keys.
         */
-        orderByDescending<TKey>(keySelector: (item: T) => TKey, comparer: IEqualityComparer<TKey>): IOrderedEnumerable<T>
+        orderByDescending<TKey>(keySelector: (item: T) => TKey, comparer: EqualityComparer<TKey>): OrderedEnumerable<T>
 
 
         /**
@@ -2220,7 +2249,7 @@ declare module mx {
         * @param second An Enumerable to compare to the first sequence.
         * @param comparer The EqualityComparer to compare values.
         */
-        sequenceEqual(second: IEnumerable<T>, comparer: IEqualityComparer<T>): boolean
+        sequenceEqual(second: IEnumerable<T>, comparer: EqualityComparer<T>): boolean
 
 
         /**
@@ -2366,7 +2395,7 @@ declare module mx {
         * Creates a Dictionary from an Enumerable according to a specified key selector function.
         * @param keySelector A function to extract a key from each element.
         */
-        toDictionary<TKey>(keySelector: (item: T) => TKey): IDictionary<TKey, T>;
+        toDictionary<TKey>(keySelector: (item: T) => TKey): Dictionary<TKey, T>;
 
 
         /**
@@ -2374,7 +2403,7 @@ declare module mx {
         * @param keySelector A function to extract a key from each element.
         * @param comparer An equality comparer to compare values.
         */
-        toDictionary<TKey>(keySelector: (item: T) => TKey, comparer: IEqualityComparer<TKey>): IDictionary<TKey, T>;
+        toDictionary<TKey>(keySelector: (item: T) => TKey, comparer: EqualityComparer<TKey>): Dictionary<TKey, T>;
 
 
         /**
@@ -2382,7 +2411,7 @@ declare module mx {
         * @param keySelector A function to extract a key from each element.
         * @param elementSelector A transform function to produce a result element value from each element.
         */
-        toDictionary<TKey, TElement>(keySelector: (item: T) => TKey, elementSelector: (item: T) => TElement): IDictionary<TKey, TElement>;
+        toDictionary<TKey, TElement>(keySelector: (item: T) => TKey, elementSelector: (item: T) => TElement): Dictionary<TKey, TElement>;
 
 
         /**
@@ -2391,20 +2420,20 @@ declare module mx {
         * @param elementSelector A transform function to produce a result element value from each element.
         * @param comparer An equality comparer to compare values.
         */
-        toDictionary<TKey, TElement>(keySelector: (item: T) => TKey, elementSelector: (item: T) => TElement, comparer: IEqualityComparer<TKey>): IDictionary<TKey, TElement>;
+        toDictionary<TKey, TElement>(keySelector: (item: T) => TKey, elementSelector: (item: T) => TElement, comparer: EqualityComparer<TKey>): Dictionary<TKey, TElement>;
 
 
         /**
         * Creates a List from an Enumerable.
         */
-        toList(): IList<T>
+        toList(): List<T>
 
 
         /**
         * Creates a Lookup from an Enumerable according to a specified key selector function.
         * @param keySelector A function to extract a key from each element.
         */
-        toLookup<TKey>(keySelector: (item: T) => TKey): ILookup<TKey, T>;
+        toLookup<TKey>(keySelector: (item: T) => TKey): Lookup<TKey, T>;
 
 
         /**
@@ -2412,7 +2441,7 @@ declare module mx {
         * @param keySelector A function to extract a key from each element.
         * @param comparer An equality comparer to compare values.
         */
-        toLookup<TKey>(keySelector: (item: T) => TKey, comparer: IEqualityComparer<TKey>): ILookup<TKey, T>;
+        toLookup<TKey>(keySelector: (item: T) => TKey, comparer: EqualityComparer<TKey>): Lookup<TKey, T>;
 
 
         /**
@@ -2420,7 +2449,7 @@ declare module mx {
         * @param keySelector A function to extract a key from each element.
         * @param elementSelector A transform function to produce a result element value from each element.
         */
-        toLookup<TKey, TElement>(keySelector: (item: T) => TKey, elementSelector: (item: T) => TElement): ILookup<TKey, TElement>;
+        toLookup<TKey, TElement>(keySelector: (item: T) => TKey, elementSelector: (item: T) => TElement): Lookup<TKey, TElement>;
 
 
         /**
@@ -2429,7 +2458,7 @@ declare module mx {
         * @param elementSelector A transform function to produce a result element value from each element.
         * @param comparer An equality comparer to compare values.
         */
-        toLookup<TKey, TElement>(keySelector: (item: T) => TKey, elementSelector: (item: T) => TElement, comparer: IEqualityComparer<TKey>): ILookup<TKey, TElement>;
+        toLookup<TKey, TElement>(keySelector: (item: T) => TKey, elementSelector: (item: T) => TElement, comparer: EqualityComparer<TKey>): Lookup<TKey, TElement>;
 
 
         /**
@@ -2444,7 +2473,7 @@ declare module mx {
         * @param second An Enumerable whose distinct elements form the second set for the union.
         * @param comparer The EqualityComparer to compare values.
         */
-        union(second: IEnumerable<T>, comparer: IEqualityComparer<T>): IEnumerable<T>
+        union(second: IEnumerable<T>, comparer: EqualityComparer<T>): IEnumerable<T>
 
 
         /**
