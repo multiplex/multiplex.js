@@ -61,10 +61,7 @@
         ERROR_ARRAY_SIZE = "The number of elements in the source is greater than the number of elements that the destination array can contain.",
         ERROR_KEY_NOT_FOUND = "The given key was not present in the collection.",
         ERROR_DUPLICATE_KEY = "An item with the same key has already been added.",
-        ERROR_EMPTY_LINKED_LIST = "Linked list is empty.",
-        ERROR_EMPTY_STACK = "Stack is empty.",
-        ERROR_EMPTY_QUEUE = "Queue is empty.",
-        ERROR_INVALID_LINKED_LIST_NODE = "Invalid node list.",
+        ERROR_EMPTY_COLLECTION = "Collection is empty.",
         ERROR_MORE_THAN_ONE_ELEMENT = "Sequence contains more than one element.",
         ERROR_MORE_THAN_ONE_MATCH = "Sequence contains more than one match.",
         ERROR_NO_MATCH = "Sequence contains no matching element.",
@@ -285,7 +282,7 @@
                     return new FUNCTION((_match[1] || "").replace(/ /g, ""), "return " + _match[4]);
                 }
 
-                $error("Cannot parse supplied `. " + exp);
+                $error("Cannot parse supplied expression: " + exp);
                 break;
 
             default:
@@ -3552,6 +3549,8 @@
                     _node = value;
                     _source = $prop(this);
 
+                    validateNode(_node);
+
                     if (_source.head == null) {
                         insertNodeToEmptyList(this, _node);
                     }
@@ -3580,6 +3579,8 @@
                 if ($is(value, __LinkedListNode)) {
                     _node = value;
                     _source = $prop(this);
+
+                    validateNode(_node);
 
                     if (_source.head == null) {
                         insertNodeToEmptyList(this, _node);
@@ -3679,6 +3680,8 @@
                     _node = value;
                     _source = $prop(this);
 
+                    validateNode(_node, this);
+
                     if (_node._next === _node) {
                         _source.head = null;
                     }
@@ -3692,6 +3695,8 @@
                     }
                     resetNode(_node);
                     _source.count--;
+
+                    return true;
                 }
                 else {
                     if ((_node = this.find(value)) != null) {
@@ -3709,7 +3714,7 @@
                 var _source = $prop(this);
 
                 if (_source.head == null) {
-                    $error(ERROR_EMPTY_LINKED_LIST);
+                    $error(ERROR_EMPTY_COLLECTION);
                 }
 
                 this.remove(_source.head);
@@ -3722,7 +3727,7 @@
                 var _source = $prop(this);
 
                 if (_source.head == null) {
-                    $error(ERROR_EMPTY_LINKED_LIST);
+                    $error(ERROR_EMPTY_COLLECTION);
                 }
 
                 this.remove(_source.head._prev);
@@ -3766,9 +3771,8 @@
             $ensureType(node, __LinkedListNode);
             $ensureType(newNode, __LinkedListNode);
 
-            if (node._list !== list || newNode._list != null) {
-                $error(ERROR_INVALID_LINKED_LIST_NODE);
-            }
+            validateNode(newNode);
+            validateNode(node, list);
 
             newNode._list = list;
             newNode._next = node;
@@ -3781,10 +3785,7 @@
 
         function insertNodeToEmptyList(list, newNode) {
             $ensureType(newNode, __LinkedListNode);
-
-            if (newNode._list != null) {
-                $error(ERROR_INVALID_LINKED_LIST_NODE);
-            }
+            validateNode(newNode);
 
             var _source = $prop(list);
 
@@ -3794,6 +3795,12 @@
 
             _source.head = newNode;
             _source.count++;
+        }
+
+        function validateNode(node, list) {
+            if ((list === null && node._list != null) || node._list != list) {
+                $error("Invalid node list.");
+            }
         }
     })();
 
@@ -3864,7 +3871,7 @@
                     return _source.shift();
                 }
 
-                $error(ERROR_EMPTY_QUEUE);
+                $error(ERROR_EMPTY_COLLECTION);
             },
 
             /**
@@ -3887,7 +3894,7 @@
                     return _source[0];
                 }
 
-                $error(ERROR_EMPTY_QUEUE);
+                $error(ERROR_EMPTY_COLLECTION);
             },
 
             /**
@@ -3975,7 +3982,7 @@
                     return _source[_length - 1];
                 }
 
-                $error(ERROR_EMPTY_STACK);
+                $error(ERROR_EMPTY_COLLECTION);
             },
 
             /**
@@ -3990,7 +3997,7 @@
                     return _source.pop();
                 }
 
-                $error(ERROR_EMPTY_STACK);
+                $error(ERROR_EMPTY_COLLECTION);
             },
 
             /**
