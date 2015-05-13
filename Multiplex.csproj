@@ -86,7 +86,18 @@
     <Content Include="src\typescript\_references.ts" />
     <Content Include="test\data\_references.js" />
     <TypeScriptCompile Include="test\data\qunit.d.ts" />
-    <Content Include="test\data\_references.ts" />
+    <TypeScriptCompile Include="test\typescript\dictionary.ts" />
+    <TypeScriptCompile Include="test\typescript\hashset.ts" />
+    <TypeScriptCompile Include="test\typescript\linkedlist.ts" />
+    <TypeScriptCompile Include="test\typescript\linq.ts" />
+    <TypeScriptCompile Include="test\typescript\list.ts" />
+    <TypeScriptCompile Include="test\typescript\lookup.ts" />
+    <TypeScriptCompile Include="test\typescript\mx.ts" />
+    <TypeScriptCompile Include="test\typescript\queue.ts" />
+    <TypeScriptCompile Include="test\typescript\readonlycollection.ts" />
+    <TypeScriptCompile Include="test\typescript\runtime.ts" />
+    <TypeScriptCompile Include="test\typescript\sortedlist.ts" />
+    <TypeScriptCompile Include="test\typescript\stack.ts" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
