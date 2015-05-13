@@ -2988,12 +2988,13 @@
 
                     if (areEqualityComparersEqual(this, other)) {
                         var _table = $prop(this),
-                            _otable = other.table(),
+                            _otable = $prop(other),
                             _buffer = $buffer(this, false),
+                            _len = _buffer.length,
                             _item;
 
-                        while (_count-- > 0) {
-                            if (!_otable.contains(_item = _buffer[_count])) {
+                        while (_len-- > 0) {
+                            if (!_otable.contains(_item = _buffer[_len])) {
                                 _table.remove(_item);
                             }
                         }
@@ -3034,10 +3035,9 @@
                         }
                     }
                 }
-                else {
-                    var result = checkUniqueAndUnfoundElements(this, other, false);
-                    return (result.uniqueCount === this.count() && result.unfoundCount > 0);
-                }
+
+                var result = checkUniqueAndUnfoundElements(this, other, false);
+                return (result.uniqueCount === this.count() && result.unfoundCount > 0);
             },
 
             /**
@@ -3073,10 +3073,9 @@
                         }
                     }
                 }
-                else {
-                    var result = checkUniqueAndUnfoundElements(this, other, true);
-                    return (result.uniqueCount < this.count() && result.unfoundCount === 0);
-                }
+
+                var result = checkUniqueAndUnfoundElements(this, other, true);
+                return (result.uniqueCount < this.count() && result.unfoundCount === 0);
             },
 
             /**
@@ -3101,10 +3100,9 @@
                         return isSubsetOfHashSetWithSameEC(this, other);
                     }
                 }
-                else {
-                    var result = checkUniqueAndUnfoundElements(this, other, false);
-                    return (result.uniqueCount === this.count() && result.unfoundCount >= 0);
-                }
+
+                var result = checkUniqueAndUnfoundElements(this, other, false);
+                return (result.uniqueCount === this.count() && result.unfoundCount >= 0);
             },
 
             /**
@@ -3269,7 +3267,7 @@
 
         function containsAllElements(set, other) {
             var _eOther = $enumerator(other),
-                _table = set.table();
+                _table = $prop(set);
 
             while (_eOther.next()) {
                 if (!_table.contains(_eOther.current)) {
@@ -3282,7 +3280,7 @@
 
         function isSubsetOfHashSetWithSameEC(set, other) {
             var _e = $enumerator(set),
-                _table = other.table();
+                _table = $prop(other);
 
             while (_e.next()) {
                 if (!_table.contains(_e.current)) {
@@ -3305,7 +3303,7 @@
 
             var _unfoundCount = 0,                      // count of items in other not found in this
                 _uniqueFoundCount = 0,                  // count of unique items in other found in this
-                _table = set.table(),
+                _table = $prop(set),
                 _otable = new __HashTable(set.comparer());
 
             while (_eOther.next()) {
