@@ -85,6 +85,8 @@
     <TypeScriptCompile Include="src\typescript\multiplex.d.ts" />
     <Content Include="src\typescript\_references.ts" />
     <Content Include="test\data\_references.js" />
+    <TypeScriptCompile Include="test\data\qunit.d.ts" />
+    <Content Include="test\data\_references.ts" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
