@@ -4,11 +4,8 @@
 (function () {
 
     var Dictionary = mx.Dictionary,
-        Comparer = mx.Comparer,
         KeyValuePair = mx.KeyValuePair,
-        NumericComparer = Comparer.create(function (a, b) {
-            return a - b;
-        });
+        EqualityComparer = mx.EqualityComparer;
 
 
     function CreateDictionary() {
@@ -28,20 +25,24 @@
 
     QUnit.test("constructor", function (assert) {
 
-        var d1 = new Dictionary(),
-            d2 = new Dictionary(CreateDictionary()),
-            d3 = new Dictionary(NumericComparer),
-            d4 = new Dictionary(5),
-            d5 = new Dictionary(5, NumericComparer),
-            d6 = new Dictionary(CreateDictionary(), NumericComparer);
+        var _comparer = EqualityComparer.create(
+                function (o) { return mx.hash(o); },
+                function (a, b) { return a === b; }
+            ),
+            _d1 = new Dictionary(),
+            _d2 = new Dictionary(CreateDictionary()),
+            _d3 = new Dictionary(_comparer),
+            _d4 = new Dictionary(5),
+            _d5 = new Dictionary(5, _comparer),
+            _d6 = new Dictionary(CreateDictionary(), _comparer);
 
 
-        assert.ok(d1.count() === 0, "initialize a Dictionary!");
-        assert.ok(d2.count() === 5, "initialize a Dictionary using specified dictionary!");
-        assert.ok(d3.count() === 0, "initialize a Dictionary using specified comparer!");
-        assert.ok(d4.count() === 0, "initialize a Dictionary using initial capacity!");
-        assert.ok(d5.count() === 0, "initialize a Dictionary using using initial capacity and comparer!");
-        assert.ok(d6.count() === 5, "initialize a Dictionary using specified dictionary and comparer!");
+        assert.ok(_d1.count() === 0, "initialize a Dictionary!");
+        assert.ok(_d2.count() === 5, "initialize a Dictionary using specified dictionary!");
+        assert.ok(_d3.count() === 0, "initialize a Dictionary using specified comparer!");
+        assert.ok(_d4.count() === 0, "initialize a Dictionary using initial capacity!");
+        assert.ok(_d5.count() === 0, "initialize a Dictionary using using initial capacity and comparer!");
+        assert.ok(_d6.count() === 5, "initialize a Dictionary using specified dictionary and comparer!");
     });
 
 
@@ -78,7 +79,7 @@
         var _dic = CreateDictionary();
 
         assert.ok(_dic.containsValue("A") === true, "dictionary contains value!");
-        assert.ok(_dic.containsKey("Z") === false, "dictionary does not contain value!");
+        assert.ok(_dic.containsValue("Z") === false, "dictionary does not contain value!");
     });
 
 
