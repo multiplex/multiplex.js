@@ -1,12 +1,27 @@
 /// <reference path="../data/_references.js" />
 
 
-(function (global) {
+(function () {
 
-    var Foo = global.Foo,
-        FooWithEqualityComparer = global.FooWithEqualityComparer,
-        EqualityComparer = mx.EqualityComparer;
 
+    // class without equality-comparer
+    function SimpleClass() {
+    }
+
+
+    // class overriding '__hash__' and '__equals__' methods.
+    function SimpleClassWithComparer(val) {
+        this.value = val;
+        this.name = val.toString();
+
+        this.__hash__ = function () {
+            return mx.hash(this.value, this.name);
+        };
+
+        this.__equals__ = function (obj) {
+            return obj instanceof SimpleClassWithComparer && obj.value === this.value && obj.name === this.name;
+        };
+    }
 
 
     QUnit.module("Runtime");
@@ -22,8 +37,8 @@
         assert.ok(mx.hash(true) === mx.hash(true), "hash boolean!");
         assert.ok(mx.hash(new Date(2015, 0, 1)) === mx.hash(new Date(2015, 0, 1)), "hash date!");
         assert.ok(mx.hash({ name: "A" }) === mx.hash({ name: "A" }), "hash object literal!");
-        assert.ok(mx.hash(new Foo()) !== mx.hash(new Foo()), "hash class instance!");
-        assert.ok(mx.hash(new FooWithEqualityComparer(10)) === mx.hash(new FooWithEqualityComparer(10)), "hash class instance overriding __hash__ method!");
+        assert.ok(mx.hash(new SimpleClass()) !== mx.hash(new SimpleClass()), "hash class instance!");
+        assert.ok(mx.hash(new SimpleClassWithComparer(10)) === mx.hash(new SimpleClassWithComparer(10)), "hash class instance overriding __hash__ method!");
         assert.ok(mx.hash(10, 10.5, "string", new Date(2015, 0, 1)) === mx.hash(10, 10.5, "string", new Date(2015, 0, 1)), "combine hash codes!");
     });
 
@@ -38,12 +53,12 @@
         assert.ok(mx.equals(true, true), "equals boolean!");
         assert.ok(mx.equals(new Date(2015, 0, 1), new Date(2015, 0, 1)), "equals date!");
         assert.ok(mx.equals({ name: "A" }, { name: "A" }), "equals object literal!");
-        assert.ok(mx.equals(new Foo(), new Foo()) === false, "equals class instance!");
-        assert.ok(mx.equals(new Foo(), new Foo(), EqualityComparer.create(
+        assert.ok(mx.equals(new SimpleClass(), new SimpleClass()) === false, "equals class instance!");
+        assert.ok(mx.equals(new SimpleClass(), new SimpleClass(), mx.EqualityComparer.create(
             function () { return 0; },
             function () { return true; }
         )), "equals class instance using comparer!");
-        assert.ok(mx.equals(new FooWithEqualityComparer(10), new FooWithEqualityComparer(10)), "equals class instance overriding __equals__ method!");
+        assert.ok(mx.equals(new SimpleClassWithComparer(10), new SimpleClassWithComparer(10)), "equals class instance overriding __equals__ method!");
     });
 
 
@@ -60,15 +75,15 @@
 
     QUnit.test("lambda", function (assert) {
 
-        var f1 = mx.runtime.lambda("t => t * t"),
-            f2 = mx.runtime.lambda("(t, u) => t + u"),
-            f3 = mx.runtime.lambda("(t, u, r) => t + u + r"),
-            f4 = mx.runtime.lambda("(t, u) => {id:t, name:u}");
+        var _f1 = mx.runtime.lambda("t => t * t"),
+            _f2 = mx.runtime.lambda("(t, u) => t + u"),
+            _f3 = mx.runtime.lambda("(t, u, r) => t + u + r"),
+            _f4 = mx.runtime.lambda("(t, u) => {id:t, name:u}");
 
-        assert.ok(f1(2) === 4, "square root lambda!");
-        assert.ok(f2(1, 2) === 3, "sum of 2 numbers lambda!");
-        assert.ok(f3(1, 2, 3) === 6, "sum of 3 numbers lambda!");
-        assert.ok(f4(1, "A").id === 1 && f4(1, "A").name === "A", "object literal lambda!");
+        assert.ok(_f1(2) === 4, "square root lambda!");
+        assert.ok(_f2(1, 2) === 3, "sum of 2 numbers lambda!");
+        assert.ok(_f3(1, 2, 3) === 6, "sum of 3 numbers lambda!");
+        assert.ok(_f4(1, "A").id === 1 && _f4(1, "A").name === "A", "object literal lambda!");
     });
 
-})(window);
+})();
