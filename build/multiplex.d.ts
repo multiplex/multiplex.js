@@ -871,7 +871,7 @@ declare module mx {
         * Gets or sets the number of elements that the SortedList can contain.
         * @param value The number of elements that the SortedList can contain.
         */
-        capacity(value: number): number
+        capacity(value?: number): number
 
 
         /**
@@ -883,7 +883,7 @@ declare module mx {
         /**
         * Gets the Comparer for the sorted list.
         */
-        comparer(): EqualityComparer<TKey>
+        comparer(): Comparer<TKey>
 
 
         /**
