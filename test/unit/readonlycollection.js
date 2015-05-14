@@ -7,7 +7,7 @@
         ReadOnlyCollection = mx.ReadOnlyCollection;
 
 
-    function Create() {
+    function CreateCollection() {
         return new ReadOnlyCollection(new List(1, 2, 3, 4, 5));
     }
 
@@ -16,7 +16,7 @@
 
 
     QUnit.test("constructor", function (assert) {
-        assert.ok(Create().count() === 5, "initialize a ReadOnlyCollection!");
+        assert.ok(CreateCollection().count() === 5, "initialize a ReadOnlyCollection!");
 
         assert.throws(function () {
             new ReadOnlyCollection();
@@ -30,18 +30,21 @@
 
     QUnit.test("indexer", function (assert) {
 
-        var _col = Create();
+        var _col = CreateCollection();
 
         assert.ok(_col[0] === 1, "indexer get!");
 
         _col[0] = 0;
         assert.ok(_col[0] === 1, "indexer set!");
+
+        _col[10] = 0;
+        assert.ok(_col[10] === undefined, "out of range indexer set!");
     });
 
 
     QUnit.test("get", function (assert) {
 
-        var _col = Create();
+        var _col = CreateCollection();
 
         assert.ok(_col.get(1) === 2, "get item at index 1 from a collection of 5 numbers!");
         assert.throws(function () {
@@ -52,7 +55,7 @@
 
     QUnit.test("contains", function (assert) {
 
-        var _col = Create();
+        var _col = CreateCollection();
 
         assert.ok(_col.contains(3) === true, "collection contains!");
         assert.ok(_col.contains(6) === false, "collection not containing!");
@@ -61,7 +64,7 @@
 
     QUnit.test("copyTo", function (assert) {
 
-        var _col = Create(),
+        var _col = CreateCollection(),
             _arr = new Array(_col.count());
 
         _col.copyTo(_arr, 0);
@@ -75,24 +78,16 @@
 
     QUnit.test("indexOf", function (assert) {
 
-        var _col = Create();
+        var _col = CreateCollection();
 
         assert.ok(_col.indexOf(3) === 2, "get index of 3 in a collection of first 5 numbers!");
         assert.ok(_col.indexOf(10) === -1, "get index of 10 in a collection of first 5 numbers!");
     });
 
 
-    QUnit.test("items", function (assert) {
-
-        var _col = Create();
-
-        assert.deepEqual(_col.items(), [1, 2, 3, 4, 5], "get collection items!");
-    });
-
-
     QUnit.test("collection enumerable", function (assert) {
 
-        var _col = Create();
+        var _col = CreateCollection();
         assert.deepEqual(_col.select("t => t * 2").where("t => t > 5").toArray(), [6, 8, 10], "select-where-toArray over a collection!");
     });
 
