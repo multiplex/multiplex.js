@@ -11,10 +11,7 @@
 
     QUnit.test("constructor", function (assert) {
         assert.ok(CreateCollection().count() === 5, "initialize a ReadOnlyCollection!");
-
-        assert.throws(function () {
-            new ReadOnlyCollection<number>(null);
-        }, "throws an exception creating an ampty ReadOnlyCollection!");
+        assert.throws(() => new ReadOnlyCollection<number>(null), "throws an exception creating an ampty ReadOnlyCollection!");
     });
 
 
@@ -37,9 +34,7 @@
         var _col = CreateCollection();
 
         assert.ok(_col.get(1) === 2, "get item at index 1 from a collection of 5 numbers!");
-        assert.throws(function () {
-            _col.get(10);
-        }, "throws error getting item at index 10 from a collection of 5 numbers!");
+        assert.throws(() => _col.get(10), "throws error getting item at index 10 from a collection of 5 numbers!");
     });
 
 
@@ -58,11 +53,8 @@
             _arr = new Array(_col.count());
 
         _col.copyTo(_arr, 0);
-
         assert.deepEqual(_arr, [1, 2, 3, 4, 5], "collection copyTo an array!");
-        assert.throws(function () {
-            _col.copyTo([], 0);
-        }, "throws an error when the number of elements is greater than the number of elements that the destination array can contain!");
+        assert.throws(() => _col.copyTo([], 0), "throws an error when the number of elements is greater than the number of elements that the destination array can contain!");
     });
 
 
@@ -78,6 +70,7 @@
     QUnit.test("collection enumerable", function (assert) {
 
         var _col = CreateCollection();
+
         assert.deepEqual(_col.select(t => t * 2).where(t => t > 5).toArray(), [6, 8, 10], "select-where-toArray over a collection!");
     });
 }

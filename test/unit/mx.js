@@ -52,7 +52,13 @@
 
     QUnit.test("Multiplex Iterable", function (assert) {
         if (global.Set) {
-            var _source = mx(new global.Set([1, 2, 3]));
+            var _set = new global.Set(),
+                _source = mx(_set);
+
+            _set.add(1);
+            _set.add(2);
+            _set.add(3);
+
             assert.ok(MxCount(_source) === 3, "Passed!");
         }
 

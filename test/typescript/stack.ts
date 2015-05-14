@@ -40,11 +40,8 @@
             _arr = new Array(_stack.count());
 
         _stack.copyTo(_arr, 0);
-
         assert.deepEqual(_arr, [1, 2, 3, 4, 5], "stack copy to an array!");
-        assert.throws(function () {
-            _stack.copyTo([], 0);
-        }, "throws an error when the number of elements is greater than the number of elements that the destination array can contain!");
+        assert.throws(() => _stack.copyTo([], 0), "throws an error when the number of elements is greater than the number of elements that the destination array can contain!");
     });
 
 
@@ -55,9 +52,7 @@
         assert.ok(_stack.peek() === 5, "stack peek an item!");
 
         _stack.clear();
-        assert.throws(function () {
-            _stack.peek();
-        }, "throws an error peek from empty stack!");
+        assert.throws(() => _stack.peek(), "throws an error peek from empty stack!");
     });
 
 
@@ -68,9 +63,7 @@
         assert.ok(_stack.pop() === 5, "stack pop an item!");
 
         _stack.clear();
-        assert.throws(function () {
-            _stack.pop();
-        }, "throws an error pop from empty stack!");
+        assert.throws(() => _stack.pop(), "throws an error pop from empty stack!");
     });
 
 

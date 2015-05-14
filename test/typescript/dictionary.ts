@@ -18,10 +18,7 @@
 
     QUnit.test("constructor", function (assert) {
 
-        var _comparer = EqualityComparer.create(
-                function (o) { return mx.hash(o); },
-                function (a, b) { return a === b; }
-            ),
+        var _comparer = EqualityComparer.create(o => mx.hash(o), (a, b) => a === b),
             _d1 = new Dictionary<number, string>(),
             _d2 = new Dictionary<number, string>(CreateDictionary()),
             _d3 = new Dictionary<number, string>(_comparer),
@@ -44,9 +41,7 @@
         _dic.add(1, "A");
 
         assert.ok(_dic.count() === 1, "ditionary add");
-        assert.throws(function () {
-            _dic.add(1, "B");
-        }, "throws an error adding duplicate key");
+        assert.throws(() => _dic.add(1, "B"), "throws an error adding duplicate key");
     });
 
 
@@ -82,11 +77,8 @@
             _arr = new Array(_dic.count());
 
         _dic.copyTo(_arr, 0);
-
         assert.deepEqual(_arr, [1, 2, 3, 4, 5], "dictionary copy to an array!");
-        assert.throws(function () {
-            _dic.copyTo([], 0);
-        }, "throws an error when the number of elements is greater than the number of elements that the destination array can contain!");
+        assert.throws(() => _dic.copyTo([], 0), "throws an error when the number of elements is greater than the number of elements that the destination array can contain!");
     });
 
 
@@ -113,17 +105,15 @@
         var _dic = CreateDictionary();
 
         assert.ok(_dic.get(1) === "A", "dictionary get value!");
-        assert.throws(function () {
-            _dic.get(10);
-        }, "throws an error getting non existing key!");
+        assert.throws(() => _dic.get(10), "throws an error getting non existing key!");
     });
 
 
     QUnit.test("set", function (assert) {
 
         var _dic = CreateDictionary();
+        
         _dic.set(1, "AA");
-
         assert.ok(_dic.get(1) === "AA", "dictionary set value!");
 
         _dic.set(6, "F");
@@ -137,10 +127,7 @@
 
         assert.ok(function () {
             var value: string;
-
-            var res = _dic.tryGetValue(1, function (val) {
-                value = val;
-            });
+            var res = _dic.tryGetValue(1, val => value = val);
 
             return res && value === "A";
 
@@ -149,10 +136,7 @@
 
         assert.ok(function () {
             var value: string;
-
-            var res = _dic.tryGetValue(10, function (val) {
-                value = val;
-            });
+            var res = _dic.tryGetValue(10, val => value = val);
 
             return res === false;
 

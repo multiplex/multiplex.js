@@ -30,9 +30,7 @@
 
     QUnit.test("constructor", function (assert) {
 
-        var _comparer = Comparer.create(function (a: number, b: number) {
-            return a - b;
-        }),
+        var _comparer = Comparer.create((a: number, b: number) => a - b),
             _dic = CreateDictionary(),
             _s1 = new SortedList(),
             _s2 = new SortedList(5),
@@ -54,10 +52,7 @@
     QUnit.test("add", function (assert) {
 
         assert.ok(CreateSortedList().count() == 5, "sorted-list add!");
-        assert.throws(function () {
-            var _list = CreateSortedList();
-            _list.add(1, "AA");
-        }, "throws an error adding existing key to the list!");
+        assert.throws(() => CreateSortedList().add(1, "AA"), "throws an error adding existing key to the list!");
     });
 
 
@@ -66,9 +61,7 @@
         var _list = CreateSortedList();
 
         assert.ok(_list.get(1) === "A", "sorted-list get!");
-        assert.throws(function () {
-            _list.get(10);
-        }, "throws an error getting invalid key!");
+        assert.throws(() => _list.get(10), "throws an error getting invalid key!");
     });
 
 
@@ -86,26 +79,24 @@
     QUnit.test("clear", function (assert) {
 
         var _list = CreateSortedList();
-        _list.clear();
 
+        _list.clear();
         assert.ok(_list.count() === 0 && _list.capacity() === 0, "clear sorted-list!");
     });
 
 
     QUnit.test("comparer", function (assert) {
 
-        var comparer = CreateSortedList().comparer();
+        var _comparer = CreateSortedList().comparer();
 
-        assert.ok(comparer.compare(5, 1) > 0 && comparer.compare(1, 5) < 0 && comparer.compare(1, 1) === 0, "sorted-list comparer!");
+        assert.ok(_comparer.compare(5, 1) > 0 && _comparer.compare(1, 5) < 0 && _comparer.compare(1, 1) === 0, "sorted-list comparer!");
     });
 
 
     QUnit.test("containsKey", function (assert) {
 
         var _list1 = CreateSortedList(),
-            _list2 = new SortedList<{ id: number; name: string }, number>({
-                compare: function (a, b) { return a.name.localeCompare(b.name); }
-            });
+            _list2 = new SortedList<{ id: number; name: string }, number>({ compare: (a, b) => a.name.localeCompare(b.name) });
 
         assert.ok(_list1.containsKey(1) === true, "sorted-list contains key!");
         assert.ok(_list1.containsKey(10) === false, "sorted-list does not contain key!");
@@ -178,12 +169,10 @@
     QUnit.test("removeAt", function (assert) {
 
         var _list = CreateSortedList();
-        _list.removeAt(0);
 
+        _list.removeAt(0);
         assert.ok(_list.count() === 4 && _list.indexOfKey(1) < 0, "sorted-list remove at index!");
-        assert.throws(function () {
-            _list.removeAt(10);
-        }, "throws an error removing item at invalid index");
+        assert.throws(() => _list.removeAt(10), "throws an error removing item at invalid index");
     });
 
 
@@ -205,10 +194,7 @@
 
         assert.ok(function () {
             var value: string;
-
-            var res = _list.tryGetValue(1, function (val) {
-                value = val;
-            });
+            var res = _list.tryGetValue(1, val => value = val);
 
             return res && value === "A";
 
@@ -217,10 +203,7 @@
 
         assert.ok(function () {
             var value: string;
-
-            var res = _list.tryGetValue(10, function (val) {
-                value = val;
-            });
+            var res = _list.tryGetValue(10, val => value = val);
 
             return res === false;
 
@@ -240,9 +223,7 @@
     QUnit.test("evaluate sorting", function (assert) {
 
         var _list1 = CreateSortedList(),
-            _list2 = new SortedList<{ id: number; name: string }, number>({
-                compare: function (a, b) { return a.name.localeCompare(b.name); }
-            });
+            _list2 = new SortedList<{ id: number; name: string }, number>({ compare: (a, b) => a.name.localeCompare(b.name) });
 
         _list1.remove(5);
         _list1.add(6, "F");

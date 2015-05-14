@@ -58,10 +58,7 @@
         assert.ok(mx.equals(new Date(2015, 0, 1), new Date(2015, 0, 1)), "equals date!");
         assert.ok(mx.equals({ name: "A" }, { name: "A" }), "equals object literal!");
         assert.ok(mx.equals(new SimpleClass(), new SimpleClass()) === false, "equals class instance!");
-        assert.ok(mx.equals(new SimpleClass(), new SimpleClass(), EqualityComparer.create(
-            function () { return 0; },
-            function () { return true; }
-            )), "equals class instance using comparer!");
+        assert.ok(mx.equals(new SimpleClass(), new SimpleClass(), EqualityComparer.create((obj) => 0, (a, b) => true)), "equals class instance using comparer!");
         assert.ok(mx.equals(new SimpleClassWithComparer(10), new SimpleClassWithComparer(10)), "equals class instance overriding __equals__ method!");
     });
 

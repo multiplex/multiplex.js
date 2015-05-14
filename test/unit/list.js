@@ -246,7 +246,7 @@
     QUnit.test("remove", function (assert) {
 
         var _list = CreateList();
-        
+
         assert.ok(_list.remove(2) === true && _list.count() === 4, "remove an item from a list, get count!");
         assert.ok(_list.remove(10) === false && _list.count() === 4, "remove an item which does not exist in a list, get count!");
     });
@@ -320,16 +320,13 @@
             _list1 = new List(_arr),
             _list2 = new List(_arr),
             _list3 = new List(_arr),
-            _list4 = new List(_arr);
+            _list4 = new List(_arr),
+            _sorter = function (a, b) { return a - b; };
 
         _list1.sort();
-        _list2.sort(function (a, b) { return a - b; });
-        _list3.sort({
-            compare: function (a, b) { return a - b; }
-        });
-        _list4.sort(0, 5, {
-            compare: function (a, b) { return a - b; }
-        });
+        _list2.sort(_sorter);
+        _list3.sort({ compare: _sorter });
+        _list4.sort(0, 5, { compare: _sorter });
 
         assert.deepEqual(_list1.toArray(), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], "sort list of first 10 numbers!");
         assert.deepEqual(_list2.toArray(), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], "sort list of first 10 numbers with a comparison function!");
