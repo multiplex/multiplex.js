@@ -80,7 +80,21 @@ declare module mx {
         * Creates A function expression from the specified string lambda expression
         * @param exp String lambda expression.
         */
-        function lambda<T>(exp: string): (...args: any[]) => T;
+        function lambda<T, TResult>(exp: string): (obj: T) => TResult;
+
+
+        /**
+        * Creates A function expression from the specified string lambda expression
+        * @param exp String lambda expression.
+        */
+        function lambda<T1, T2, TResult>(exp: string): (obj1: T1, obj2: T2) => TResult;
+
+
+        /**
+        * Creates A function expression from the specified string lambda expression
+        * @param exp String lambda expression.
+        */
+        function lambda<TResult>(exp: string): (...args: any[]) => TResult;
 
 
         /**
