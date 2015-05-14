@@ -73,7 +73,7 @@ declare module mx {
         * @param objA The first object to compare.
         * @param objB The second object to compare.
         */
-        function compare(objA: any, objB: any): number;
+        function compare<T>(objA: T, objB: T): number;
 
 
         /**
@@ -88,6 +88,13 @@ declare module mx {
         * @param exp String lambda expression.
         */
         function lambda<T1, T2, TResult>(exp: string): (obj1: T1, obj2: T2) => TResult;
+
+
+        /**
+        * Creates A function expression from the specified string lambda expression
+        * @param exp String lambda expression.
+        */
+        function lambda<T1, T2, T3, TResult>(exp: string): (obj1: T1, obj2: T2, obj3: T3) => TResult;
 
 
         /**
@@ -135,6 +142,14 @@ declare module mx {
     * @param objB The second object to compare.
     */
     function equals(objA: any, objB: any): boolean;
+
+
+    /**
+    * Performs a comparison of two objects of the same type and returns a value indicating whether one object is less than, equal to, or greater than the other.
+    * @param objA The first object to compare.
+    * @param objB The second object to compare.
+    */
+    function compare<T>(objA: T, objB: T): number;
 
 
     /**

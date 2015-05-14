@@ -5796,6 +5796,7 @@
 
         hash: $hash,
         equals: $equals,
+        compare: $computeCompare,
         range: __Enumerable.range,
         repeat: __Enumerable.repeat,
         empty: __Enumerable.empty,

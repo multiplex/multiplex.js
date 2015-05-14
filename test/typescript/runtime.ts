@@ -68,12 +68,12 @@
 
     QUnit.test("compare", function (assert) {
 
-        assert.ok(mx.runtime.compare(1, null) === 1 && mx.runtime.compare(null, 1) === -1 && mx.runtime.compare(null, null) === 0, "compare null!");
-        assert.ok(mx.runtime.compare(1, 0) === 1 && mx.runtime.compare(0, 1) === -1 && mx.runtime.compare(1, 1) === 0, "compare numbers!");
-        assert.ok(mx.runtime.compare("B", "A") === 1 && mx.runtime.compare("A", "B") === -1 && mx.runtime.compare("A", "A") === 0, "compare string!");
-        assert.ok(mx.runtime.compare(true, false) === 1 && mx.runtime.compare(false, true) === -1 && mx.runtime.compare(true, true) === 0, "compare bolean!");
-        assert.ok(mx.runtime.compare(new Date(2015, 0, 2), new Date(2015, 0, 1)) === 1 && mx.runtime.compare(new Date(2015, 0, 1), new Date(2015, 0, 2)) === -1 && mx.runtime.compare(new Date(2015, 0, 1), new Date(2015, 0, 1)) === 0, "compare date!");
-        assert.ok(mx.runtime.compare({ name: "A" }, { name: "B" }) === 0, "compare objects!");
+        assert.ok(mx.compare(1, null) === 1 && mx.compare(null, 1) === -1 && mx.compare(null, null) === 0, "compare null!");
+        assert.ok(mx.compare(1, 0) === 1 && mx.compare(0, 1) === -1 && mx.compare(1, 1) === 0, "compare numbers!");
+        assert.ok(mx.compare("B", "A") === 1 && mx.compare("A", "B") === -1 && mx.compare("A", "A") === 0, "compare string!");
+        assert.ok(mx.compare(true, false) === 1 && mx.compare(false, true) === -1 && mx.compare(true, true) === 0, "compare bolean!");
+        assert.ok(mx.compare(new Date(2015, 0, 2), new Date(2015, 0, 1)) === 1 && mx.compare(new Date(2015, 0, 1), new Date(2015, 0, 2)) === -1 && mx.compare(new Date(2015, 0, 1), new Date(2015, 0, 1)) === 0, "compare date!");
+        assert.ok(mx.compare({ name: "A" }, { name: "B" }) === 0, "compare objects!");
     });
 
 

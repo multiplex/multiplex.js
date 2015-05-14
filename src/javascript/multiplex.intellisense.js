@@ -42,6 +42,24 @@ intellisense.annotate(mx, {
         ///     <returns type="Boolean" />
         /// </signature>
     },
+    "compare": function () {
+        /// <signature>
+        ///     <summary>
+        ///         Performs a comparison of two objects of the same type and returns a value indicating whether one object is less than, equal to, or greater than the other.
+        ///         <br />
+        ///         Returns an integer that indicates the relative values of objA and objB, as shown in the following table:
+        ///         <br />
+        ///         Less than zero objA is less than objB.
+        ///         <br />
+        ///         Zero objA equals objB.
+        ///         <br />
+        ///         Greater than zero objA is greater than objB.
+        ///     </summary>
+        ///     <param name="objA" type="Object">The first object to compare.</param>
+        ///     <param name="objB" type="Object">The second object to compare.</param>
+        ///     <returns type="Number" />
+        /// </signature>
+    },
     "empty": function () {
         /// <signature>
         ///     <summary>
