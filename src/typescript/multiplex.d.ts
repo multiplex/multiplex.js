@@ -2570,7 +2570,7 @@ declare function mx(str: string): IEnumerable<string>
 * Defines an enumerator, which supports an iteration over the specified Generator function.
 * @param func A Generator function.
 */
-declare function mx<T>(func: () => (yielder: (value: T) => any) => void): IEnumerable<T>
+declare function mx<T>(func: () => (yielder: (value: T) => T) => any): IEnumerable<T>
 
 
 /**
@@ -2578,11 +2578,18 @@ declare function mx<T>(func: () => (yielder: (value: T) => any) => void): IEnume
 * An Array-like object is an object which has the "length" property, eg. arguments, jQuery
 * @param obj An Array-like object.
 */
-declare function mx<T>(obj: { length: Number }): IEnumerable<T>
+declare function mx<T>(obj: { length: Number; [index: number]: T }): IEnumerable<T>
+
+
+/**
+* Defines an enumerator, which supports an iteration over the arguments local variable available within all functions.
+* @param obj arguments local variable available within all functions.
+*/
+declare function mx(obj: IArguments): IEnumerable<any>
 
 
 /**
 * Defines an enumerator, which supports an iteration over the properties of the specified object.
 * @param obj A regular Object.
 */
-declare function mx<T>(obj: Object): IEnumerable<KeyValuePair<string, T>>
+declare function mx(obj: Object): IEnumerable<KeyValuePair<string, any>>
