@@ -79,7 +79,6 @@
     <Content Include="test\data\qunit.css" />
     <Content Include="test\data\qunit.js" />
     <Content Include="test\runtime.html" />
-    <Content Include="test\data\setup.js" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\typescript\multiplex.d.ts" />
