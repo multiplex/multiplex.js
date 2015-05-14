@@ -559,9 +559,9 @@ declare module mx {
         * that is the  bitwise complement of the index of the  next element that is larger than item or, if there is no larger element, 
         * the bitwise complement of List.count().
         * @param item The object to locate. The value can be null for reference types.
-        * @param index The zero-based starting index of the range to search.
+        * @param comparer The Comparer implementation to use when comparing elements.
         */
-        binarySearch(item: T, index: number): number
+        binarySearch(item: T, comparer: Comparer<T>): number
 
 
         /**
@@ -571,9 +571,10 @@ declare module mx {
         * the bitwise complement of List.count().
         * @param item The object to locate. The value can be null for reference types.
         * @param index The zero-based starting index of the range to search.
+        * @param count The length of the range to search.
         * @param comparer The Comparer implementation to use when comparing elements.
         */
-        binarySearch(item: T, index: number, comparer: Comparer<T>): number
+        binarySearch(item: T, index: number, count: number, comparer: Comparer<T>): number
 
 
         /**
