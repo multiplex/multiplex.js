@@ -81,7 +81,7 @@
 
         var _f1 = mx.runtime.lambda<number, number>("t => t * t"),
             _f2 = mx.runtime.lambda<number, number, number>("(t, u) => t + u"),
-            _f3 = mx.runtime.lambda<number>("(t, u, r) => t + u + r"),
+            _f3 = mx.runtime.lambda<number, number, number, number>("(t, u, r) => t + u + r"),
             _f4 = mx.runtime.lambda<number, string, { id: number; name: string }>("(t, u) => {id:t, name:u}");
 
         assert.ok(_f1(2) === 4, "square root lambda!");
