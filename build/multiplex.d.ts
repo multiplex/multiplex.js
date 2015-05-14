@@ -2391,7 +2391,7 @@ declare module mx {
         * Computes the sum of the sequence of values that are obtained by invoking a transform function on each element of the input sequence.
         * @param selector A transform function to apply to each element.
         */
-        sum(selector: (item: number) => number): number
+        sum(selector: (item: T) => number): number
 
 
         /**
