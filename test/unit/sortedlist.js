@@ -5,33 +5,30 @@
 
     var SortedList = mx.SortedList,
         Dictionary = mx.Dictionary,
-        Comparer = mx.Comparer,
-        NumericComparer = Comparer.create(function (a, b) {
-            return a - b;
-        });
+        Comparer = mx.Comparer;
 
 
     function CreateDictionary() {
-        var dic = new Dictionary();
-        dic.add(1, "A");
-        dic.add(2, "B");
-        dic.add(3, "C");
-        dic.add(4, "D");
-        dic.add(5, "E");
+        var _dic = new Dictionary();
+        _dic.add(1, "A");
+        _dic.add(2, "B");
+        _dic.add(3, "C");
+        _dic.add(4, "D");
+        _dic.add(5, "E");
 
-        return dic;
+        return _dic;
     }
 
 
     function CreateSortedList() {
-        var list = new SortedList();
-        list.add(5, "E");
-        list.add(3, "C");
-        list.add(2, "B");
-        list.add(4, "D");
-        list.add(1, "A");
+        var _list = new SortedList();
+        _list.add(5, "E");
+        _list.add(3, "C");
+        _list.add(2, "B");
+        _list.add(4, "D");
+        _list.add(1, "A");
 
-        return list;
+        return _list;
     }
 
 
@@ -40,13 +37,16 @@
 
     QUnit.test("constructor", function (assert) {
 
-        var _dic = CreateDictionary(),
-            _s1 = new SortedList(),
-            _s2 = new SortedList(5),
-            _s3 = new SortedList(_dic),
-            _s4 = new SortedList(NumericComparer),
-            _s5 = new SortedList(5, NumericComparer),
-            _s6 = new SortedList(_dic, NumericComparer);
+        var _comparer = Comparer.create(function (a, b) {
+            return a - b;
+        }),
+        _dic = CreateDictionary(),
+        _s1 = new SortedList(),
+        _s2 = new SortedList(5),
+        _s3 = new SortedList(_dic),
+        _s4 = new SortedList(_comparer),
+        _s5 = new SortedList(5, _comparer),
+        _s6 = new SortedList(_dic, _comparer);
 
 
         assert.ok(_s1.count() === 0 && _s1.capacity() === 0, "initialize a SortedList!");
@@ -109,22 +109,21 @@
 
     QUnit.test("containsKey", function (assert) {
 
-        var _list = CreateSortedList();
+        var _list1 = CreateSortedList(),
+            _list2 = new SortedList({
+                compare: function (a, b) { return a.name.localeCompare(b.name); }
+            });
 
-        assert.ok(_list.containsKey(1) === true, "sorted-list contains key!");
-        assert.ok(_list.containsKey(10) === false, "sorted-list does not contain key!");
+        assert.ok(_list1.containsKey(1) === true, "sorted-list contains key!");
+        assert.ok(_list1.containsKey(10) === false, "sorted-list does not contain key!");
 
-        _list = new SortedList({
-            compare: function (a, b) { return a.name.localeCompare(b.name); }
-        });
+        _list2.add({ id: 2, name: "B" }, 2);
+        _list2.add({ id: 5, name: "E" }, 5);
+        _list2.add({ id: 4, name: "D" }, 4);
+        _list2.add({ id: 3, name: "C" }, 3);
+        _list2.add({ id: 1, name: "A" }, 1);
 
-        _list.add({ id: 2, name: "B" }, 2);
-        _list.add({ id: 5, name: "E" }, 5);
-        _list.add({ id: 4, name: "D" }, 4);
-        _list.add({ id: 3, name: "C" }, 3);
-        _list.add({ id: 1, name: "A" }, 1);
-
-        assert.ok(_list.containsKey({ id: 3, name: "C" }), "sorted-list contains key using specified comparer");
+        assert.ok(_list2.containsKey({ id: 3, name: "C" }), "sorted-list contains key using specified comparer");
     });
 
 
@@ -246,35 +245,34 @@
 
     QUnit.test("evaluate sorting", function (assert) {
 
-        var list = CreateSortedList();
+        var _list1 = CreateSortedList(),
+            _list2 = new SortedList({
+                compare: function (a, b) { return a.name.localeCompare(b.name); }
+            });
 
-        list.remove(5);
-        list.add(6, "F");
-        list.remove(4);
-        list.add(7, "G");
-        list.remove(3);
-        list.add(8, "H");
-        list.remove(2);
-        list.add(9, "I");
-        list.remove(1);
-        list.add(10, "J");
+        _list1.remove(5);
+        _list1.add(6, "F");
+        _list1.remove(4);
+        _list1.add(7, "G");
+        _list1.remove(3);
+        _list1.add(8, "H");
+        _list1.remove(2);
+        _list1.add(9, "I");
+        _list1.remove(1);
+        _list1.add(10, "J");
 
-        assert.deepEqual(list.keys(), [6, 7, 8, 9, 10], "evaluate sorted keys after multiple add/remove");
-        assert.deepEqual(list.values(), ["F", "G", "H", "I", "J"], "evaluate sorted values after multiple add/remove");
+        assert.deepEqual(_list1.keys(), [6, 7, 8, 9, 10], "evaluate sorted keys after multiple add/remove");
+        assert.deepEqual(_list1.values(), ["F", "G", "H", "I", "J"], "evaluate sorted values after multiple add/remove");
 
 
 
-        list = new SortedList({
-            compare: function (a, b) { return a.name.localeCompare(b.name); }
-        });
+        _list2.add({ id: 2, name: "B" }, 2);
+        _list2.add({ id: 5, name: "E" }, 5);
+        _list2.add({ id: 4, name: "D" }, 4);
+        _list2.add({ id: 3, name: "C" }, 3);
+        _list2.add({ id: 1, name: "A" }, 1);
 
-        list.add({ id: 2, name: "B" }, 2);
-        list.add({ id: 5, name: "E" }, 5);
-        list.add({ id: 4, name: "D" }, 4);
-        list.add({ id: 3, name: "C" }, 3);
-        list.add({ id: 1, name: "A" }, 1);
-
-        assert.deepEqual(list.keys().select("t => t.id").toArray(), [1, 2, 3, 4, 5], "evaluate sorted keys after multiple add/remove using specified comparer!");
+        assert.deepEqual(_list2.keys().select("t => t.id").toArray(), [1, 2, 3, 4, 5], "evaluate sorted keys after multiple add/remove using specified comparer!");
     });
 
 })(window);
