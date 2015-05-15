@@ -145,20 +145,20 @@ declare module mx {
 
 
     /**
-    * Performs a comparison of two objects of the same type and returns a value indicating whether one object is less than, equal to, or greater than the other.
-    * @param objA The first object to compare.
-    * @param objB The second object to compare.
-    */
-    function compare<T>(objA: T, objB: T): number;
-
-
-    /**
     * Determines whether the specified object instances are considered equal. calls the overridden "equals" method when available.
     * @param objA The first object to compare.
     * @param objB The second object to compare.
     * @param comparer An equality comparer to compare values.
     */
     function equals(objA: any, objB: any, comparer: EqualityComparer<any>): boolean;
+
+
+    /**
+    * Performs a comparison of two objects of the same type and returns a value indicating whether one object is less than, equal to, or greater than the other.
+    * @param objA The first object to compare.
+    * @param objB The second object to compare.
+    */
+    function compare<T>(objA: T, objB: T): number;
 
 
     /**
@@ -295,20 +295,26 @@ declare module mx {
         * Defines an enumerator, which supports an iteration over the specified Generator function.
         * @param func A Generator function.
         */
-        new <T>(func: () => (yielder: (value: T) => any) => void): IEnumerable<T>;
+        new <T>(func: () => (yielder: (value: T) => T) => any): IEnumerable<T>;
 
         /**
         * Defines an enumerator, which supports an iteration over the items of the specified Array-like object.
         * An Array-like object is an object which has the "length" property, eg. arguments, jQuery
         * @param obj An Array-like object.
         */
-        new <T>(obj: { length: Number }): IEnumerable<T>;
+        new <T>(obj: { length: Number;[index: number]: T }): IEnumerable<T>;
+
+        /**
+        * Defines an enumerator, which supports an iteration over the arguments local variable available within all functions.
+        * @param obj arguments local variable available within all functions.
+        */
+        new (obj: IArguments): IEnumerable<any>;
 
         /**
         * Defines an enumerator, which supports an iteration over the properties of the specified object.
         * @param obj A regular Object.
         */
-        new <T>(obj: Object): IEnumerable<KeyValuePair<string, T>>;
+        new (obj: Object): IEnumerable<KeyValuePair<string, any>>;
 
 
 
@@ -2578,7 +2584,7 @@ declare function mx<T>(func: () => (yielder: (value: T) => T) => any): IEnumerab
 * An Array-like object is an object which has the "length" property, eg. arguments, jQuery
 * @param obj An Array-like object.
 */
-declare function mx<T>(obj: { length: Number; [index: number]: T }): IEnumerable<T>
+declare function mx<T>(obj: { length: Number;[index: number]: T }): IEnumerable<T>
 
 
 /**
