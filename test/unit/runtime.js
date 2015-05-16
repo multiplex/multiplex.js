@@ -3,6 +3,12 @@
 
 (function () {
 
+    var EqualityComparer = mx.EqualityComparer;
+
+
+
+    /* Classes
+    ---------------------------------------------------------------------- */
 
     // class without equality-comparer
     function SimpleClass() {
@@ -23,6 +29,10 @@
         };
     }
 
+
+
+    /* Tests
+    ---------------------------------------------------------------------- */
 
     QUnit.module("Runtime");
 
@@ -54,7 +64,7 @@
         assert.ok(mx.equals(new Date(2015, 0, 1), new Date(2015, 0, 1)), "equals date!");
         assert.ok(mx.equals({ name: "A" }, { name: "A" }), "equals object literal!");
         assert.ok(mx.equals(new SimpleClass(), new SimpleClass()) === false, "equals class instance!");
-        assert.ok(mx.equals(new SimpleClass(), new SimpleClass(), mx.EqualityComparer.create(
+        assert.ok(mx.equals(new SimpleClass(), new SimpleClass(), EqualityComparer.create(
             function () { return 0; },
             function () { return true; }
         )), "equals class instance using comparer!");

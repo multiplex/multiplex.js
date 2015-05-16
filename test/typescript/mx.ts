@@ -1,12 +1,14 @@
 ﻿module MxTests {
 
+    import Enumerator = mx.Enumerator;
+    import Enumerable = mx.Enumerable;
 
-    /**
-    * Returns the number of elements in a sequence.
-    * @param {Enumerable} source An enumerable object.
-    * @returns {Number}
-    */
-    function MxCount(source: IEnumerable<any>): number {
+
+
+    /* Factory methods
+    ---------------------------------------------------------------------- */
+
+    function MxCount(source: Enumerable<any>): number {
         var _e = source.getEnumerator(),
             _i = 0;
 
@@ -17,6 +19,10 @@
         return _i;
     }
 
+
+
+    /* Tests
+    ---------------------------------------------------------------------- */
 
     QUnit.module("Multiplex");
 
@@ -46,20 +52,20 @@
     });
 
 
-    QUnit.test("Multiplex Iterable", function (assert) {
-        var _set = new Set(),
-            _source = mx(_set);
-
-        _set.add(1);
-        _set.add(2);
-        _set.add(3);
-        assert.ok(MxCount(_source) === 3, "Passed!");
-    });
+    //QUnit.test("Multiplex Iterable", function (assert) {
+    //    var _set = new Set(),
+    //        _source = mx(_set);
+        
+    //    _set.add(1);
+    //    _set.add(2);
+    //    _set.add(3);
+    //    assert.ok(MxCount(_source) === 3, "Passed!");
+    //});
 
 
     QUnit.test("Multiplex Custom Enumerator", function (assert) {
         var _source = mx({
-            getEnumerator: function (): IEnumerator<number> {
+            getEnumerator: function (): Enumerator<number> {
                 var count = 3, index = 0;
                 return {
                     current: undefined,
@@ -126,10 +132,10 @@
         assert.ok(mx.is(mx.range(1, 10)), "Enumerable Passed!");
         assert.ok(mx.is([1]), "Array Passed!");
         assert.ok(mx.is("mx"), "String Passed!");
-        assert.ok(mx.is(new Set()), "Iterable Passed!");
+        //assert.ok(mx.is(new Set()), "Iterable Passed!");
 
         assert.ok(mx.is({
-            getEnumerator: function (): IEnumerator<number> {
+            getEnumerator: function (): Enumerator<number> {
                 var count = 3, index = 0;
                 return {
                     current: undefined,

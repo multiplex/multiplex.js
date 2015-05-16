@@ -1,5 +1,13 @@
 ﻿module MxTests {
 
+    import HashSet = mx.HashSet;
+    import EqualityComparer = mx.EqualityComparer;
+
+
+
+    /* Factory methods
+    ---------------------------------------------------------------------- */
+
     interface SimpleObject {
         name: string;
         val: number;
@@ -19,6 +27,10 @@
         return new HashSet<SimpleObject>(_items, _comparer);
     }
 
+
+
+    /* Tests
+    ---------------------------------------------------------------------- */
 
     QUnit.module("Hashset");
 

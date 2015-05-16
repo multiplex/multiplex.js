@@ -6,10 +6,18 @@
     var Stack = mx.Stack;
 
 
+
+    /* Factory methods
+    ---------------------------------------------------------------------- */
+
     function CreateStack() {
         return new Stack(mx.range(1, 5));
     }
 
+
+
+    /* Tests
+    ---------------------------------------------------------------------- */
 
     QUnit.module("Stack");
 

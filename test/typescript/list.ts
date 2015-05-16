@@ -1,11 +1,20 @@
 ﻿module MxTests {
+    
+    import List = mx.List;
 
 
+
+    /* Factory methods
+    ---------------------------------------------------------------------- */
 
     function CreateList(): List<number> {
         return new List(1, 2, 3, 4, 5);
     }
 
+
+
+    /* Tests
+    ---------------------------------------------------------------------- */
 
     QUnit.module("List");
 

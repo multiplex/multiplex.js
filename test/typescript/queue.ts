@@ -1,9 +1,20 @@
 ﻿module MxTests {
 
+    import Queue = mx.Queue;
+
+
+
+    /* Factory methods
+    ---------------------------------------------------------------------- */
+
     function CreateQueue(): Queue<number> {
         return new Queue(mx.range(1, 5));
     }
 
+
+
+    /* Tests
+    ---------------------------------------------------------------------- */
 
     QUnit.module("Queue");
 

@@ -4,6 +4,9 @@
 (function () {
 
 
+    /* Classes
+    ---------------------------------------------------------------------- */
+
     // class without equality-comparer
     function SimpleClass() {
     }
@@ -26,7 +29,9 @@
     }
 
 
-    // factory methods
+
+    /* Factory methods
+    ---------------------------------------------------------------------- */
 
     var _time = new Date().getTime();
 
@@ -99,6 +104,8 @@
 
 
 
+    /* Tests
+    ---------------------------------------------------------------------- */
 
     QUnit.module("Linq");
 

@@ -1,6 +1,9 @@
 ﻿module MxTests {
 
 
+    /* Classes
+    ---------------------------------------------------------------------- */
+
     // class without equality-comparer
     class SimpleClass {
     };
@@ -27,7 +30,9 @@
     };
 
 
-    // factory methods
+
+    /* Factory methods
+    ---------------------------------------------------------------------- */
 
     var _time = new Date().getTime();
 
@@ -83,6 +88,9 @@
     }
 
 
+
+    /* Tests
+    ---------------------------------------------------------------------- */
 
     QUnit.module("Linq");
 

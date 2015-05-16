@@ -1,5 +1,13 @@
 ﻿module MxTests {
+    
+    import Dictionary = mx.Dictionary;
+    import SortedList = mx.SortedList;
+    import Comparer = mx.Comparer;
 
+
+
+    /* Factory methods
+    ---------------------------------------------------------------------- */
 
     function CreateDictionary(): Dictionary<number, string> {
         var _dic = new Dictionary<number, string>();
@@ -24,6 +32,10 @@
         return _list;
     }
 
+
+
+    /* Tests
+    ---------------------------------------------------------------------- */
 
     QUnit.module("SortedList");
 

@@ -1,10 +1,20 @@
 ﻿module MxTests {
 
+    import Stack = mx.Stack;
+
+
+
+    /* Factory methods
+    ---------------------------------------------------------------------- */
 
     function CreateStack(): Stack<number> {
         return new Stack(mx.range(1, 5));
     }
 
+
+
+    /* Tests
+    ---------------------------------------------------------------------- */
 
     QUnit.module("Stack");
 

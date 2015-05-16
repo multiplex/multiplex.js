@@ -1,10 +1,21 @@
 ﻿module MxTests {
 
+    import List = mx.List;
+    import ReadOnlyCollection = mx.ReadOnlyCollection;
+
+
+
+    /* Factory methods
+    ---------------------------------------------------------------------- */
 
     function CreateCollection(): ReadOnlyCollection<number> {
         return new ReadOnlyCollection(new List<number>(1, 2, 3, 4, 5));
     }
 
+
+
+    /* Tests
+    ---------------------------------------------------------------------- */
 
     QUnit.module("ReadOnlyCollection");
 

@@ -1,5 +1,12 @@
 ﻿module MxTests {
 
+    import EqualityComparer = mx.EqualityComparer;
+
+
+
+    /* Classes
+    ---------------------------------------------------------------------- */
+
     // class without equality-comparer
     class SimpleClass {
     };
@@ -27,6 +34,8 @@
 
 
 
+    /* Tests
+    ---------------------------------------------------------------------- */
 
     QUnit.module("Runtime");
 

@@ -1,10 +1,17 @@
 ﻿module MxTests {
 
 
+    /* Factory methods
+    ---------------------------------------------------------------------- */
+
     function CreateLookup(): mx.Lookup<number, number> {
         return mx([1, 1, 2, 3, 3, 4, 4, 4]).toLookup(t => t);
     }
 
+
+
+    /* Tests
+    ---------------------------------------------------------------------- */
 
     QUnit.module("Lookup");
 

@@ -8,6 +8,10 @@
         EqualityComparer = mx.EqualityComparer;
 
 
+
+    /* Factory methods
+    ---------------------------------------------------------------------- */
+
     function CreateDictionary() {
         var dic = new Dictionary();
         dic.add(1, "A");
@@ -19,6 +23,10 @@
         return dic;
     }
 
+
+
+    /* Tests
+    ---------------------------------------------------------------------- */
 
     QUnit.module("Dictionary");
 
@@ -198,7 +206,7 @@
 
         assert.deepEqual(_dic.select("t => t.key").toArray(), [1, 2, 3, 4, 5], "dictionary select keys, to array!");
         assert.deepEqual(_dic.select("t => t.value").toArray(), ["A", "B", "C", "D", "E"], "dictionary select values, to array!");
-        assert.ok(_dic.toArray().first().key === 1 && _dic.toArray().first().value === "A", "dictionary select key-value items!");
+        assert.ok(_dic.toArray()[0].key === 1 && _dic.toArray()[0].value === "A", "dictionary select key-value items!");
     });
 
 })(window);

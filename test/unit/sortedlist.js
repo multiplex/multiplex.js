@@ -3,10 +3,14 @@
 
 (function () {
 
-    var SortedList = mx.SortedList,
-        Dictionary = mx.Dictionary,
+    var Dictionary = mx.Dictionary,
+        SortedList = mx.SortedList,
         Comparer = mx.Comparer;
 
+
+
+    /* Factory methods
+    ---------------------------------------------------------------------- */
 
     function CreateDictionary() {
         var _dic = new Dictionary();
@@ -31,6 +35,10 @@
         return _list;
     }
 
+
+
+    /* Tests
+    ---------------------------------------------------------------------- */
 
     QUnit.module("SortedList");
 

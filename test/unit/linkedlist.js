@@ -7,10 +7,18 @@
         LinkedListNode = mx.LinkedListNode;
 
 
+
+    /* Factory methods
+    ---------------------------------------------------------------------- */
+
     function CreateLinkedList() {
         return new LinkedList(mx.range(1, 5));
     }
 
+
+
+    /* Tests
+    ---------------------------------------------------------------------- */
 
     QUnit.module("LinkedList");
 

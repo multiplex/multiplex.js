@@ -6,10 +6,18 @@
     var Queue = mx.Queue;
 
 
+
+    /* Factory methods
+    ---------------------------------------------------------------------- */
+
     function CreateQueue() {
         return new Queue(mx.range(1, 5));
     }
 
+
+
+    /* Tests
+    ---------------------------------------------------------------------- */
 
     QUnit.module("Queue");
 

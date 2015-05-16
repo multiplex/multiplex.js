@@ -3,8 +3,13 @@
 
 (function () {
 
-    var HashSet = mx.HashSet;
+    var HashSet = mx.HashSet,
+        EqualityComparer = mx.EqualityComparer;
 
+
+
+    /* Factory methods
+    ---------------------------------------------------------------------- */
 
     function CreateNumericHashSet() {
         return new HashSet(mx.range(1, 5));
@@ -22,6 +27,10 @@
     }
 
 
+
+    /* Tests
+    ---------------------------------------------------------------------- */
+
     QUnit.module("Hashset");
 
 
@@ -29,7 +38,7 @@
 
         assert.ok(new HashSet().count() === 0, "initialize an empty HashSet!");
         assert.ok(new HashSet(mx.range(1, 5)).count() === 5, "initialize a HashSet using specified collection!");
-        assert.ok(new HashSet(mx.EqualityComparer.defaultComparer).count() === 0, "initialize a HashSet using specified equality comparer!");
+        assert.ok(new HashSet(EqualityComparer.defaultComparer).count() === 0, "initialize a HashSet using specified equality comparer!");
         assert.ok(CreateObjectHashSet().count() === 2, "initialize a HashSet using specified collection and equality comparer!");
     });
 
@@ -86,7 +95,7 @@
         var _hash1 = CreateNumericHashSet(),
             _hash2 = CreateObjectHashSet();
 
-        assert.ok(_hash1.comparer() === mx.EqualityComparer.defaultComparer, "HashSet default comparer!");
+        assert.ok(_hash1.comparer() === EqualityComparer.defaultComparer, "HashSet default comparer!");
         assert.ok(_hash2.comparer().equals({ name: "A", val: 1 }, { name: "A", val: 2 }), "HashSet custom comparer!");
     });
 

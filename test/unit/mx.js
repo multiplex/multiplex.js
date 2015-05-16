@@ -5,11 +5,11 @@
 
     var Enumerator = mx.Enumerator;
 
-    /**
-    * Returns the number of elements in a sequence.
-    * @param {Enumerable} source An enumerable object.
-    * @returns {Number}
-    */
+
+
+    /* Factory methods
+    ---------------------------------------------------------------------- */
+
     function MxCount(source) {
         var _e = source.getEnumerator(),
             _i = 0;
@@ -21,6 +21,10 @@
         return _i;
     }
 
+
+
+    /* Tests
+    ---------------------------------------------------------------------- */
 
     QUnit.module("Multiplex");
 

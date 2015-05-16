@@ -1,10 +1,21 @@
 ﻿module MxTests {
 
+    import LinkedListNode = mx.LinkedListNode;
+    import LinkedList = mx.LinkedList;
+
+
+
+    /* Factory methods
+    ---------------------------------------------------------------------- */
 
     function CreateLinkedList(): LinkedList<number> {
         return new LinkedList(mx.range(1, 5));
     }
+    
 
+
+    /* Tests
+    ---------------------------------------------------------------------- */
 
     QUnit.module("LinkedList");
 
