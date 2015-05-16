@@ -13,6 +13,7 @@
 /build/[Oo]bj
 
 # Others
+/.vs
 /_other
 /node_modules
 /test/typescript/*.js
