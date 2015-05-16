@@ -110,14 +110,14 @@ mx([1, 2, 3, 4, 5]).forEach("t => console.log(t)");
 Since LINQ queries execution is deferred, you can chain different LINQ operations together to produce more complex expressions. You compose queries in method syntax by chaining the method calls together. And because a query variable does not store the results of the query, you can modify it or use it as the basis for a new query at any time, even after it has been executed.
 
 ````javascript
-Enumerable.range(0, 1000)
+mx.range(0, 1000)
     .where("t => t % 2 == 0")
     .orderByDescending("t => t")
     .take(10)
     .toArray();
 ````
 
-In the example above, `Enumerable.range` method is used to create 1000 integer numbers starting from 0, then filter even numbers, sort the result in descending order and only take 10 of them. The result is the last 10 even numbers less than 1000:
+In the example above, `mx.range` method is used to create 1000 integer numbers starting from 0, then filter even numbers, sort the result in descending order and only take 10 of them. The result is the last 10 even numbers less than 1000:
 
 `[998, 996, 994, 992, 990, 988, 986, 984, 982, 980]`
 
@@ -186,8 +186,8 @@ The followings are types which can be used to create an *Enumerable* in Multiple
 #### - Multiplex Collections
 All the collections defined in Multiplex are *Enumerable*, and can be used in LINQ queries:
 ````javascript
-var list = new List([1, 2, 3, 4]);      // a list of numbers
-var set = new HashSet([1, 2, 3, 4]);    // a set of numbers
+var list = new mx.List([1, 2, 3, 4]);      // a list of numbers
+var set = new mx.HashSet([1, 2, 3, 4]);    // a set of numbers
 var dic= list.toDictionary("t => t");   // a dictionary with numeric keys
 
 list.select("t => t").toArray();        // [1, 2, 3, 4]
@@ -304,7 +304,7 @@ Both iterable and iterator protocols are supported in Multiplex:
 The following example demonstrates the use of *iterable protocol* and `for-of` loop in an *Enumerable* object:
 
 ````javascript
-var source = Enumerable.range(0, 4);      // An Enumerable of numbers
+var source = mx.range(0, 4);      // An Enumerable of numbers
 var iterable = source[Symbol.iterator];   // Retrieve @@iterator method
 
 for(var value of source){
@@ -355,7 +355,7 @@ The following example creates an infinite *Enumerator*, each time the `next()` m
 
 ````javascript
 var index = 0;
-var gen = new Enumerator(function(yielder){
+var gen = new mx.Enumerator(function(yielder){
   yielder(index++);
 });
 
@@ -371,7 +371,7 @@ To use a legacy generator function with Multiplex, you need to wrap the process 
 ````javascript
 var source = mx(function(){
   var count = 3, index = 0;
-  return new Enumerator(function(yielder){
+  return new mx.Enumerator(function(yielder){
     if(index++ < count)
       yielder(index);
   });
