@@ -41,7 +41,7 @@
 
 
     QUnit.test("Multiplex Object", function (assert) {
-        var _source = mx({ name: "mx", id: 1 });
+        var _source = mx({ name: "mx", id: 1 });           
         assert.ok(MxCount(_source) === 2, "Passed!");
     });
 
@@ -53,7 +53,7 @@
 
 
     //QUnit.test("Multiplex Iterable", function (assert) {
-    //    var _set = new Set(),
+    //    var _set = new Set<number>(),
     //        _source = mx(_set);
         
     //    _set.add(1);
@@ -64,7 +64,7 @@
 
 
     QUnit.test("Multiplex Custom Enumerator", function (assert) {
-        var _source = mx({
+        var _source = mx(<Enumerable<number>>{
             getEnumerator: function (): Enumerator<number> {
                 var count = 3, index = 0;
                 return {
@@ -100,7 +100,7 @@
             var count = 3, 
                 index = 0;
 
-            return new Enumerator(function (yielder) {
+            return new Enumerator<number>(function (yielder) {
                 if (index++ < count) {
                     yielder(index);
                 }

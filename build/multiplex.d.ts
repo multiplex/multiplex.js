@@ -2569,9 +2569,9 @@ declare function mx(str: string): mx.Enumerable<string>
 
 /**
 * Defines an enumerator, which supports an iteration over the specified Generator function.
-* @param func A Generator function.
+* @param factory An Enumerator factory function.
 */
-declare function mx<T>(func: () => (yielder: (value: T) => T) => any): mx.Enumerable<T>
+declare function mx<T>(factory: () => mx.Enumerator<T>): mx.Enumerable<T>
 
 
 /**
