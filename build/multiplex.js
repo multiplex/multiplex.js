@@ -5828,22 +5828,7 @@
 
     $mixin(global, {
         mx: mx,
-        multiplex: mx,
-        Enumerable: __Enumerable,
-        Enumerator: __Enumerator,
-        ReadOnlyCollection: __ReadOnlyCollection,
-        List: __List,
-        SortedList: __SortedList,
-        Dictionary: __Dictionary,
-        KeyValuePair: __KeyValuePair,
-        HashSet: __HashSet,
-        LinkedList: __LinkedList,
-        LinkedListNode: __LinkedListNode,
-        Queue: __Queue,
-        Stack: __Stack,
-
-        Comparer: __Comparer,
-        EqualityComparer: __EqualityComparer,
+        multiplex: mx
     });
 
 

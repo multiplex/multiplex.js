@@ -16,29 +16,9 @@ declare module 'mx' {
 
 import multiplex = mx;
 
-import IEnumerator = mx.IEnumerator;
-import IEnumerable = mx.IEnumerable;
 
-import Enumerator = mx.Enumerator;
-import Enumerable = mx.Enumerable;
-import Comparer = mx.Comparer;
-import EqualityComparer = mx.EqualityComparer;
-import ReadOnlyCollection = mx.ReadOnlyCollection;
-import List = mx.List;
-import SortedList = mx.SortedList;
-import KeyValuePair = mx.KeyValuePair;
-import Dictionary = mx.Dictionary;
-import HashSet = mx.HashSet;
-import LinkedListNode = mx.LinkedListNode;
-import LinkedList = mx.LinkedList;
-import Queue = mx.Queue;
-import Stack = mx.Stack;
-
-
-interface String extends IEnumerable<string> { }
-interface Array<T> extends IEnumerable<T> { }
-
-
+interface String extends mx.Enumerable<string> { }
+interface Array<T> extends mx.Enumerable<T> { }
 
 
 declare module mx {
@@ -171,7 +151,7 @@ declare module mx {
     /**
     * Returns an empty Enumerable.
     */
-    function empty<T>(): IEnumerable<T>;
+    function empty<T>(): Enumerable<T>;
 
 
     /**
@@ -186,7 +166,7 @@ declare module mx {
     * @param start The value of the first integer in the sequence.
     * @param count The number of sequential integers to generate.
     */
-    function range(start: number, count: number): IEnumerable<number>;
+    function range(start: number, count: number): Enumerable<number>;
 
 
     /**
@@ -194,7 +174,7 @@ declare module mx {
     * @param element The value to be repeated.
     * @param count The number of times to repeat the value in the generated sequence.
     */
-    function repeat<T>(element: T, count: number): IEnumerable<T>;
+    function repeat<T>(element: T, count: number): Enumerable<T>;
 
 
 
@@ -206,7 +186,7 @@ declare module mx {
     /**
     * Supports a simple iteration over a collection.
     */
-    interface IEnumerator<T> {
+    interface Enumerator<T> {
 
         /**
         * Advances the enumerator to the next element of the collection.
@@ -224,7 +204,7 @@ declare module mx {
     * Supports a simple iteration over a collection.
     */
     var Enumerator: {
-        new <T>(factory: (yielder: (value: T) => any) => void): IEnumerator<T>;
+        new <T>(factory: (yielder: (value: T) => any) => void): Enumerator<T>;
     }
 
 
@@ -237,19 +217,19 @@ declare module mx {
     /**
     * Exposes the enumerator, which supports a simple iteration over a collection of a specified type.
     */
-    interface IEnumerable<T> {
+    interface Enumerable<T> {
 
         /** 
         * Returns an enumerator that iterates through the collection. 
         */
-        getEnumerator(): IEnumerator<T>;
+        getEnumerator(): Enumerator<T>;
     }
 
 
     /**
     * An object's iterator result returned by ES6 iteretor's next() method.
     */
-    interface IEnumeratorResult<T> {
+    interface EnumeratorResult<T> {
         /**
         * Has the value true if the iterator is past the end of the iterated sequence. In this case value optionally specifies the return value of the iterator.
         */
@@ -270,51 +250,51 @@ declare module mx {
         * Exposes the enumerator, which supports an iteration over the specified Enumerable object.
         * @param obj An Enumerable object.
         */
-        new <T>(obj: IEnumerable<T>): IEnumerable<T>;
+        new <T>(obj: Enumerable<T>): Enumerable<T>;
 
         /**
         * Exposes the iterator, which supports an iteration over the specified Iterable object.
         * An Iterable object, is an object that implements the @@iterator method. eg. Map, Set and Iterable objects.
         * @param obj An Iterable object that implements the @@iterator method.
         */
-        new <T>(obj: { "@@iterator": () => { next: () => IEnumeratorResult<T> } }): IEnumerable<T>;
+        new <T>(obj: { "@@iterator": () => { next: () => EnumeratorResult<T> } }): Enumerable<T>;
 
         /**
         * Defines an enumerator, which supports an iteration over the items of the specified Array object.
         * @param arr An array object.
         */
-        new <T>(arr: T[]): IEnumerable<T>;
+        new <T>(arr: T[]): Enumerable<T>;
 
         /**
         * Defines an enumerator, which supports an iteration over the characters of the specified String object.
         * @param str A string object.
         */
-        new (str: string): IEnumerable<string>;
+        new (str: string): Enumerable<string>;
 
         /**
         * Defines an enumerator, which supports an iteration over the specified Generator function.
         * @param func A Generator function.
         */
-        new <T>(func: () => (yielder: (value: T) => T) => any): IEnumerable<T>;
+        new <T>(func: () => (yielder: (value: T) => T) => any): Enumerable<T>;
 
         /**
         * Defines an enumerator, which supports an iteration over the items of the specified Array-like object.
         * An Array-like object is an object which has the "length" property, eg. arguments, jQuery
         * @param obj An Array-like object.
         */
-        new <T>(obj: { length: Number;[index: number]: T }): IEnumerable<T>;
+        new <T>(obj: { length: Number;[index: number]: T }): Enumerable<T>;
 
         /**
         * Defines an enumerator, which supports an iteration over the arguments local variable available within all functions.
         * @param obj arguments local variable available within all functions.
         */
-        new (obj: IArguments): IEnumerable<any>;
+        new (obj: IArguments): Enumerable<any>;
 
         /**
         * Defines an enumerator, which supports an iteration over the properties of the specified object.
         * @param obj A regular Object.
         */
-        new (obj: Object): IEnumerable<KeyValuePair<string, any>>;
+        new (obj: Object): Enumerable<KeyValuePair<string, any>>;
 
 
 
@@ -322,7 +302,7 @@ declare module mx {
         /**
         * Returns an empty Enumerable.
         */
-        empty<T>(): IEnumerable<T>;
+        empty<T>(): Enumerable<T>;
 
         /**
         * Detects if an object is Enumerable.
@@ -335,14 +315,14 @@ declare module mx {
         * @param start The value of the first integer in the sequence.
         * @param count The number of sequential integers to generate.
         */
-        range(start: number, count: number): IEnumerable<number>;
+        range(start: number, count: number): Enumerable<number>;
 
         /**
         * Generates a sequence that contains one repeated value.
         * @param element The value to be repeated.
         * @param count The number of times to repeat the value in the generated sequence.
         */
-        repeat<T>(element: T, count: number): IEnumerable<T>;
+        repeat<T>(element: T, count: number): Enumerable<T>;
     }
 
 
@@ -444,7 +424,7 @@ declare module mx {
     /**
     * Initializes a new instance of the abstract Collection class.
     */
-    interface Collection<T> extends IEnumerable<T> {
+    interface Collection<T> extends Enumerable<T> {
 
         /**
         * Gets the number of elements contained in the Collection.
@@ -540,7 +520,7 @@ declare module mx {
         * Adds the elements of the specified collection to the end of the List.
         * @param collection The collection whose elements should be added to the end of the List.
         */
-        addRange(collection: IEnumerable<T>): void
+        addRange(collection: Enumerable<T>): void
 
 
         /**
@@ -727,7 +707,7 @@ declare module mx {
         * @param index The zero-based index at which item should be inserted.
         * @param collection The collection whose elements should be inserted into the List.
         */
-        insertRange(index: number, collection: IEnumerable<T>): void
+        insertRange(index: number, collection: Enumerable<T>): void
 
 
         /**
@@ -873,7 +853,7 @@ declare module mx {
         * and has sufficient capacity to accommodate the number of elements copied.
         * @param collection The collection whose elements are copied to the new list.
         */
-        new <T>(collection: IEnumerable<T>): List<T>
+        new <T>(collection: Enumerable<T>): List<T>
     }
 
 
@@ -1296,56 +1276,56 @@ declare module mx {
         * Removes all elements in the specified collection from the current set.
         * @param other The collection of items to remove from the set.
         */
-        exceptWith(other: IEnumerable<T>): void
+        exceptWith(other: Enumerable<T>): void
 
 
         /**
         * Modifies the current set so that it contains only elements that are also in a specified collection.
         * @param other The collection to compare to the current set.
         */
-        intersectWith(other: IEnumerable<T>): void
+        intersectWith(other: Enumerable<T>): void
 
 
         /**
         * Determines whether the current set is a proper (strict) subset of a specified collection.
         * @param other The collection to compare to the current set.
         */
-        isProperSubsetOf(other: IEnumerable<T>): boolean
+        isProperSubsetOf(other: Enumerable<T>): boolean
 
 
         /**
         * Determines whether the current set is a proper (strict) superset of a specified collection.
         * @param other The collection to compare to the current set.
         */
-        isProperSupersetOf(other: IEnumerable<T>): boolean
+        isProperSupersetOf(other: Enumerable<T>): boolean
 
 
         /**
         * Determines whether a set is a subset of a specified collection.
         * @param other The collection to compare to the current set.
         */
-        isSubsetOf(other: IEnumerable<T>): boolean
+        isSubsetOf(other: Enumerable<T>): boolean
 
 
         /**
         * Determines whether the current set is a superset of a specified collection.
         * @param other The collection to compare to the current set.
         */
-        isSupersetOf(other: IEnumerable<T>): boolean
+        isSupersetOf(other: Enumerable<T>): boolean
 
 
         /**
         * Determines whether the current set overlaps with the specified collection.
         * @param other The collection to compare to the current set.
         */
-        overlaps(other: IEnumerable<T>): boolean
+        overlaps(other: Enumerable<T>): boolean
 
 
         /**
         * Determines whether the current set and the specified collection contain the same elements.
         * @param other The collection to compare to the current set.
         */
-        setEquals(other: IEnumerable<T>): boolean
+        setEquals(other: Enumerable<T>): boolean
 
 
         /**
@@ -1353,7 +1333,7 @@ declare module mx {
         * either in the current set or in the specified collection, but not both.
         * @param other The collection to compare to the current set.
         */
-        symmetricExceptWith(other: IEnumerable<T>): void
+        symmetricExceptWith(other: Enumerable<T>): void
 
 
         /**
@@ -1361,7 +1341,7 @@ declare module mx {
         * in either the current set or the specified collection.
         * @param other The collection to compare to the current set.
         */
-        unionWith(other: IEnumerable<T>): void
+        unionWith(other: Enumerable<T>): void
 
     }
 
@@ -1379,7 +1359,7 @@ declare module mx {
         * and contains elements copied from the specified collection.
         * @param collection The collection whose elements are copied to the new set.
         */
-        new <T>(collection: IEnumerable<T>): HashSet<T>
+        new <T>(collection: Enumerable<T>): HashSet<T>
 
 
         /**
@@ -1395,7 +1375,7 @@ declare module mx {
         * @param collection The collection whose elements are copied to the new set.
         * @param comparer The EqualityComparer implementation to use when comparing values in the set.
         */
-        new <T>(collection: IEnumerable<T>, comparer: EqualityComparer<T>): HashSet<T>
+        new <T>(collection: Enumerable<T>, comparer: EqualityComparer<T>): HashSet<T>
     }
 
 
@@ -1608,7 +1588,7 @@ declare module mx {
         * Initializes a new instance of the LinkedList class that contains elements copied from the specified Enumerable.
         * @param collection The collection to copy elements from.
         */
-        new <T>(collection: IEnumerable<T>): LinkedList<T>
+        new <T>(collection: Enumerable<T>): LinkedList<T>
     }
 
 
@@ -1673,7 +1653,7 @@ declare module mx {
         * Initializes a new instance of the Queue class that contains elements copied from the specified collection.
         * @param collection The collection to copy elements from.
         */
-        new <T>(collection: IEnumerable<T>): Queue<T>
+        new <T>(collection: Enumerable<T>): Queue<T>
     }
 
 
@@ -1739,7 +1719,7 @@ declare module mx {
         * Initializes a new instance of the Stack class that contains elements copied from the specified collection.
         * @param collection The collection to copy elements from.
         */
-        new <T>(collection: IEnumerable<T>): Stack<T>
+        new <T>(collection: Enumerable<T>): Stack<T>
     }
 
 
@@ -1767,7 +1747,7 @@ declare module mx {
         * Gets the value associated with the specified key.
         * @param key The key of the element to add.
         */
-        get(key: TKey): IEnumerable<TElement>
+        get(key: TKey): Enumerable<TElement>
     }
 
 
@@ -1798,7 +1778,7 @@ declare module mx {
     /**
     * Exposes the enumerator, which supports a simple iteration over a collection of a specified type.
     */
-    interface OrderedEnumerable<TElement> extends IEnumerable<TElement> {
+    interface OrderedEnumerable<TElement> extends Enumerable<TElement> {
 
         /**
         * Performs a subsequent ordering on the elements of an OrderedEnumerable<TElement> according to a key.
@@ -1853,7 +1833,7 @@ declare module mx {
     /**
     * Defines Enumerable extention methods, applies on String, Array and Enumerable
     */
-    interface IEnumerable<T> {
+    interface Enumerable<T> {
 
         /**
         * Applies an accumulator function over a sequence.
@@ -1909,7 +1889,7 @@ declare module mx {
         /**
         * Returns the input typed as Enumerable.
         */
-        asEnumerable(): IEnumerable<T>
+        asEnumerable(): Enumerable<T>
 
 
         /**
@@ -1929,7 +1909,7 @@ declare module mx {
         * Concatenates two sequences.
         * @param second The sequence to concatenate to the first sequence.
         */
-        concat(second: IEnumerable<T>): IEnumerable<T>
+        concat(second: Enumerable<T>): Enumerable<T>
 
 
         /**
@@ -1963,34 +1943,34 @@ declare module mx {
         /**
         * Returns the elements of the specified sequence or null if the sequence is empty.
         */
-        defaultIfEmpty(): IEnumerable<T>
+        defaultIfEmpty(): Enumerable<T>
 
 
         /**
         * Returns the elements of the specified sequence or the specified value in  a singleton collection if the sequence is empty.
         * @param defaultValue The value to return if the sequence is empty.
         */
-        defaultIfEmpty(defaultValue: T): IEnumerable<T>
+        defaultIfEmpty(defaultValue: T): Enumerable<T>
 
 
         /**
         * Returns distinct elements from a sequence by using the default equality comparer to compare values.
         */
-        distinct(): IEnumerable<T>
+        distinct(): Enumerable<T>
 
 
         /**
         * Produces the set difference of two sequences by using the EqualityComparer to compare values.
         * @param comparer An EqualityComparer to compare values.
         */
-        distinct(comparer: EqualityComparer<T>): IEnumerable<T>
+        distinct(comparer: EqualityComparer<T>): Enumerable<T>
 
 
         /**
         * Produces the set difference of two sequences by using the default equality comparer to compare values.
         * @param second An Enumerable whose elements that also occur in the first sequence will cause those elements to be removed from the returned sequence.
         */
-        except(second: IEnumerable<T>): IEnumerable<T>
+        except(second: Enumerable<T>): Enumerable<T>
 
 
         /**
@@ -1998,7 +1978,7 @@ declare module mx {
         * @param second An Enumerable whose elements that also occur in the first sequence will cause those elements to be removed from the returned sequence.
         * @param comparer An EqualityComparer to compare values.
         */
-        except(second: IEnumerable<T>, comparer: EqualityComparer<T>): IEnumerable<T>
+        except(second: Enumerable<T>, comparer: EqualityComparer<T>): Enumerable<T>
 
 
         /**
@@ -2060,7 +2040,7 @@ declare module mx {
         * Groups the elements of a sequence according to a specified key selector function.
         * @param keySelector A function to extract the key for each element.
         */
-        groupBy<TKey>(keySelector: (item: T) => TKey): IEnumerable<Grouping<TKey, T>>;
+        groupBy<TKey>(keySelector: (item: T) => TKey): Enumerable<Grouping<TKey, T>>;
 
 
         /**
@@ -2068,7 +2048,7 @@ declare module mx {
         * @param keySelector A function to extract the key for each element.
         * @param comparer An equality comparer to compare values.
         */
-        groupBy<TKey>(keySelector: (item: T) => TKey, comparer: EqualityComparer<TKey>): IEnumerable<Grouping<TKey, T>>;
+        groupBy<TKey>(keySelector: (item: T) => TKey, comparer: EqualityComparer<TKey>): Enumerable<Grouping<TKey, T>>;
 
 
         /**
@@ -2076,7 +2056,7 @@ declare module mx {
         * @param keySelector A function to extract the key for each element.
         * @param elementSelector A function to map each source element to an element in the Grouping.
         */
-        groupBy<TKey, TElement>(keySelector: (item: T) => TKey, elementSelector: (item: T) => TElement): IEnumerable<Grouping<TKey, TElement>>;
+        groupBy<TKey, TElement>(keySelector: (item: T) => TKey, elementSelector: (item: T) => TElement): Enumerable<Grouping<TKey, TElement>>;
 
 
         /**
@@ -2086,7 +2066,7 @@ declare module mx {
         * @param elementSelector A function to map each source element to an element in the Grouping.
         * @param comparer An equality comparer to compare values.
         */
-        groupBy<TKey, TElement>(keySelector: (item: T) => TKey, elementSelector: (item: T) => TElement, comparer: EqualityComparer<TKey>): IEnumerable<Grouping<TKey, TElement>>;
+        groupBy<TKey, TElement>(keySelector: (item: T) => TKey, elementSelector: (item: T) => TElement, comparer: EqualityComparer<TKey>): Enumerable<Grouping<TKey, TElement>>;
 
 
         /**
@@ -2095,7 +2075,7 @@ declare module mx {
         * @param elementSelector A function to map each source element to an element in the Grouping. 
         * @param resultSelector A function to extract the key for each element.
         */
-        groupBy<TKey, TElement, TResult>(keySelector: (item: T) => TKey, elementSelector: (item: T) => TElement, resultSelector: (key: TKey, elements: IEnumerable<TElement>) => TResult): IEnumerable<TResult>;
+        groupBy<TKey, TElement, TResult>(keySelector: (item: T) => TKey, elementSelector: (item: T) => TElement, resultSelector: (key: TKey, elements: Enumerable<TElement>) => TResult): Enumerable<TResult>;
 
 
         /**
@@ -2106,7 +2086,7 @@ declare module mx {
         * @param resultSelector A function to extract the key for each element.
         * @param comparer An equality comparer to compare values.
         */
-        groupBy<TKey, TElement, TResult>(keySelector: (item: T) => TKey, elementSelector: (item: T) => TElement, resultSelector: (key: TKey, elements: IEnumerable<TElement>) => TResult, comparer: EqualityComparer<TKey>): IEnumerable<TResult>;
+        groupBy<TKey, TElement, TResult>(keySelector: (item: T) => TKey, elementSelector: (item: T) => TElement, resultSelector: (key: TKey, elements: Enumerable<TElement>) => TResult, comparer: EqualityComparer<TKey>): Enumerable<TResult>;
 
 
         /**
@@ -2116,7 +2096,7 @@ declare module mx {
         * @param innerKeySelector A function to extract the join key from each element of the second sequence.
         * @param resultSelector A function to create a result element from an element from the first sequence and a collection of matching elements from the second sequence.
         */
-        groupJoin<TInner, TKey, TResult>(inner: IEnumerable<TInner>, outerKeySelector: (item: T) => TKey, innerKeySelector: (item: TInner) => TKey, resultSelector: (outer: T, inner: IEnumerable<TInner>) => TResult): IEnumerable<TResult>;
+        groupJoin<TInner, TKey, TResult>(inner: Enumerable<TInner>, outerKeySelector: (item: T) => TKey, innerKeySelector: (item: TInner) => TKey, resultSelector: (outer: T, inner: Enumerable<TInner>) => TResult): Enumerable<TResult>;
 
 
         /**
@@ -2127,14 +2107,14 @@ declare module mx {
         * @param resultSelector A function to create a result element from an element from the first sequence and a collection of matching elements from the second sequence.
         * @param comparer An equality comparer to compare values.
         */
-        groupJoin<TInner, TKey, TResult>(inner: IEnumerable<TInner>, outerKeySelector: (item: T) => TKey, innerKeySelector: (item: TInner) => TKey, resultSelector: (outer: T, inner: IEnumerable<TInner>) => TResult, comparer: EqualityComparer<TKey>): IEnumerable<TResult>;
+        groupJoin<TInner, TKey, TResult>(inner: Enumerable<TInner>, outerKeySelector: (item: T) => TKey, innerKeySelector: (item: TInner) => TKey, resultSelector: (outer: T, inner: Enumerable<TInner>) => TResult, comparer: EqualityComparer<TKey>): Enumerable<TResult>;
 
 
         /**
         * Produces the set intersection of two sequences by using the default equality comparer to compare values.
         * @param second An Enumerable whose distinct elements that also appear in the first sequence will be returned.
         */
-        intersect(second: IEnumerable<T>): IEnumerable<T>;
+        intersect(second: Enumerable<T>): Enumerable<T>;
 
 
         /**
@@ -2142,7 +2122,7 @@ declare module mx {
         * @param second An Enumerable whose distinct elements that also appear in the first sequence will be returned.
         * @param comparer An EqualityComparer to compare values.
         */
-        intersect(second: IEnumerable<T>, comparer: EqualityComparer<T>): IEnumerable<T>;
+        intersect(second: Enumerable<T>, comparer: EqualityComparer<T>): Enumerable<T>;
 
 
         /**
@@ -2152,7 +2132,7 @@ declare module mx {
         * @param innerKeySelector A function to extract the join key from each element of the second sequence.
         * @param resultSelector A function to create a result element from an element from the first sequence and a collection of matching elements from the second sequence.
         */
-        join<TInner, TKey, TResult>(inner: IEnumerable<TInner>, outerKeySelector: (item: T) => TKey, innerKeySelector: (item: TInner) => TKey, resultSelector: (outer: T, inner: TInner) => TResult): IEnumerable<TResult>;
+        join<TInner, TKey, TResult>(inner: Enumerable<TInner>, outerKeySelector: (item: T) => TKey, innerKeySelector: (item: TInner) => TKey, resultSelector: (outer: T, inner: TInner) => TResult): Enumerable<TResult>;
 
 
         /**
@@ -2163,7 +2143,7 @@ declare module mx {
         * @param resultSelector A function to create a result element from an element from the first sequence and a collection of matching elements from the second sequence.
         * @param comparer An equality comparer to compare values.
         */
-        join<TInner, TKey, TResult>(inner: IEnumerable<TInner>, outerKeySelector: (item: T) => TKey, innerKeySelector: (item: TInner) => TKey, resultSelector: (outer: T, inner: TInner) => TResult, comparer: EqualityComparer<TKey>): IEnumerable<TResult>;
+        join<TInner, TKey, TResult>(inner: Enumerable<TInner>, outerKeySelector: (item: T) => TKey, innerKeySelector: (item: TInner) => TKey, resultSelector: (outer: T, inner: TInner) => TResult, comparer: EqualityComparer<TKey>): Enumerable<TResult>;
 
 
         /**
@@ -2230,7 +2210,7 @@ declare module mx {
         * Filters the elements of an Enumerable based on a specified type.
         * @param type The type to filter the elements of the sequence on.
         */
-        ofType<TResult>(type: { new (...args: any[]): TResult }): IEnumerable<TResult>
+        ofType<TResult>(type: { new (...args: any[]): TResult }): Enumerable<TResult>
 
 
         /**
@@ -2270,14 +2250,14 @@ declare module mx {
         /**
         * Inverts the order of the elements in a sequence.
         */
-        reverse(): IEnumerable<T>
+        reverse(): Enumerable<T>
 
 
         /**
         * Determines whether two sequences are equal by comparing the elements by using the default equality comparer for their type.
         * @param second An Enumerable to compare to the first sequence.
         */
-        sequenceEqual(second: IEnumerable<T>): boolean
+        sequenceEqual(second: Enumerable<T>): boolean
 
 
         /**
@@ -2285,35 +2265,35 @@ declare module mx {
         * @param second An Enumerable to compare to the first sequence.
         * @param comparer The EqualityComparer to compare values.
         */
-        sequenceEqual(second: IEnumerable<T>, comparer: EqualityComparer<T>): boolean
+        sequenceEqual(second: Enumerable<T>, comparer: EqualityComparer<T>): boolean
 
 
         /**
         * Projects each element of a sequence into a new form.
         * @param selector A transform function to apply to each source element.
         */
-        select<TResult>(selector: (item: T) => TResult): IEnumerable<TResult>
+        select<TResult>(selector: (item: T) => TResult): Enumerable<TResult>
 
 
         /**
         * Projects each element of a sequence into a new form by incorporating the element's index.
         * @param selector A transform function to apply to each source element; the second parameter of the function represents the index of the source element.
         */
-        select<TResult>(selector: (item: T, index: number) => TResult): IEnumerable<TResult>
+        select<TResult>(selector: (item: T, index: number) => TResult): Enumerable<TResult>
 
 
         /**
         * Projects each element of a sequence to an Enumerable and flattens the resulting sequences into one sequence.
         * @param collectionSelector A transform function to apply to each source element.
         */
-        selectMany<TResult>(selector: (item: T) => IEnumerable<TResult>): IEnumerable<TResult>;
+        selectMany<TResult>(selector: (item: T) => Enumerable<TResult>): Enumerable<TResult>;
 
 
         /**
         * Projects each element of a sequence to an Enumerable and flattens the resulting sequences into one sequence. The index of each source element is used in the projected form of that element.
         * @param collectionSelector A transform function to apply to each source element; the second parameter of the function represents the index of the source element.
         */
-        selectMany<TResult>(selector: (item: T, index: number) => IEnumerable<TResult>): IEnumerable<TResult>;
+        selectMany<TResult>(selector: (item: T, index: number) => Enumerable<TResult>): Enumerable<TResult>;
 
 
         /**
@@ -2321,7 +2301,7 @@ declare module mx {
         * @param collectionSelector A transform function to apply to each source element; the second parameter of the function represents the index of the source element.
         * @param resultSelector A transform function to apply to each element of the intermediate sequence.
         */
-        selectMany<TCollection, TResult>(collectionSelector: (item: T) => IEnumerable<TCollection>, resultSelector: (item: T, collection: TCollection) => TResult): IEnumerable<TResult>;
+        selectMany<TCollection, TResult>(collectionSelector: (item: T) => Enumerable<TCollection>, resultSelector: (item: T, collection: TCollection) => TResult): Enumerable<TResult>;
 
 
         /**
@@ -2329,7 +2309,7 @@ declare module mx {
         * @param collectionSelector A transform function to apply to each source element; the second parameter of the function represents the index of the source element.
         * @param resultSelector A transform function to apply to each element of the intermediate sequence.
         */
-        selectMany<TCollection, TResult>(collectionSelector: (item: T, index: number) => IEnumerable<TCollection>, resultSelector: (item: T, collection: TCollection) => TResult): IEnumerable<TResult>;
+        selectMany<TCollection, TResult>(collectionSelector: (item: T, index: number) => Enumerable<TCollection>, resultSelector: (item: T, collection: TCollection) => TResult): Enumerable<TResult>;
 
 
         /**
@@ -2370,21 +2350,21 @@ declare module mx {
         * Bypasses a specified number of elements in a sequence and then returns the remaining elements.
         * @param count The number of elements to skip before returning the remaining elements.
         */
-        skip(count: number): IEnumerable<T>
+        skip(count: number): Enumerable<T>
 
 
         /**
         * Bypasses elements in a sequence as long as a specified condition is true and then returns the remaining elements.
         * @param predicate A function to test each source element for a condition.
         */
-        skipWhile(predicate: (item: T) => boolean): IEnumerable<T>
+        skipWhile(predicate: (item: T) => boolean): Enumerable<T>
 
 
         /**
         * Bypasses elements in a sequence as long as a specified condition is true and then returns the remaining elements. The element's index is used in the logic of the predicate function.
         * @param predicate A function to test each source element for a condition; the second parameter of the function represents the index of the source element.
         */
-        skipWhile(predicate: (item: T, index: number) => boolean): IEnumerable<T>
+        skipWhile(predicate: (item: T, index: number) => boolean): Enumerable<T>
 
 
         /**
@@ -2404,21 +2384,21 @@ declare module mx {
         * Returns a specified number of contiguous elements from the start of a sequence.
         * @param count The number of elements to return.
         */
-        take(count: number): IEnumerable<T>
+        take(count: number): Enumerable<T>
 
 
         /**
         * Returns elements from a sequence as long as a specified condition is true.
         * @param predicate A function to test each source element for a condition.
         */
-        takeWhile(predicate: (item: T) => boolean): IEnumerable<T>
+        takeWhile(predicate: (item: T) => boolean): Enumerable<T>
 
 
         /**
         * Returns elements from a sequence as long as a specified condition is true. The element's index is used in the logic of the predicate function.
         * @param predicate A function to test each source element for a condition; the second parameter of the function represents the index of the source element.
         */
-        takeWhile(predicate: (item: T, index: number) => boolean): IEnumerable<T>
+        takeWhile(predicate: (item: T, index: number) => boolean): Enumerable<T>
 
 
         /**
@@ -2501,7 +2481,7 @@ declare module mx {
         * Produces the set union of two sequences by using the default equality comparer.
         * @param second An Enumerable whose distinct elements form the second set for the union.
         */
-        union(second: IEnumerable<T>): IEnumerable<T>
+        union(second: Enumerable<T>): Enumerable<T>
 
 
         /**
@@ -2509,21 +2489,21 @@ declare module mx {
         * @param second An Enumerable whose distinct elements form the second set for the union.
         * @param comparer The EqualityComparer to compare values.
         */
-        union(second: IEnumerable<T>, comparer: EqualityComparer<T>): IEnumerable<T>
+        union(second: Enumerable<T>, comparer: EqualityComparer<T>): Enumerable<T>
 
 
         /**
         * Filters a sequence of values based on a predicate.
         * @param predicate A function to test each source element for a condition.
         */
-        where(predicate: (item: T) => boolean): IEnumerable<T>;
+        where(predicate: (item: T) => boolean): Enumerable<T>;
 
 
         /**
         * Filters a sequence of values based on a predicate. Each element's index is used in the logic of the predicate function.
         * @param predicate A function to test each source element for a condition; the second parameter of the function represents the index of the source element.
         */
-        where(predicate: (item: T, index: number) => boolean): IEnumerable<T>;
+        where(predicate: (item: T, index: number) => boolean): Enumerable<T>;
 
 
         /**
@@ -2531,7 +2511,7 @@ declare module mx {
         * @param second The second sequence to merge.
         * @param resultSelector A function that specifies how to merge the elements from the two sequences.
         */
-        zip<TSecond, TResult>(second: IEnumerable<TSecond>, resultSelector: (first: T, second: TSecond) => TResult): IEnumerable<TResult>;
+        zip<TSecond, TResult>(second: Enumerable<TSecond>, resultSelector: (first: T, second: TSecond) => TResult): Enumerable<TResult>;
 
     }
 }
@@ -2547,7 +2527,7 @@ declare module mx {
 * Exposes the enumerator, which supports an iteration over the specified Enumerable object.
 * @param obj An Enumerable object.
 */
-declare function mx<T>(obj: IEnumerable<T>): IEnumerable<T>
+declare function mx<T>(obj: mx.Enumerable<T>): mx.Enumerable<T>
 
 
 /**
@@ -2555,28 +2535,28 @@ declare function mx<T>(obj: IEnumerable<T>): IEnumerable<T>
 * An Iterable object, is an object that implements the @@iterator method. eg. Map, Set and Iterable objects.
 * @param obj An Iterable object that implements the @@iterator method.
 */
-declare function mx<T>(obj: { "@@iterator": () => { next: () => mx.IEnumeratorResult<T> } }): IEnumerable<T>
+declare function mx<T>(obj: { "@@iterator": () => { next: () => mx.EnumeratorResult<T> } }): mx.Enumerable<T>
 
 
 /**
 * Defines an enumerator, which supports an iteration over the items of the specified Array object.
 * @param arr An array object.
 */
-declare function mx<T>(arr: T[]): IEnumerable<T>
+declare function mx<T>(arr: T[]): mx.Enumerable<T>
 
 
 /**
 * Defines an enumerator, which supports an iteration over the characters of the specified String object.
 * @param str A string object.
 */
-declare function mx(str: string): IEnumerable<string>
+declare function mx(str: string): mx.Enumerable<string>
 
 
 /**
 * Defines an enumerator, which supports an iteration over the specified Generator function.
 * @param func A Generator function.
 */
-declare function mx<T>(func: () => (yielder: (value: T) => T) => any): IEnumerable<T>
+declare function mx<T>(func: () => (yielder: (value: T) => T) => any): mx.Enumerable<T>
 
 
 /**
@@ -2584,18 +2564,18 @@ declare function mx<T>(func: () => (yielder: (value: T) => T) => any): IEnumerab
 * An Array-like object is an object which has the "length" property, eg. arguments, jQuery
 * @param obj An Array-like object.
 */
-declare function mx<T>(obj: { length: Number;[index: number]: T }): IEnumerable<T>
+declare function mx<T>(obj: { length: Number;[index: number]: T }): mx.Enumerable<T>
 
 
 /**
 * Defines an enumerator, which supports an iteration over the arguments local variable available within all functions.
 * @param obj arguments local variable available within all functions.
 */
-declare function mx(obj: IArguments): IEnumerable<any>
+declare function mx(obj: IArguments): mx.Enumerable<any>
 
 
 /**
 * Defines an enumerator, which supports an iteration over the properties of the specified object.
 * @param obj A regular Object.
 */
-declare function mx(obj: Object): IEnumerable<KeyValuePair<string, any>>
+declare function mx(obj: Object): mx.Enumerable<mx.KeyValuePair<string, any>>
