@@ -98,8 +98,8 @@
 
         var _dic = CreateDictionary();
 
-        assert.deepEqual(_dic.keys(), [1, 2, 3, 4, 5], "dictionary keys!");
-        assert.deepEqual(new Dictionary().keys(), [], "empty dictionary keys!");
+        assert.deepEqual(_dic.keys().toArray(), [1, 2, 3, 4, 5], "dictionary keys!");
+        assert.deepEqual(new Dictionary().keys().toArray(), [], "empty dictionary keys!");
     });
 
 
@@ -107,8 +107,8 @@
 
         var _dic = CreateDictionary();
 
-        assert.deepEqual(_dic.values(), ["A", "B", "C", "D", "E"], "dictionary values!");
-        assert.deepEqual(new Dictionary().values(), [], "empty dictionary values!");
+        assert.deepEqual(_dic.values().toArray(), ["A", "B", "C", "D", "E"], "dictionary values!");
+        assert.deepEqual(new Dictionary().values().toArray(), [], "empty dictionary values!");
     });
 
 

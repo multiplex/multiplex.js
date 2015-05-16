@@ -1920,7 +1920,7 @@ intellisense.annotate(mx.SortedList.prototype, {
         ///     <summary>
         ///         Gets a collection containing the keys in the SortedList, in sorted order.
         ///     </summary>
-        ///     <returns type="Array" />
+        ///     <returns type="Collection" />
         /// </signature>
     },
     "values": function () {
@@ -1928,7 +1928,7 @@ intellisense.annotate(mx.SortedList.prototype, {
         ///     <summary>
         ///         Gets a collection containing the values in the SortedLis.
         ///     </summary>
-        ///     <returns type="Array" />
+        ///     <returns type="Collection" />
         /// </signature>
     },
     "indexOfKey": function () {
@@ -2066,17 +2066,17 @@ intellisense.annotate(mx.Dictionary.prototype, {
     "keys": function () {
         /// <signature>
         ///     <summary>
-        ///         Gets a Array containing the keys of the Dictionary.
+        ///         Gets a Collection containing the keys of the Dictionary.
         ///     </summary>
-        ///     <returns type="Array" />
+        ///     <returns type="Collection" />
         /// </signature>
     },
     "values": function () {
         /// <signature>
         ///     <summary>
-        ///         Gets a Array containing the values of the Dictionary.
+        ///         Gets a Collection containing the values of the Dictionary.
         ///     </summary>
-        ///     <returns type="Array" />
+        ///     <returns type="Collection" />
         /// </signature>
     },
     "get": function () {
@@ -2857,16 +2857,6 @@ intellisense.annotate(mx.OrderedEnumerable.prototype, {
 /* window
 ---------------------------------------------------------------------- */
 intellisense.annotate(window, {
-    "mx": mx.Enumerable,
-    "ReadOnlyCollection": mx.ReadOnlyCollection,
-    "List": mx.List,
-    "Dictionary": mx.Dictionary,
-    "KeyValuePair": mx.KeyValuePair,
-    "HashSet": mx.HashSet,
-    "LinkedList": mx.LinkedList,
-    "LinkedListNode": mx.LinkedListNode,
-    "Queue": mx.Queue,
-    "Stack": mx.Stack,
-    "Comparer": mx.Comparer,
-    "EqualityComparer": mx.EqualityComparer
+    "mx": mx,
+    "multiplex": mx
 });

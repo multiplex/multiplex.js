@@ -919,13 +919,13 @@ declare module mx {
         /**
         * Gets a collection containing the keys in the SortedList, in sorted order.
         */
-        keys(): TKey[]
+        keys(): Collection<TKey>
 
 
         /**
         * Gets a collection containing the values in the SortedLis.
         */
-        values(): TValue[]
+        values(): Collection<TValue>
 
 
         /**
@@ -1113,15 +1113,15 @@ declare module mx {
 
 
         /**
-        * Gets a Array containing the keys of the Dictionary.
+        * Gets a Collection containing the keys of the Dictionary.
         */
-        keys(): TKey[]
+        keys(): Collection<TKey>
 
 
         /**
-        * Gets a Array containing the values in the Dictionary.
+        * Gets a Collection containing the values in the Dictionary.
         */
-        values(): TValue[]
+        values(): Collection<TValue>
 
 
         /**

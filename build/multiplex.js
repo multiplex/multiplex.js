@@ -1159,8 +1159,12 @@
 
         /**
         * Initializes a new instance of the abstract Collection class.
+        * @param {Enumerable=} value Enumerable whose elements are copied to the new collection.
         */
-        function Collection() {
+        function Collection(value) {
+            if (__Enumerable.is(value)) {
+                $prop(this, $buffer(value, false));
+            }
         }
 
 
@@ -1170,6 +1174,13 @@
             * @returns {Number}
             */
             count: function () {
+
+                var _source = $prop(this);
+
+                if(_source){
+                    return $count(_source);
+                }
+
                 /// implemented in sub-classes
                 $error(ERROR_METHOD_NOT_IMPLEMENTED);
             },
@@ -1188,6 +1199,13 @@
             * @returns {Enumerator}
             */
             getEnumerator: function () {
+
+                var _source = $prop(this);
+
+                if (_source) {
+                    return $enumerator(_source);
+                }
+
                 /// implemented in sub-classes
                 $error(ERROR_METHOD_NOT_IMPLEMENTED);
             },
@@ -2045,20 +2063,20 @@
 
             /**
             * Gets a collection containing the keys in the SortedList, in sorted order.
-            * @returns {Array}
+            * @returns {Collection}
             */
             keys: function () {
                 var _source = $prop(this);
-                return _source.keys.slice(0, _source.size);
+                return new __Collection(_source.keys.slice(0, _source.size));
             },
 
             /**
             * Gets a collection containing the values in the SortedLis.
-            * @returns {Array}
+            * @returns {Collection}
             */
             values: function () {
                 var _source = $prop(this);
-                return _source.values.slice(0, _source.size);
+                return new __Collection(_source.values.slice(0, _source.size));
             },
 
             /**
@@ -2350,16 +2368,16 @@
             },
 
             /**
-            * Gets a Array containing the keys of the Dictionary.
-            * @returns {Array}
+            * Gets a Collection containing the keys of the Dictionary.
+            * @returns {Collection}
             */
             keys: function () {
                 return $prop(this).keys();
             },
 
             /**
-            * Gets a Array containing the values in the Dictionary.
-            * @returns {Array}
+            * Gets a Collection containing the values in the Dictionary.
+            * @returns {Collection}
             */
             values: function () {
                 return $prop(this).values();
@@ -2648,8 +2666,8 @@
             },
 
             /**
-            * Gets a Array containing the keys of the HashTable.
-            * @returns {Array}
+            * Gets a Collection containing the keys of the HashTable.
+            * @returns {Collection}
             */
             keys: function () {
                 var _count = this._count,
@@ -2666,12 +2684,12 @@
                     }
                 }
 
-                return _arr;
+                return new __Collection(_arr);
             },
 
             /**
-            * Gets a Array containing the values in the HashTable.
-            * @returns {Array}
+            * Gets a Collection containing the values in the HashTable.
+            * @returns {Collection}
             */
             values: function () {
                 var _count = this._count,
@@ -2688,7 +2706,7 @@
                     }
                 }
 
-                return _arr;
+                return new __Collection(_arr);
             },
 
             /** 

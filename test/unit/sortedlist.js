@@ -79,7 +79,7 @@
     QUnit.test("get", function (assert) {
 
         var _list = CreateSortedList();
-
+        
         assert.ok(_list.get(1) === "A", "sorted-list get!");
         assert.throws(function () {
             _list.get(10);
@@ -148,8 +148,8 @@
 
         var _list = CreateSortedList();
 
-        assert.deepEqual(_list.keys(), [1, 2, 3, 4, 5], "sorted-list keys!");
-        assert.deepEqual(new SortedList().keys(), [], "empty sorted-list keys!");
+        assert.deepEqual(_list.keys().toArray(), [1, 2, 3, 4, 5], "sorted-list keys!");
+        assert.deepEqual(new SortedList().keys().toArray(), [], "empty sorted-list keys!");
     });
 
 
@@ -157,8 +157,8 @@
 
         var _list = CreateSortedList();
 
-        assert.deepEqual(_list.values(), ["A", "B", "C", "D", "E"], "sorted-list values!");
-        assert.deepEqual(new SortedList().values(), [], "empty sorted-list values!");
+        assert.deepEqual(_list.values().toArray(), ["A", "B", "C", "D", "E"], "sorted-list values!");
+        assert.deepEqual(new SortedList().values().toArray(), [], "empty sorted-list values!");
     });
 
 
@@ -269,8 +269,8 @@
         _list1.remove(1);
         _list1.add(10, "J");
 
-        assert.deepEqual(_list1.keys(), [6, 7, 8, 9, 10], "evaluate sorted keys after multiple add/remove");
-        assert.deepEqual(_list1.values(), ["F", "G", "H", "I", "J"], "evaluate sorted values after multiple add/remove");
+        assert.deepEqual(_list1.keys().toArray(), [6, 7, 8, 9, 10], "evaluate sorted keys after multiple add/remove");
+        assert.deepEqual(_list1.values().toArray(), ["F", "G", "H", "I", "J"], "evaluate sorted values after multiple add/remove");
 
 
 
