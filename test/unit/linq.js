@@ -243,7 +243,7 @@
             _arr3 = CreateComplexObjectLiteralArray();
 
         assert.ok(mx(_arr1).except(CreateNumberArray()).count() === 0, "Array of first 10 numbers except first 10 numbers!");
-        assert.deepEqual(_arr1.except([0, 1, 2, 3, 4]).toArray(), [5, 6, 7, 8, 9], "Array of first 10 numbers except first 5 numbers!");
+        assert.deepEqual(mx(_arr1).except([0, 1, 2, 3, 4]).toArray(), [5, 6, 7, 8, 9], "Array of first 10 numbers except first 5 numbers!");
         assert.ok(mx(_arr2).except([{}]).count() === 0, "Array of 10 empty object literal except an empty object literal!");
         assert.ok(mx(_arr3).except([{ name: "n5", inner: null }]).count() === 10, "Array of 10 distinct complex object literal without equality-comparer!");
         assert.ok(mx(_arr3).except([{ name: "n5", inner: null }], {
