@@ -1431,7 +1431,7 @@
             * @param {Number} arrayIndex The zero-based index in array at which copying begins.
             */
             copyTo: function (array, arrayIndex) {
-                $bufferTo(this.items(), array, arrayIndex);
+                $bufferTo(this, array, arrayIndex);
             },
 
             /**
@@ -3872,7 +3872,7 @@
             * @param {Number} arrayIndex The zero-based index in array at which copying begins.
             */
             copyTo: function (array, arrayIndex) {
-                $bufferTo($prop(this), array, arrayIndex);
+                $bufferTo(this, array, arrayIndex);
             },
 
             /**
@@ -3983,7 +3983,7 @@
             * @param {Number} arrayIndex The zero-based index in array at which copying begins.
             */
             copyTo: function (array, arrayIndex) {
-                $bufferTo($prop(this), array, arrayIndex);
+                $bufferTo(this, array, arrayIndex);
             },
 
             /**
