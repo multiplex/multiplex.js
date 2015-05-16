@@ -440,6 +440,21 @@ declare module mx {
         copyTo(array: T[], arrayIndex: number): void
     }
 
+    var Collection: {
+
+        /**
+        * Initializes a new instance of the Collection class that is empty.
+        */
+        new <T>(): Collection<T>
+
+
+        /**
+        * Initializes a new instance of the Collection class that is wrapper around the specified Enumerable.
+        * @param value The Enumerable to wrap.
+        */
+        new <T>(value: Enumerable<T>): Collection<T>
+    }
+
 
 
 
