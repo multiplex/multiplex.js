@@ -1,7 +1,7 @@
 /// <reference path="../data/_references.js" />
 
 
-(function (global) {
+(function () {
 
     var Enumerator = mx.Enumerator;
 
@@ -55,8 +55,8 @@
 
 
     QUnit.test("Multiplex Iterable", function (assert) {
-        if (global.Set) {
-            var _set = new global.Set(),
+        if (window.Set) {
+            var _set = new window.Set(),
                 _source = mx(_set);
 
             _set.add(1);
@@ -138,8 +138,8 @@
         assert.ok(mx.is([1]), "Array Passed!");
         assert.ok(mx.is("mx"), "String Passed!");
 
-        if (global.Set) {
-            assert.ok(mx.is(new global.Set([1, 2, 3])), "Iterable Passed!");
+        if (window.Set) {
+            assert.ok(mx.is(new window.Set([1, 2, 3])), "Iterable Passed!");
         }
 
         assert.ok(mx.is({
@@ -167,4 +167,4 @@
         catch (e) { assert.ok(true, "Generator not implemented by the browser"); }
     });
 
-})(window);
+})();

@@ -58,4 +58,4 @@
         assert.deepEqual(_col.select("t => t * 2").where("t => t > 5").toArray(), [6, 8, 10], "select-where-toArray over a collection!");
     });
 
-})(window);
+})();

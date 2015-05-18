@@ -283,4 +283,4 @@
         assert.deepEqual(_list2.keys().select("t => t.id").toArray(), [1, 2, 3, 4, 5], "evaluate sorted keys after multiple add/remove using specified comparer!");
     });
 
-})(window);
+})();

@@ -54,4 +54,4 @@
         assert.deepEqual(_lookup.select("t => t.count()").toArray(), [2, 1, 2, 3], "lookup select items count!");
     });
 
-})(window);
+})();

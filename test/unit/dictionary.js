@@ -209,4 +209,4 @@
         assert.ok(_dic.toArray()[0].key === 1 && _dic.toArray()[0].value === "A", "dictionary select key-value items!");
     });
 
-})(window);
+})();
