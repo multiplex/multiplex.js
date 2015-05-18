@@ -691,7 +691,7 @@
                         continue;
                     }
 
-                    if (!$computeEquals(_val, objB[_prop])) {
+                    if (!$computeEquals(_val, objB[_prop], true)) {
                         return false;
                     }
                 }
