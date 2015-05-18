@@ -173,6 +173,12 @@ intellisense.annotate(mx, {
         ///         Provides an abstract base class for a strongly typed collection.
         ///     </summary>
         /// </signature>
+        /// <signature>
+        ///     <summary>
+        ///         Provides an abstract base class for a strongly typed collection.
+        ///     </summary>
+        ///     <param name="value" type="Enumerable">Enumerable whose elements are copied to the new collection.</param>
+        /// </signature>
     },
     "ReadOnlyCollection": function () {
         /// <signature>
