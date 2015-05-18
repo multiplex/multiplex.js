@@ -68,6 +68,7 @@
     <Content Include="test\unit\linkedlist.js" />
     <Content Include="test\unit\lookup.js" />
     <Content Include="test\unit\runtime.js" />
+    <Content Include="test\unit\collection.js" />
     <Content Include="test\unit\stack.js" />
     <Content Include="test\unit\queue.js" />
     <Content Include="test\unit\sortedlist.js" />
@@ -98,6 +99,7 @@
     <TypeScriptCompile Include="test\typescript\readonlycollection.ts" />
     <TypeScriptCompile Include="test\typescript\runtime.ts" />
     <TypeScriptCompile Include="test\typescript\sortedlist.ts" />
+    <TypeScriptCompile Include="test\typescript\collection.ts" />
     <TypeScriptCompile Include="test\typescript\stack.ts" />
   </ItemGroup>
   <ItemGroup>
