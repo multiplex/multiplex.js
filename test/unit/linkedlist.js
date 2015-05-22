@@ -2,6 +2,7 @@
 
 
 (function () {
+    "use strict";
 
     var LinkedList = mx.LinkedList,
         LinkedListNode = mx.LinkedListNode;

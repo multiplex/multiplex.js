@@ -2,6 +2,7 @@
 
 
 (function () {
+    "use strict";
 
     var Dictionary = mx.Dictionary,
         KeyValuePair = mx.KeyValuePair,
@@ -191,9 +192,13 @@
 
         assert.ok(_pair1.key === 1 && _pair1.value === "A", "KeyValuePair get key/value!");
 
-        _pair1.key = 2;
-        _pair1.value = "B";
-        assert.ok(_pair1.key === 1 && _pair1.value === "A", "KeyValuePair key/value immutable!");
+        assert.throws(function () {
+            _pair1.key = 2;
+        }, "throws an error trysing to set KeyValuePair key!");
+
+        assert.throws(function () {
+            _pair1.value = "B";
+        }, "throws an error trysing to set KeyValuePair value!");
 
         assert.ok(mx.hash(_pair1) === mx.hash(_pair2), "KeyValuePair get hash code!");
         assert.ok(mx.equals(_pair1, _pair2), "KeyValuePair equality check!");

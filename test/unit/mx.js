@@ -2,6 +2,7 @@
 
 
 (function () {
+    "use strict";
 
     var Enumerator = mx.Enumerator;
 

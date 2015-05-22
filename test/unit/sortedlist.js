@@ -2,6 +2,7 @@
 
 
 (function () {
+    "use strict";
 
     var Dictionary = mx.Dictionary,
         SortedList = mx.SortedList,

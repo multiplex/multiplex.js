@@ -2,7 +2,7 @@
 
 
 (function () {
-
+    "use strict";
 
     /* Classes
     ---------------------------------------------------------------------- */
@@ -32,9 +32,6 @@
 
     /* Factory methods
     ---------------------------------------------------------------------- */
-
-    var _time = new Date().getTime();
-
 
     function CreateObjectLiteralArray() {
         return mx.range(0, 10).select(function () {
@@ -91,7 +88,7 @@
 
     function CreateDateArray() {
         return mx.range(0, 10).select(function (t) {
-            return new Date(_time + t);
+            return new Date(new Date().getTime() + t);
         }).toArray();
     }
 

@@ -2,6 +2,7 @@
 
 
 (function () {
+    "use strict";
 
     var List = mx.List,
         ReadOnlyCollection = mx.ReadOnlyCollection;
@@ -42,11 +43,17 @@
 
         assert.ok(_col[0] === 1, "indexer get!");
 
-        _col[0] = 0;
-        assert.ok(_col[0] === 1, "indexer set!");
+        assert.ok(function () {
+            try { _col[0] = 0; }
+            catch (e) { }
+            return _col[0] === 1;
+        }, "indexer set!");
 
-        _col[10] = 0;
-        assert.ok(_col[10] === undefined, "out of range indexer set!");
+        assert.ok(function () {
+            try { _col[10] = 0; }
+            catch (e) { }
+            return _col[10] === undefined;
+        }, "out of range indexer set!");
     });
 
 

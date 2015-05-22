@@ -2,6 +2,7 @@
 
 
 (function () {
+    "use strict";
 
     var EqualityComparer = mx.EqualityComparer;
 

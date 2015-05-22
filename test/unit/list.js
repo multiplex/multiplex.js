@@ -2,6 +2,7 @@
 
 
 (function () {
+    "use strict";
 
     var List = mx.List;
 
@@ -66,9 +67,6 @@
 
         assert.ok(_rlist.count() === 10, "readOnlyCollection count!");
         assert.ok(_rlist[0] === 0, "readOnlyCollection get!");
-
-        _rlist[0] = 100;
-        assert.ok(_rlist[0] === 0, "readOnlyCollection set!");
     });
 
 
