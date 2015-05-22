@@ -188,25 +188,34 @@ The followings are types which can be used to create an *Enumerable* in Multiple
 #### - Multiplex Collections
 All the collections defined in Multiplex are *Enumerable*, and can be used in LINQ queries:
 ````javascript
-var list = new mx.List([1, 2, 3, 4]);      // a list of numbers
-var set = new mx.HashSet([1, 2, 3, 4]);    // a set of numbers
-var dic= list.toDictionary("t => t");   // a dictionary with numeric keys
+var list = new mx.List([1, 2, 3, 4]);       // a list of numbers
+var set = new mx.HashSet([1, 2, 3, 4]);     // a set of numbers
+var dic = list.toDictionary("t => t");      // a dictionary with numeric keys
 
-list.select("t => t").toArray();        // [1, 2, 3, 4]
-set.select("t => t").toArray();         // [1, 2, 3, 4]
-dic.select("t => t.key").toArray();     // [1, 2, 3, 4]
+list.select("t => t").toArray();            // [1, 2, 3, 4]
+set.select("t => t").toArray();             // [1, 2, 3, 4]
+dic.select("t => t.key").toArray();         // [1, 2, 3, 4]
 ````
 
 <br/>
 #### - Array and String
-Arrays and Strings are enumerable per ser, to make things easy, *Enumerable* methods are applied to JavaScript built-in *String* and *Array* classes, so in short you can use LINQ methods on Array and Strings pretty much the same way you use them on *Enumerable* objects:
+*Array*s and *Strings* are *Enumerable* per ser, because they have a default iteration behavior. This means you can pass *String* or *Array* objects to any method accepting *Iterable* argument without wrapping it in an *Enumerable* object.
+This comes handy in LINQ operations, so instead of this:
 
 ````javascript
-[1, 2, 3, 4].select("t => t * t").toArray();  // [1, 4, 9, 16]
-"string".select("t => t").toArray();          // ["s", "t", "r", "i", "n", "g"]
+mx([1, 2]).union(mx([3, 4])).toArray();     // [1, 4, 9, 16]
+mx("str").union(mx("ing")).toArray();       // ["s", "t", "r", "i", "n", "g"]
+````
+
+You can write:
+
+````javascript
+mx([1, 2]).union([3, 4]).toArray();         // [1, 4, 9, 16]
+mx("str").union("ing").toArray();           // ["s", "t", "r", "i", "n", "g"]
 ````
 
 Note that, in the example above the string object is queried as a sequence of characters.
+In practice, LINQ operations accept any argument implementing [ES6 iteration protocols](https://github.com/multiplex/multiplex.js#es6-iteration-protocols).
 
 <br/>
 #### - Array-like objects: `arguments`, `NodeList`, `jQuery`
