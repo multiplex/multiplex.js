@@ -137,8 +137,8 @@ In Multiplex, equality comparison on anonymous types are defined in terms of the
 Note that in JavaScript two distinct objects are never equal for either strict or abstract comparisons:
 
 ````javascript
-{ val: 1} == { val: 1}                  // false
-{ val: 1} === { val: 1}                 // false
+{ val: 1 } == { val: 1 }                  // false
+{ val: 1 } === { val: 1 }                 // false
 ````
 
 However using `mx.equals` method you can compare two object literals which results in true if all their properties are equal:
@@ -147,10 +147,12 @@ However using `mx.equals` method you can compare two object literals which resul
 mx.equals({ val: 1 }, { val: 1 });      // true
 ````
 
-Since Multiplex LINQ operations internally make use of the `mx.equals` method, you can write expressions like this using object literals:
+Since Multiplex LINQ operations internally make use of the `mx.equals` method, you can write expressions like these using object literals:
 
 ```javascript
-mx([1, 2, 3, 4, 5]).select("t => { val: t }").contains({ val: 1 });   // true
+mx([{ val: 1 }, { val: 1 }]).contains({ val: 1 });              // true
+mx([{ val: 1 }, { val: 1 }]).distinct().count();                // 1
+mx([{ val: 1 }, { val: 1 }]).except([{ val: 1 }]).count();      // 0
 ```
 
 The following example uses object literals as the *key* for the `groupBy` operator:
