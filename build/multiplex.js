@@ -5795,7 +5795,7 @@
     * @returns {Enumerable}
     */
     function multiplex(value) {
-        return $enumerable(value);
+        return $is(value, __Enumerable) ? value : new __Enumerable(value);
     }
 
 
