@@ -1,7 +1,8 @@
 ﻿module MxTests {
+    "use strict";
 
     import Collection = mx.Collection;
-
+    var Collection = mx.Collection;
 
 
     /* Factory methods

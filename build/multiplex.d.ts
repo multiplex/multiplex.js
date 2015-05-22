@@ -1,6 +1,6 @@
 ﻿/*--------------------------------------------------------------------------
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Ver 0.9.2 (May 7, 2015)
+* Ver 0.9.3 (May 22, 2015)
 *
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under Apache License Version 2.0
@@ -9,179 +9,44 @@
 *--------------------------------------------------------------------------*/
 
 
+declare var multiplex: multiplex.MultiplexStatic;
 
-declare module 'mx' {
-    export = mx;
+
+// Support AMD require
+declare module 'multiplex' {
+    export = multiplex;
 }
 
-import multiplex = mx;
+
+// Collapse multiplex into mx
+import mx = multiplex;
 
 
-interface String extends mx.Enumerable<string> { }
-interface Array<T> extends mx.Enumerable<T> { }
+// ES6 compatibility
+interface Array<T> extends multiplex.Iterable<T> { }
+interface String extends multiplex.Iterable<string> { }
 
 
-declare module mx {
 
-
-    /* runtime module
-    ---------------------------------------------------------------------- */
+declare module multiplex {
 
     /**
-    * Provides a set of static methods that provide support for internal operations.
+    * ES6 Iterable
     */
-    export module runtime {
-        /**
-        * Serves as a hash function for a particular type, suitable for use in hashing algorithms and data structures such as a hash table.
-        * @param obj An object to retrieve the hash code for.
-        * @param override When true, uses the overriden __hash__ function if it is defined.
-        */
-        function hash(obj: any, override?: boolean): number;
-
-
-        /** 
-        * Determines whether the specified object instances are considered equal.
-        * @param objA The first object to compare.
-        * @param objB The second object to compare.
-        * @param override When true, uses the overriden __equals__ function if it is defined.
-        */
-        function equals(objA: any, objB: any, override?: boolean): boolean;
-
-
-        /**
-        * Performs a comparison of two objects of the same type and returns a value indicating whether one object is less than, equal to, or greater than the other.
-        * @param objA The first object to compare.
-        * @param objB The second object to compare.
-        */
-        function compare<T>(objA: T, objB: T): number;
-
-
-        /**
-        * Creates A function expression from the specified string lambda expression
-        * @param exp String lambda expression.
-        */
-        function lambda<T, TResult>(exp: string): (obj: T) => TResult;
-
-
-        /**
-        * Creates A function expression from the specified string lambda expression
-        * @param exp String lambda expression.
-        */
-        function lambda<T1, T2, TResult>(exp: string): (obj1: T1, obj2: T2) => TResult;
-
-
-        /**
-        * Creates A function expression from the specified string lambda expression
-        * @param exp String lambda expression.
-        */
-        function lambda<T1, T2, T3, TResult>(exp: string): (obj1: T1, obj2: T2, obj3: T3) => TResult;
-
-
-        /**
-        * Creates A function expression from the specified string lambda expression
-        * @param exp String lambda expression.
-        */
-        function lambda<TResult>(exp: string): (...args: any[]) => TResult;
-
-
-        /**
-        * Defines new or modifies existing properties directly on the specified object, returning the object.
-        * @param obj The object on which to define or modify properties.
-        * @param prop The name of the property to be defined or modified.
-        * @param attributes The descriptor for the property being defined or modified.
-        */
-        function define<T>(obj: T, prop: String, attributes: PropertyDescriptor): T;
-
-
-        /**
-        * Extends the given object by implementing supplied members.
-        * @param obj The object on which to define or modify properties.
-        * @param properties Represetnts the mixin source object
-        * @param attributes The descriptor for the property being defined or modified.
-        */
-        function mixin<T>(obj: T, properties: Object, attributes?: PropertyDescriptor): T;
+    interface Iterable<T> {
+        "@@iterator"(): Iterator<T>
+    }
+    interface Iterator<T> {
+        next(): IteratorResult<T>;
+        return?(value?: any): IteratorResult<T>;
+        throw?(e?: any): IteratorResult<T>;
+    }
+    interface IteratorResult<T> {
+        done: boolean;
+        value?: T;
     }
 
 
-
-
-
-    /* multiplex static
-    ---------------------------------------------------------------------- */
-
-    /**
-    * Gets and combines hash code for the given parameters, calls the overridden "hash" method when available.
-    * @param objs Optional number of objects to combine their hash codes.
-    */
-    function hash(...obj: any[]): number;
-
-
-    /**
-    * Determines whether the specified object instances are considered equal. calls the overridden "equals" method when available.
-    * @param objA The first object to compare.
-    * @param objB The second object to compare.
-    */
-    function equals(objA: any, objB: any): boolean;
-
-
-    /**
-    * Determines whether the specified object instances are considered equal. calls the overridden "equals" method when available.
-    * @param objA The first object to compare.
-    * @param objB The second object to compare.
-    * @param comparer An equality comparer to compare values.
-    */
-    function equals(objA: any, objB: any, comparer: EqualityComparer<any>): boolean;
-
-
-    /**
-    * Performs a comparison of two objects of the same type and returns a value indicating whether one object is less than, equal to, or greater than the other.
-    * @param objA The first object to compare.
-    * @param objB The second object to compare.
-    */
-    function compare<T>(objA: T, objB: T): number;
-
-
-    /**
-    * Extends Enumerable extension methods to the given type
-    * @param type The type to extend.
-    */
-    function enumerableExtend(type: Function): void;
-
-
-    /**
-    * Returns an empty Enumerable.
-    */
-    function empty<T>(): Enumerable<T>;
-
-
-    /**
-    * Detects if an object is Enumerable.
-    * @param obj An object to check its Enumerability.
-    */
-    function is(obj: any): boolean;
-
-
-    /**
-    * Generates a sequence of integral numbers within a specified range.
-    * @param start The value of the first integer in the sequence.
-    * @param count The number of sequential integers to generate.
-    */
-    function range(start: number, count: number): Enumerable<number>;
-
-
-    /**
-    * Generates a sequence that contains one repeated value.
-    * @param element The value to be repeated.
-    * @param count The number of times to repeat the value in the generated sequence.
-    */
-    function repeat<T>(element: T, count: number): Enumerable<T>;
-
-
-
-
-
-    /* Enumerator
-    ---------------------------------------------------------------------- */
 
     /**
     * Supports a simple iteration over a collection.
@@ -198,91 +63,44 @@ declare module mx {
         */
         current: T;
     }
-
-
-    /**
-    * Supports a simple iteration over a collection.
-    */
-    var Enumerator: {
-        new <T>(factory: (yielder: (value: T) => any) => void): Enumerator<T>;
+    interface EnumeratorConstructor {
+        new <T>(generator: (yielder: (value: T) => T) => any): Enumerator<T>;
     }
 
 
 
-
-
-    /* Enumerable
-    ---------------------------------------------------------------------- */
-
     /**
     * Exposes the enumerator, which supports a simple iteration over a collection of a specified type.
+    * Enumerable uses ES6 Iteration protocol.
     */
-    interface Enumerable<T> {
+    interface Enumerable<T> extends Iterable<T> {
 
         /** 
         * Returns an enumerator that iterates through the collection. 
         */
         getEnumerator(): Enumerator<T>;
     }
-
-
-    /**
-    * An object's iterator result returned by ES6 iteretor's next() method.
-    */
-    interface EnumeratorResult<T> {
-        /**
-        * Has the value true if the iterator is past the end of the iterated sequence. In this case value optionally specifies the return value of the iterator.
-        */
-        done: boolean;
-        /**
-        * Any JavaScript value returned by the iterator.Can be omitted when done is true.
-        */
-        value?: T;
-    }
-
-
-    /**
-    * Exposes the enumerator, which supports a simple iteration over a collection of a specified type.
-    */
-    var Enumerable: {
+    interface EnumerableConstructor {
 
         /**
         * Exposes the enumerator, which supports an iteration over the specified Enumerable object.
-        * @param obj An Enumerable object.
+        * @param obj An Iterable object. eg. Enumerable, Array, String, Set, Map, Iterable & Generators
         */
-        new <T>(obj: Enumerable<T>): Enumerable<T>;
+        new <T>(obj: Iterable<T>): Enumerable<T>;
 
-        /**
-        * Exposes the iterator, which supports an iteration over the specified Iterable object.
-        * An Iterable object, is an object that implements the @@iterator method. eg. Map, Set and Iterable objects.
-        * @param obj An Iterable object that implements the @@iterator method.
-        */
-        new <T>(obj: { "@@iterator": () => { next: () => EnumeratorResult<T> } }): Enumerable<T>;
-
-        /**
-        * Defines an enumerator, which supports an iteration over the items of the specified Array object.
-        * @param arr An array object.
-        */
-        new <T>(arr: T[]): Enumerable<T>;
-
-        /**
-        * Defines an enumerator, which supports an iteration over the characters of the specified String object.
-        * @param str A string object.
-        */
-        new (str: string): Enumerable<string>;
 
         /**
         * Defines an enumerator, which supports an iteration over the specified Generator function.
-        * @param func A Generator function.
+        * @param factory An Enumerator factory function.
         */
-        new <T>(func: () => (yielder: (value: T) => T) => any): Enumerable<T>;
+        new <T>(factory: () => Enumerator<T>): Enumerable<T>;
 
         /**
         * Defines an enumerator, which supports an iteration over the items of the specified Array-like object.
-        * An Array-like object is an object which has the "length" property, eg. arguments, jQuery
+        * An Array-like object is an object which has the "length" property and indexed properties access, eg. jQuery
         * @param obj An Array-like object.
         */
-        new <T>(obj: { length: Number;[index: number]: T }): Enumerable<T>;
+        new <T>(obj: ArrayLike<T>): Enumerable<T>;
 
         /**
         * Defines an enumerator, which supports an iteration over the arguments local variable available within all functions.
@@ -327,11 +145,6 @@ declare module mx {
 
 
 
-
-
-    /* Comparer
-    ---------------------------------------------------------------------- */
-
     /**
     * Defines a method that a type implements to compare two objects.
     */
@@ -347,13 +160,7 @@ declare module mx {
         */
         compare(x: T, y: T): number;
     }
-
-
-
-    /**
-    * Provides a base class for implementations of Comparer<T> generic interface.
-    */
-    var Comparer: {
+    interface ComparerConstructor {
 
         /**
         * Returns a default sort order comparer for the type specified by the generic argument.
@@ -368,11 +175,6 @@ declare module mx {
     }
 
 
-
-
-
-    /* EqualityComparer
-    ---------------------------------------------------------------------- */
 
     /**
     * Provides a base class for implementations of the EqualityComparer.
@@ -393,12 +195,7 @@ declare module mx {
         */
         hash(obj: T): number
     }
-
-
-    /**
-    * Provides a base class for implementations of the EqualityComparer.
-    */
-    var EqualityComparer: {
+    interface EqualityComparerConstructor {
 
         /**
         * Gets a default equality comparer for the type specified by the generic argument.
@@ -415,11 +212,6 @@ declare module mx {
     }
 
 
-
-
-
-    /* Collection
-    ---------------------------------------------------------------------- */
 
     /**
     * Initializes a new instance of the abstract Collection class.
@@ -439,8 +231,7 @@ declare module mx {
         */
         copyTo(array: T[], arrayIndex: number): void
     }
-
-    var Collection: {
+    interface CollectionConstructor {
 
         /**
         * Initializes a new instance of the Collection class that is empty.
@@ -450,17 +241,12 @@ declare module mx {
 
         /**
         * Initializes a new instance of the Collection class that is wrapper around the specified Enumerable.
-        * @param value The Enumerable to wrap.
+        * @param value The Iterable to wrap.
         */
-        new <T>(value: Enumerable<T>): Collection<T>
+        new <T>(value: Iterable<T>): Collection<T>
     }
 
 
-
-
-
-    /* ReadOnlyCollection
-    ---------------------------------------------------------------------- */
 
     /**
     * Initializes a new instance of the abstract Collection class.
@@ -494,9 +280,7 @@ declare module mx {
         */
         indexOf(item: T): number
     }
-
-
-    var ReadOnlyCollection: {
+    interface ReadOnlyCollectionConstructor {
 
         /**
         * Initializes a new instance of the ReadOnlyCollection class that is a read-only wrapper around the specified list.
@@ -506,11 +290,6 @@ declare module mx {
     }
 
 
-
-
-
-    /* List
-    ---------------------------------------------------------------------- */
 
     /**
     * Represents a strongly typed list of objects that can be accessed by index.
@@ -535,7 +314,7 @@ declare module mx {
         * Adds the elements of the specified collection to the end of the List.
         * @param collection The collection whose elements should be added to the end of the List.
         */
-        addRange(collection: Enumerable<T>): void
+        addRange(collection: Iterable<T>): void
 
 
         /**
@@ -722,7 +501,7 @@ declare module mx {
         * @param index The zero-based index at which item should be inserted.
         * @param collection The collection whose elements should be inserted into the List.
         */
-        insertRange(index: number, collection: Enumerable<T>): void
+        insertRange(index: number, collection: Iterable<T>): void
 
 
         /**
@@ -839,9 +618,7 @@ declare module mx {
         */
         trueForAll(match: (item: T) => boolean): boolean
     }
-
-
-    var List: {
+    interface ListConstructor {
 
         /**
         * Initializes a new instance of the List class that is empty.
@@ -868,15 +645,10 @@ declare module mx {
         * and has sufficient capacity to accommodate the number of elements copied.
         * @param collection The collection whose elements are copied to the new list.
         */
-        new <T>(collection: Enumerable<T>): List<T>
+        new <T>(collection: Iterable<T>): List<T>
     }
 
 
-
-
-
-    /* SortedList
-    ---------------------------------------------------------------------- */
 
     /**
     * Represents a collection of key/value pairs that are sorted by key based on the associated Comparer implementation.
@@ -994,9 +766,7 @@ declare module mx {
         */
         tryGetValue(key: TKey, callback: (value: TValue) => void): boolean
     }
-
-
-    var SortedList: {
+    interface SortedListConstructor {
 
         /**
         * Initializes a new instance of the SortedList class that is empty, 
@@ -1049,44 +819,36 @@ declare module mx {
 
 
 
-
-
-    /* KeyValuePair
-    ---------------------------------------------------------------------- */
-
     /**
-    * Initializes a new instance of the abstract Collection class.
+    * Defines a key/value pair that can be set or retrieved.
     */
-    class KeyValuePair<TKey, TValue> {
+    interface KeyValuePair<TKey, TValue> {
+
+        /**
+        * Gets the key in the key/value pair.
+        */
+        key: TKey;
+
+
+        /**
+        * Gets the value in the key/value pair.
+        */
+        value: TValue;
+    }
+    interface KeyValuePairConstructor {
 
         /**
         * Initializes a new instance of the KeyValuePair with the specified key and value.
         * @param key The object defined in each key/value pair.
         * @param value The definition associated with key.
         */
-        constructor(key: TKey, value: TValue);
-
-        /**
-        * Gets the key in the key/value pair.
-        */
-        public key: TKey;
-
-
-        /**
-        * Gets the value in the key/value pair.
-        */
-        public value: TValue;
+        new <TKey, TValue>(key: TKey, value: TValue): KeyValuePair<TKey, TValue>
     }
 
 
 
-
-
-    /* Dictionary
-    ---------------------------------------------------------------------- */
-
     /**
-    * Initializes a new instance of the abstract Collection class.
+    * Represents a collection of keys and values.
     */
     interface Dictionary<TKey, TValue> extends Collection<KeyValuePair<TKey, TValue>> {
 
@@ -1169,9 +931,7 @@ declare module mx {
         */
         remove(key: TKey): boolean
     }
-
-
-    var Dictionary: {
+    interface DictionaryConstructor {
 
         /**
         * Initializes a new instance of the Dictionary class that is empty, 
@@ -1219,11 +979,6 @@ declare module mx {
     }
 
 
-
-
-
-    /* HashSet
-    ---------------------------------------------------------------------- */
 
     /**
     * Represents a set of values.
@@ -1291,56 +1046,56 @@ declare module mx {
         * Removes all elements in the specified collection from the current set.
         * @param other The collection of items to remove from the set.
         */
-        exceptWith(other: Enumerable<T>): void
+        exceptWith(other: Iterable<T>): void
 
 
         /**
         * Modifies the current set so that it contains only elements that are also in a specified collection.
         * @param other The collection to compare to the current set.
         */
-        intersectWith(other: Enumerable<T>): void
+        intersectWith(other: Iterable<T>): void
 
 
         /**
         * Determines whether the current set is a proper (strict) subset of a specified collection.
         * @param other The collection to compare to the current set.
         */
-        isProperSubsetOf(other: Enumerable<T>): boolean
+        isProperSubsetOf(other: Iterable<T>): boolean
 
 
         /**
         * Determines whether the current set is a proper (strict) superset of a specified collection.
         * @param other The collection to compare to the current set.
         */
-        isProperSupersetOf(other: Enumerable<T>): boolean
+        isProperSupersetOf(other: Iterable<T>): boolean
 
 
         /**
         * Determines whether a set is a subset of a specified collection.
         * @param other The collection to compare to the current set.
         */
-        isSubsetOf(other: Enumerable<T>): boolean
+        isSubsetOf(other: Iterable<T>): boolean
 
 
         /**
         * Determines whether the current set is a superset of a specified collection.
         * @param other The collection to compare to the current set.
         */
-        isSupersetOf(other: Enumerable<T>): boolean
+        isSupersetOf(other: Iterable<T>): boolean
 
 
         /**
         * Determines whether the current set overlaps with the specified collection.
         * @param other The collection to compare to the current set.
         */
-        overlaps(other: Enumerable<T>): boolean
+        overlaps(other: Iterable<T>): boolean
 
 
         /**
         * Determines whether the current set and the specified collection contain the same elements.
         * @param other The collection to compare to the current set.
         */
-        setEquals(other: Enumerable<T>): boolean
+        setEquals(other: Iterable<T>): boolean
 
 
         /**
@@ -1348,7 +1103,7 @@ declare module mx {
         * either in the current set or in the specified collection, but not both.
         * @param other The collection to compare to the current set.
         */
-        symmetricExceptWith(other: Enumerable<T>): void
+        symmetricExceptWith(other: Iterable<T>): void
 
 
         /**
@@ -1356,12 +1111,10 @@ declare module mx {
         * in either the current set or the specified collection.
         * @param other The collection to compare to the current set.
         */
-        unionWith(other: Enumerable<T>): void
+        unionWith(other: Iterable<T>): void
 
     }
-
-
-    var HashSet: {
+    interface HashSetConstructor {
 
         /**
         * Initializes a new instance of the HashSet class that is empty and uses the default equality comparer for the set type.
@@ -1374,7 +1127,7 @@ declare module mx {
         * and contains elements copied from the specified collection.
         * @param collection The collection whose elements are copied to the new set.
         */
-        new <T>(collection: Enumerable<T>): HashSet<T>
+        new <T>(collection: Iterable<T>): HashSet<T>
 
 
         /**
@@ -1390,58 +1143,49 @@ declare module mx {
         * @param collection The collection whose elements are copied to the new set.
         * @param comparer The EqualityComparer implementation to use when comparing values in the set.
         */
-        new <T>(collection: Enumerable<T>, comparer: EqualityComparer<T>): HashSet<T>
+        new <T>(collection: Iterable<T>, comparer: EqualityComparer<T>): HashSet<T>
     }
 
-
-
-
-
-    /* LinkedListNode
-    ---------------------------------------------------------------------- */
+    
 
     /**
     * Represents a node in a LinkedList.
     */
-    class LinkedListNode<T> {
-
-        /**
-        * Initializes a new instance of the LinkedListNode class, containing the specified value.
-        * @param value The value to contain in the LinkedListNode
-        */
-        constructor(value: T);
-
+    interface LinkedListNode<T> {
 
         /**
         * Gets the value contained in the node.
         */
-        public value(): T
+        value(): T
 
 
         /**
         * Gets the LinkedList that the LinkedListNode belongs to.
         */
-        public list(): LinkedList<T>
+        list(): LinkedList<T>
 
 
         /**
         * Gets the next node in the LinkedList.
         */
-        public next(): LinkedListNode<T>
+        next(): LinkedListNode<T>
 
 
         /**
         * Gets the previous node in the LinkedList.
         */
-        public previous(): LinkedListNode<T>
+        previous(): LinkedListNode<T>
+    }
+    interface LinkedListNodeConstructor {
+
+        /**
+        * Initializes a new instance of the LinkedListNode class, containing the specified value.
+        * @param value The value to contain in the LinkedListNode
+        */
+        new <T>(value: T): LinkedListNode<T>
     }
 
 
-
-
-
-    /* LinkedList
-    ---------------------------------------------------------------------- */
 
     /**
     * Represents a doubly linked list.
@@ -1589,9 +1333,7 @@ declare module mx {
         */
         removeLast(): void
     }
-
-
-    var LinkedList: {
+    interface LinkedListConstructor {
 
         /**
         * Initializes a new instance of the LinkedList class that is empty.
@@ -1603,15 +1345,10 @@ declare module mx {
         * Initializes a new instance of the LinkedList class that contains elements copied from the specified Enumerable.
         * @param collection The collection to copy elements from.
         */
-        new <T>(collection: Enumerable<T>): LinkedList<T>
+        new <T>(collection: Iterable<T>): LinkedList<T>
     }
 
 
-
-
-
-    /* Queue
-    ---------------------------------------------------------------------- */
 
     /**
     * Represents a first-in, first-out collection of objects.
@@ -1654,9 +1391,7 @@ declare module mx {
         */
         toArray(): T[]
     }
-
-
-    var Queue: {
+    interface QueueConstructor {
 
         /**
         * Initializes a new instance of the Queue class that is empty.
@@ -1668,15 +1403,10 @@ declare module mx {
         * Initializes a new instance of the Queue class that contains elements copied from the specified collection.
         * @param collection The collection to copy elements from.
         */
-        new <T>(collection: Enumerable<T>): Queue<T>
+        new <T>(collection: Iterable<T>): Queue<T>
     }
 
 
-
-
-
-    /* Stack
-    ---------------------------------------------------------------------- */
 
     /**
     * Represents a variable size last-in-first-out (LIFO) collection of instances of the same arbitrary type.
@@ -1720,9 +1450,7 @@ declare module mx {
         */
         toArray(): T[]
     }
-
-
-    var Stack: {
+    interface StackConstructor {
 
         /**
         * Initializes a new instance of the Stack class that is empty.
@@ -1734,15 +1462,10 @@ declare module mx {
         * Initializes a new instance of the Stack class that contains elements copied from the specified collection.
         * @param collection The collection to copy elements from.
         */
-        new <T>(collection: Enumerable<T>): Stack<T>
+        new <T>(collection: Iterable<T>): Stack<T>
     }
 
 
-
-
-
-    /* Lookup
-    ---------------------------------------------------------------------- */
 
     /**
     * Defines a data structures that map keys to Enumerable sequences of values.
@@ -1767,11 +1490,6 @@ declare module mx {
 
 
 
-
-
-    /* Grouping
-    ---------------------------------------------------------------------- */
-
     /**
     * Represents a collection of objects that have a common key.
     */
@@ -1784,11 +1502,6 @@ declare module mx {
     }
 
 
-
-
-
-    /* OrderedEnumerable
-    ---------------------------------------------------------------------- */
 
     /**
     * Exposes the enumerator, which supports a simple iteration over a collection of a specified type.
@@ -1840,15 +1553,11 @@ declare module mx {
 
 
 
-
-
-    /* EnumerableExtensions
-    ---------------------------------------------------------------------- */
-
     /**
-    * Defines Enumerable extention methods, applies on String, Array and Enumerable
+    * Defines Enumerable extention methods applied on Enumerable
     */
     interface Enumerable<T> {
+
 
         /**
         * Applies an accumulator function over a sequence.
@@ -1924,7 +1633,7 @@ declare module mx {
         * Concatenates two sequences.
         * @param second The sequence to concatenate to the first sequence.
         */
-        concat(second: Enumerable<T>): Enumerable<T>
+        concat(second: Iterable<T>): Enumerable<T>
 
 
         /**
@@ -1983,17 +1692,17 @@ declare module mx {
 
         /**
         * Produces the set difference of two sequences by using the default equality comparer to compare values.
-        * @param second An Enumerable whose elements that also occur in the first sequence will cause those elements to be removed from the returned sequence.
+        * @param second An Iterable whose elements that also occur in the first sequence will cause those elements to be removed from the returned sequence.
         */
-        except(second: Enumerable<T>): Enumerable<T>
+        except(second: Iterable<T>): Enumerable<T>
 
 
         /**
         * Produces the set difference of two sequences by using the specified EqualityComparer to compare values.
-        * @param second An Enumerable whose elements that also occur in the first sequence will cause those elements to be removed from the returned sequence.
+        * @param second An Iterable whose elements that also occur in the first sequence will cause those elements to be removed from the returned sequence.
         * @param comparer An EqualityComparer to compare values.
         */
-        except(second: Enumerable<T>, comparer: EqualityComparer<T>): Enumerable<T>
+        except(second: Iterable<T>, comparer: EqualityComparer<T>): Enumerable<T>
 
 
         /**
@@ -2090,7 +1799,7 @@ declare module mx {
         * @param elementSelector A function to map each source element to an element in the Grouping. 
         * @param resultSelector A function to extract the key for each element.
         */
-        groupBy<TKey, TElement, TResult>(keySelector: (item: T) => TKey, elementSelector: (item: T) => TElement, resultSelector: (key: TKey, elements: Enumerable<TElement>) => TResult): Enumerable<TResult>;
+        groupBy<TKey, TElement, TResult>(keySelector: (item: T) => TKey, elementSelector: (item: T) => TElement, resultSelector: (key: TKey, elements: Iterable<TElement>) => TResult): Enumerable<TResult>;
 
 
         /**
@@ -2101,7 +1810,7 @@ declare module mx {
         * @param resultSelector A function to extract the key for each element.
         * @param comparer An equality comparer to compare values.
         */
-        groupBy<TKey, TElement, TResult>(keySelector: (item: T) => TKey, elementSelector: (item: T) => TElement, resultSelector: (key: TKey, elements: Enumerable<TElement>) => TResult, comparer: EqualityComparer<TKey>): Enumerable<TResult>;
+        groupBy<TKey, TElement, TResult>(keySelector: (item: T) => TKey, elementSelector: (item: T) => TElement, resultSelector: (key: TKey, elements: Iterable<TElement>) => TResult, comparer: EqualityComparer<TKey>): Enumerable<TResult>;
 
 
         /**
@@ -2111,7 +1820,7 @@ declare module mx {
         * @param innerKeySelector A function to extract the join key from each element of the second sequence.
         * @param resultSelector A function to create a result element from an element from the first sequence and a collection of matching elements from the second sequence.
         */
-        groupJoin<TInner, TKey, TResult>(inner: Enumerable<TInner>, outerKeySelector: (item: T) => TKey, innerKeySelector: (item: TInner) => TKey, resultSelector: (outer: T, inner: Enumerable<TInner>) => TResult): Enumerable<TResult>;
+        groupJoin<TInner, TKey, TResult>(inner: Iterable<TInner>, outerKeySelector: (item: T) => TKey, innerKeySelector: (item: TInner) => TKey, resultSelector: (outer: T, inner: Enumerable<TInner>) => TResult): Enumerable<TResult>;
 
 
         /**
@@ -2122,22 +1831,22 @@ declare module mx {
         * @param resultSelector A function to create a result element from an element from the first sequence and a collection of matching elements from the second sequence.
         * @param comparer An equality comparer to compare values.
         */
-        groupJoin<TInner, TKey, TResult>(inner: Enumerable<TInner>, outerKeySelector: (item: T) => TKey, innerKeySelector: (item: TInner) => TKey, resultSelector: (outer: T, inner: Enumerable<TInner>) => TResult, comparer: EqualityComparer<TKey>): Enumerable<TResult>;
+        groupJoin<TInner, TKey, TResult>(inner: Iterable<TInner>, outerKeySelector: (item: T) => TKey, innerKeySelector: (item: TInner) => TKey, resultSelector: (outer: T, inner: Enumerable<TInner>) => TResult, comparer: EqualityComparer<TKey>): Enumerable<TResult>;
 
 
         /**
         * Produces the set intersection of two sequences by using the default equality comparer to compare values.
-        * @param second An Enumerable whose distinct elements that also appear in the first sequence will be returned.
+        * @param second An Iterable whose distinct elements that also appear in the first sequence will be returned.
         */
-        intersect(second: Enumerable<T>): Enumerable<T>;
+        intersect(second: Iterable<T>): Enumerable<T>;
 
 
         /**
         * Produces the set intersection of two sequences by using the default equality comparer to compare values.
-        * @param second An Enumerable whose distinct elements that also appear in the first sequence will be returned.
+        * @param second An Iterable whose distinct elements that also appear in the first sequence will be returned.
         * @param comparer An EqualityComparer to compare values.
         */
-        intersect(second: Enumerable<T>, comparer: EqualityComparer<T>): Enumerable<T>;
+        intersect(second: Iterable<T>, comparer: EqualityComparer<T>): Enumerable<T>;
 
 
         /**
@@ -2147,7 +1856,7 @@ declare module mx {
         * @param innerKeySelector A function to extract the join key from each element of the second sequence.
         * @param resultSelector A function to create a result element from an element from the first sequence and a collection of matching elements from the second sequence.
         */
-        join<TInner, TKey, TResult>(inner: Enumerable<TInner>, outerKeySelector: (item: T) => TKey, innerKeySelector: (item: TInner) => TKey, resultSelector: (outer: T, inner: TInner) => TResult): Enumerable<TResult>;
+        join<TInner, TKey, TResult>(inner: Iterable<TInner>, outerKeySelector: (item: T) => TKey, innerKeySelector: (item: TInner) => TKey, resultSelector: (outer: T, inner: TInner) => TResult): Enumerable<TResult>;
 
 
         /**
@@ -2158,7 +1867,7 @@ declare module mx {
         * @param resultSelector A function to create a result element from an element from the first sequence and a collection of matching elements from the second sequence.
         * @param comparer An equality comparer to compare values.
         */
-        join<TInner, TKey, TResult>(inner: Enumerable<TInner>, outerKeySelector: (item: T) => TKey, innerKeySelector: (item: TInner) => TKey, resultSelector: (outer: T, inner: TInner) => TResult, comparer: EqualityComparer<TKey>): Enumerable<TResult>;
+        join<TInner, TKey, TResult>(inner: Iterable<TInner>, outerKeySelector: (item: T) => TKey, innerKeySelector: (item: TInner) => TKey, resultSelector: (outer: T, inner: TInner) => TResult, comparer: EqualityComparer<TKey>): Enumerable<TResult>;
 
 
         /**
@@ -2270,17 +1979,17 @@ declare module mx {
 
         /**
         * Determines whether two sequences are equal by comparing the elements by using the default equality comparer for their type.
-        * @param second An Enumerable to compare to the first sequence.
+        * @param second An Iterable to compare to the first sequence.
         */
-        sequenceEqual(second: Enumerable<T>): boolean
+        sequenceEqual(second: Iterable<T>): boolean
 
 
         /**
         * Determines whether two sequences are equal by comparing their elements by using a specified EqualityComparer.
-        * @param second An Enumerable to compare to the first sequence.
+        * @param second An Iterable to compare to the first sequence.
         * @param comparer The EqualityComparer to compare values.
         */
-        sequenceEqual(second: Enumerable<T>, comparer: EqualityComparer<T>): boolean
+        sequenceEqual(second: Iterable<T>, comparer: EqualityComparer<T>): boolean
 
 
         /**
@@ -2301,14 +2010,14 @@ declare module mx {
         * Projects each element of a sequence to an Enumerable and flattens the resulting sequences into one sequence.
         * @param collectionSelector A transform function to apply to each source element.
         */
-        selectMany<TResult>(selector: (item: T) => Enumerable<TResult>): Enumerable<TResult>;
+        selectMany<TResult>(selector: (item: T) => Iterable<TResult>): Enumerable<TResult>;
 
 
         /**
         * Projects each element of a sequence to an Enumerable and flattens the resulting sequences into one sequence. The index of each source element is used in the projected form of that element.
         * @param collectionSelector A transform function to apply to each source element; the second parameter of the function represents the index of the source element.
         */
-        selectMany<TResult>(selector: (item: T, index: number) => Enumerable<TResult>): Enumerable<TResult>;
+        selectMany<TResult>(selector: (item: T, index: number) => Iterable<TResult>): Enumerable<TResult>;
 
 
         /**
@@ -2316,7 +2025,7 @@ declare module mx {
         * @param collectionSelector A transform function to apply to each source element; the second parameter of the function represents the index of the source element.
         * @param resultSelector A transform function to apply to each element of the intermediate sequence.
         */
-        selectMany<TCollection, TResult>(collectionSelector: (item: T) => Enumerable<TCollection>, resultSelector: (item: T, collection: TCollection) => TResult): Enumerable<TResult>;
+        selectMany<TCollection, TResult>(collectionSelector: (item: T) => Iterable<TCollection>, resultSelector: (item: T, collection: TCollection) => TResult): Enumerable<TResult>;
 
 
         /**
@@ -2324,7 +2033,7 @@ declare module mx {
         * @param collectionSelector A transform function to apply to each source element; the second parameter of the function represents the index of the source element.
         * @param resultSelector A transform function to apply to each element of the intermediate sequence.
         */
-        selectMany<TCollection, TResult>(collectionSelector: (item: T, index: number) => Enumerable<TCollection>, resultSelector: (item: T, collection: TCollection) => TResult): Enumerable<TResult>;
+        selectMany<TCollection, TResult>(collectionSelector: (item: T, index: number) => Iterable<TCollection>, resultSelector: (item: T, collection: TCollection) => TResult): Enumerable<TResult>;
 
 
         /**
@@ -2494,17 +2203,17 @@ declare module mx {
 
         /**
         * Produces the set union of two sequences by using the default equality comparer.
-        * @param second An Enumerable whose distinct elements form the second set for the union.
+        * @param second An Iterable whose distinct elements form the second set for the union.
         */
-        union(second: Enumerable<T>): Enumerable<T>
+        union(second: Iterable<T>): Enumerable<T>
 
 
         /**
         * Produces the set union of two sequences by using a specified EqualityComparer.
-        * @param second An Enumerable whose distinct elements form the second set for the union.
+        * @param second An Iterable whose distinct elements form the second set for the union.
         * @param comparer The EqualityComparer to compare values.
         */
-        union(second: Enumerable<T>, comparer: EqualityComparer<T>): Enumerable<T>
+        union(second: Iterable<T>, comparer: EqualityComparer<T>): Enumerable<T>
 
 
         /**
@@ -2526,71 +2235,321 @@ declare module mx {
         * @param second The second sequence to merge.
         * @param resultSelector A function that specifies how to merge the elements from the two sequences.
         */
-        zip<TSecond, TResult>(second: Enumerable<TSecond>, resultSelector: (first: T, second: TSecond) => TResult): Enumerable<TResult>;
+        zip<TSecond, TResult>(second: Iterable<TSecond>, resultSelector: (first: T, second: TSecond) => TResult): Enumerable<TResult>;
+    }
 
+
+
+    /**
+    * Represents Array-like objects which has the "length" property and indexed properties access, eg. jQuery
+    */
+    interface ArrayLike<T> {
+        length: number;
+        [n: number]: T;
+    }
+
+
+
+    /**
+    * Provides 'hash' and 'equals' functions for a particular type, suitable for use in hashing algorithms and data structures such as a hash table.
+    */
+    interface RuntimeComparer {
+
+        /**
+        * Serves as a hash function for a particular type.
+        */
+        __hash__(): number;
+
+        /**
+        * Determines whether the specified Object is equal to the current Object.
+        */
+        __equals__(obj: any): boolean;
+    }
+
+
+
+    /**
+    * Provides a set of static methods that provide support for internal operations.
+    */
+    interface MultiplexRuntime {
+
+        /**
+        * Serves as a hash function for a particular type, suitable for use in hashing algorithms and data structures such as a hash table.
+        * @param obj An object to retrieve the hash code for.
+        */
+        hash(obj: any): number;
+
+
+        /** 
+        * Determines whether the specified object instances are considered equal.
+        * @param objA The first object to compare.
+        * @param objB The second object to compare.
+        */
+        equals(objA: any, objB: any): boolean;
+
+
+        /**
+        * Performs a comparison of two objects of the same type and returns a value indicating whether one object is less than, equal to, or greater than the other.
+        * @param objA The first object to compare.
+        * @param objB The second object to compare.
+        */
+        compare<T>(objA: T, objB: T): number;
+
+
+        /**
+        * Creates A function expression from the specified string lambda expression
+        * @param exp String lambda expression.
+        */
+        lambda<T, TResult>(exp: string): (obj: T) => TResult;
+
+
+        /**
+        * Creates A function expression from the specified string lambda expression
+        * @param exp String lambda expression.
+        */
+        lambda<T1, T2, TResult>(exp: string): (obj1: T1, obj2: T2) => TResult;
+
+
+        /**
+        * Creates A function expression from the specified string lambda expression
+        * @param exp String lambda expression.
+        */
+        lambda<T1, T2, T3, TResult>(exp: string): (obj1: T1, obj2: T2, obj3: T3) => TResult;
+
+
+        /**
+        * Creates A function expression from the specified string lambda expression
+        * @param exp String lambda expression.
+        */
+        lambda<TResult>(exp: string): (...args: any[]) => TResult;
+
+
+        /**
+        * Defines new or modifies existing properties directly on the specified object, returning the object.
+        * @param obj The object on which to define or modify properties.
+        * @param prop The name of the property to be defined or modified.
+        * @param attributes The descriptor for the property being defined or modified.
+        */
+        define<T>(obj: T, prop: String, attributes: PropertyDescriptor): T;
+
+
+        /**
+        * Extends the given object by implementing supplied members.
+        * @param obj The object on which to define or modify properties.
+        * @param properties Represetnts the mixin source object
+        * @param attributes The descriptor for the property being defined or modified.
+        */
+        mixin<T>(obj: T, properties: Object, attributes?: PropertyDescriptor): T;
+    }
+
+
+
+    /**
+    * Defines MultiplexStatic module members
+    */
+    interface MultiplexStatic {
+
+
+
+        /* Factory Methods
+        --------------------------------------------------------------------------*/
+
+        /**
+        * Exposes the enumerator, which supports an iteration over the specified Enumerable object.
+        * @param obj An Iterable object. eg. Enumerable, Array, String, Set, Map, Iterable & Generators
+        */
+        <T>(obj: Iterable<T>): Enumerable<T>
+
+
+        /**
+        * Defines an enumerator, which supports an iteration over the specified Generator function.
+        * @param factory An Enumerator factory function.
+        */
+        <T>(factory: () => Enumerator<T>): Enumerable<T>
+
+
+        /**
+        * Defines an enumerator, which supports an iteration over the items of the specified Array-like object.
+        * An Array-like object is an object which has the "length" property and indexed properties access, eg. jQuery
+        * @param obj An Array-like object.
+        */
+        <T>(obj: ArrayLike<T>): Enumerable<T>
+
+
+        /**
+        * Defines an enumerator, which supports an iteration over the arguments local variable available within all functions.
+        * @param obj arguments local variable available within all functions.
+        */
+        (obj: IArguments): Enumerable<any>
+
+
+        /**
+        * Defines an enumerator, which supports an iteration over the properties of the specified object.
+        * @param obj A regular Object.
+        */
+        (obj: Object): Enumerable<KeyValuePair<string, any>>
+
+
+
+
+
+
+        /* Static Methods
+        --------------------------------------------------------------------------*/
+
+        /**
+        * Gets and combines hash code for the given parameters, calls the overridden "hash" method when available.
+        * @param objs Optional number of objects to combine their hash codes.
+        */
+        hash(...obj: any[]): number;
+
+
+        /**
+        * Determines whether the specified object instances are considered equal. calls the overridden "equals" method when available.
+        * @param objA The first object to compare.
+        * @param objB The second object to compare.
+        */
+        equals(objA: any, objB: any): boolean;
+
+
+        /**
+        * Determines whether the specified object instances are considered equal. calls the overridden "equals" method when available.
+        * @param objA The first object to compare.
+        * @param objB The second object to compare.
+        * @param comparer An equality comparer to compare values.
+        */
+        equals(objA: any, objB: any, comparer: EqualityComparer<any>): boolean;
+
+
+        /**
+        * Performs a comparison of two objects of the same type and returns a value indicating whether one object is less than, equal to, or greater than the other.
+        * @param objA The first object to compare.
+        * @param objB The second object to compare.
+        */
+        compare<T>(objA: T, objB: T): number;
+
+
+        /**
+        * Extends Enumerable extension methods to the given type
+        * @param type The type to extend.
+        */
+        enumerableExtend(type: Function): void;
+
+
+        /**
+        * Returns an empty Enumerable.
+        */
+        empty<T>(): Enumerable<T>;
+
+
+        /**
+        * Detects if an object is Enumerable.
+        * @param obj An object to check its Enumerability.
+        */
+        is(obj: any): boolean;
+
+
+        /**
+        * Generates a sequence of integral numbers within a specified range.
+        * @param start The value of the first integer in the sequence.
+        * @param count The number of sequential integers to generate.
+        */
+        range(start: number, count: number): Enumerable<number>;
+
+
+        /**
+        * Generates a sequence that contains one repeated value.
+        * @param element The value to be repeated.
+        * @param count The number of times to repeat the value in the generated sequence.
+        */
+        repeat<T>(element: T, count: number): Enumerable<T>;
+
+
+
+
+
+
+        /* Mutiplex Types
+        --------------------------------------------------------------------------*/
+
+        /**
+        * Provides a set of static methods that provide support for internal operations.
+        */
+        runtime: MultiplexRuntime
+
+        /**
+        * Supports a simple iteration over a collection.
+        */
+        Enumerator: EnumeratorConstructor
+
+        /**
+        * Exposes the enumerator, which supports a simple iteration over a collection of a specified type.
+        */
+        Enumerable: EnumerableConstructor
+
+        /**
+        * Provides a base class for implementations of Comparer<T> generic interface.
+        */
+        Comparer: ComparerConstructor
+
+        /**
+        * Provides a base class for implementations of the EqualityComparer.
+        */
+        EqualityComparer: EqualityComparerConstructor
+
+        /**
+        * Initializes a new instance of the abstract Collection class.
+        */
+        Collection: CollectionConstructor
+
+        /**
+        * Initializes a new instance of the abstract Collection class.
+        */
+        ReadOnlyCollection: ReadOnlyCollectionConstructor
+
+        /**
+        * Represents a strongly typed list of objects that can be accessed by index.
+        */
+        List: ListConstructor
+
+        /**
+        * Represents a collection of key/value pairs that are sorted by key based on the associated Comparer implementation.
+        */
+        SortedList: SortedListConstructor
+
+        /**
+        * Defines a key/value pair that can be set or retrieved.
+        */
+        KeyValuePair: KeyValuePairConstructor
+
+        /**
+        * Represents a collection of keys and values.
+        */
+        Dictionary: DictionaryConstructor
+
+        /**
+        * Represents a set of values.
+        */
+        HashSet: HashSetConstructor
+
+        /**
+        * Represents a node in a LinkedList.
+        */
+        LinkedListNode: LinkedListNodeConstructor
+
+        /**
+        * Represents a doubly linked list.
+        */
+        LinkedList: LinkedListConstructor
+
+        /**
+        * Represents a first-in, first-out collection of objects.
+        */
+        Queue: QueueConstructor
+
+        /**
+        * Represents a variable size last-in-first-out (LIFO) collection of instances of the same arbitrary type.
+        */
+        Stack: StackConstructor
     }
 }
-
-
-
-
-
-/* mx
----------------------------------------------------------------------- */
-
-/**
-* Exposes the enumerator, which supports an iteration over the specified Enumerable object.
-* @param obj An Enumerable object.
-*/
-declare function mx<T>(obj: mx.Enumerable<T>): mx.Enumerable<T>
-
-
-/**
-* Exposes the iterator, which supports an iteration over the specified Iterable object.
-* An Iterable object, is an object that implements the @@iterator method. eg. Map, Set and Iterable objects.
-* @param obj An Iterable object that implements the @@iterator method.
-*/
-declare function mx<T>(obj: { "@@iterator": () => { next: () => mx.EnumeratorResult<T> } }): mx.Enumerable<T>
-
-
-/**
-* Defines an enumerator, which supports an iteration over the items of the specified Array object.
-* @param arr An array object.
-*/
-declare function mx<T>(arr: T[]): mx.Enumerable<T>
-
-
-/**
-* Defines an enumerator, which supports an iteration over the characters of the specified String object.
-* @param str A string object.
-*/
-declare function mx(str: string): mx.Enumerable<string>
-
-
-/**
-* Defines an enumerator, which supports an iteration over the specified Generator function.
-* @param factory An Enumerator factory function.
-*/
-declare function mx<T>(factory: () => mx.Enumerator<T>): mx.Enumerable<T>
-
-
-/**
-* Defines an enumerator, which supports an iteration over the items of the specified Array-like object.
-* An Array-like object is an object which has the "length" property, eg. arguments, jQuery
-* @param obj An Array-like object.
-*/
-declare function mx<T>(obj: { length: Number;[index: number]: T }): mx.Enumerable<T>
-
-
-/**
-* Defines an enumerator, which supports an iteration over the arguments local variable available within all functions.
-* @param obj arguments local variable available within all functions.
-*/
-declare function mx(obj: IArguments): mx.Enumerable<any>
-
-
-/**
-* Defines an enumerator, which supports an iteration over the properties of the specified object.
-* @param obj A regular Object.
-*/
-declare function mx(obj: Object): mx.Enumerable<mx.KeyValuePair<string, any>>

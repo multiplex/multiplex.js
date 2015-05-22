@@ -1,9 +1,12 @@
 ﻿module MxTests {
-    
+    "use strict";
+
     import Dictionary = mx.Dictionary;
     import SortedList = mx.SortedList;
-    import Comparer = mx.Comparer;
 
+    var Dictionary = mx.Dictionary,
+        SortedList = mx.SortedList,
+        Comparer = mx.Comparer;
 
 
     /* Factory methods

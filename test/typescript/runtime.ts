@@ -1,7 +1,7 @@
 ﻿module MxTests {
+    "use strict";
 
-    import EqualityComparer = mx.EqualityComparer;
-
+    var EqualityComparer = mx.EqualityComparer;
 
 
     /* Classes
@@ -13,7 +13,7 @@
 
 
     // class overriding '__hash__' and '__equals__' methods.
-    class SimpleClassWithComparer {
+    class SimpleClassWithComparer implements mx.RuntimeComparer {
 
         constructor(val: number) {
             this.value = val;

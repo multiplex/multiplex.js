@@ -1,7 +1,8 @@
 ﻿module MxTests {
-    
-    import List = mx.List;
+    "use strict";
 
+    import List = mx.List;
+    var List = mx.List;
 
 
     /* Factory methods
@@ -63,9 +64,6 @@
 
         assert.ok(_rlist.count() === 10, "readOnlyCollection count!");
         assert.ok(_rlist[0] === 0, "readOnlyCollection get!");
-
-        _rlist[0] = 100;
-        assert.ok(_rlist[0] === 0, "readOnlyCollection set!");
     });
 
 

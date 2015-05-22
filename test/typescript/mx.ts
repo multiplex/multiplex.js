@@ -1,8 +1,11 @@
 ﻿module MxTests {
+    "use strict";
 
     import Enumerator = mx.Enumerator;
     import Enumerable = mx.Enumerable;
 
+    var Enumerator = mx.Enumerator,
+        Enumerable = mx.Enumerable;
 
 
     /* Factory methods

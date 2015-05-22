@@ -1,7 +1,8 @@
 ﻿module MxTests {
+    "use strict";
 
     import Queue = mx.Queue;
-
+    var Queue = mx.Queue;
 
 
     /* Factory methods

@@ -1,7 +1,8 @@
 ﻿module MxTests {
+    "use strict";
 
     import Stack = mx.Stack;
-
+    var Stack = mx.Stack;
 
 
     /* Factory methods
@@ -11,7 +12,7 @@
         return new Stack(mx.range(1, 5));
     }
 
-
+    
 
     /* Tests
     ---------------------------------------------------------------------- */

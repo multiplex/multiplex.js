@@ -1,7 +1,10 @@
 ﻿module MxTests {
+    "use strict";
 
-    import LinkedListNode = mx.LinkedListNode;
     import LinkedList = mx.LinkedList;
+
+    var LinkedList = mx.LinkedList,
+        LinkedListNode = mx.LinkedListNode;
 
 
 

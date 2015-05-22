@@ -1,10 +1,13 @@
 ﻿module MxTests {
+    "use strict";
+
+    import Lookup = mx.Lookup;
 
 
     /* Factory methods
     ---------------------------------------------------------------------- */
 
-    function CreateLookup(): mx.Lookup<number, number> {
+    function CreateLookup(): Lookup<number, number> {
         return mx([1, 1, 2, 3, 3, 4, 4, 4]).toLookup(t => t);
     }
 

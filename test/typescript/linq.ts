@@ -1,4 +1,5 @@
 ﻿module MxTests {
+    "use strict";
 
 
     /* Classes
@@ -10,15 +11,15 @@
 
 
     // class overriding '__hash__' and '__equals__' methods.
-    class SimpleClassWithComparer {
+    class SimpleClassWithComparer implements mx.RuntimeComparer {
 
         constructor(val: number) {
             this.value = val;
             this.name = val.toString();
         }
 
-        public value: number;
         public name: string;
+        public value: number;
 
         __hash__(): number {
             return mx.hash(this.value, this.name);
@@ -33,9 +34,6 @@
 
     /* Factory methods
     ---------------------------------------------------------------------- */
-
-    var _time = new Date().getTime();
-
 
     function CreateObjectLiteralArray(): Object[] {
         return mx.range(0, 10).select(t => ({})).toArray();
@@ -79,7 +77,7 @@
 
 
     function CreateDateArray(): Date[] {
-        return mx.range(0, 10).select(t => new Date(_time + t)).toArray();
+        return mx.range(0, 10).select(t => new Date(new Date().getTime() + t)).toArray();
     }
 
 

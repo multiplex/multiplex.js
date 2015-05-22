@@ -1,8 +1,11 @@
 ﻿module MxTests {
+    "use strict";
 
     import Dictionary = mx.Dictionary;
-    import KeyValuePair = mx.KeyValuePair;
-    import EqualityComparer = mx.EqualityComparer;
+
+    var Dictionary = mx.Dictionary,
+        KeyValuePair = mx.KeyValuePair,
+        EqualityComparer = mx.EqualityComparer;
 
 
 
@@ -124,7 +127,7 @@
     QUnit.test("set", function (assert) {
 
         var _dic = CreateDictionary();
-        
+
         _dic.set(1, "AA");
         assert.ok(_dic.get(1) === "AA", "dictionary set value!");
 
@@ -171,11 +174,8 @@
             _pair2 = new KeyValuePair(1, "A");
 
         assert.ok(_pair1.key === 1 && _pair1.value === "A", "KeyValuePair get key/value!");
-
-        _pair1.key = 2;
-        _pair1.value = "B";
-        assert.ok(_pair1.key === 1 && _pair1.value === "A", "KeyValuePair key/value immutable!");
-
+        assert.throws(() => _pair1.key = 2, "throws an error trysing to set KeyValuePair key!");
+        assert.throws(() => _pair1.value = "B", "throws an error trysing to set KeyValuePair value!");
         assert.ok(mx.hash(_pair1) === mx.hash(_pair2), "KeyValuePair get hash code!");
         assert.ok(mx.equals(_pair1, _pair2), "KeyValuePair equality check!");
     });
