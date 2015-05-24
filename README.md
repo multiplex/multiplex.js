@@ -210,7 +210,7 @@ mx("str").union(mx("ing")).toArray();       // ["s", "t", "r", "i", "n", "g"]
 You can write:
 
 ````javascript
-mx([1, 2]).union([3, 4]).toArray();         // [1, 4, 9, 16]
+mx([1, 2]).union([3, 4]).toArray();         // [1, 2, 3, 4]
 mx("str").union("ing").toArray();           // ["s", "t", "r", "i", "n", "g"]
 ````
 
