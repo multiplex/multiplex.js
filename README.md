@@ -408,12 +408,18 @@ To create custom build install [grunt command line interface](https://github.com
 npm install -g grunt-cli
 ```
 
+Then, make sure all Node dependencies are installed by runnung the following command in the `Multiplex` directory:
+
+````
+npm install
+````
+
 Now by running the `grunt` command, in the `Multiplex` directory, you can build Multiplex:
 ```
 grunt
 ```
 
-To execute all unit tests using grunt, use `grunt tests` command; This uses [PhantomJS](http://www.phantomjs.org/) to run over 500 unit tests defined in `test` directory, you can also run tests from within your browser by running `test\mx.html` file.
+To execute all unit tests using grunt, run `grunt tests` command; This uses [PhantomJS](http://www.phantomjs.org/) to run over 500 unit tests defined in `test` directory, you can also run tests from within your browser by running `test\mx.html` file.
 
 To build a full version of Multiplex use:
 ````
