@@ -18,4 +18,5 @@
 /.vs
 /_other
 /node_modules
+/bower_components
 /test/typescript/*.js

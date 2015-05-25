@@ -14,5 +14,7 @@
 /.git
 /_other
 /build/bin
+/node_modules
+/bower_components
 /test
 /test/typescript/*.js

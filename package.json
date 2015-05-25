@@ -17,7 +17,8 @@
         "linq",
         "data-structure",
         "iterator",
-        "library"
+        "library",
+        "framework"
     ],
     "bugs": {
         "url": "https://github.com/multiplex/multiplex.js/issues"
