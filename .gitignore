@@ -3,7 +3,9 @@
 *.ide
 *.user
 *.userosscache
+*.sln
 *.sln.docstates
+*.csproj
 
 # Build results
 *.dll
