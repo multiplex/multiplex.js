@@ -19,31 +19,31 @@ Multiplex is a set of data-structures and implementation of .Net LINQ methods in
 * Over 40 LINQ methods (90 method overloads).
 * LINQ lazy evaluation.
 * TypeScript support.
-* Support for [Lambda notation](https://github.com/multiplex/multiplex.js#the-lambda-notation), [Object literal](https://github.com/multiplex/multiplex.js#using-object-literals) and ES6 [Iteration protocols](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols).
-* LINQ support over built-in [Array](https://github.com/multiplex/multiplex.js#--array-and-string) and [String](https://github.com/multiplex/multiplex.js#--array-and-string) classes and [jQuery](https://github.com/multiplex/multiplex.js#--array-like-objects-arguments-nodelist-jquery) objects.
+* Support for [Lambda notation](#the-lambda-notation), [Object literal](#using-object-literals) and ES6 [Iteration protocols](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols).
+* LINQ support over built-in [Array](#--array-and-string) and [String](#--array-and-string) classes and [jQuery](#--array-like-objects-arguments-nodelist-jquery) objects.
 * Built-in `hash` and `equals` functions to identify objects in a hash-based collection.
 * *JSDoc* documentation.
 * IntelliSense support for *VisualStudio*.
 
 <br/>
 ## Get started
-* [Basic syntax](https://github.com/multiplex/multiplex.js#basic-syntax)
-* [The lambda notation](https://github.com/multiplex/multiplex.js#the-lambda-notation)
-* [Executing a query](https://github.com/multiplex/multiplex.js#executing-a-query)
-* [LINQ expression trees](https://github.com/multiplex/multiplex.js#linq-expression-trees)
-* [Using object literals](https://github.com/multiplex/multiplex.js#using-object-literals)
-* [Working with Enumerable](https://github.com/multiplex/multiplex.js#working-with-enumerable)
-  - [Multiplex Collections](https://github.com/multiplex/multiplex.js#--multiplex-collections)
-  - [Array and String](https://github.com/multiplex/multiplex.js#--array-and-string)
-  - [Array-like objects (arguments, NodeList, jQuery)](https://github.com/multiplex/multiplex.js#--array-like-objects-arguments-nodelist-jquery)
-  - [Enumerator interface](https://github.com/multiplex/multiplex.js#--enumerator-interface)
-  - [Regular JavaScript objects](https://github.com/multiplex/multiplex.js#--regular-javascript-objects)
-  - [ECMAScript 6 iteration protocols](https://github.com/multiplex/multiplex.js#--ecmascript-6-iteration-protocols)
-* [Iteration protocols](https://github.com/multiplex/multiplex.js#iteration-protocols)
-  - [ES6 Iteration protocols](https://github.com/multiplex/multiplex.js#es6-iteration-protocols)
-  - [Generator functions](https://github.com/multiplex/multiplex.js#generator-functions)
-  - [Legacy generator functions](https://github.com/multiplex/multiplex.js#legacy-generator-functions)
-  - [Using legacy generator functions as Enumerable](https://github.com/multiplex/multiplex.js#using-legacy-generator-functions-as-enumerable)
+* [Basic syntax](#basic-syntax)
+* [The lambda notation](#the-lambda-notation)
+* [Executing a query](#executing-a-query)
+* [LINQ expression trees](#linq-expression-trees)
+* [Using object literals](#using-object-literals)
+* [Working with Enumerable](#working-with-enumerable)
+  - [Multiplex Collections](#--multiplex-collections)
+  - [Array and String](#--array-and-string)
+  - [Array-like objects (arguments, NodeList, jQuery)](#--array-like-objects-arguments-nodelist-jquery)
+  - [Enumerator interface](#--enumerator-interface)
+  - [Regular JavaScript objects](#--regular-javascript-objects)
+  - [ECMAScript 6 iteration protocols](#--ecmascript-6-iteration-protocols)
+* [Iteration protocols](#iteration-protocols)
+  - [ES6 Iteration protocols](#es6-iteration-protocols)
+  - [Generator functions](#generator-functions)
+  - [Legacy generator functions](#legacy-generator-functions)
+  - [Using legacy generator functions as Enumerable](#using-legacy-generator-functions-as-enumerable)
 
 
 <br/>
@@ -215,7 +215,7 @@ mx("str").union("ing").toArray();           // ["s", "t", "r", "i", "n", "g"]
 ````
 
 Note that, in the example above the string object is queried as a sequence of characters.
-In practice, LINQ operations accept any argument implementing [ES6 iteration protocols](https://github.com/multiplex/multiplex.js#es6-iteration-protocols).
+In practice, LINQ operations accept any argument implementing [ES6 iteration protocols](#es6-iteration-protocols).
 
 <br/>
 #### - Array-like objects: `arguments`, `NodeList`, `jQuery`
