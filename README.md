@@ -53,7 +53,7 @@ Several quick install options are available:
 - Clone the repo: `git clone https://github.com/multiplex/multiplex.js.git`.
 - Install with [npm](https://www.npmjs.com/package/multiplexjs): `npm install multiplexjs`.
 - Install with [Bower](http://bower.io): `bower install multiplex`.
-- Install with [Jam](http://jamjs.org/): `jam install multiplex`.
+- Install with [Jam](http://jamjs.org/): `jam install multiplexjs`.
 
 <br/>
 ### Basic syntax 
