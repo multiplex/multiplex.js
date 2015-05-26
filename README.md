@@ -27,6 +27,7 @@ Multiplex is a set of data-structures and implementation of .Net LINQ methods in
 
 <br/>
 ## Get started
+* [How to install](#how-to-install)
 * [Basic syntax](#basic-syntax)
 * [The lambda notation](#the-lambda-notation)
 * [Executing a query](#executing-a-query)
@@ -45,6 +46,14 @@ Multiplex is a set of data-structures and implementation of .Net LINQ methods in
   - [Legacy generator functions](#legacy-generator-functions)
   - [Using legacy generator functions as Enumerable](#using-legacy-generator-functions-as-enumerable)
 
+
+<br/>
+### How to install
+Several quick install options are available:
+- Clone the repo: `git clone https://github.com/multiplex/multiplex.js.git`.
+- Install with [npm](https://www.npmjs.com/package/multiplexjs): `npm install multiplexjs`.
+- Install with [Bower](http://bower.io): `bower install multiplex`.
+- Install with [Jam](http://jamjs.org/): `jam install multiplex`.
 
 <br/>
 ### Basic syntax 
