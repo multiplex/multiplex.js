@@ -798,22 +798,22 @@
 
 
             $ensureType(factory, FUNCTION);
-            $define(this, "next", {
 
-                /**
-                * Advances the enumerator to the next element of the collection.
-                * @returns {Boolean}
-                */
-                value: function () {
-                    _current = undefined;       // reset "current"
-                    _next = false;              // reset "next"
 
-                    factory(_yielder);
-                    this.current = _current;
+            /**
+            * Advances the enumerator to the next element of the collection.
+            * @returns {Boolean}
+            */
 
-                    return _next;
-                }
-            });
+            this.next = function () {
+                _current = undefined;       // reset "current"
+                _next = false;              // reset "next"
+
+                factory(_yielder);
+                this.current = _current;
+
+                return _next;
+            };
 
 
             /** 
@@ -856,12 +856,6 @@
             obj = obj || [];
 
 
-            /// Enumerable object
-            if ($is(obj, __Enumerable)) {
-                return obj.getEnumerator();
-            }
-
-
 
             /// ES6/Legacy generator function
             if ($isFunc(obj)) {
@@ -884,6 +878,13 @@
 
 
 
+            /// Enumerator object
+            if ($isFunc(obj.getEnumerator)) {
+                return obj.getEnumerator();
+            }
+
+
+
             /// ES6 Iterable object: Map, Set and Iterable objects
             if ($isFunc(obj[_iteratorSymbol])) {
                 var _iterator = obj[_iteratorSymbol](),
@@ -894,13 +895,6 @@
                         return yielder(_next.value);
                     }
                 });
-            }
-
-
-
-            /// Enumerator object
-            if ($isFunc(obj.getEnumerator)) {
-                return obj.getEnumerator();
             }
 
 
@@ -1056,8 +1050,9 @@
 
 
         function Comparer(comparison) {
-            $ensureType(comparison, FUNCTION);
-            $define(this, "_comparison", { value: comparison });
+            if ($isFunc(comparison)) {
+                $define(this, "compare", { value: comparison });
+            }
         }
 
         return $extend(Comparer,
@@ -1072,7 +1067,7 @@
             * Greater than zero x is greater than y.
             */
             compare: function (objA, objB) {
-                return this._comparison(objA, objB);
+                return $computeCompare(objA, objB);
             }
         },
         {
@@ -1080,7 +1075,7 @@
             /**
             * Gets a default sort order comparer for the type specified by the generic argument.
             */
-            defaultComparer: new Comparer($computeCompare),
+            defaultComparer: new Comparer(),
 
 
             /**
@@ -1102,11 +1097,13 @@
 
         function EqualityComparer(hashCodeProvider, equality) {
 
-            $ensureType(equality, FUNCTION);
-            $ensureType(hashCodeProvider, FUNCTION);
+            if ($isFunc(equality)) {
+                $define(this, "equals", { value: equality });
+            }
 
-            $define(this, "_equality", { value: equality });
-            $define(this, "_hashCodeProvider", { value: hashCodeProvider });
+            if ($isFunc(hashCodeProvider)) {
+                $define(this, "hash", { value: hashCodeProvider });
+            }
         }
 
 
@@ -1119,7 +1116,7 @@
             * @returns true if the specified objects are equal; otherwise, false.
             */
             equals: function (x, y) {
-                return this._equality(x, y);
+                return $computeEquals(x, y, true);
             },
 
             /**
@@ -1128,7 +1125,7 @@
             * @returns A hash code for the specified object.
             */
             hash: function (obj) {
-                return this._hashCodeProvider(obj);
+                return $computeHash(obj, true);
             }
         },
         {
@@ -1136,7 +1133,7 @@
             /**
             * Gets a default equality comparer for the type specified by the generic argument.
             */
-            defaultComparer: new EqualityComparer($hash, $equals),
+            defaultComparer: new EqualityComparer(),
 
             /**
             * Creates an EqualityComparer by using the specified equality and hashCodeProvider.
@@ -1177,7 +1174,7 @@
 
                 var _source = $prop(this);
 
-                if(_source){
+                if (_source) {
                     return $count(_source);
                 }
 
