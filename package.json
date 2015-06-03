@@ -12,13 +12,18 @@
         }
     ],
     "keywords": [
+        "mx",
         "multiplex",
         "javascript",
         "linq",
+        "collection",
         "data-structure",
+        "lazy",
+        "lambda",
         "iterator",
         "library",
-        "framework"
+        "framework",
+        "es6"
     ],
     "bugs": {
         "url": "https://github.com/multiplex/multiplex.js/issues"

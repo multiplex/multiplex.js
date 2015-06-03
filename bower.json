@@ -3,13 +3,18 @@
     "version": "0.9.4",
     "description": "Comprehensive data-structure and LINQ library for JavaScript.",
     "keywords": [
+        "mx",
         "multiplex",
         "javascript",
         "linq",
+        "collection",
         "data-structure",
+        "lazy",
+        "lambda",
         "iterator",
         "library",
-        "framework"
+        "framework",
+        "es6"
     ],
     "homepage": "https://github.com/multiplex/multiplex.js",
     "license": "Apache",
