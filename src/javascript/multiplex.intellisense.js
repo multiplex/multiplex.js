@@ -2627,14 +2627,6 @@ intellisense.annotate(mx.Queue.prototype, {
         ///     <returns type="Object" />
         /// </signature>
     },
-    "toArray": function () {
-        /// <signature>
-        ///     <summary>
-        ///        Copies the Queue to a new array. 
-        ///     </summary>
-        ///     <returns type="Array" />
-        /// </signature>
-    },
     "getEnumerator": function () {
         /// <signature>
         ///     <summary>
@@ -2706,14 +2698,6 @@ intellisense.annotate(mx.Stack.prototype, {
         ///         Inserts an object at the top of the Stack.
         ///     </summary>
         ///     <param name="obj" type="Object">The object to push onto the Stack.</param>
-        /// </signature>
-    },
-    "toArray": function () {
-        /// <signature>
-        ///     <summary>
-        ///        Copies the Stack to a new array. 
-        ///     </summary>
-        ///     <returns type="Array" />
         /// </signature>
     },
     "getEnumerator": function () {
