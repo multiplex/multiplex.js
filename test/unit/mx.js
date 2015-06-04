@@ -56,7 +56,7 @@
 
 
     QUnit.test("Multiplex Iterable", function (assert) {
-        if (window.Set) {
+        if (window.Set && window.Symbol) {
             var _set = new window.Set(),
                 _source = mx(_set);
 
@@ -139,7 +139,7 @@
         assert.ok(mx.is([1]), "Array Passed!");
         assert.ok(mx.is("mx"), "String Passed!");
 
-        if (window.Set) {
+        if (window.Set && window.Symbol) {
             assert.ok(mx.is(new window.Set([1, 2, 3])), "Iterable Passed!");
         }
 
