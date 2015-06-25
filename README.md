@@ -93,7 +93,7 @@ In a query that returns a sequence of values, the query variable itself never ho
 The following example uses the `toArray` method to immediately evaluate a sequence into an array:
 
 ````javascript
-mx([1, 2, 3, 4, 5]).select("t => t * t").toArray();   // [1, 2, 3, 4, 5]
+mx([1, 2, 3, 4, 5]).select("t => t * t").toArray();   // [1, 4, 9, 16, 25]
 ````
 
 The following example uses the `sum` method to evaluate sum of the first 10 numbers:
