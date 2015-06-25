@@ -1,6 +1,6 @@
 ﻿/*--------------------------------------------------------------------------
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Ver 0.9.3 (May 22, 2015)
+* Ver 1.0.0 (Jun 25, 2015)
 *
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under Apache License Version 2.0
@@ -35,20 +35,9 @@
         DATE = global.Date,
         WEAKMAP = global.WeakMap,
         SYMBOL = global.Symbol,
+        NODELIST = global.NodeList,
         UNDEFINED;
 
-
-
-
-
-    /* js type names
-    ---------------------------------------------------------------------- */
-    var TYPE_FUNCTION = "function",
-        TYPE_OBJECT = "object",
-        TYPE_NUMBER = "number",
-        TYPE_STRING = "string",
-        TYPE_BOOLEAN = "boolean",
-        TYPE_SYMBOL = "symbol";
 
 
 
@@ -84,24 +73,22 @@
     */
     function $is(obj, type) {
 
-        switch (typeof obj) {
-            case TYPE_NUMBER:
-                return type === NUMBER;
+        // use 'typeof' operator in an if clause yields in better performance than switch-case
 
-            case TYPE_STRING:
-                return type === STRING;
-
-            case TYPE_FUNCTION:
-                return type === FUNCTION;
-
-            case TYPE_BOOLEAN:
-                return type === BOOLEAN;
-
-            case TYPE_SYMBOL:
-                return type === SYMBOL;
-
-            default:
-                return obj instanceof type;
+        if (typeof obj === "number") {
+            return type === NUMBER;
+        }
+        else if (typeof obj === "string") {
+            return type === STRING;
+        }
+        else if (typeof obj === "function") {
+            return type === FUNCTION;
+        }
+        else if (typeof obj === "boolean") {
+            return type === BOOLEAN;
+        }
+        else {
+            return obj instanceof type;
         }
     }
 
@@ -112,7 +99,31 @@
     * @returns {Boolean}
     */
     function $isFunc(fn) {
-        return typeof fn === TYPE_FUNCTION;
+        return typeof fn === "function";
+    }
+
+
+    /**
+    * Determines whether the specified object is array-like.
+    * @param {Object} obj The object to check.
+    * @returns {Boolean}
+    */
+    function $isArrayLike(obj) {
+
+        if (obj instanceof ARRAY || typeof obj === "string") {                      // Arrays/String
+            return true;
+        }
+        else if (typeof obj === "object" && typeof obj.length === "number") {       // Array-likes have 'length' property (excelude 'function' type)
+
+            if (typeof obj.splice === "function" ||                                 // third party libraries. eg. jQuery
+                obj.toString() === "[object Arguments]" ||                          // arguments
+                obj.buffer ||                                                       // typed-array
+                obj instanceof NODELIST) {                                          // NodeList: document.querySelectorAll
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
@@ -148,7 +159,7 @@
 
 
         /// Overwrite function "toString" method.
-        if ($is(prop, STRING) && $is(attributes.value, FUNCTION)) {
+        if ($is(prop, STRING) && $isFunc(attributes.value)) {
             var _fn = attributes.value,
                 _toString = "toString",
                 _str = "function " + prop + (_fn.toString().match(/\(.*?\)/) || [""])[0] + " {...}";
@@ -270,25 +281,22 @@
     * @returns {Function}
     */
     function $lambda(exp) {
-        switch (typeof exp) {
 
-            case TYPE_FUNCTION:
-                return exp;
-
-            case TYPE_STRING:
-                var _pattern = /^\s*\(?\s*(([a-z_$]{1}[a-z0-9_$]*)+([, ]+[a-z_$]{1}[a-z0-9_$]*)*)*\s*\)?\s*=>\s*(.*)$/i;
-                if (_pattern.test(exp)) {
-                    var _match = exp.match(_pattern);
-                    return new FUNCTION((_match[1] || "").replace(/ /g, ""), "return " + _match[4]);
-                }
-
-                $error("Cannot parse supplied expression: " + exp);
-                break;
-
-            default:
-                return null;
-
+        if (typeof exp === "function") {
+            return exp;
         }
+
+        else if (typeof exp === "string") {
+            var _pattern = /^\s*\(?\s*(([a-z_$]{1}[a-z0-9_$]*)+([, ]+[a-z_$]{1}[a-z0-9_$]*)*)*\s*\)?\s*=>\s*(.*)$/i;
+            if (_pattern.test(exp)) {
+                var _match = exp.match(_pattern);
+                return new FUNCTION((_match[1] || "").replace(/ /g, ""), "return " + _match[4]);
+            }
+
+            $error("Cannot parse supplied expression: " + exp);
+        }
+
+        return null;
     }
 
 
@@ -308,6 +316,7 @@
             _i = 0;
 
             while (++_i < _len) {
+                // Josh Bloch hash method
                 _hash = (17 * 31 + _hash) * 31 + $computeHash(_args[_i], true);
             }
 
@@ -407,40 +416,40 @@
         */
         function computeHash(obj, override) {
 
-            switch (typeof obj) {
-                case TYPE_NUMBER:
-                    return compute31BitNumberHash(obj);                 // Compute "Number" primitive type hash (does not incluede "new Number(value)")
+            /// use 'instanceof' and 'typeof' operators to maximize performance
 
-                case TYPE_STRING:
-                    return compute31BitStringHash(obj);                 // Compute "String" primitive type hash (does not incluede "new String(value)")
-
-                case TYPE_BOOLEAN:
-                    return obj ? 1 : 0;                                 // Compute "Boolean" primitive type hash (does not incluede "new Boolean(value)")
-
-                default:
-
-                    if (obj == null) {                      // null/undefined hash is 0
-                        return 0;
-                    }
-
-                    else if (obj instanceof DATE) {
-                        return compute31BitDateHash(obj);               // Compute "Date" object type hash
-                    }
-
-                    else if (override && $isFunc(obj.__hash__)) {
-                        return obj.__hash__(obj);                       // Compute overriden "Object" hash
-                    }
-
-                    else {
-                        return compute31BitObjecHash(obj);             // Compute "Object" type hash for all other types
-                    }
+            if (typeof obj === "number") {                          // Compute "Number" primitive type hash (does not incluede "new Number(value)")
+                if (obj % 1 === 0) {                                // integer number
+                    return obj >> 32;
+                }
+                return compute31BitNumberHash(obj);
             }
-        }
 
+            else if (typeof obj === "string") {                     // Compute "String" primitive type hash (does not incluede "new String(value)")
+                return compute31BitStringHash(obj);
+            }
 
-        /// Creates a new HashCode by combining the given hash codes.
-        function combineHashCodes(h1, h2) {
-            return (17 * 31 + h1) * 31 + h2;
+            else if (typeof obj === "boolean") {                    // Compute "Boolean" primitive type hash (does not incluede "new Boolean(value)")
+                return obj ? 1 : 0;
+            }
+
+            else {
+                if (obj == null) {                                  // null/undefined hash is 0
+                    return 0;
+                }
+
+                else if (obj instanceof DATE) {
+                    return compute31BitDateHash(obj);               // Compute "Date" object type hash
+                }
+
+                else if (override && typeof obj.__hash__ === "function") {
+                    return obj.__hash__(obj);                       // Compute overriden "Object" hash
+                }
+
+                else {
+                    return compute31BitObjecHash(obj);             // Compute "Object" type hash for all other types
+                }
+            }
         }
 
 
@@ -529,7 +538,9 @@
                             // only object literals fall into following code, no need to check for hasOwnProperty
 
                             for (var _p in obj) {
-                                _hash = combineHashCodes(_hash, combineHashCodes(compute31BitStringHash(_p), computeHash(obj[_p], true)));
+
+                                // Josh Bloch hash method
+                                _hash = (17 * 31 + _hash) * 31 + compute31BitStringHash(_p) + computeHash(obj[_p], true);
                             }
 
                             _hash = _hash & _lower31BitMask;
@@ -549,7 +560,7 @@
 
                     var _hash = 0;
 
-                    if (typeof obj.__hash__ !== TYPE_FUNCTION || typeof (_hash = obj.__hash__()) !== TYPE_NUMBER) {
+                    if (typeof obj.__hash__ !== "function" || typeof (_hash = obj.__hash__()) !== "number") {
                         obj.__hash__ = function () { return _hash; };      // prevents recursion;
 
                         if (isObjectLiteral(obj)) {
@@ -562,7 +573,9 @@
                                 if (_p === _hashSymbol) {
                                     continue;
                                 }
-                                _hash = combineHashCodes(_hash, combineHashCodes(compute31BitStringHash(_p), computeHash(obj[_p], true)));
+
+                                // Josh Bloch hash method
+                                _hash = (17 * 31 + _hash) * 31 + compute31BitStringHash(_p) + computeHash(obj[_p], true);
                             }
 
                             _hash = _hash & _lower31BitMask;
@@ -618,40 +631,46 @@
         * @returns {Boolean} 
         */
         function computeEquals(objA, objB, override) {
+
+            // Objects are identical (including null)
             if (objA === objB) {
-                return true;                                            // Objects are identical (including null)
+                return true;
             }
 
+                // null is not equal to any object
             else if (objA == null || objB == null) {
-                return false;                                           // null is not equal to any object
+                return false;
             }
 
-            switch (typeof objA) {
-                case TYPE_NUMBER:                                      // NaN is not equal to NaN
-                case TYPE_STRING:
-                case TYPE_BOOLEAN:
-                    return objA == objB;                                // Objects check for equality
 
-                case TYPE_OBJECT:
-
-                    if (objA instanceof DATE) {
-                        return computeDateEquals(objA, objB);           // Objects are from "Date" type
-                    }
-
-                    else if (override && $isFunc(objA.__equals__)) {
-                        return objA.__equals__(objB);                   // Overriden "equals" method for Object types
-                    }
-
-
-                    else {
-                        return computeObjectEquals(objA, objB);        // Object types
-                    }
-
-                    break;
-
-                default:
-                    return false;                                       // Objects are already not equal
+            // Objects check for equality for primitive types
+            if (typeof objA === "number" ||
+                typeof objA === "string" ||
+                typeof objA === "boolean") {
+                return objA == objB;
             }
+
+            else if (typeof objA === "object") {
+
+                // Objects are from "Date" type
+                if (objA instanceof DATE) {
+                    return computeDateEquals(objA, objB);
+                }
+
+                    // Overriden "equals" method for Object types
+                else if (override && typeof objA.__equals__ === "function") {
+                    return objA.__equals__(objB);
+                }
+
+                    // Object types
+                else {
+                    return computeObjectEquals(objA, objB);
+                }
+            }
+
+
+            // Objects are already not equal
+            return false;
         }
 
 
@@ -670,9 +689,9 @@
         /// Compares Object types by their Hash code and Properties 
         function computeObjectEquals(objA, objB) {
 
-            if (typeof objB === TYPE_OBJECT) {
+            if (typeof objB === "object") {
 
-                if ($computeHash(objA) !== $computeHash(objB)) {        // Objects having different hash code are not equal
+                if ($computeHash(objA, true) !== $computeHash(objB, true)) {        // Objects having different hash code are not equal
                     return false;
                 }
 
@@ -687,7 +706,7 @@
                 for (var _prop in objA) {
 
                     /// Object methods are not considered for equality
-                    if (typeof (_val = objA[_prop]) === TYPE_FUNCTION) {
+                    if (typeof (_val = objA[_prop]) === "function") {
                         continue;
                     }
 
@@ -732,6 +751,7 @@
         * @returns {Number} 
         */
         function computeCompare(objA, objB) {
+
             if (objA === objB) {                                // Identical objects
                 return 0;
             }
@@ -741,27 +761,32 @@
             else if (objB == null) {                            // Everything is greater than null or undefined
                 return 1;
             }
-            else if (typeof objA !== typeof objB) {             // Object is considered less than another from different type
-                return -1;
-            }
+            else {
 
-            switch (typeof objA) {
-                case TYPE_STRING:
+                if (typeof objA === "number" ||                 // numbers compare using "gt" operator
+                    typeof objA === "boolean") {                // booleans compare using "gt" operator
+                    return objA > objB ? 1 : -1;                // values are already checked to equality
+                }
+
+                else if (typeof objA === "string") {
                     return objA.localeCompare(objB);            // Strings are compared using String.prototype.localeCompare method
+                }
 
-                default:
-                    var r = objA - objB;                        // Numbers, Booleans, Dates and Objects are compared using "-" operator
-                    if (!isNaN(r)) {                            // only when "-" operator returns a number
-                        return r > 0 ? 1 : (r < 0 ? -1 : 0);    // 1: objA > objB, -1: objA < objB, 0: objA = objB
-                    }
+                else {
+                    if (objA instanceof DATE &&                 // Dates are compared using 'getTime' method
+                        objB instanceof DATE) {
+                        var _t1 = objA.getTime(),
+                            _t2 = objB.getTime();
 
-                    else if ($isFunc(objA.localeCompare)) {
-                        return objA.localeCompare(objB);        // Strings objects are compared using String.prototype.localeCompare method
+                        return _t1 > _t2 ? 1 : (_t2 > _t1 ? -1 : 0);
                     }
+                    else {                                      // Objects are compared using 'valudOf' method
+                        var _v1 = objA.valueOf(),
+                            _v2 = objB.valueOf();
 
-                    else {
-                        return 0;                              // Objects are considered equal after all
+                        return _v1 > _v2 ? 1 : (_v2 > _v1 ? -1 : 0);
                     }
+                }
             }
         }
 
@@ -832,7 +857,7 @@
     */
     var __Enumerable = (function () {
 
-        var _iteratorSymbol = $isFunc(SYMBOL) && $is(SYMBOL.iterator, SYMBOL) ? SYMBOL.iterator : "@@iterator",
+        var _iteratorSymbol = $isFunc(SYMBOL) && typeof SYMBOL.iterator === "symbol" ? SYMBOL.iterator : "@@iterator",
             _generatorFunction = (function () {
                 try { return eval("(function*() {}).constructor"); }
                 catch (e) { return function () { }; }
@@ -858,14 +883,14 @@
 
 
             /// ES6/Legacy generator function
-            if ($isFunc(obj)) {
+            if (typeof obj === "function") {
                 return obj instanceof _generatorFunction ? EnumeratorFactory(obj()) : obj();
             }
 
 
 
             /// Array-like: String, Array, arguments, jQuery
-            if ($is(obj, ARRAY) || $is(obj, STRING) || $is(obj.length, NUMBER)) {
+            if ($isArrayLike(obj)) {
                 var _index = -1,
                     _length = obj.length;
 
@@ -879,14 +904,14 @@
 
 
             /// Enumerator object
-            if ($isFunc(obj.getEnumerator)) {
+            if (typeof obj.getEnumerator === "function") {
                 return obj.getEnumerator();
             }
 
 
 
             /// ES6 Iterable object: Map, Set and Iterable objects
-            if ($isFunc(obj[_iteratorSymbol])) {
+            if (typeof obj[_iteratorSymbol] === "function") {
                 var _iterator = obj[_iteratorSymbol](),
                     _next;
 
@@ -902,7 +927,7 @@
             /// Regular object
             return function () {
 
-                if (typeof obj !== TYPE_OBJECT) {
+                if (typeof obj !== "object") {
                     return EnumeratorFactory([obj]);
                 }
 
@@ -969,13 +994,11 @@
                     return false;
                 }
 
-                if ($is(obj, __Enumerable) ||                                   /// Enumerable
-                    $is(obj, ARRAY) ||                                        /// Array
-                    $is(obj, STRING) ||                                       /// String
-                    $isFunc(obj.getEnumerator) ||                               /// Enumerable-like
-                    $isFunc(obj[_iteratorSymbol]) ||                            /// Iterable
-                    obj instanceof _generatorFunction ||                        /// ES6 Generator Function
-                    ($is(obj.length, NUMBER) && $isFunc(obj.splice))) {       /// Array-like
+                if ($isArrayLike(obj) ||                                    /// Array-like
+                    obj instanceof __Enumerable ||                          /// Enumerable
+                    obj instanceof _generatorFunction ||                    /// ES6 Generator Function
+                    typeof obj.getEnumerator === "function" ||              /// Enumerable
+                    typeof obj[_iteratorSymbol] === "function") {           /// Iterable
                     return true;
                 }
 
@@ -1159,8 +1182,8 @@
         * @param {Enumerable=} value Enumerable whose elements are copied to the new collection.
         */
         function Collection(value) {
-            if (__Enumerable.is(value)) {
-                $prop(this, $buffer(value, false));
+            if (value) {
+                $prop(this, $buffer(value));
             }
         }
 
@@ -1340,7 +1363,7 @@
                     _capacity = value;
                 }
 
-                else if (__Enumerable.is(value) && !$is(value, STRING)) {
+                else if (__Enumerable.is(value)) {
                     this.addRange(value);
                 }
 
@@ -1644,7 +1667,7 @@
                     validateRange(this, index);
                 }
 
-                var _arr = $buffer(collection, false),
+                var _arr = $buffer(collection),
                     _count = _arr.length,
                     _len = this.length + _count;
 
@@ -2850,7 +2873,7 @@
             $prop(this, _table);
 
             if (_enumerable) {
-                var _buffer = $buffer(_args[0], false);
+                var _buffer = $buffer(_args[0]);
                 for (var i = 0, len = _buffer.length; i < len; i++) {
                     _table.add(_buffer[i], null);
                 }
@@ -2934,7 +2957,7 @@
 
                 var _count = this.count(),
                     _table = $prop(this),
-                    _buffer = $buffer(this, false),
+                    _buffer = $buffer(this),
                     _removed = 0,
                     _item;
 
@@ -3004,7 +3027,7 @@
                     if (areEqualityComparersEqual(this, other)) {
                         var _table = $prop(this),
                             _otable = $prop(other),
-                            _buffer = $buffer(this, false),
+                            _buffer = $buffer(this),
                             _len = _buffer.length,
                             _item;
 
@@ -3418,7 +3441,7 @@
             });
 
             if (collection) {
-                var _buffer = $buffer(collection, false);
+                var _buffer = $buffer(collection);
                 for (var i = 0, len = _buffer.length; i < len; i++) {
                     this.addLast(_buffer[i]);
                 }
@@ -3831,7 +3854,7 @@
             var _items = [];
 
             if (collection != null) {
-                _items = $buffer(collection);
+                _items = $buffer(collection).concat();
             }
 
             $prop(this, _items);
@@ -3910,14 +3933,6 @@
                 $error(ERROR_EMPTY_COLLECTION);
             },
 
-            /**
-            * Copies the Queue to a new array.
-            * @returns {Array}
-            */
-            toArray: function () {
-                return $prop(this).slice();
-            },
-
             /** 
             * Returns an enumerator that iterates through the collection. 
             * @returns {Enumerator}
@@ -3942,7 +3957,7 @@
             var _items = [];
 
             if (collection != null) {
-                _items = $buffer(collection);
+                _items = $buffer(collection).concat();
             }
 
             $prop(this, _items);
@@ -4021,14 +4036,6 @@
                 $prop(this).push(item);
             },
 
-            /**
-            *   Copies the Stack to a new array.
-            *   @returns {Array}
-            */
-            toArray: function () {
-                return $prop(this).slice();
-            },
-
             /** 
             * Returns an enumerator that iterates through the collection. 
             * @returns {Enumerator}
@@ -4055,7 +4062,7 @@
         function Lookup(source, keySelector, elementSelector, comparer) {
 
             var _table = new __HashTable($count(source), comparer),
-                _buffer = $buffer(source, false),
+                _buffer = $buffer(source),
                 _count = _buffer.length,
                 _item,
                 _key,
@@ -4362,7 +4369,7 @@
                 var _args = arguments,
                     _func = _args.length === 1 ? $lambda(funcOrSeed) : $lambda(func),
                     _seed = _args.length === 1 ? UNDEFINED : funcOrSeed,
-                    _buffer = $buffer(this, false),
+                    _buffer = $buffer(this),
                     _len = _buffer.length,
                     _index = 0,
                     _result;
@@ -4442,7 +4449,7 @@
                     return $enumerable(this).select(selector).average();
                 }
 
-                var _buffer = $buffer(this, false),
+                var _buffer = $buffer(this),
                     _len = _buffer.length,
                     _sum = 0;
 
@@ -4927,22 +4934,25 @@
                     return $enumerable(this).select(selector).max();
                 }
 
-                var _buffer = $buffer(this, false),
+                var _buffer = $buffer(this),
                     _len = _buffer.length;
 
                 if (_len === 0) {
                     $error(ERROR_NO_ELEMENTS);
                 }
                 else {
-                    var _value = _buffer[--_len];
+                    var _max = _buffer[--_len],
+                        _value;
 
                     while (_len-- > 0) {
-                        if ($computeCompare(_buffer[_len], _value) > 0) {
-                            _value = _buffer[_len];
+                        _value = _buffer[_len];
+
+                        if (_value > _max) {
+                            _max = _value;
                         }
                     }
 
-                    return _value;
+                    return _max;
                 }
             },
 
@@ -4959,22 +4969,25 @@
                     return $enumerable(this).select(selector).min();
                 }
 
-                var _buffer = $buffer(this, false),
+                var _buffer = $buffer(this),
                     _len = _buffer.length;
 
                 if (_len === 0) {
                     $error(ERROR_NO_ELEMENTS);
                 }
                 else {
-                    var _value = _buffer[--_len];
+                    var _min = _buffer[--_len],
+                        _value;
 
                     while (_len-- > 0) {
-                        if ($computeCompare(_buffer[_len], _value) < 0) {
-                            _value = _buffer[_len];
+                        _value = _buffer[_len];
+
+                        if (_value < _min) {
+                            _min = _value;
                         }
                     }
 
-                    return _value;
+                    return _min;
                 }
             },
 
@@ -5026,8 +5039,17 @@
             * @returns {Enumerable}
             */
             reverse: function () {
-                var _buffer = $buffer(this);
-                return new __Enumerable(_buffer.reverse());
+
+                var _buffer = $buffer(this),
+                    _len = _buffer.length;
+
+                return new __Enumerable(function () {
+                    return new __Enumerator(function (yielder) {
+                        if (_len-- > 0) {
+                            return yielder(_buffer[_len]);
+                        }
+                    });
+                });
             },
 
             /**
@@ -5038,8 +5060,8 @@
             */
             sequenceEqual: function (second, comparer) {
 
-                var _arr1 = $buffer(this, false),
-                    _arr2 = $buffer(second, false),
+                var _arr1 = $buffer(this),
+                    _arr2 = $buffer(second),
                     _comparer = $equalityComparer(comparer),
                     _len = _arr1.length;
 
@@ -5178,7 +5200,7 @@
                     _arr = asArrayLike(this);
 
                 if (_arr) {
-                    return new __Enumerable($buffer(_arr, false).slice(count));
+                    return new __Enumerable($buffer(_arr).slice(count));
                 }
                 else {
                     return new __Enumerable(function () {
@@ -5242,7 +5264,7 @@
                     return $enumerable(this).select(selector).sum();
                 }
 
-                var _buffer = $buffer(this, false),
+                var _buffer = $buffer(this),
                     _len = _buffer.length,
                     _sum = 0;
 
@@ -5269,7 +5291,7 @@
                     _arr = asArrayLike(this);
 
                 if (_arr) {
-                    return new __Enumerable($buffer(_arr, false).slice(0, count));
+                    return new __Enumerable($buffer(_arr).slice(0, count));
                 }
                 else {
                     return new __Enumerable(function () {
@@ -5320,7 +5342,8 @@
             * @returns {Array}
             */
             toArray: function () {
-                return $buffer(this);
+                // 'concat' is fastest way to duplicate an array
+                return $buffer(this).concat();
             },
 
             /**
@@ -5581,16 +5604,16 @@
     */
     function $count(value) {
 
-        if ($is(value, ARRAY) || $is(value, STRING)) {
+        if ($isArrayLike(value)) {
             return value.length;
         }
-        else if ($is(value, __Collection)) {
+        else if (value instanceof __Collection) {
             return value.count();
         }
-        else if ($is(value, __Enumerable)) {
+        else if (value instanceof __Enumerable) {
             var _source = $prop(value);
 
-            if (_source && !$isFunc(_source) && $is(_source.length, NUMBER)) {
+            if ($isArrayLike(_source)) {
                 return _source.length;
             }
         }
@@ -5602,16 +5625,17 @@
     /**
     * Buffers an Enumerable object into an array.
     * @param {Enumerable} value An Enumerable object.
-    * @param {Boolean=} copy When true returns a copy of the Array Collections. default value is true.
     * @returns {Array}
     */
-    function $buffer(value, copy) {
+    function $buffer(value) {
 
-        if ($is(value, ARRAY)) {                                    // fast buffer arrays
-            return copy === false ? value : value.concat();         // 'concat' is fastest way to duplicate an array
+        /// use 'instanceof' and 'typeof' operators to maximize performance
+
+        if (value instanceof ARRAY) {                                   // fast buffer arrays
+            return value;
         }
 
-        else if ($is(value, STRING)) {                                // fast buffer strings
+        else if (typeof value === "string") {                           // fast buffer strings
             return value.split("");
         }
 
@@ -5619,44 +5643,50 @@
 
             var _source = $prop(value);
 
-            if ($is(_source, ARRAY) || $is(_source, STRING)) {      // fast buffer array/string enumerable
-                return $buffer(_source, copy);
+            if (_source) {
+                if (_source instanceof ARRAY) {                         // fast buffer array/string enumerable
+                    return _source;
+                }
+                else if (typeof _source === "string") {                 // fast buffer strings
+                    return _source.split("");
+                }
+                else if (typeof _source.slice === "function") {         // fast buffer enumerable with slice function: List
+                    return _source.slice(0);
+                }
             }
-            else if (_source && $isFunc(_source.slice)) {           // fast buffer enumerable with slice function: List
-                return _source.slice(0);
+
+
+            // do it the hard way
+            var _e = $enumerator(value),
+                _length = 16,
+                _count = 0,
+                _arr;
+
+
+            // collections have fixed element count
+            if (value instanceof __Collection) {
+                _arr = new ARRAY(value.count());
+
+                while (_e.next()) {
+                    _arr[_count++] = _e.current;
+                }
+
+                return _arr;
             }
-            else {                                                  // do it the hard way
-                var _e = $enumerator(value),
-                    _length = 16,
-                    _count = 0,
-                    _arr;
+            else {
+                _arr = new ARRAY(_length);
 
-
-                // collections have fixed element count
-                if ($is(value, __Collection)) {
-                    _arr = new ARRAY(value.count());
-
-                    while (_e.next()) {
-                        _arr[_count++] = _e.current;
+                while (_e.next()) {
+                    if (_count >= _length) {
+                        _length *= 4;
+                        _arr.length = _length;
                     }
 
-                    return _arr;
+                    _arr[_count++] = _e.current;
                 }
-                else {
-                    _arr = new ARRAY(_length);
 
-                    while (_e.next()) {
-                        if (_count >= _length) {
-                            _length *= 4;
-                            _arr.length = _length;
-                        }
-
-                        _arr[_count++] = _e.current;
-                    }
-
-                    _arr.length = _count;
-                    return _arr;
-                }
+                _arr.length = _count;
+                return _arr;
             }
         }
     }
@@ -5747,7 +5777,7 @@
     * @returns {EqualityComparer}
     */
     function $equalityComparer(value) {
-        if ($is(value, __EqualityComparer)) {
+        if (value instanceof __EqualityComparer) {
             return value;
         }
 

@@ -1,6 +1,6 @@
 {
     "name": "multiplex",
-    "version": "0.9.4",
+    "version": "1.0.0",
     "description": "Comprehensive data-structure and LINQ library for JavaScript.",
     "keywords": [
         "mx",
