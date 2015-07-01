@@ -2429,9 +2429,12 @@ declare module multiplex {
         * @param obj A regular Object.
         */
         (obj: Object): Enumerable<KeyValuePair<string, any>>
+        
 
-
-
+        /**
+        * Returns an empty Enumerable.
+        */
+        (): Enumerable<any>
 
 
 
