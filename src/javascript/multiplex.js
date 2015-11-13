@@ -400,7 +400,7 @@
     /**
     * Serves as a hash function for a particular type, suitable for use in hashing algorithms and data structures such as a hash table.
     */
-    var $computeHash = (function (useWeakMap) {
+    var $computeHash = (function () {
 
         var _lower31BitMask = 0X7FFFFFFF,
             _hashSeed = MATH.floor(MATH.random() * 0X7FFF) + 0X7FFF,
@@ -520,9 +520,8 @@
 
 
         /// Creates and stores a HashCode for an object.
-        /// When "useWeakMap" is true uses WeakMap as an internal hash storage whenever possible.
         var compute31BitObjecHash = (function () {
-            if (useWeakMap && $isFunc(WEAKMAP)) {
+            if ($isFunc(WEAKMAP)) {
                 var _map = new WEAKMAP();
 
                 return function (obj) {
@@ -612,7 +611,7 @@
 
 
         return computeHash;
-    })(true);
+    })();
 
 
     /**
@@ -705,12 +704,14 @@
 
                 for (var _prop in objA) {
 
+                    _val = objA[_prop];
+
                     /// Object methods are not considered for equality
-                    if (typeof (_val = objA[_prop]) === "function") {
+                    if (typeof _val === "function") {
                         continue;
                     }
 
-                    if (!$computeEquals(_val, objB[_prop], true)) {
+                    if (!computeEquals(_val, objB[_prop], true)) {
                         return false;
                     }
                 }
