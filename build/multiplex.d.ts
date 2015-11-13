@@ -65,6 +65,7 @@ declare module multiplex {
     }
     interface EnumeratorConstructor {
         new <T>(generator: (yielder: (value: T) => T) => any): Enumerator<T>;
+        prototype: Enumerator<any>
     }
 
 
@@ -115,6 +116,7 @@ declare module multiplex {
         new (obj: Object): Enumerable<KeyValuePair<string, any>>;
 
 
+        prototype: Enumerable<any>
 
 
         /**
@@ -172,6 +174,9 @@ declare module multiplex {
         * @param comparison The comparison to use.
         */
         create<T>(comparison: (x: T, y: T) => number): Comparer<T>;
+
+
+        prototype: Comparer<any>
     }
 
 
@@ -209,6 +214,9 @@ declare module multiplex {
         * @param equality The equality function.
         */
         create<T>(hashCodeProvider: (obj: T) => number, equality: (x: T, y: T) => boolean): EqualityComparer<T>;
+
+
+        prototype: EqualityComparer<any>
     }
 
 
@@ -244,6 +252,9 @@ declare module multiplex {
         * @param value The Iterable to wrap.
         */
         new <T>(value: Iterable<T>): Collection<T>
+
+
+        prototype: Collection<any>
     }
 
 
@@ -287,6 +298,9 @@ declare module multiplex {
         * @param list The list to wrap.
         */
         new <T>(list: List<T>): ReadOnlyCollection<T>
+
+
+        prototype: ReadOnlyCollection<any>
     }
 
 
@@ -646,6 +660,9 @@ declare module multiplex {
         * @param collection The collection whose elements are copied to the new list.
         */
         new <T>(collection: Iterable<T>): List<T>
+
+
+        prototype: List<any>
     }
 
 
@@ -815,6 +832,9 @@ declare module multiplex {
         * @param comparer The Comparer implementation to use when comparing keys.-or-null to use the default Comparer for the type of the key.
         */
         new <TKey, TValue>(capacity: number, comparer: Comparer<TKey>): SortedList<TKey, TValue>
+
+
+        prototype: SortedList<any, any>
     }
 
 
@@ -843,6 +863,9 @@ declare module multiplex {
         * @param value The definition associated with key.
         */
         new <TKey, TValue>(key: TKey, value: TValue): KeyValuePair<TKey, TValue>
+
+
+        prototype: KeyValuePair<any, any>
     }
 
 
@@ -976,6 +999,9 @@ declare module multiplex {
         * @param comparer The EqualityComparer implementation to use when comparing keys.
         */
         new <TKey, TValue>(dictionary: Dictionary<TKey, TValue>, comparer: EqualityComparer<TKey>): Dictionary<TKey, TValue>
+
+
+        prototype: Dictionary<any, any>
     }
 
 
@@ -1144,6 +1170,9 @@ declare module multiplex {
         * @param comparer The EqualityComparer implementation to use when comparing values in the set.
         */
         new <T>(collection: Iterable<T>, comparer: EqualityComparer<T>): HashSet<T>
+
+
+        prototype: HashSet<any>
     }
 
     
@@ -1183,6 +1212,9 @@ declare module multiplex {
         * @param value The value to contain in the LinkedListNode
         */
         new <T>(value: T): LinkedListNode<T>
+
+
+        prototype: LinkedListNode<any>
     }
 
 
@@ -1346,6 +1378,9 @@ declare module multiplex {
         * @param collection The collection to copy elements from.
         */
         new <T>(collection: Iterable<T>): LinkedList<T>
+
+
+        prototype: LinkedList<any>
     }
 
 
@@ -1404,6 +1439,9 @@ declare module multiplex {
         * @param collection The collection to copy elements from.
         */
         new <T>(collection: Iterable<T>): Queue<T>
+
+
+        prototype: Queue<any>
     }
 
 
@@ -1463,6 +1501,9 @@ declare module multiplex {
         * @param collection The collection to copy elements from.
         */
         new <T>(collection: Iterable<T>): Stack<T>
+
+
+        prototype: Stack<any>
     }
 
 
@@ -2388,9 +2429,12 @@ declare module multiplex {
         * @param obj A regular Object.
         */
         (obj: Object): Enumerable<KeyValuePair<string, any>>
+        
 
-
-
+        /**
+        * Returns an empty Enumerable.
+        */
+        (): Enumerable<any>
 
 
 

@@ -157,16 +157,13 @@
     function $define(obj, prop, attributes) {
         $defineProperty(obj, prop, attributes);
 
-
-        /// Overwrite function "toString" method.
         if ($is(prop, STRING) && $isFunc(attributes.value)) {
-            var _fn = attributes.value,
-                _toString = "toString",
-                _str = "function " + prop + (_fn.toString().match(/\(.*?\)/) || [""])[0] + " {...}";
+            var _str = "function " + prop + "() {...}";
 
-            if (!$has(_fn, _toString)) {
-                $defineProperty(_fn, _toString, { value: function () { return _str; } });
-            }
+            $defineProperty(attributes.value, "toString", {
+                value: function () { return _str; },
+                writable: true
+            });
         }
 
         return obj;
@@ -201,24 +198,6 @@
 
 
     /**
-    * Creates a new module with supplied members.
-    * @param {Object} source The module object or the mixin source object.
-    * @param {Object=} props Represetnts the mixin source object.
-    * @returns {Object}
-    */
-    function $module(source, props) {
-        var _source = props ? source : {},
-            _props = props || source;
-
-        if ($isFunc(_source)) {
-            _source = $extend(_source);
-        }
-
-        return $freeze($mixin(_source, _props, { enumerable: true }));
-    }
-
-
-    /**
     * Extends the given type by inheriting from a superType and/or extending its prototype.
     * @param {Function} type The type to extend.
     * @param {Function|Object} extender The super-type or the prototype mixin object.
@@ -231,15 +210,12 @@
         var _args = arguments,
             _super = $isFunc(extender) ? extender : null,
             _proto = _args.length === 4 || _super ? _args[2] : extender,
-            _static = _args.length === 4 || _super ? _args[3] : _args[2],
-            _str = "function " + (type.name || type.toString().match(/function (.+)\(.*?\)/)[1]) + "() {...}";
-
-        $defineProperty(type, "toString", { value: function () { return _str; } });
+            _static = _args.length === 4 || _super ? _args[3] : _args[2];
 
         if (_super) {
-            var Super = function () { $define(this, "constructor", { value: type }); };
-            Super.prototype = _super.prototype;
-            type.prototype = new Super();
+            var _ = function () { $define(this, "constructor", { value: type }); };
+            _.prototype = _super.prototype;
+            type.prototype = new _();
         }
 
         if (_proto) {
@@ -333,7 +309,7 @@
     * @returns {Boolean} true if the objA parameter is the same instance as the objB parameter, or if both are null, or if objA.equals(objB) returns true; otherwise, false.
     */
     function $equals(objA, objB, comparer) {
-        if ($is(comparer, __EqualityComparer)) {
+        if (comparer) {
             if (objA === objB) {
                 return true;                                            // Objects are identical (including null)
             }
@@ -400,7 +376,7 @@
     /**
     * Serves as a hash function for a particular type, suitable for use in hashing algorithms and data structures such as a hash table.
     */
-    var $computeHash = (function (useWeakMap) {
+    var $computeHash = (function () {
 
         var _lower31BitMask = 0X7FFFFFFF,
             _hashSeed = MATH.floor(MATH.random() * 0X7FFF) + 0X7FFF,
@@ -520,9 +496,8 @@
 
 
         /// Creates and stores a HashCode for an object.
-        /// When "useWeakMap" is true uses WeakMap as an internal hash storage whenever possible.
         var compute31BitObjecHash = (function () {
-            if (useWeakMap && $isFunc(WEAKMAP)) {
+            if ($isFunc(WEAKMAP)) {
                 var _map = new WEAKMAP();
 
                 return function (obj) {
@@ -612,7 +587,7 @@
 
 
         return computeHash;
-    })(true);
+    })();
 
 
     /**
@@ -705,12 +680,14 @@
 
                 for (var _prop in objA) {
 
+                    _val = objA[_prop];
+
                     /// Object methods are not considered for equality
-                    if (typeof (_val = objA[_prop]) === "function") {
+                    if (typeof _val === "function") {
                         continue;
                     }
 
-                    if (!$computeEquals(_val, objB[_prop], true)) {
+                    if (!computeEquals(_val, objB[_prop], true)) {
                         return false;
                     }
                 }
@@ -2291,7 +2268,7 @@
 
         return $extend(KeyValuePair, {
             __hash__: function () { return $hash(this.key, this.value); },
-            __equals__: function (obj) { return $is(obj, __KeyValuePair) && $equals(this.key, obj.key) && $equals(this.value, obj.value); },
+            __equals__: function (obj) { return $is(obj, __KeyValuePair) && $computeEquals(this.key, obj.key) && $computeEquals(this.value, obj.value); },
         });
     })();
 
@@ -2370,7 +2347,7 @@
                 var _e = $enumerator($prop(this));
 
                 while (_e.next()) {
-                    if ($equals(_e.current.value, value)) {
+                    if ($computeEquals(_e.current.value, value)) {
                         return true;
                     }
                 }
@@ -3645,7 +3622,7 @@
                 if (_node != null) {
                     if (value != null) {
                         do {
-                            if ($equals(_node._value, value)) {
+                            if ($computeEquals(_node._value, value)) {
                                 return _node;
                             }
                             _node = _node._next;
@@ -3682,7 +3659,7 @@
                 if (_node != null) {
                     if (value != null) {
                         do {
-                            if ($equals(_node._value, value)) {
+                            if ($computeEquals(_node._value, value)) {
                                 return _node;
                             }
 
@@ -5826,16 +5803,17 @@
     }
 
 
-    var mx = $module(multiplex, {
-        runtime: $module({
+    var mx = $mixin(multiplex, {
+        runtime: $mixin({}, {
             hash: $computeHash,
             equals: $computeEquals,
             compare: $computeCompare,
             lambda: $lambda,
             define: $define,
             mixin: $mixin
-        }),
-        extensions: $module(__EnumerableExtensions),
+        }, { enumerable: true }),
+
+        extensions: $mixin({}, __EnumerableExtensions, { enumerable: true }),
 
         hash: $hash,
         equals: $equals,
@@ -5866,7 +5844,7 @@
 
         Comparer: __Comparer,
         EqualityComparer: __EqualityComparer
-    });
+    }, { enumerable: true });
 
 
     $mixin(global, {
@@ -5876,4 +5854,4 @@
 
 
 
-})(window || this);
+})(this);
