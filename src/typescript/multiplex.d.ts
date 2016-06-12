@@ -2596,4 +2596,4 @@ declare module multiplex {
         */
         Stack: StackConstructor
     }
-}
+}

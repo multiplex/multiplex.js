@@ -1,6 +1,6 @@
 ﻿/*--------------------------------------------------------------------------
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Ver 1.0.0 (Jun 25, 2015)
+* Ver 1.1.0 (Nov 15, 2015)
 *
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under Apache License Version 2.0
@@ -2532,8 +2532,8 @@
                 var _entries = this._entries,
                     _buckets = this._buckets,
                     _comparer = this._comparer,
-                    _hash = _comparer.hash(key),            // hash code of the key
-                    _bucket = _hash % _buckets.length,      // bucket index
+                    _hash = _comparer.hash(key) & 0x7FFFFFFF,       // hash code of the key
+                    _bucket = _hash % _buckets.length,              // bucket index
                     _entry = null;
 
 
@@ -2593,8 +2593,8 @@
                 var _comparer = this._comparer,
                     _buckets = this._buckets,
                     _entries = this._entries,
-                    _hash = _comparer.hash(key),            // hash-code of the key
-                    _bucket = _hash % _buckets.length,      // bucket index
+                    _hash = _comparer.hash(key) & 0x7FFFFFFF,       // hash-code of the key
+                    _bucket = _hash % _buckets.length,              // bucket index
                     _last = -1,
                     _entry;
 
@@ -2774,8 +2774,8 @@
             var _comparer = table._comparer,
                 _buckets = table._buckets,
                 _entries = table._entries,
-                _hash = _comparer.hash(key),        // hash code of the key
-                _length = _buckets.length,          // total buckets
+                _hash = _comparer.hash(key) & 0x7FFFFFFF,      // hash code of the key
+                _length = _buckets.length,                      // total buckets
                 _entry = null;
 
             // freed entries have -1 hashCode and do not need enumeration
