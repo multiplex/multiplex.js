@@ -1,6 +1,6 @@
 ﻿/*--------------------------------------------------------------------------
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Ver 1.1.0 (Nov 15, 2015)
+* Ver 1.1.0 (Jun 12, 2016)
 *
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under Apache License Version 2.0
@@ -2596,4 +2596,4 @@ declare module multiplex {
         */
         Stack: StackConstructor
     }
-}
+}
