@@ -1,52 +1,52 @@
 {
-    "name": "multiplexjs",
-    "title": "Multiplex.js",
-    "description": "Comprehensive data-structure and LINQ library for JavaScript.",
-    "version": "2.0.0",
-    "main": "dist/multiplex.js",
-    "author": "Kamyar Nazeri",
-    "license": "Apache-2.0",
-    "homepage": "https://github.com/multiplex/multiplex.js",
-    "keywords": [
-        "mx",
-        "multiplex",
-        "javascript",
-        "linq",
-        "collection",
-        "data-structure",
-        "lazy",
-        "lambda",
-        "iterator",
-        "library",
-        "framework",
-        "es6"
-    ],
-    "bugs": {
-        "url": "https://github.com/multiplex/multiplex.js/issues"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/multiplex/multiplex.js.git"
-    },
-    "dependencies": { },
-    "preferGlobal": true,
-    "devDependencies": {
-        "grunt": "1.0.1",
-        "grunt-cli": "1.2.0",
-        "grunt-contrib-clean": "1.0.0",
-        "grunt-contrib-copy": "1.0.0",
-        "grunt-contrib-qunit": "1.2.0",
-        "grunt-contrib-jshint": "1.0.0",
-        "grunt-contrib-uglify": "1.0.0",
-        "grunt-contrib-watch": "1.0.0",
-        "grunt-jscs": "3.0.0",
-        "load-grunt-tasks": "3.5.0",
-        "grunt-karma": "2.0.0",
-        "karma": "*",
-        "rollup": "*"
-    },
-    "scripts": {
-        "build": "npm install && grunt",
-        "test": "grunt && grunt test"
-    }
+  "name": "multiplexjs",
+  "title": "Multiplex.js",
+  "description": "Comprehensive data-structure and LINQ library for JavaScript.",
+  "version": "2.0.0",
+  "main": "dist/multiplex.js",
+  "author": "Kamyar Nazeri",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/multiplex/multiplex.js",
+  "keywords": [
+    "mx",
+    "multiplex",
+    "javascript",
+    "linq",
+    "collection",
+    "data-structure",
+    "lazy",
+    "lambda",
+    "iterator",
+    "library",
+    "framework",
+    "es6"
+  ],
+  "bugs": {
+    "url": "https://github.com/multiplex/multiplex.js/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/multiplex/multiplex.js.git"
+  },
+  "dependencies": { },
+  "preferGlobal": true,
+  "devDependencies": {
+    "grunt": "1.0.1",
+    "grunt-cli": "1.2.0",
+    "grunt-contrib-clean": "1.0.0",
+    "grunt-contrib-copy": "1.0.0",
+    "grunt-contrib-qunit": "1.2.0",
+    "grunt-contrib-jshint": "1.0.0",
+    "grunt-contrib-uglify": "1.0.0",
+    "grunt-contrib-watch": "1.0.0",
+    "grunt-jscs": "3.0.0",
+    "load-grunt-tasks": "3.5.0",
+    "grunt-karma": "2.0.0",
+    "karma": "*",
+    "rollup": "*"
+  },
+  "scripts": {
+    "build": "npm install && grunt",
+    "test": "grunt && grunt test"
+  }
 }
