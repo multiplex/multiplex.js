@@ -1,4 +1,4 @@
-/// <reference path="../data/_references.js" />
+<reference path="../data/_references.js" />
 
 
 (function () {

@@ -140,5 +140,4 @@
     grunt.registerTask('test', ['qunit']);
     grunt.registerTask('default', ['dev', 'clean', 'copy', 'uglify']);
     grunt.registerTask('release', ['dev', 'test', 'clean', 'copy', 'uglify']);
-
 };
