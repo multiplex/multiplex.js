@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <script src="../../src/javascript/multiplex.js"></script>
+    <!--<script src="mx.js"></script>-->
+    <script src="lazy.js"></script>
+    <script src="lodash.js"></script>
+    <script>
+
+
+        /// TODO:
+        /// - create each enumerators individually
+        /// - remove stupid $prop function
+        /// - remove count from HashTable constructor when using distinct, ...
+        /// - remove $has from mixin
+        /// - move enumerable EnumerableExtensions to Enumerable prototype
+        /// - remove $enumerator
+        /// - remove $enumerable as possible
+
+        /// <reference path="../data/_references.js" />
+
+        var _arr = mx.range(0, 100000).select(function (t) { return t }).toArray(),
+            _mx = mx(_arr),
+            _lazy = Lazy(_arr);
+
+
+
+        function Test1() {
+            console.time("a");
+
+            _mx.where(function (t) { return t > 50000 }).count();
+
+            console.timeEnd("a");
+        };
+
+
+        function Test2() {
+
+            console.time("a");
+
+            _lazy.where(function (t) { return t > 50000 }).size();
+
+            console.timeEnd("a");
+        };
+
+        function Test3() {
+
+            console.time("a");
+
+            _.filter(_arr, function (t) { return t > 50000 }).length;
+
+            console.timeEnd("a");
+        }
+
+
+    </script>
+</head>
+<body>
+    <div id="qunit"></div>
+</body>
+</html>
