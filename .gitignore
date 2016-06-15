@@ -11,12 +11,11 @@
 *.dll
 [Bb]in/
 [Oo]bj/
-/build/[Bb]in
-/build/[Oo]bj
+/dist/[Bb]in
+/dist/[Oo]bj
 
 # Others
 /.vs
-/_other
 /node_modules
 /bower_components
 /test/typescript/*.js
