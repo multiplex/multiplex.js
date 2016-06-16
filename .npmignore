@@ -13,6 +13,8 @@
 /bower.json
 
 /.vs
+/.vscode
+/.resources
 /.git
 /dist/bin
 /node_modules

@@ -17,6 +17,7 @@
 # Others
 /.vs
 /.vscode
+/.resources
 /node_modules
 /bower_components
 /test/typescript/*.js
