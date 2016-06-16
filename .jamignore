@@ -13,8 +13,9 @@
 /bower.json
 
 /.vs
+/.vscode
+/.resources
 /.git
-/_other
 /build/bin
 /node_modules
 /bower_components
