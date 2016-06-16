@@ -16,6 +16,7 @@
 
 # Others
 /.vs
+/.vscode
 /_other
 /node_modules
 /bower_components
