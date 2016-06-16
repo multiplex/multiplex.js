@@ -14,7 +14,8 @@
 
 /.vs
 /.git
-/dist/bin
+/_other
+/build/bin
 /node_modules
 /bower_components
 /test
