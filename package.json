@@ -4,6 +4,8 @@
     "description": "Comprehensive data-structure and LINQ library for JavaScript.",
     "version": "2.0.0",
     "main": "dist/multiplex.js",
+    "jsnext:main": "dist/multiplex-es6.js",
+    "typings": "dist/multiplex.d.ts",
     "author": "Kamyar Nazeri",
     "license": "Apache-2.0",
     "homepage": "https://github.com/multiplex/multiplex.js",
@@ -21,6 +23,9 @@
         "framework",
         "es6"
     ],
+    "engines": {
+        "node": "*"
+    },
     "bugs": {
         "url": "https://github.com/multiplex/multiplex.js/issues"
     },
@@ -28,22 +33,26 @@
         "type": "git",
         "url": "https://github.com/multiplex/multiplex.js.git"
     },
-    "dependencies": { },
+    "dependencies": {},
     "preferGlobal": true,
     "devDependencies": {
+        "load-grunt-tasks": "3.5.0",
         "grunt": "1.0.1",
         "grunt-cli": "1.2.0",
-        "grunt-contrib-clean": "1.0.0",
-        "grunt-contrib-copy": "1.0.0",
-        "grunt-contrib-qunit": "1.2.0",
-        "grunt-contrib-jshint": "1.0.0",
-        "grunt-contrib-uglify": "1.0.0",
-        "grunt-contrib-watch": "1.0.0",
-        "grunt-jscs": "3.0.0",
-        "load-grunt-tasks": "3.5.0",
-        "grunt-karma": "2.0.0",
-        "karma": "*",
-        "rollup": "*"
+        "grunt-contrib-clean": "latest",
+        "grunt-contrib-copy": "latest",
+        "grunt-contrib-qunit": "latest",
+        "grunt-contrib-jshint": "latest",
+        "grunt-contrib-uglify": "latest",
+        "grunt-contrib-watch": "latest",
+        "grunt-benchmark": "latest",
+        "grunt-jscs": "latest",
+        "grunt-nuget": "latest",
+        "grunt-karma": "latest",
+        "benchmark": "latest",
+        "qunit": "latest",
+        "karma": "latest",
+        "rollup": "latest"
     },
     "scripts": {
         "build": "npm install && grunt",
