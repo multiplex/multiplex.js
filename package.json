@@ -52,6 +52,7 @@
         "benchmark": "latest",
         "qunit": "latest",
         "karma": "latest",
+        "uglify-js": "latest",
         "rollup": "latest"
     },
     "scripts": {

@@ -76,7 +76,7 @@ module.exports = function (grunt) {
                 dirs.test + '/**/*.js'
             ],
             options: {
-                jshintrc: true
+                jshintrc: '.jshintrc'
             }
         },
         jscs: {
@@ -87,7 +87,7 @@ module.exports = function (grunt) {
                 dirs.test + '/**/*.js'
             ],
             options: {
-                config: '.jscs.json'
+                config: '.jscsrc'
             }
         },
         uglify: {
@@ -95,9 +95,8 @@ module.exports = function (grunt) {
                 sourceMap: true,
                 screwIE8: true,
                 preserveComments: false,
-                report: 'min',
-                sourceMapName: dirs.release + '/multiplex.min.js.map',
                 banner: banner,
+                report: 'min',
                 mangle: {
                     sort: true,
                     eval: true,
