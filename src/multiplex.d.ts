@@ -1,16 +1,4 @@
-﻿/*--------------------------------------------------------------------------
-* Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Ver 2.0.0 (Jun 12, 2016)
-*
-* Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
-* Licensed under Apache License Version 2.0
-* https://github.com/multiplex/multiplex.js
-*
-*--------------------------------------------------------------------------*/
-
-
-
-declare var multiplex: multiplex.MultiplexStatic;
+﻿declare var multiplex: multiplex.MultiplexStatic;
 
 
 // Support AMD require
