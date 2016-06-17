@@ -45,6 +45,7 @@
         "grunt-contrib-jshint": "latest",
         "grunt-contrib-uglify": "latest",
         "grunt-contrib-watch": "latest",
+        "grunt-string-replace": "latest",
         "grunt-benchmark": "latest",
         "grunt-jscs": "latest",
         "grunt-nuget": "latest",

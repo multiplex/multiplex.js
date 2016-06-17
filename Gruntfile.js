@@ -12,7 +12,7 @@ module.exports = function (grunt) {
         banner = [
             '/*!',
             '* ' + pkg.title + ' - ' + pkg.description,
-            '* Ver ' + pkg.version + ' (' + grunt.template.today('mmmm dd, yyyy') + ')',
+            '* Version ' + pkg.version + ' (' + grunt.template.today('mmmm dd, yyyy') + ')',
             '',
             '* Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>',
             '* Licensed under Apache License Version 2.0',
@@ -154,6 +154,7 @@ module.exports = function (grunt) {
     // releasing a new version
     grunt.registerTask('release', [
         'clean',
+        'bump_version',
         'default',
         'copy',
         'uglify'
