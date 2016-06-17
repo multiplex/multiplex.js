@@ -6,7 +6,8 @@
         dirs: {
             test: 'test',
             source: 'src',
-            release: 'dist'
+            release: 'dist',
+            temp: 'dist/temp'
         }
     });
 
