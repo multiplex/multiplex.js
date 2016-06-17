@@ -1,0 +1,28 @@
+{
+    "node": true,
+    "browser": true,
+    "boss": true,
+    "curly": true,
+    "eqeqeq": false,
+    "eqnull": true,
+    "evil": true,
+    "newcap": false,
+    "noarg": true,
+    "nocomma": true,
+    "notypeof": true,
+    "shadow": true,
+    "proto": false,
+    "undef": true,
+    "unused": true,
+    "esnext": true,
+    "globals": {
+        "window": true,
+        "console": true,
+        "define": true,
+        "require": true,
+        "module": true,
+        "intellisense": true,
+        "QUnit": true,
+        "mx": true
+    }
+}
