@@ -29,7 +29,7 @@ interface String extends multiplex.Iterable<string> { }
 
 
 
-declare module multiplex {
+declare namespace multiplex {
 
     /**
     * ES6 Iterable
