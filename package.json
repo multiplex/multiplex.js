@@ -4,7 +4,7 @@
     "description": "Comprehensive data-structure and LINQ library for JavaScript.",
     "version": "2.0.0",
     "main": "dist/multiplex.js",
-    "jsnext:main": "dist/multiplex-es6.js",
+    "jsnext:main": "dist/multiplex.es6.js",
     "typings": "dist/multiplex.d.ts",
     "author": "Kamyar Nazeri",
     "license": "Apache-2.0",

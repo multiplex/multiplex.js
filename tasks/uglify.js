@@ -1,5 +1,6 @@
 module.exports = function (grunt) {
     var dirs = grunt.config('dirs'),
+        files = grunt.config('files'),
         banner = grunt.config('banner');
 
     grunt.config.merge({
@@ -40,7 +41,7 @@ module.exports = function (grunt) {
             },
             dist: {
                 files: {
-                    [dirs.release + '/multiplex.min.js']: [dirs.release + '/multiplex.js']
+                    [dirs.release + '/' + files.minified]: [dirs.release + '/' + files.main]
                 }
             }
         }

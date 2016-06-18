@@ -1,10 +1,11 @@
 module.exports = function (grunt) {
     var rollup = require('rollup'),
+        pkg = grunt.config('pkg'),
         dirs = grunt.config('dirs'),
-        banner = grunt.config('banner'),
-        version = grunt.config('pkg').version;
+        files = grunt.config('files'),
+        banner = grunt.config('banner');
 
-    function transpileFactory(name) {
+    function transpileFactory(name, format) {
         return function () {
             var done = this.async();
 
@@ -13,12 +14,12 @@ module.exports = function (grunt) {
             }).then(function (bundle) {
                 bundle.write({
                     // output format - 'amd', 'cjs', 'es6', 'iife', 'umd'
-                    format: 'umd',
+                    format: format,
                     sourceMap: false,
                     banner: banner,
                     footer: ' ',
                     dest: dirs.release + '/' + name,
-                    intro: 'Multiplex.version = \'' + version + '\';\n',
+                    intro: 'Multiplex.version = \'' + pkg.version + '\';\n',
                     moduleName: 'mx'
                 });
             }).then(done, function (e) {
@@ -28,10 +29,10 @@ module.exports = function (grunt) {
         };
     }
 
-    grunt.task.registerTask('transpile-es5', 'convert es5 to umd', transpileFactory('multiplex.js'));
-    grunt.task.registerTask('transpile-es6', 'convert es6 to umd', transpileFactory('multiplex-es6.js'));
+    grunt.task.registerTask('transpile-es5', 'convert es5 to umd', transpileFactory(files.main, 'umd'));
+    grunt.task.registerTask('transpile-es6', 'compiles es6', transpileFactory(files.es6, 'es6'));
 
-    grunt.task.registerTask('transpile', 'builds all files, converts es6 modules to umd', function () {
+    grunt.task.registerTask('transpile', 'builds all files, compiles es6 modules and convert es5 to umd', function () {
         var tasks = [
             'transpile-es5',
             'transpile-es6'

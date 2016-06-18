@@ -1,5 +1,6 @@
 module.exports = function (grunt) {
     var dirs = grunt.config('dirs'),
+        files = grunt.config('files'),
         banner = grunt.config('banner');
 
     grunt.config.merge({
@@ -11,7 +12,7 @@ module.exports = function (grunt) {
                         flatten: true,
                         cwd: dirs.source,
                         dest: dirs.release,
-                        src: ['**/*.{intellisense.js,d.ts}'],
+                        src: [files.typings, files.intellisense],
                         filter: 'isFile'
                     }
                 ],

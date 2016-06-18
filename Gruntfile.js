@@ -9,6 +9,13 @@ module.exports = function (grunt) {
             tasks: 'tasks',
             temp: 'dist/temp'
         },
+        files = {
+            main: 'multiplex.js',
+            es6: 'multiplex.es6.js',
+            minified: 'multiplex.min.js',
+            typings: 'multiplex.d.ts',
+            intellisense: 'multiplex.intellisense.js'
+        },
         banner = [
             '/*!',
             '* ' + pkg.title + ' - ' + pkg.description,
@@ -25,6 +32,7 @@ module.exports = function (grunt) {
     grunt.initConfig({
         pkg: pkg,
         dirs: dirs,
+        files: files,
         banner: banner
     });
 
