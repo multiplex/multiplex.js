@@ -19,17 +19,20 @@
     "homepage": "https://github.com/multiplex/multiplex.js",
     "license": "Apache",
     "moduleType": [
-        "globals" 
+        "globals"
     ],
     "main": [
         "dist/multiplex.js"
     ],
     "ignore": [
         "/.*",
-        "/Gruntfile.js",
-        "/test"
+        "/test",
+        "/tasks",
+        "/external",
+        "Gruntfile.js",
+        "package.json"
     ],
-    "dependencies": { },
+    "dependencies": {},
     "devDependencies": {
         "grunt": "1.0.1",
         "grunt-cli": "1.2.0",

@@ -9,6 +9,9 @@
 
 /.editorconfig
 /.gitattributes
+/.jscsrc
+/.jshintrc
+/.travis.yml
 /Gruntfile.js
 /bower.json
 
@@ -19,5 +22,7 @@
 /dist/bin
 /node_modules
 /bower_components
+/tasks
 /test
 /test/typescript/*.js
+/external
