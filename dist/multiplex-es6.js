@@ -13,13 +13,13 @@
     (global.mx = factory());
 }(this, function () { 'use strict';
 
+    Multiplex.version = '2.0.0';
+
     class Multiplex {
         constructor(obj) {
             this._source = obj;
         }
     }
-
-    Multiplex.version = '2.0.0';
 
     return Multiplex;
 
