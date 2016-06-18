@@ -1,7 +1,8 @@
 module.exports = function (grunt) {
-    var rollup = require('rollup');
-    var dirs = grunt.config.get('dirs');
-    var banner = grunt.config.get('banner');
+    var rollup = require('rollup'),
+        dirs = grunt.config('dirs'),
+        banner = grunt.config('banner'),
+        version = grunt.config('pkg').version;
 
     function transpileFactory(name) {
         return function () {
@@ -17,6 +18,7 @@ module.exports = function (grunt) {
                     banner: banner,
                     footer: ' ',
                     dest: dirs.release + '/' + name,
+                    intro: 'Multiplex.version = \'' + version + '\';\n',
                     moduleName: 'mx'
                 });
             }).then(done, function (e) {

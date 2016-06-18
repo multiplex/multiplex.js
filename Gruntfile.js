@@ -25,122 +25,15 @@ module.exports = function (grunt) {
     grunt.initConfig({
         pkg: pkg,
         dirs: dirs,
-        banner: banner,
-        clean: {
-            build: {
-                src: [dirs.release + '/*.*']
-            },
-            options: {
-                force: true
-            }
-        },
-        copy: {
-            main: {
-                files: [
-                    {
-                        expand: true,
-                        flatten: true,
-                        cwd: dirs.source,
-                        dest: dirs.release,
-                        src: ['**/*.{intellisense.js,d.ts}'],
-                        filter: 'isFile'
-                    }
-                ],
-                options: {
-                    process: function (content) {
-                        return banner + '\n' + content;
-                    }
-                }
-            }
-        },
-        watch: {
-            scripts: {
-                files: [
-                    'Gruntfile.js',
-                    dirs.source + '/**/*.js',
-                    dirs.tasks + '/**/*.js',
-                    dirs.test + '/**/*.js'
-                ],
-                tasks: ['lint'],
-                options: {
-                    spawn: false,
-                    interrupt: true
-                }
-            }
-        },
-        jshint: {
-            files: [
-                'Gruntfile.js',
-                dirs.source + '/**/*.js',
-                dirs.tasks + '/**/*.js',
-                dirs.test + '/**/*.js'
-            ],
-            options: {
-                jshintrc: '.jshintrc'
-            }
-        },
-        jscs: {
-            all: [
-                'Gruntfile.js',
-                dirs.source + '/**/*.js',
-                dirs.tasks + '/**/*.js',
-                dirs.test + '/**/*.js'
-            ],
-            options: {
-                config: '.jscsrc'
-            }
-        },
-        uglify: {
-            options: {
-                sourceMap: true,
-                screwIE8: true,
-                preserveComments: false,
-                banner: banner,
-                report: 'min',
-                mangle: {
-                    sort: true,
-                    eval: true,
-                    except: [
-                        'mx',
-                        'multiplex',
-                        'Enumerable',
-                        'Enumerator',
-                        'Collection',
-                        'ReadOnlyCollection',
-                        'List',
-                        'SortedList',
-                        'Dictionary',
-                        'KeyValuePair',
-                        'HashSet',
-                        'HashTable',
-                        'LinkedList',
-                        'LinkedListNode',
-                        'Queue',
-                        'Stack',
-                        'Lookup',
-                        'Grouping',
-                        'OrderedEnumerable',
-                        'Comparer',
-                        'EqualityComparer'
-                    ]
-                }
-            },
-            dist: {
-                files: {
-                    '<%= dirs.release %>/multiplex.min.js': [dirs.release + '/multiplex.js']
-                }
-            }
-        },
-        qunit: {
-            all: [dirs.test + '/mx.html']
-        }
+        banner: banner
     });
 
 
+    // load grunt tasks
     grunt.loadTasks(dirs.tasks);
 
+    // load grunt tasks from NPM packages
     require('load-grunt-tasks')(grunt);
-
 
     // linting
     grunt.registerTask('lint', ['jshint', 'jscs']);
@@ -154,7 +47,6 @@ module.exports = function (grunt) {
     // releasing a new version
     grunt.registerTask('release', [
         'clean',
-        'bump_version',
         'default',
         'copy',
         'uglify'

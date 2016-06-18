@@ -1,13 +1,50 @@
 module.exports = function (grunt) {
-    // var uglify = require('uglify-js');
-    // var dirs = grunt.config.get('dirs');
-    // var banner = grunt.config.get('banner');
+    var dirs = grunt.config('dirs'),
+        banner = grunt.config('banner');
 
-    // grunt.task.registerTask('uglify', 'builds all files, converts es6 modules to umd', function () {
-    //     var tasks = [
-    //     ];
+    grunt.config.merge({
+        uglify: {
+            options: {
+                sourceMap: true,
+                screwIE8: true,
+                preserveComments: false,
+                banner: banner,
+                report: 'min',
+                mangle: {
+                    sort: true,
+                    eval: true,
+                    except: [
+                        'mx',
+                        'multiplex',
+                        'Enumerable',
+                        'Enumerator',
+                        'Collection',
+                        'ReadOnlyCollection',
+                        'List',
+                        'SortedList',
+                        'Dictionary',
+                        'KeyValuePair',
+                        'HashSet',
+                        'HashTable',
+                        'LinkedList',
+                        'LinkedListNode',
+                        'Queue',
+                        'Stack',
+                        'Lookup',
+                        'Grouping',
+                        'OrderedEnumerable',
+                        'Comparer',
+                        'EqualityComparer'
+                    ]
+                }
+            },
+            dist: {
+                files: {
+                    [dirs.release + '/multiplex.min.js']: [dirs.release + '/multiplex.js']
+                }
+            }
+        }
+    });
 
-    //     grunt.task.run(tasks);
-    // });
     return grunt;
 };
