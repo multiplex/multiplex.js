@@ -9,6 +9,8 @@
 
 /.editorconfig
 /.gitattributes
+/.jshintrc
+/.jscs.json
 /Gruntfile.js
 /bower.json
 
