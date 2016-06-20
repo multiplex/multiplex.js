@@ -1,5 +1,7 @@
 module.exports = function (grunt) {
-    var dirs = grunt.config('dirs');
+    'use strict';
+
+    const dirs = grunt.config('dirs');
 
     grunt.config.merge({
         jscs: {

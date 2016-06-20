@@ -1,5 +1,8 @@
 module.exports = function (grunt) {
-    var dirs = grunt.config('dirs'),
+    'use strict';
+
+    const path = require('path'),
+        dirs = grunt.config('dirs'),
         files = grunt.config('files'),
         banner = grunt.config('banner');
 
@@ -41,7 +44,7 @@ module.exports = function (grunt) {
             },
             dist: {
                 files: {
-                    [dirs.release + '/' + files.minified]: [dirs.release + '/' + files.main]
+                    [path.join(dirs.release, files.minified)]: [path.join(dirs.release, files.main)]
                 }
             }
         }
