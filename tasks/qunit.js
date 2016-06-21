@@ -38,7 +38,7 @@ module.exports = function (grunt) {
                 }
                 done(err);
             });
-        }
+        };
     }
 
     grunt.task.registerTask('qtest-es5', 'run all es5 unit tests', testrunnerFactory(es5source));
