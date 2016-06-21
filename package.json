@@ -48,7 +48,6 @@
         "grunt-string-replace": "latest",
         "grunt-benchmark": "latest",
         "grunt-jscs": "latest",
-        "grunt-nuget": "latest",
         "grunt-karma": "latest",
         "benchmark": "latest",
         "qunit": "latest",
