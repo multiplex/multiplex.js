@@ -11,14 +11,20 @@ module.exports = function (grunt) {
         testrunner = path.join(dirs.test, files.testrunner),
         units = grunt.file.expand(dirs.testunit + '/*.js');
 
+
+    // configure qrunner
     qrunner.options.log.assertions = false;
     qrunner.options.log.tests = false;
     qrunner.options.log.summary = false;
     qrunner.options.log.testing = false;
     qrunner.options.maxBlockDuration = 120000;
 
+
+    // regsiter all unit tests in a single "testrunner" file to be use in browser
     fs.writeFileSync(testrunner, 'require([' + units.map(t => '\n\'' + t.replace(dirs.test, '.') + '\'') + '\n]);\n');
 
+
+    // qrunner factory function
     function testrunnerFactory(code) {
         return function () {
             let done = this.async();
@@ -40,6 +46,7 @@ module.exports = function (grunt) {
             });
         };
     }
+
 
     grunt.task.registerTask('qtest-es5', 'run all es5 unit tests', testrunnerFactory(es5source));
     grunt.task.registerTask('qtest-es6', 'run all es6 unit tests', testrunnerFactory(es6source));

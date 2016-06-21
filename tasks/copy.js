@@ -5,6 +5,8 @@ module.exports = function (grunt) {
         files = grunt.config('files'),
         banner = grunt.config('banner');
 
+    // copy "typings" and "intellisense" files to the release directory
+    // include "banner" in the beginning
     grunt.config.merge({
         copy: {
             main: {

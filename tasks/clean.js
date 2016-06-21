@@ -3,6 +3,7 @@ module.exports = function (grunt) {
 
     const dirs = grunt.config('dirs');
 
+    // clean release directory before publush
     grunt.config.merge({
         clean: {
             build: {

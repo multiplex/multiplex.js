@@ -6,6 +6,8 @@ module.exports = function (grunt) {
         files = grunt.config('files'),
         banner = grunt.config('banner');
 
+    // minify es5 publish source (es6 minification is not supported)
+    // include "banner" in the beginning
     grunt.config.merge({
         uglify: {
             options: {

@@ -15,6 +15,8 @@ module.exports = function (grunt) {
         es6test = path.join(dirs.testbuild, files.es6);
 
 
+    // transpile es6 modules to umd
+    // include "banner" in the beginning
     function transpileFactory(entry, dest, format) {
         return function () {
             let done = this.async();
