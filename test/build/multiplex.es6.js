@@ -13,12 +13,16 @@
     (global.mx = factory());
 }(this, function () { 'use strict';
 
-    function Multiplex(obj) {
-        this._source = obj;
+    class Multiplex {
+        constructor(obj) {
+            this._source = obj;
+        }
     }
+
+    const mx = Multiplex;
     Multiplex.version = '2.0.0';
 
-    return Multiplex;
+    return mx;
 
 }));
  

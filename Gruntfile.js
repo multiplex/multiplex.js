@@ -3,18 +3,20 @@ module.exports = function (grunt) {
 
     var pkg = grunt.file.readJSON('package.json'),
         dirs = {
-            test: 'test',
             source: 'src',
             release: 'dist',
             tasks: 'tasks',
-            temp: 'dist/temp'
+            test: 'test',
+            testbuild: 'test/build',
+            testunit: 'test/unit'
         },
         files = {
             main: 'multiplex.js',
             es6: 'multiplex.es6.js',
             minified: 'multiplex.min.js',
             typings: 'multiplex.d.ts',
-            intellisense: 'multiplex.intellisense.js'
+            intellisense: 'multiplex.intellisense.js',
+            testrunner: 'testrunner.js'
         },
         banner = [
             '/*!',
@@ -47,7 +49,7 @@ module.exports = function (grunt) {
     grunt.registerTask('lint', ['jshint', 'jscs']);
 
     // test tasks
-    grunt.registerTask('test', ['transpile', 'qunit']);
+    grunt.registerTask('test', ['transpile', 'qtest']);
 
     // default task
     grunt.registerTask('default', ['lint', 'test']);
