@@ -1,6 +1,5 @@
 [![NPM version](https://img.shields.io/npm/v/multiplexjs.svg?style=flat)](https://www.npmjs.com/package/multiplexjs) [![Apache License](https://img.shields.io/badge/license-Apache-blue.svg?style=flat)](LICENSE) [![Coverage Status](https://coveralls.io/repos/github/multiplex/multiplex.js/badge.svg?branch=develop)](https://coveralls.io/github/multiplex/multiplex.js?branch=develop) [![Build Status](https://travis-ci.org/multiplex/multiplex.js.svg?branch=develop)](https://travis-ci.org/multiplex/multiplex.js)
 
-[![Coverage Status](https://coveralls.io/repos/github/multiplex/multiplex.js/badge.svg?branch=develop)](https://coveralls.io/github/multiplex/multiplex.js?branch=develop)
 
 # Multiplex
 #### Comprehensive data-structure and LINQ library for JavaScript.
