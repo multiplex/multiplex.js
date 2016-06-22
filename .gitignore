@@ -15,9 +15,11 @@
 /build/[Oo]bj
 
 # Others
-/.vs
-/.vscode
-/.resources
-/node_modules
-/bower_components
-/test/typescript/*.js
+.vs
+.vscode
+.resources
+.nyc_output
+.coveralls.yml
+node_modules
+bower_components
+test/typescript/*.js
