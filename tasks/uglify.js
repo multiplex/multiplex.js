@@ -43,9 +43,11 @@ module.exports = function (grunt) {
                 }
             },
             dist: {
-                files: {
-                    [path.join(dirs.release, files.minified)]: [path.join(dirs.release, files.main)]
-                }
+                files: (function () {
+                    var file = {};
+                    file[path.join(dirs.release, files.minified)] = [path.join(dirs.release, files.main)];
+                    return file;
+                })()
             }
         }
     });
