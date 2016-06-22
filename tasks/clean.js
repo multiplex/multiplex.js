@@ -1,7 +1,5 @@
 module.exports = function (grunt) {
-    'use strict';
-
-    const dirs = grunt.config('dirs');
+    var dirs = grunt.config('dirs');
 
     // clean release directory before publush
     grunt.config.merge({

@@ -1,7 +1,5 @@
 module.exports = function (grunt) {
-    'use strict';
-
-    const rollup = require('rollup'),
+    var rollup = require('rollup'),
         path = require('path'),
         pkg = grunt.config('pkg'),
         dirs = grunt.config('dirs'),
@@ -19,7 +17,7 @@ module.exports = function (grunt) {
     // include "banner" in the beginning
     function transpileFactory(entry, dest, format) {
         return function () {
-            let done = this.async();
+            var done = this.async();
 
             rollup.rollup({
                 entry: entry
@@ -48,7 +46,7 @@ module.exports = function (grunt) {
     grunt.task.registerTask('transpile-es6-test', 'convert es6 to umd for test', transpileFactory(es6source, es6test, 'umd'));
 
     grunt.task.registerTask('transpile', 'builds all files, compiles es6 modules and convert es5 to umd', function () {
-        let tasks = [
+        var tasks = [
             'transpile-es5',
             'transpile-es6',
             'transpile-es5-test',

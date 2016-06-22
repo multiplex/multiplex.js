@@ -1,7 +1,5 @@
 module.exports = function (grunt) {
-    'use strict';
-
-    const dirs = grunt.config('dirs'),
+    var dirs = grunt.config('dirs'),
         files = grunt.config('files'),
         qrunner = require('qunit'),
         path = require('path'),
@@ -27,7 +25,7 @@ module.exports = function (grunt) {
     // qrunner factory function
     function testrunnerFactory(code) {
         return function () {
-            let done = this.async();
+            var done = this.async();
 
             qrunner.run({
                 code: code,
@@ -52,7 +50,7 @@ module.exports = function (grunt) {
     grunt.task.registerTask('qtest-es6', 'run all es6 unit tests', testrunnerFactory(es6source));
 
     grunt.task.registerTask('qtest', 'run all unit tests', function () {
-        let tasks = [
+        var tasks = [
             'qtest-es5',
             'qtest-es6'
         ];
