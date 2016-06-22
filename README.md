@@ -1,4 +1,4 @@
-[![MIT Apache][https://img.shields.io/badge/license-Apache-blue.svg?style=flat]][LICENSE] [![NPM version][https://img.shields.io/npm/v/multiplexjs.svg?style=flat]][https://www.npmjs.com/package/multiplexjs] [![Coverage Status](https://coveralls.io/repos/github/multiplex/multiplex.js/badge.svg?branch=master)](https://coveralls.io/github/multiplex/multiplex.js?branch=master) [![Build Status](https://travis-ci.org/multiplex/multiplex.js.svg?branch=master)](https://travis-ci.org/multiplex/multiplex.js)
+[![NPM version](https://img.shields.io/npm/v/multiplexjs.svg?style=flat)](https://www.npmjs.com/package/multiplexjs) [![Apache License](https://img.shields.io/badge/license-Apache-blue.svg?style=flat)](LICENSE) [![Coverage Status](https://coveralls.io/repos/github/multiplex/multiplex.js/badge.svg?branch=master)](https://coveralls.io/github/multiplex/multiplex.js?branch=master) [![Build Status](https://travis-ci.org/multiplex/multiplex.js.svg?branch=master)](https://travis-ci.org/multiplex/multiplex.js)
 
 # Multiplex
 #### Comprehensive data-structure and LINQ library for JavaScript.
