@@ -54,6 +54,9 @@ module.exports = function (grunt) {
     // default task
     grunt.registerTask('default', ['lint', 'test']);
 
+    // travis build task
+    grunt.registerTask('build:travis', ['default']);
+
     // releasing a new version
     grunt.registerTask('release', [
         'clean',
