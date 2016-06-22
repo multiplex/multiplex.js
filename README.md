@@ -1,4 +1,4 @@
-[![NPM version][https://img.shields.io/npm/v/multiplexjs.svg?style=flat]][https://www.npmjs.com/package/multiplexjs]
+[![NPM version](https://img.shields.io/npm/v/multiplexjs.svg?style=flat)](https://www.npmjs.com/package/multiplexjs)
 
 
 # Multiplex
