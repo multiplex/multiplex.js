@@ -1,4 +1,4 @@
-[![Coverage Status](https://coveralls.io/repos/github/multiplex/multiplex.js/badge.svg?branch=master)](https://coveralls.io/github/multiplex/multiplex.js?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/multiplex/multiplex.js/badge.svg?branch=develop)](https://coveralls.io/github/multiplex/multiplex.js?branch=develop)
 # Multiplex
 #### Comprehensive data-structure and LINQ library for JavaScript.
 ----------------------------
