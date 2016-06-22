@@ -20,7 +20,7 @@ module.exports = function (grunt) {
 
     // regsiter all unit tests in a single "testrunner" file to be use in browser
     fs.writeFileSync(testrunner, 'require([' +
-        units.map(t => '\n\'' + file.replace(dirs.test, '.') + '\'').join(',') + '\n]);\n');
+        units.map(file => '\n\'' + file.replace(dirs.test, '.') + '\'').join(',') + '\n]);\n');
 
 
     // qrunner factory function
