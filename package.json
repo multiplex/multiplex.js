@@ -53,7 +53,8 @@
         "qunit": "latest",
         "karma": "latest",
         "uglify-js": "latest",
-        "rollup": "latest"
+        "rollup": "latest",
+        "coveralls": "latest"
     },
     "scripts": {
         "build": "npm install && grunt",

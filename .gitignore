@@ -15,9 +15,12 @@
 /dist/[Oo]bj
 
 # Others
-/.vs
-/.vscode
-/.resources
-/node_modules
-/bower_components
-/test/typescript/*.js
+.vs
+.vscode
+.resources
+.coveralls.yml
+coverage
+npm-debug.log
+node_modules
+bower_components
+test/typescript/*.js
