@@ -8,9 +8,4 @@ sudo: false
 before_script:
   - npm install -g grunt-cli
 
-script: 
-  - grunt build:travis
-  - coverage run nyc npm test && nyc report
-  - coveralls run nyc npm test && nyc report --reporter=text-lcov
-
-after_success: coveralls
+script: grunt build:travis
