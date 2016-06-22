@@ -26,6 +26,8 @@
   ],
   "ignore": [
     "/.*",
+    ".jscs.json",
+    ".jshintrc",
     "/Gruntfile.js",
     "/test"
   ],
