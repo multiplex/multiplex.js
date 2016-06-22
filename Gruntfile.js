@@ -19,14 +19,14 @@
         copy: {
             main: {
                 files: [
-                  {
-                      expand: true,
-                      flatten: true,
-                      cwd: '<%= dirs.source %>/',
-                      src: ['**/*.{js,d.ts}'],
-                      dest: '<%= dirs.release %>/',
-                      filter: 'isFile'
-                  }
+                    {
+                        expand: true,
+                        flatten: true,
+                        cwd: '<%= dirs.source %>/',
+                        src: ['**/*.{js,d.ts}'],
+                        dest: '<%= dirs.release %>/',
+                        filter: 'isFile'
+                    }
                 ],
             },
         },
@@ -140,5 +140,5 @@
     grunt.registerTask('test', ['qunit']);
     grunt.registerTask('default', ['dev', 'clean', 'copy', 'uglify']);
     grunt.registerTask('release', ['dev', 'test', 'clean', 'copy', 'uglify']);
-
+    grunt.registerTask('build:travis', ['default']);
 };
