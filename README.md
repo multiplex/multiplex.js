@@ -1,4 +1,4 @@
-[![NPM version][npm-version-image]][https://img.shields.io/badge/license-Apache-blue.svg?style=flat]
+[![NPM version][https://img.shields.io/npm/v/multiplexjs.svg?style=flat][https://www.npmjs.com/package/multiplexjs]
 
 # Multiplex
 #### Comprehensive data-structure and LINQ library for JavaScript.
