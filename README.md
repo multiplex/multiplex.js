@@ -1,7 +1,7 @@
 [![npm version][npm-version-image]][npm-url] 
 [![build status][travis-image]][travis-url] 
 [![coverage status][coverage-image]][coverage-url] 
-[![apache license][license-image]][license-image]
+[![apache license][license-image]][license-url]
 
 
 # Multiplex
