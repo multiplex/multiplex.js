@@ -1,4 +1,4 @@
-[![NPM version](https://img.shields.io/npm/v/multiplexjs.svg?style=flat)](https://www.npmjs.com/package/multiplexjs) [![Apache License](https://img.shields.io/badge/license-Apache-blue.svg?style=flat)](LICENSE) [![Coverage Status](https://coveralls.io/repos/github/multiplex/multiplex.js/badge.svg?branch=develop)](https://coveralls.io/github/multiplex/multiplex.js?branch=develop) [![Build Status](https://travis-ci.org/multiplex/multiplex.js.svg?branch=develop)](https://travis-ci.org/multiplex/multiplex.js)
+[![npm version][npm-version-image]][npm-url] [![build status][travis-image]][travis-url] [![coverage status][coverage-image]][coverage-url] [![apache license][license-image]][license-image]
 
 
 # Multiplex
@@ -438,3 +438,16 @@ To build a full version of Multiplex use:
 grunt release
 ````
 When the tests pass, the built version of Multiplex will be put in the `build/` subdirectory, along with the minified copy and associated map file.
+
+
+[npm-url]: https://npmjs.org/package/moment
+[npm-version-image]: https://badge.fury.io/js/multiplexjs.svg
+
+[license-url]: LICENSE
+[license-image]: https://img.shields.io/badge/license-Apache-blue.svg
+
+[travis-url]: https://travis-ci.org/multiplex/multiplex.js?branch=develop
+[travis-image]: https://travis-ci.org/multiplex/multiplex.js.svg?branch=develop
+
+[coverage-url]: https://coveralls.io/repos/github/multiplex/multiplex.js/badge.svg?branch=develop
+[coverage-image]: https://coveralls.io/github/multiplex/multiplex.js?branch=develop
