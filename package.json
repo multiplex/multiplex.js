@@ -59,7 +59,7 @@
     },
     "scripts": {
         "build": "npm install && grunt",
-        "test": "grunt && grunt test",
+        "test": "grunt test",
         "coverage": "nyc npm test && nyc report",
         "coveralls": "nyc npm test && nyc report --reporter=text-lcov | coveralls"
     }
