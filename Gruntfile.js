@@ -8,7 +8,8 @@ module.exports = function (grunt) {
             tasks: 'tasks',
             test: 'test',
             testbuild: 'test/build',
-            testunit: 'test/unit'
+            testunit: 'test/unit',
+            benchmark: 'test/benchmark'
         },
         files = {
             main: 'multiplex.js',

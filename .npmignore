@@ -25,5 +25,4 @@
 /bower_components
 /tasks
 /test
-/test/typescript/*.js
 /external
