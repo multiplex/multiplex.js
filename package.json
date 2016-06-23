@@ -35,6 +35,13 @@
     },
     "dependencies": {},
     "preferGlobal": true,
+    "nyc": {
+        "exclude": [
+            "test",
+            "tasks",
+            "external"
+        ]
+    },
     "devDependencies": {
         "load-grunt-tasks": "3.5.0",
         "grunt": "1.0.1",
@@ -45,14 +52,12 @@
         "grunt-contrib-jshint": "1.0.0",
         "grunt-contrib-uglify": "1.0.1",
         "grunt-contrib-watch": "1.0.0",
-        "grunt-string-replace": "1.2.1",
         "grunt-benchmark": "0.3.0",
         "grunt-jscs": "3.0.1",
         "grunt-karma": "2.0.0",
         "benchmark": "2.1.0",
         "qunit": "^0.9.1",
         "karma": "^0.13.22",
-        "uglify-js": "^2.6.4",
         "rollup": "^0.32.1",
         "coveralls": "^2.11.9",
         "nyc": "^6.6.1"
