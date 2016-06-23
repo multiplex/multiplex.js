@@ -23,7 +23,6 @@
 .nyc_output
 coverage
 nyc_output
-npm-debug.log
 node_modules
 bower_components
 test/typescript/*.js
