@@ -49,7 +49,7 @@ module.exports = function (grunt) {
     grunt.registerTask('lint', ['jshint', 'jscs']);
 
     // test tasks
-    grunt.registerTask('test', ['transpile', 'qtest']);
+    grunt.registerTask('test', ['transpile-test', 'qtest']);
 
     // default task
     grunt.registerTask('default', ['lint', 'test']);
@@ -59,8 +59,9 @@ module.exports = function (grunt) {
 
     // releasing a new version
     grunt.registerTask('release', [
-        'clean',
         'default',
+        'clean',
+        'transpile',
         'copy',
         'uglify'
     ]);
