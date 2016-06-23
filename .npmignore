@@ -6,6 +6,7 @@
 *.sln
 *.sln.docstates
 *.csproj
+*.log
 
 /.editorconfig
 /.gitattributes

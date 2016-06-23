@@ -25,6 +25,8 @@
         "dist/multiplex.js"
     ],
     "ignore": [
+        "*.log",
+        "*.yml",
         "/.*",
         "/test",
         "/tasks",
