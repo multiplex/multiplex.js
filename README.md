@@ -464,7 +464,7 @@ When the tests pass, the built version of Multiplex will be put in the `build/` 
 [npm-version-image]: https://badge.fury.io/js/multiplexjs.svg
 
 [license-url]: LICENSE
-[license-image]: https://img.shields.io/badge/license-Apache-blue.svg
+[license-image]: https://img.shields.io/badge/license-MIT-blue.svg
 
 [travis-url]: https://travis-ci.org/multiplex/multiplex.js?branch=develop
 [travis-image]: https://travis-ci.org/multiplex/multiplex.js.svg?branch=develop
