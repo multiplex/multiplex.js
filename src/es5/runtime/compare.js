@@ -49,8 +49,8 @@ export default function compare(objA, objB) {
                 }
                 // All other objects are compared using 'valudOf' method
                 else {
-                    var _v1 = objA.valueOf(),
-                        _v2 = objB.valueOf();
+                    var _v1 = typeof objA.valueOf == 'function' ? objA.valueOf() : 0,
+                        _v2 = typeof objB.valueOf === 'function' ? objB.valueOf() : 0;
 
                     return _v1 > _v2 ? 1 : (_v1 < _v2 ? -1 : 0);
                 }
