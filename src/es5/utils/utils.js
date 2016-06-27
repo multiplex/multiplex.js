@@ -3,6 +3,7 @@ import isType from './is-type';
 import isFunc from './is-function';
 import isArrayLike from './is-array-like';
 import isObjectLiteral from './is-object-literal';
+import assign from './assign';
 import assertNotNull from './assert-not-null';
 import assertType from './assert-type';
 import count from './count';
@@ -17,6 +18,7 @@ export {
     isFunc,
     isArrayLike,
     isObjectLiteral,
+    assign,
     assertNotNull,
     assertType,
     count,

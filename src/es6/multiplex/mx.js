@@ -1,4 +1,4 @@
-import Multiplex from './multiplex.js';
+import Multiplex from './multiplex';
 
 /**
 * Creates a new Multiplex instance.
