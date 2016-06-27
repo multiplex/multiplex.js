@@ -1,3 +1,3 @@
-import Multiplex from './es5/multiplex/multiplex.js';
+import mx from './es5/multiplex/mx.js';
 
-export default Multiplex;
+export default mx;
