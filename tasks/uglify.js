@@ -36,7 +36,7 @@ module.exports = function (grunt) {
                         'Stack',
                         'Lookup',
                         'Grouping',
-                        'OrderedIterator',
+                        'OrderedIterable',
                         'Comparer',
                         'EqualityComparer'
                     ]
