@@ -1,3 +1,5 @@
+export const compareSymbol = '__cmp__';
+
 /**
 * Performs a comparison of two objects of the same type and returns a value indicating whether one object is less than, equal to, or greater than the other.
 * @param {Object} objA The first object to compare.
@@ -47,9 +49,15 @@ export default function compare(objA, objB) {
 
                     return _t1 > _t2 ? 1 : (_t1 < _t2 ? -1 : 0);
                 }
+
+                // Compute overriden '__cmp__' method
+                else if (typeof objA.__cmp__ === 'function') {
+                    return objA.__cmp__(objB);
+                }
+
                 // All other objects are compared using 'valudOf' method
                 else {
-                    let _v1 = typeof objA.valueOf == 'function' ? objA.valueOf() : 0,
+                    let _v1 = typeof objA.valueOf === 'function' ? objA.valueOf() : 0,
                         _v2 = typeof objB.valueOf === 'function' ? objB.valueOf() : 0;
 
                     return _v1 > _v2 ? 1 : (_v1 < _v2 ? -1 : 0);
