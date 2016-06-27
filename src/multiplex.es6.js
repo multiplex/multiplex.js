@@ -1,4 +1,4 @@
-import multiplex from './es6/mx/multiplex.js';
+import Multiplex from './es6/multiplex/multiplex.js';
 
-const mx = multiplex;
+const mx = Multiplex;
 export default mx;
