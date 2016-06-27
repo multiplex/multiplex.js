@@ -6,10 +6,8 @@ module.exports = function (grunt) {
 
 
     // transpile es6 modules, include "banner" and "version"
-    function transpile(task, entry, dest, format) {
-        var done = task.async();
-
-        rollup.rollup({
+    function transpile(done, entry, dest, format) {
+        retrollup.rollup({
             entry: entry
         }).then(function (bundle) {
             bundle.write({
@@ -41,13 +39,15 @@ module.exports = function (grunt) {
 
 
     grunt.task.registerTask('transpile', 'builds all files, compiles es6 modules and convert es5 to umd', function () {
-        transpile(this,
+        var done = this.async();
+
+        transpile(done,
             path.join(dirs.source, files.main),
             path.join(dirs.release, files.main),
             'umd'
         );
 
-        transpile(this,
+        transpile(done,
             path.join(dirs.source, files.es6),
             path.join(dirs.release, files.es6),
             'es6'
@@ -56,15 +56,17 @@ module.exports = function (grunt) {
 
 
     grunt.task.registerTask('transpile-test', 'builds files for test, compiles es6 modules to umd', function () {
+        var done = this.async();
+
         compileTestrunner();
 
-        transpile(this,
+        transpile(done,
             path.join(dirs.source, files.main),
             path.join(dirs.testbuild, files.main),
             'umd'
         );
 
-        transpile(this,
+        transpile(done,
             path.join(dirs.source, files.es6),
             path.join(dirs.testbuild, files.es6),
             'umd'

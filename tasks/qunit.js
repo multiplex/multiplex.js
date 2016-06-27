@@ -14,9 +14,7 @@ module.exports = function (grunt) {
 
 
     // testrunner function to run tests
-    function testrunner(task, code) {
-        var done = task.async();
-
+    function testrunner(done, code) {
         qrunner.run({
             code: code,
             tests: grunt.file.expand(dirs.test + '/unit/*.js')
@@ -36,8 +34,9 @@ module.exports = function (grunt) {
 
 
     grunt.task.registerTask('qtest', 'run all unit tests', function () {
-        testrunner(this, path.join(dirs.testbuild, files.main));
-        testrunner(this, path.join(dirs.testbuild, files.es6));
+        var done = this.async();
+        testrunner(done, path.join(dirs.testbuild, files.main));
+        testrunner(done, path.join(dirs.testbuild, files.es6));
     });
 };
 
