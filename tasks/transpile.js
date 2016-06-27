@@ -7,7 +7,7 @@ module.exports = function (grunt) {
 
     // transpile es6 modules, include "banner" and "version"
     function transpile(done, entry, dest, format) {
-        retrollup.rollup({
+        rollup.rollup({
             entry: entry
         }).then(function (bundle) {
             bundle.write({
