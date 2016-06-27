@@ -20,8 +20,7 @@ module.exports = function (grunt) {
                     except: [
                         'mx',
                         'multiplex',
-                        'Enumerable',
-                        'Enumerator',
+                        'Iterator',
                         'Collection',
                         'ReadOnlyCollection',
                         'List',
@@ -30,13 +29,14 @@ module.exports = function (grunt) {
                         'KeyValuePair',
                         'HashSet',
                         'HashTable',
+                        'HashTableEntry',
                         'LinkedList',
                         'LinkedListNode',
                         'Queue',
                         'Stack',
                         'Lookup',
                         'Grouping',
-                        'OrderedEnumerable',
+                        'OrderedIterator',
                         'Comparer',
                         'EqualityComparer'
                     ]
