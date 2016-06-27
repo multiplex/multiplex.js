@@ -1,18 +1,25 @@
+const toString = Object.prototype.toString;
+const TypedArray = Object.getPrototypeOf(Int8Array);
+
 /**
 * Determines whether the specified object is array-like.
 * @param {Object} obj The object to check.
 * @returns {Boolean}
 */
 export default function isArrayLike(obj) {
-    if (obj instanceof Array || typeof obj === 'string') {                      // Arrays/String
+    if (
+        typeof obj === 'string' ||                              // String
+        obj instanceof Array ||                                 // Arrays
+        obj instanceof TypedArray ||                            // typed-array
+        obj instanceof NodeList) {                              // NodeList: document.querySelectorAll
         return true;
     }
-    else if (typeof obj === 'object' && typeof obj.length === 'number') {       // Array-likes have 'length' property (excelude 'function' type)
+    else if (obj !== null &&
+        typeof obj === 'object' &&
+        typeof obj.length === 'number') {                       // Array-likes have 'length' property (excelude 'function' type)
 
-        if (typeof obj.splice === 'function' ||                                 // third party libraries. eg. jQuery
-            obj.toString() === '[object Arguments]' ||                          // arguments
-            obj.buffer ||                                                       // typed-array
-            obj instanceof NodeList) {                                          // NodeList: document.querySelectorAll
+        if (typeof obj.splice === 'function' ||                 // third party libraries. eg. jQuery
+            toString.call(obj) === '[object Arguments]') {      // arguments
             return true;
         }
     }
