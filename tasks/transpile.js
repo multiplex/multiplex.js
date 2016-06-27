@@ -17,7 +17,7 @@ module.exports = function (grunt) {
                 banner: grunt.config('banner'),
                 footer: ' ',
                 dest: dest,
-                outro: 'Multiplex.version = \'' + grunt.config('pkg').version + '\';\n',
+                outro: 'mx.version = \'' + grunt.config('pkg').version + '\';\n',
                 moduleName: 'mx'
             });
         }).then(done, function (e) {
