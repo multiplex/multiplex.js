@@ -3,3 +3,7 @@
 
 # JS files must always use LF for tools to work
 *.js eol=lf
+
+external/* linguist-documentation=false
+*.ts linguist-documentation=false
+*.d.ts linguist-documentation=false
