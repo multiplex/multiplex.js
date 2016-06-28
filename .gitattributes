@@ -4,5 +4,5 @@
 # JS files must always use LF for tools to work
 *.js eol=lf
 
-src/typescript/* linguist-vendored=false
+*.ts linguist-vendored=false
 test/* linguist-vendored=false
