@@ -3,6 +3,3 @@
 
 # JS files must always use LF for tools to work
 *.js eol=lf
-
-*.ts linguist-vendored=false
-test/* linguist-vendored=false
