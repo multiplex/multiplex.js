@@ -1,28 +1,14 @@
 # User-specific files
 *.suo
 *.ide
-*.user
-*.userosscache
-*.sln
-*.sln.docstates
-*.csproj
 *.log
 
 # Build results
-*.dll
-[Bb]in/
-[Oo]bj/
-/dist/[Bb]in
-/dist/[Oo]bj
+/build
 
 # Others
-.vs
-.vscode
-.resources
-.coveralls.yml
-.nyc_output
+.*
 coverage
 nyc_output
 node_modules
 bower_components
-test/typescript/*.js

@@ -28,9 +28,10 @@
         "*.log",
         "*.yml",
         "/.*",
-        "/test",
+        "/build",
         "/tasks",
         "/external",
+        "/src/test",
         "Gruntfile.js",
         "package.json"
     ],
