@@ -11,11 +11,7 @@ module.exports = function (grunt) {
                 files: [
                     {
                         dest: path.join(dirs.release, files.main),
-                        src: [path.join(dirs.build, 'es5', files.main)]
-                    },
-                    {
-                        dest: path.join(dirs.release, files.es6),
-                        src: [path.join(dirs.build, 'es6', files.main)]
+                        src: [path.join(dirs.build, files.main)]
                     }
                 ]
             },
