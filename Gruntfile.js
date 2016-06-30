@@ -13,7 +13,6 @@ module.exports = function (grunt) {
         },
         files = {
             main: 'multiplex.js',
-            es6: 'multiplex.es6.js',
             minified: 'multiplex.min.js',
             typings: 'multiplex.d.ts'
         },
