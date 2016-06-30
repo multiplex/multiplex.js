@@ -1,7 +1,8 @@
 module.exports = function (grunt) {
     var dirs = grunt.config('dirs'),
         files = grunt.config('files'),
-        banner = grunt.config('banner');
+        banner = grunt.config('banner'),
+        path = require('path');
 
     // copy "typings" and "intellisense" files to the release directory
     // include "banner" in the beginning
@@ -16,7 +17,7 @@ module.exports = function (grunt) {
                     }
                 ]
             },
-            
+
             // copy "typescript" files to the release directory
             // include "banner" in the beginning
             typings: {

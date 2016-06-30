@@ -5,71 +5,74 @@ module.exports = function (grunt) {
         files = grunt.config('files');
 
 
-    // transpile es6 modules, include "banner" and "version"
-    function transpile(done, entry, dest, format) {
-        rollup.rollup({
-            entry: entry
+    // transpile es6 modules
+    function transpile() {
+        return rollup.rollup({
+            entry: path.join(dirs.source, files.main)
         }).then(function (bundle) {
-            bundle.write({
+            return bundle.write({
                 // output format - 'amd', 'cjs', 'es6', 'iife', 'umd'
-                format: format,
+                format: 'es6',
+                dest: path.join(dirs.build, files.main),
                 sourceMap: false,
                 banner: grunt.config('banner'),
-                footer: ' ',
-                dest: dest,
                 outro: 'mx.version = \'' + grunt.config('pkg').version + '\';\n',
+                footer: '\n',
                 moduleName: 'mx'
             });
-        }).then(done, function (e) {
-            grunt.log.error('error transpiling', e);
-            done(e);
         });
     }
 
+    // transpile unit tests
+    function transpileTests() {
+        var files = grunt.file.expand({ cwd: dirs.test }, '**/*.js'),
+            header = grunt.file.read(dirs.test + '/test-header');
 
-    // regsiter all unit tests in a single "testrunner" file to be use in browser
-    function compileTestrunner() {
-        var fs = require('fs'),
-            testrunner = path.join(dirs.test, files.testrunner),
-            units = grunt.file.expand(dirs.testunit + '/*.js');
+        return Promise.all(files.map(function (file) {
+            return rollup.rollup({
+                entry: path.join(dirs.test, file)
+            }).then(function (bundle) {
+                var code = header + bundle.generate({
+                    // output format - 'amd', 'cjs', 'es6', 'iife', 'umd'
+                    format: 'umd',
+                    footer: '\n',
+                    sourceMap: false,
+                    useStrict: false
+                }).code.split('\n').slice(5).join('\n');
 
-        fs.writeFileSync(testrunner, 'require([' +
-            units.map(file => '\n\'' + file.replace(dirs.test, '.') + '\'').join(',') + '\n]);\n');
+                grunt.file.write(path.join(dirs.build, 'test', file), code);
+            });
+        }));
     }
 
-
-    grunt.task.registerTask('transpile', 'builds all files, compiles es6 modules and convert es5 to umd', function () {
+    grunt.task.registerTask('transpile-code', 'builds all files/tests, compiles es6 modules', function () {
         var done = this.async();
 
-        transpile(done,
-            path.join(dirs.source, files.main),
-            path.join(dirs.release, files.main),
-            'umd'
-        );
-
-        transpile(done,
-            path.join(dirs.source, files.es6),
-            path.join(dirs.release, files.es6),
-            'es6'
-        );
+        Promise.resolve(null)
+            .then(function () {
+                return transpile();
+            })
+            .then(function () {
+                grunt.log.ok('transpile code');
+            })
+            .then(function () {
+                return transpileTests();
+            })
+            .then(function () {
+                grunt.log.ok('transpile tests');
+            })
+            .then(done, function (e) {
+                grunt.log.error('error transpiling', e);
+                done(e);
+            });
     });
 
 
-    grunt.task.registerTask('transpile-test', 'builds files for test, compiles es6 modules to umd', function () {
-        var done = this.async();
-
-        compileTestrunner();
-
-        transpile(done,
-            path.join(dirs.source, files.main),
-            path.join(dirs.testbuild, files.main),
-            'umd'
-        );
-
-        transpile(done,
-            path.join(dirs.source, files.es6),
-            path.join(dirs.testbuild, files.es6),
-            'umd'
-        );
+    grunt.task.registerTask('transpile', 'cleans build directory, builds all files, compiles es6 modules', function () {
+        var tasks = [
+            'clean:build',
+            'transpile-code'
+        ];
+        grunt.task.run(tasks);
     });
 };

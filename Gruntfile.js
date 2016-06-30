@@ -3,13 +3,13 @@ module.exports = function (grunt) {
 
     var pkg = grunt.file.readJSON('package.json'),
         dirs = {
-            source: 'src',
+            build: 'build',
             release: 'dist',
             tasks: 'tasks',
+            source: 'src',
             test: 'test',
-            testbuild: 'test/build',
-            testunit: 'test/unit',
-            benchmark: 'test/benchmark'
+            typings: 'src/typings',
+            benchmark: 'benchmark'
         },
         files = {
             main: 'multiplex.js',
