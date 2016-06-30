@@ -14,29 +14,33 @@ module.exports = function (grunt) {
 
 
     // testrunner function to run tests
-    function testrunner(done, code) {
+    function testrunner() {
         qrunner.run({
-            code: code,
-            tests: grunt.file.expand(dirs.test + '/unit/*.js')
+            code: path.join(dirs.build, files.main),
+            tests: grunt.file.expand(dirs.build + '/test/*.js')
         }, function (err, report) {
             if (err) {
                 console.log('Oops', err, report);
-                done(err);
-                return;
+                throw err;
             }
-            err = null;
             if (report.failed !== 0) {
-                err = new Error(report.failed + ' tests failed');
+                throw new Error(report.failed + ' tests failed');
             }
-            done(err);
         });
     }
 
 
     grunt.task.registerTask('qtest', 'run all unit tests', function () {
         var done = this.async();
-        testrunner(done, path.join(dirs.testbuild, files.main));
-        testrunner(done, path.join(dirs.testbuild, files.es6));
+
+        Promise.resolve(null)
+            .then(function () {
+                testrunner();
+            })
+            .then(done, function (e) {
+                grunt.log.error('error running tests', e);
+                done(e);
+            });
     });
 };
 
