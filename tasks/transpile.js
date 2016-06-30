@@ -2,33 +2,29 @@ module.exports = function (grunt) {
     var rollup = require('rollup'),
         path = require('path'),
         dirs = grunt.config('dirs'),
-        files = grunt.config('files'),
-        version = {
-            es5: 'es5',
-            es6: 'es6'
-        };
+        files = grunt.config('files');
 
 
     // transpile es6 modules
-    function transpile(ver) {
+    function transpile() {
         return rollup.rollup({
-            entry: path.join(dirs.source, ver, files.main)
+            entry: path.join(dirs.source, files.main)
         }).then(function (bundle) {
             return bundle.write({
                 // output format - 'amd', 'cjs', 'es6', 'iife', 'umd'
                 format: 'umd',
-                dest: path.join(dirs.build, ver, files.main),
+                dest: path.join(dirs.build, files.main),
                 sourceMap: false,
                 banner: grunt.config('banner'),
                 outro: 'mx.version = \'' + grunt.config('pkg').version + '\';\n',
-                footer: ' ',
+                footer: '\n',
                 moduleName: 'mx'
             });
         });
     }
 
     // transpile unit tests
-    function transpileTests(ver) {
+    function transpileTests() {
         var files = grunt.file.expand({ cwd: dirs.test }, '**/*.js'),
             header = grunt.file.read(dirs.test + '/test-header');
 
@@ -38,12 +34,13 @@ module.exports = function (grunt) {
             }).then(function (bundle) {
                 var code = header + bundle.generate({
                     // output format - 'amd', 'cjs', 'es6', 'iife', 'umd'
-                    format: 'iife',
+                    format: 'umd',
+                    footer: '\n',
                     sourceMap: false,
                     useStrict: false
-                }).code.split('\n').slice(1).join('\n');
+                }).code.split('\n').slice(5).join('\n');
 
-                grunt.file.write(path.join(dirs.build, ver, 'test', file), code);
+                grunt.file.write(path.join(dirs.build, 'test', file), code);
             });
         }));
     }
@@ -53,28 +50,16 @@ module.exports = function (grunt) {
 
         Promise.resolve(null)
             .then(function () {
-                return transpile(version.es5);
+                return transpile();
             })
             .then(function () {
-                grunt.log.ok('transpile es5');
+                grunt.log.ok('transpile code');
             })
             .then(function () {
-                return transpileTests(version.es5);
+                return transpileTests();
             })
             .then(function () {
-                grunt.log.ok('transpile es5 tests');
-            })
-            .then(function () {
-                return transpile(version.es6);
-            })
-            .then(function () {
-                grunt.log.ok('transpile es6');
-            })
-            .then(function () {
-                return transpileTests(version.es6);
-            })
-            .then(function () {
-                grunt.log.ok('transpile es6 tests');
+                grunt.log.ok('transpile tests');
             })
             .then(done, function (e) {
                 grunt.log.error('error transpiling', e);
