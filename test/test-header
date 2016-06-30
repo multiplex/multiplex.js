@@ -1,6 +1,5 @@
 ;(function (global, factory) {
-   typeof exports === 'object' && typeof module !== 'undefined'
-       && typeof require === 'function' ? factory(require('../multiplex')) :
+   typeof exports === 'object' && typeof module !== 'undefined' && typeof require === 'function' ? factory(require('../multiplex')) :
    typeof define === 'function' && define.amd ? define(['../multiplex'], factory) :
    factory(global.mx)
 }(this, function (mx) { 'use strict';
