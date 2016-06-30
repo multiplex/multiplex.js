@@ -7,14 +7,26 @@ module.exports = function (grunt) {
     // include "banner" in the beginning
     grunt.config.merge({
         copy: {
+            // copy built files to the release directory
             main: {
+                files: [
+                    {
+                        dest: path.join(dirs.release, files.main),
+                        src: [path.join(dirs.build, files.main)]
+                    }
+                ]
+            },
+            
+            // copy "typescript" files to the release directory
+            // include "banner" in the beginning
+            typings: {
                 files: [
                     {
                         expand: true,
                         flatten: true,
-                        cwd: dirs.source,
+                        cwd: dirs.typings,
                         dest: dirs.release,
-                        src: [files.typings, files.intellisense],
+                        src: [files.typings],
                         filter: 'isFile'
                     }
                 ],
