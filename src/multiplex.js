@@ -1,7 +1,7 @@
-import mx from './es6/multiplex/mx';
-import hash from './es6/runtime/hash';
-import equals from './es6/runtime/equals';
-import compare from './es6/runtime/compare';
+import mx from './multiplex/mx';
+import hash from './runtime/hash';
+import equals from './runtime/equals';
+import compare from './runtime/compare';
 
 mx.hash = hash;
 mx.equals = equals;
