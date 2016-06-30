@@ -14,10 +14,10 @@ module.exports = function (grunt) {
 
 
     // testrunner function to run tests
-    function testrunner(root) {
+    function testrunner() {
         qrunner.run({
-            code: path.join(root, files.main),
-            tests: grunt.file.expand(root + '/test/*.js')
+            code: path.join(dirs.build, files.main),
+            tests: grunt.file.expand(dirs.build + '/test/*.js')
         }, function (err, report) {
             if (err) {
                 console.log('Oops', err, report);
@@ -35,8 +35,7 @@ module.exports = function (grunt) {
 
         Promise.resolve(null)
             .then(function () {
-                testrunner(path.join(dirs.build, 'es5'));
-                testrunner(path.join(dirs.build, 'es6'));
+                testrunner();
             })
             .then(done, function (e) {
                 grunt.log.error('error running tests', e);
