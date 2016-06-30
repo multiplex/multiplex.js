@@ -7,6 +7,10 @@
 #### Comprehensive data-structure and LINQ library for JavaScript.
 ----------------------------
 
+## We are porting to ES6 (ES2015)
+Version 2.0 is going to be written from ground-up in two separate branches: ES6 which is up to the latest stanrad of ECMA (including classes, generators, symbols, spread operator, destructuring,...) and does not support backward compatibility, and ES5 which also benefits from the ES6 standard but is fully backward compatible.
+We try our best not to include breaking changes to the API, however should any new feature is irreversible, we provide a list of breaking changes in the wiki section.
+Keep in mind that the master branch in under development and might be broken, is you wish to fork an stable branch please refer to 'release-1.0' which is already locked for this purpose.
 
 
 ## What is Multiplex
