@@ -6,8 +6,7 @@ module.exports = function (grunt) {
             all: [
                 'Gruntfile.js',
                 dirs.source + '/**/*.js',
-                dirs.tasks + '/**/*.js',
-                dirs.test + '/unit/*.js'
+                dirs.tasks + '/**/*.js'
             ],
             options: {
                 config: '.jscsrc'

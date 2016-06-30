@@ -3,21 +3,19 @@ module.exports = function (grunt) {
 
     var pkg = grunt.file.readJSON('package.json'),
         dirs = {
-            source: 'src',
+            build: 'build',
             release: 'dist',
             tasks: 'tasks',
+            source: 'src',
             test: 'test',
-            testbuild: 'test/build',
-            testunit: 'test/unit',
-            benchmark: 'test/benchmark'
+            typings: 'src/typings',
+            benchmark: 'benchmark'
         },
         files = {
             main: 'multiplex.js',
             es6: 'multiplex.es6.js',
             minified: 'multiplex.min.js',
-            typings: 'multiplex.d.ts',
-            intellisense: 'multiplex.intellisense.js',
-            testrunner: 'testrunner.js'
+            typings: 'multiplex.d.ts'
         },
         banner = [
             '/*!',
@@ -50,7 +48,7 @@ module.exports = function (grunt) {
     grunt.registerTask('lint', ['jshint', 'jscs']);
 
     // test tasks
-    grunt.registerTask('test', ['transpile-test', 'qtest']);
+    grunt.registerTask('test', ['transpile', 'qtest']);
 
     // default task
     grunt.registerTask('default', ['lint', 'test']);
@@ -60,9 +58,8 @@ module.exports = function (grunt) {
 
     // releasing a new version
     grunt.registerTask('release', [
-        'default',
         'clean',
-        'transpile',
+        'default',
         'copy',
         'uglify'
     ]);
