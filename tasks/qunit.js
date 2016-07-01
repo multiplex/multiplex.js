@@ -14,8 +14,7 @@ module.exports = function (grunt) {
         qrunner.options.log.testing = false;
         qrunner.options.maxBlockDuration = 120000;
 
-        console.log(grunt.file.expand(dirs.build + '/test/**/*.js').length);
-        console.log(grunt.file.expand(dirs.build + '/test/**/*.js'));
+        console.log(grunt.file.read(grunt.file.expand(dirs.build + '/test/**/*.js')[0]));
 
         qrunner.run({
             code: path.join(dirs.build, files.main),
