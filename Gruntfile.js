@@ -8,6 +8,7 @@ module.exports = function (grunt) {
             tasks: 'tasks',
             source: 'src',
             test: 'test',
+            unit: 'test/unit',
             typings: 'src/typings',
             benchmark: 'benchmark'
         },

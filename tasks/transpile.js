@@ -25,22 +25,29 @@ module.exports = function (grunt) {
 
     // transpile unit tests
     function transpileTests() {
-        var files = grunt.file.expand({ cwd: dirs.test }, '**/*.js'),
-            header = grunt.file.read(dirs.test + '/test-header');
+        var files = grunt.file.expand({ cwd: dirs.unit }, '**/*.js');
 
         return Promise.all(files.map(function (file) {
             return rollup.rollup({
-                entry: path.join(dirs.test, file)
+                entry: path.join(dirs.unit, file),
+                external: function (id) {
+                    if (id.endsWith('multiplex')) {
+                        return true;
+                    }
+                }
             }).then(function (bundle) {
-                var code = header + bundle.generate({
+                return bundle.write({
                     // output format - 'amd', 'cjs', 'es6', 'iife', 'umd'
                     format: 'umd',
                     footer: '\n',
                     sourceMap: false,
-                    useStrict: false
-                }).code.split('\n').slice(5).join('\n');
-
-                grunt.file.write(path.join(dirs.build, 'test', file), code);
+                    dest: path.join(dirs.build, 'test', file),
+                    globals: function (id) {
+                        if (id.endsWith('multiplex')) {
+                            return 'mx';
+                        }
+                    }
+                });
             });
         }));
     }
