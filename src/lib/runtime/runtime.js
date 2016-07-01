@@ -5,9 +5,9 @@ import equalsSymbol from './equals-symbol';
 import compare from './compare';
 import compareSymbol from './compare-symbol';
 
-export {hash}
-export {hashSymbol}
-export {equals}
-export {equalsSymbol}
-export {compare}
-export {compareSymbol}
+export {hash};
+export {hashSymbol};
+export {equals};
+export {equalsSymbol};
+export {compare};
+export {compareSymbol};
