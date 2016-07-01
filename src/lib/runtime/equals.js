@@ -9,7 +9,7 @@ import equalsSymbol from './equals-symbol';
 * @param {EqualityComparer=} comparer An equality comparer to compare values.
 * @returns {Boolean} if the objA parameter is the same instance as the objB parameter, or if both are null, or if objA.equals(objB) returns true; otherwise, false.
 */
-export default function equals(objA, objB, comparer = null) {
+export default function equals(objA, objB, comparer) {
     // Objects are identical (including null)
     if (objA === objB) {
         return true;
