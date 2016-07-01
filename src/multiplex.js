@@ -1,7 +1,7 @@
-import mx from './multiplex/mx';
-import hash from './runtime/hash';
-import equals from './runtime/equals';
-import compare from './runtime/compare';
+import mx from './lib/multiplex/mx';
+import hash from './lib/runtime/hash';
+import equals from './lib/runtime/equals';
+import compare from './lib/runtime/compare';
 
 mx.hash = hash;
 mx.equals = equals;
