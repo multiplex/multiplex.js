@@ -1,8 +1,8 @@
 import mx from '../../multiplex'
-import {module, test} from '../../qunit'
+import {qmodule, qtest} from '../../qunit'
 
-module('runtime');
+qmodule('runtime');
 
-test('dummy', function (assert) {
+qtest('dummy', function (assert) {
     assert.ok(mx === mx, 'Dummy test!');
 });
