@@ -1,12 +1,3 @@
-/**
-* Searches a range of elements in a sorted Array for an element using the specified comparer function and returns the zero-based index of the element.
-* @param {Array} array The sorted array to find value.
-* @param {Number} index The zero-based starting index of the range to search.
-* @param {Number} length The length of the range to search.
-* @param {Object} value The value to locate.
-* @param {Function} comparer The Comparer function to use when comparing elements.
-* @returns {Number}
-*/
 export default function binarySearch(array, index, length, value, comparer) {
     let _lo = index,
         _hi = index + length - 1,

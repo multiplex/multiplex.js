@@ -1,8 +1,7 @@
-/**
-* Determines whether the specified object is array-like.
-* @param {Object} obj The object to check.
-* @returns {Boolean}
-*/
+var getPrototypeOf = Object.getPrototypeOf || function (obj) {
+    return obj.__proto__ == Object.prototype;
+};
+
 export default function isObjectLiteral(obj) {
-    return Object.getPrototypeOf(obj) === Object.prototype;
+    return getPrototypeOf(obj) === Object.prototype;
 }

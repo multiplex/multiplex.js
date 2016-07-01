@@ -1,11 +1,6 @@
 var toString = Object.prototype.toString;
 var TypedArray = typeof Int8Array !== 'undefined' ? Object.getPrototypeOf(Int8Array) : function () { };
 
-/**
-* Determines whether the specified object is array-like.
-* @param {Object} obj The object to check.
-* @returns {Boolean}
-*/
 export default function isArrayLike(obj) {
     if (
         typeof obj === 'string' ||                              // String

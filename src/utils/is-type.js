@@ -1,9 +1,3 @@
-/**
-* Determines whether an object is instance of a given type.
-* @param {Object} obj An object.
-* @param {Function} type The type to check.
-* @returns {Boolean}
-*/
 export default function isType(obj, type) {
     // use 'typeof' operator in an if clause yields in better performance than switch-case
 
