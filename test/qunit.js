@@ -1,4 +1,4 @@
-export var module = QUnit.module;
-export var test = QUnit.test;
-export var expect = QUnit.expect;
+export var qmodule = QUnit.module;
+export var qtest = QUnit.test;
+export var qexpect = QUnit.expect;
 
