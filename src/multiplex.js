@@ -1,10 +1,21 @@
 import mx from './lib/multiplex/mx';
-import hash from './lib/runtime/hash';
-import equals from './lib/runtime/equals';
-import compare from './lib/runtime/compare';
+
+import {
+    hash,
+    hashSymbol,
+    equals,
+    equalsSymbol,
+    compare,
+    compareSymbol
+} from './lib/runtime/runtime';
+
 
 mx.hash = hash;
+mx.hashSymbol = hashSymbol;
 mx.equals = equals;
+mx.equalsSymbol = equalsSymbol;
 mx.compare = compare;
+mx.compareSymbol = compareSymbol;
+
 
 export default mx;

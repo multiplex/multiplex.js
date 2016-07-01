@@ -1,6 +1,5 @@
 import hash from './hash';
-export const equalsSymbol = '__eq__';
-
+import equalsSymbol from './equals-symbol';
 
 
 /**
@@ -41,60 +40,52 @@ export default function equals(objA, objB, comparer = null) {
             return objB instanceof Date && objA.getTime() === objB.getTime();
         }
 
-        // Compute overriden '__eq__' method for Object types
-        else if (typeof objA.__eq__ === 'function') {
-            return objA.__eq__(objB);
+        // Compute overriden 'equals' method for Object types
+        else if (typeof objA[equalsSymbol] === 'function') {
+            return objA[equalsSymbol](objB);
         }
 
         // Object types
-        else {
-            return computeObjectEquals(objA, objB);
+        else if (typeof objB === 'object') {
+            // Objects having different hash code are not equal
+            if (hash(objA) !== hash(objB)) {
+                return false;
+            }
+
+
+            /// Process equality for object literals:
+            /// object literals may have equal hash code, we process equality by each property.
+            /// regular 'class' instances have different hash code, hence do not fall into following code.
+            /// object objA is direct descendant of Object hence no need to check 'hasOwnProperty'
+
+            let _val, _prop;
+
+            for (_prop in objA) {
+                _val = objA[_prop];
+
+                /// Object methods are not considered for equality
+                if (typeof _val === 'function') {
+                    continue;
+                }
+
+                if (!equals(_val, objB[_prop])) {
+                    return false;
+                }
+            }
+
+            /// no need to browse objB properties, all properties of objA is checked against objB
+            /// it is very unlikely for object literals with the same hash code to have different properties
+            /// even in such a rare case, objects are considered equal
+
+            return true;
         }
+
+        // Objects are equal (with auto type conversion)
+        // Objects from the same type are considered equal (eg. new Number(1) and 1)
+        return objA == objB;
     }
 
 
     // Objects are already not equal
     return false;
-}
-
-
-/// Compares Object types by their Hash code and Properties
-function computeObjectEquals(objA, objB) {
-    if (typeof objB === 'object') {
-        // Objects having different hash code are not equal
-        if (hash(objA) !== hash(objB)) {
-            return false;
-        }
-
-
-        /// Process equality for object literals:
-        /// object literals may have equal hash code, we process equality by each property.
-        /// regular 'class' instances have different hash code, hence do not fall into following code.
-        /// object objA is direct descendant of Object hence no need to check 'hasOwnProperty'
-
-        let _val;
-
-        for (let _prop in objA) {
-            _val = objA[_prop];
-
-            /// Object methods are not considered for equality
-            if (typeof _val === 'function') {
-                continue;
-            }
-
-            if (!equals(_val, objB[_prop], true)) {
-                return false;
-            }
-        }
-
-        /// no need to browse objB properties, all properties of objA is checked against objB
-        /// it is very unlikely for object literals with the same hash code to have different properties
-        /// even in such a rare case, objects are considered equal
-
-        return true;
-    }
-
-    // Objects are equal (with auto type conversion)
-    // Objects from the same type are considered equal (eg. new Number(1) and 1)
-    return objA == objB;
 }

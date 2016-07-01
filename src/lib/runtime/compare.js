@@ -1,4 +1,4 @@
-export const compareSymbol = '__cmp__';
+import compareSymbol from './compare-symbol';
 
 /**
 * Performs a comparison of two objects of the same type and returns a value indicating whether one object is less than, equal to, or greater than the other.
@@ -50,9 +50,9 @@ export default function compare(objA, objB) {
                     return _t1 > _t2 ? 1 : (_t1 < _t2 ? -1 : 0);
                 }
 
-                // Compute overriden '__cmp__' method
-                else if (typeof objA.__cmp__ === 'function') {
-                    return objA.__cmp__(objB);
+                // Compute overriden 'compare' method for Object types
+                else if (typeof objA[compareSymbol] === 'function') {
+                    return objA[compareSymbol](objB);
                 }
 
                 // All other objects are compared using 'valudOf' method
