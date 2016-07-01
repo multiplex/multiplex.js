@@ -1,11 +1,19 @@
-(function () {
-    'use strict';
+(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('../../multiplex')) :
+    typeof define === 'function' && define.amd ? define(['../../multiplex'], factory) :
+    (factory(global.mx));
+}(this, function (mx) { 'use strict';
 
-    QUnit.module('runtime');
+    mx = 'default' in mx ? mx['default'] : mx;
 
-    QUnit.test('dummy', function (assert) {
-        assert.ok(1 === 1, 'Dummy test!');
+    var qmodule = QUnit.module;
+    var qtest = QUnit.test;
+
+    qmodule('runtime');
+
+    qtest('dummy', function (assert) {
+        assert.ok(mx === mx, 'Dummy test!');
     });
 
-}());
+}));
 

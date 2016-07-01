@@ -108,7 +108,7 @@
 
         // array-like objects
         else if (isArrayLike(obj)) {
-            let _index = -1,
+            var _index = -1,
                 _length = obj.length;
 
             return new Iterator(function () {
@@ -132,7 +132,7 @@
                 return iteratorFactory([obj]);
             }
 
-            let _index = -1,
+            var _index = -1,
                 _keys = Object.keys(obj),
                 _length = _keys.length;
 
