@@ -469,8 +469,8 @@ When the tests pass, the built version of Multiplex will be put in the `build/` 
 [license-url]: LICENSE
 [license-image]: https://img.shields.io/badge/license-Apache-blue.svg
 
-[travis-url]: https://travis-ci.org/multiplex/multiplex.js?branch=master
-[travis-image]: https://travis-ci.org/multiplex/multiplex.js.svg?branch=master
+[travis-url]: https://travis-ci.org/multiplex/multiplex.js?branch=release-1.0
+[travis-image]: https://travis-ci.org/multiplex/multiplex.js.svg?branch=release-1.0
 
-[coverage-url]: https://coveralls.io/github/multiplex/multiplex.js?branch=master
-[coverage-image]: https://coveralls.io/repos/github/multiplex/multiplex.js/badge.svg?branch=master
+[coverage-url]: https://coveralls.io/github/multiplex/multiplex.js?branch=release-1.0
+[coverage-image]: https://coveralls.io/repos/github/multiplex/multiplex.js/badge.svg?branch=release-1.0
