@@ -38,7 +38,7 @@ module.exports = function (grunt) {
             }).then(function (bundle) {
                 return bundle.write({
                     // output format - 'amd', 'cjs', 'es6', 'iife', 'umd'
-                    format: 'cjs',
+                    format: 'umd',
                     footer: '\n',
                     sourceMap: false,
                     dest: path.join(dirs.build, 'test', file),
