@@ -11,7 +11,7 @@ import compute31BitObjecHash from './hash-object';
 * @param {...Objects} rest Optional number of objects to combine their hash codes.
 * @returns {Number}
 */
-export default function hash(obj, ...rest) {
+export default function hash(obj) {
     var _hash;
 
     // null/undefined hash is 0
@@ -60,13 +60,13 @@ export default function hash(obj, ...rest) {
 
 
     // Combine hash codes for given inputs
-    if (rest.length) {
-        var _len = rest.length,
-            _i = 0;
+    if (arguments.length > 1) {
+        var _len = arguments.length,
+            _i = 1;
 
-        while (++_i < _len) {
+        while (_i < _len) {
             // Josh Bloch hash method to combine 2 hash
-            _hash = (17 * 31 + _hash) * 31 + hash(rest[_i]);
+            _hash = (17 * 31 + _hash) * 31 + hash(arguments[_i++]);
         }
     }
 
