@@ -64,9 +64,9 @@ export default function hash(obj, ...rest) {
         let _len = rest.length,
             _i = 0;
 
-        while (++_i < _len) {
+        while (_i < _len) {
             // Josh Bloch hash method to combine 2 hash
-            _hash = (17 * 31 + _hash) * 31 + hash(rest[_i]);
+            _hash = (17 * 31 + _hash) * 31 + hash(rest[_i++]);
         }
     }
 
