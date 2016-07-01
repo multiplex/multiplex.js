@@ -55,7 +55,7 @@
         this.next = factory;
     }
 
-    var iteratorSymbol = typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol' ? Symbol.iterator : '@@iterator';
+    var iteratorSymbol = (typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol') ? Symbol.iterator : '@@iterator';
 
     var toString = Object.prototype.toString;
     var TypedArray = typeof Int8Array !== 'undefined' ? Object.getPrototypeOf(Int8Array) : function () { };
@@ -163,7 +163,7 @@
         return value instanceof Multiplex ? value : new Multiplex(value);
     }
 
-    var hashSymbol = typeof Symbol === 'function' && typeof Symbol('hash') === 'symbol' ? Symbol('hash') : '__hash__';
+    var hashSymbol = (typeof Symbol === 'function' && typeof Symbol('hash') === 'symbol') ? Symbol('hash') : '__hash__';
 
     function compute31BitDateHash(obj) {
         var _time = obj.getTime();
@@ -368,7 +368,7 @@
         return _hash;
     }
 
-    var equalsSymbol = typeof Symbol === 'function' && typeof Symbol('equals') === 'symbol' ? Symbol('equals') : '__eq__';
+    var equalsSymbol = (typeof Symbol === 'function' && typeof Symbol('equals') === 'symbol') ? Symbol('equals') : '__eq__';
 
     /**
     * Determines whether the specified object instances are considered equal.
@@ -458,7 +458,7 @@
         return false;
     }
 
-    var compareSymbol = typeof Symbol === 'function' && typeof Symbol('compare') === 'symbol' ? Symbol('compare') : '__cmp__';
+    var compareSymbol = (typeof Symbol === 'function' && typeof Symbol('compare') === 'symbol') ? Symbol('compare') : '__cmp__';
 
     /**
     * Performs a comparison of two objects of the same type and returns a value indicating whether one object is less than, equal to, or greater than the other.
