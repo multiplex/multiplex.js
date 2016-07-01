@@ -38,15 +38,10 @@ module.exports = function (grunt) {
             }).then(function (bundle) {
                 return bundle.write({
                     // output format - 'amd', 'cjs', 'es6', 'iife', 'umd'
-                    format: 'umd',
+                    format: 'iife',
                     footer: '\n',
                     sourceMap: false,
-                    dest: path.join(dirs.build, 'test', file),
-                    globals: function (id) {
-                        if (id.endsWith('multiplex')) {
-                            return 'mx';
-                        }
-                    }
+                    dest: path.join(dirs.build, 'test', file)
                 });
             });
         }));
