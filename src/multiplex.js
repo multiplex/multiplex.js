@@ -1,3 +1,3 @@
-import mx from './multiplex/mx';
+import mx from './lib/multiplex/mx';
 
 export default mx;
