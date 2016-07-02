@@ -82,7 +82,7 @@ module.exports = function (grunt) {
         });
 
         var modules = ['multiplex'].concat(units).map(function (file) {
-            return '\n\t\t\t"' + file + '"';
+            return '\n            "' + file + '"';
         });
 
         var script = [
