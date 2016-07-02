@@ -25,9 +25,9 @@ module.exports = function (grunt) {
 
     // transpile unit tests
     function transpileTests() {
-        var files = grunt.file.expand({ cwd: dirs.unit }, '**/*.js');
+        var units = grunt.file.expand({ cwd: dirs.unit }, '**/*.js');
 
-        return Promise.all(files.map(function (file) {
+        return Promise.all(units.map(function (file) {
             return rollup.rollup({
                 entry: path.join(dirs.unit, file),
                 external: function (id) {
@@ -41,7 +41,7 @@ module.exports = function (grunt) {
                     format: 'umd',
                     footer: '\n',
                     sourceMap: false,
-                    dest: path.join(dirs.build, 'test', file),
+                    dest: path.join(dirs.build, dirs.test, file),
                     globals: function (id) {
                         if (id.endsWith('multiplex')) {
                             return 'mx';
@@ -52,7 +52,7 @@ module.exports = function (grunt) {
         }));
     }
 
-    grunt.task.registerTask('transpile-code', 'builds all files/tests, compiles es6 modules', function () {
+    grunt.task.registerTask('transpile', 'builds all files/tests, compiles es6 modules', function () {
         var done = this.async();
 
         Promise.resolve(null)
@@ -74,11 +74,34 @@ module.exports = function (grunt) {
             });
     });
 
+    grunt.task.registerTask('build-testrunner', 'creates testrunner.html file to run unit-tests', function () {
+        var testrunner = grunt.file.read(dirs.test + '/testrunner.html');
 
-    grunt.task.registerTask('transpile', 'cleans build directory, builds all files, compiles es6 modules', function () {
+        var units = grunt.file.expand({ cwd: dirs.unit }, '**/*.js').map(function (file) {
+            return dirs.test + '/' + file;
+        });
+
+        var modules = ['multiplex'].concat(units).map(function (file) {
+            return '\n\t\t\t"' + file + '"';
+        });
+
+        var script = [
+            '    <script>',
+            '        require([' + modules.join(','),
+            '        ]);',
+            '    </script>'
+        ];
+
+        testrunner = testrunner.replace(/.*<tests\/>/, script.join('\n'));
+        grunt.file.write(dirs.build + '/testrunner.html', testrunner);
+    });
+
+
+    grunt.task.registerTask('build', 'cleans build directory, transpiles es6 modules, builds tests', function () {
         var tasks = [
             'clean:build',
-            'transpile-code'
+            'transpile',
+            'build-testrunner'
         ];
         grunt.task.run(tasks);
     });
