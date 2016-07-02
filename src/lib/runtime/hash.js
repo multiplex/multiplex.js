@@ -20,10 +20,8 @@ export default function hash(obj) {
     }
 
 
-    // use 'instanceof' and 'typeof' operators to maximize performance
-
     // Compute 'Number' primitive type hash (does not incluede 'new Number(value)')
-    if (typeof obj === 'number') {
+    else if (typeof obj === 'number') {
         _hash = compute31BitNumberHash(obj);
     }
 
