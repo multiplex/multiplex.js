@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (July 02, 2016)
+* Version 2.0.0 (July 03, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under Apache License Version 2.0
@@ -212,15 +212,13 @@
         return _hash & 0X7FFFFFFF;
     }
 
-    var __stringHashSeed = Math.floor(Math.random() * 0X7FFF) + 0X7FFF;
-
     function compute31BitStringHash(obj) {
-        var _hash = __stringHashSeed,
+        var _hash = 0X7FFF,         // string hash seed
             _len = obj.length,
             _i = 0;
 
-        for (; _i < _len; _i++) {
-            _hash = ((((_hash << 5) - _hash) | 0) + obj.charCodeAt(_i)) | 0;
+        for (; _i < _len;) {
+            _hash = ((((_hash << 5) - _hash) | 0) + obj.charCodeAt(_i++)) | 0;
         }
 
         return _hash & 0X7FFFFFFF;
@@ -234,7 +232,7 @@
         return getPrototypeOf(obj) === Object.prototype;
     }
 
-    var __objectHashSeed = Math.floor(Math.random() * 0X7FFF) + 0X7FFF;
+    var __objectHashSeed = Math.floor(Math.random() * 0XFFFF) + 0XFFFF;
     var __objetHashIndex = __objectHashSeed;
     var compute31BitObjecHash;
 
@@ -315,10 +313,8 @@
         }
 
 
-        // use 'instanceof' and 'typeof' operators to maximize performance
-
         // Compute 'Number' primitive type hash (does not incluede 'new Number(value)')
-        if (typeof obj === 'number') {
+        else if (typeof obj === 'number') {
             _hash = compute31BitNumberHash(obj);
         }
 
@@ -377,7 +373,7 @@
     * @param {EqualityComparer=} comparer An equality comparer to compare values.
     * @returns {Boolean} if the objA parameter is the same instance as the objB parameter, or if both are null, or if objA.equals(objB) returns true; otherwise, false.
     */
-    function equals(objA, objB, comparer = null) {
+    function equals(objA, objB, comparer) {
         // Objects are identical (including null)
         if (objA === objB) {
             return true;
