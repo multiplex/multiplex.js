@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (July 02, 2016)
+* Version 2.0.0 (July 03, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under Apache License Version 2.0
@@ -216,15 +216,13 @@
         return _hash & 0X7FFFFFFF;
     }
 
-    const __stringHashSeed = Math.floor(Math.random() * 0X7FFF) + 0X7FFF;
-
     function compute31BitStringHash(obj) {
-        let _hash = __stringHashSeed,
+        let _hash = 0X7FFF,         // string hash seed
             _len = obj.length,
             _i = 0;
 
-        for (; _i < _len; _i++) {
-            _hash = ((((_hash << 5) - _hash) | 0) + obj.charCodeAt(_i)) | 0;
+        for (; _i < _len;) {
+            _hash = ((((_hash << 5) - _hash) | 0) + obj.charCodeAt(_i++)) | 0;
         }
 
         return _hash & 0X7FFFFFFF;
@@ -234,7 +232,7 @@
         return Object.getPrototypeOf(obj) === Object.prototype;
     }
 
-    const __objectHashSeed = Math.floor(Math.random() * 0X7FFF) + 0X7FFF;
+    const __objectHashSeed = Math.floor(Math.random() * 0XFFFF) + 0XFFFF;
     const __objectHashMap = new WeakMap();
     let __objetHashIndex = __objectHashSeed;
 
@@ -281,10 +279,8 @@
         }
 
 
-        // use 'instanceof' and 'typeof' operators to maximize performance
-
         // Compute 'Number' primitive type hash (does not incluede 'new Number(value)')
-        if (typeof obj === 'number') {
+        else if (typeof obj === 'number') {
             _hash = compute31BitNumberHash(obj);
         }
 
