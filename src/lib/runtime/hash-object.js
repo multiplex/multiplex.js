@@ -2,7 +2,7 @@ import hash from './hash';
 import compute31BitStringHash from './hash-string';
 import isObjectLiteral from '../utils/is-object-literal';
 
-const __objectHashSeed = Math.floor(Math.random() * 0X7FFF) + 0X7FFF;
+const __objectHashSeed = Math.floor(Math.random() * 0XFFFF) + 0XFFFF;
 const __objectHashMap = new WeakMap();
 let __objetHashIndex = __objectHashSeed;
 
