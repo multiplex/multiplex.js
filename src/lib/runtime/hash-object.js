@@ -3,7 +3,7 @@ import hashSymbol from './hash-symbol';
 import compute31BitStringHash from './hash-string';
 import isObjectLiteral from '../utils/is-object-literal';
 
-var __objectHashSeed = Math.floor(Math.random() * 0X7FFF) + 0X7FFF;
+var __objectHashSeed = Math.floor(Math.random() * 0XFFFF) + 0XFFFF;
 var __objetHashIndex = __objectHashSeed;
 var compute31BitObjecHash;
 
