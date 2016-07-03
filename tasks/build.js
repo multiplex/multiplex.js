@@ -74,26 +74,21 @@ module.exports = function (grunt) {
             });
     });
 
-    grunt.task.registerTask('build-testrunner', 'creates testrunner.html file to run unit-tests', function () {
-        var testrunner = grunt.file.read(dirs.test + '/testrunner.html');
-
-        var units = grunt.file.expand({ cwd: dirs.unit }, '**/*.js').map(function (file) {
-            return dirs.test + '/' + file;
-        });
-
-        var modules = ['multiplex'].concat(units).map(function (file) {
-            return '\n            "' + file + '"';
-        });
-
-        var script = [
-            '    <script>',
-            '        require([' + modules.join(','),
-            '        ]);',
-            '    </script>'
-        ];
+    grunt.task.registerTask('build-testrunner', 'creates testrunner html file to run unit-tests', function () {
+        var testrunner = grunt.file.read(dirs.unit + '/testrunner.html'),
+            units = grunt.file.expand({ cwd: dirs.unit }, '**/*.js'),
+            modules = ['../multiplex'].concat(units).map(function (file) {
+                return '\n            "' + file + '"';
+            }),
+            script = [
+                '    <script>',
+                '        require([' + modules.join(','),
+                '        ]);',
+                '    </script>'
+            ];
 
         testrunner = testrunner.replace(/.*<tests\/>/, script.join('\n'));
-        grunt.file.write(dirs.build + '/testrunner.html', testrunner);
+        grunt.file.write(path.join(dirs.build, dirs.test, 'testrunner.html'), testrunner);
     });
 
 
