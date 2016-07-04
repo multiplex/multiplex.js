@@ -76,13 +76,12 @@ module.exports = function (grunt) {
 
     grunt.task.registerTask('build-testrunner', 'creates testrunner html file to run unit-tests', function () {
         var testrunner = grunt.file.read(dirs.unit + '/testrunner.html'),
-            units = grunt.file.expand({ cwd: dirs.unit }, '**/*.js'),
-            modules = ['../multiplex'].concat(units).map(function (file) {
+            units = grunt.file.expand({ cwd: dirs.unit }, '**/*.js').map(function (file) {
                 return '\n            "' + file + '"';
             }),
             script = [
                 '    <script>',
-                '        require([' + modules.join(','),
+                '        require([' + units.join(','),
                 '        ]);',
                 '    </script>'
             ];
