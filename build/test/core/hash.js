@@ -14,9 +14,8 @@
     var MAX_HASH_VALUE = 0X7FFFFFFF;
     var MIN_HASH_VALUE = -0X7FFFFFFF;
 
-    function isValidHashValue() {
-        var hash = mx.hash.apply(arguments);
-        return hash > MIN_HASH_VALUE && hash < MAX_HASH_VALUE;
+    function isValidHashValue(hash) {
+        return hash >= MIN_HASH_VALUE && hash <= MAX_HASH_VALUE;
     }
 
     qtest('basic hash', function (assert) {
@@ -49,12 +48,12 @@
 
         assert.equal(mx.hash(MAX_HASH_VALUE), MAX_HASH_VALUE, 'maximum hash value!');
         assert.equal(mx.hash(MIN_HASH_VALUE), MIN_HASH_VALUE, 'minimum hash value!');
-        assert.ok(isValidHashValue(MAX_HASH_VALUE), 'maximum hash is 0X7FFFFFFF!');
-        assert.ok(isValidHashValue(MIN_HASH_VALUE), 'minimum hash is -0X7FFFFFFF!');
-        assert.ok(isValidHashValue(Number.MAX_VALUE), 'hash MAX_VALUE');
-        assert.ok(isValidHashValue(Number.MIN_VALUE), 'hash MIN_VALUE');
-        assert.ok(isValidHashValue(Number.POSITIVE_INFINITY), 'hash POSITIVE_INFINITY');
-        assert.ok(isValidHashValue(Number.NEGATIVE_INFINITY), 'hash NEGATIVE_INFINITY');
+        assert.ok(isValidHashValue(mx.hash(MAX_HASH_VALUE)), 'maximum hash is 0X7FFFFFFF!');
+        assert.ok(isValidHashValue(mx.hash(MIN_HASH_VALUE)), 'minimum hash is -0X7FFFFFFF!');
+        assert.ok(isValidHashValue(mx.hash(Number.MAX_VALUE)), 'hash MAX_VALUE');
+        assert.ok(isValidHashValue(mx.hash(Number.MIN_VALUE)), 'hash MIN_VALUE');
+        assert.ok(isValidHashValue(mx.hash(Number.POSITIVE_INFINITY)), 'hash POSITIVE_INFINITY');
+        assert.ok(isValidHashValue(mx.hash(Number.NEGATIVE_INFINITY)), 'hash NEGATIVE_INFINITY');
 
         assert.equal(mx.hash(.1), mx.hash(.1), 'hash 0.1!');
         assert.equal(mx.hash(.01), mx.hash(.01), 'hash 0.01!');
@@ -71,31 +70,31 @@
         assert.equal(mx.hash(-.000000001), mx.hash(-.000000001), 'hash -0.000000001!');
         assert.equal(mx.hash(-.000000000001), mx.hash(-.000000000001), 'hash -0.000000000001!');
 
-        assert.ok(isValidHashValue(.1), 'hash 0.1 is valid!');
-        assert.ok(isValidHashValue(.001), 'hash 0.001 is valid!');
-        assert.ok(isValidHashValue(.00001), 'hash 0.00001 is valid!');
-        assert.ok(isValidHashValue(.0000001), 'hash 0.0000001 is valid!');
-        assert.ok(isValidHashValue(.000000001), 'hash 0.000000001 is valid!');
-        assert.ok(isValidHashValue(.00000000001), 'hash 0.00000000001 is valid!');
-        assert.ok(isValidHashValue(.0000000000001), 'hash 0.0000000000001 is valid!');
-        assert.ok(isValidHashValue(.000000000000001), 'hash 0.000000000000001 is valid!');
-        assert.ok(isValidHashValue(.00000000000000001), 'hash 0.00000000000000001 is valid!');
-        assert.ok(isValidHashValue(.0000000000000000001), 'hash 0.0000000000000000001 is valid!');
-        assert.ok(isValidHashValue(-.1), 'hash -0.1 is valid!');
-        assert.ok(isValidHashValue(-.001), 'hash -0.001 is valid!');
-        assert.ok(isValidHashValue(-.00001), 'hash -0.00001 is valid!');
-        assert.ok(isValidHashValue(-.0000001), 'hash -0.0000001 is valid!');
-        assert.ok(isValidHashValue(-.000000001), 'hash -0.000000001 is valid!');
-        assert.ok(isValidHashValue(-.00000000001), 'hash -0.00000000001 is valid!');
-        assert.ok(isValidHashValue(-.0000000000001), 'hash -0.0000000000001 is valid!');
-        assert.ok(isValidHashValue(-.000000000000001), 'hash -0.000000000000001 is valid!');
-        assert.ok(isValidHashValue(-.00000000000000001), 'hash -0.00000000000000001 is valid!');
-        assert.ok(isValidHashValue(-.0000000000000000001), 'hash -0.0000000000000000001 is valid!');
+        assert.ok(isValidHashValue(mx.hash(.1)), 'hash 0.1 is valid!');
+        assert.ok(isValidHashValue(mx.hash(.001)), 'hash 0.001 is valid!');
+        assert.ok(isValidHashValue(mx.hash(.00001)), 'hash 0.00001 is valid!');
+        assert.ok(isValidHashValue(mx.hash(.0000001)), 'hash 0.0000001 is valid!');
+        assert.ok(isValidHashValue(mx.hash(.000000001)), 'hash 0.000000001 is valid!');
+        assert.ok(isValidHashValue(mx.hash(.00000000001)), 'hash 0.00000000001 is valid!');
+        assert.ok(isValidHashValue(mx.hash(.0000000000001)), 'hash 0.0000000000001 is valid!');
+        assert.ok(isValidHashValue(mx.hash(.000000000000001)), 'hash 0.000000000000001 is valid!');
+        assert.ok(isValidHashValue(mx.hash(.00000000000000001)), 'hash 0.00000000000000001 is valid!');
+        assert.ok(isValidHashValue(mx.hash(.0000000000000000001)), 'hash 0.0000000000000000001 is valid!');
+        assert.ok(isValidHashValue(mx.hash(-.1)), 'hash -0.1 is valid!');
+        assert.ok(isValidHashValue(mx.hash(-.001)), 'hash -0.001 is valid!');
+        assert.ok(isValidHashValue(mx.hash(-.00001)), 'hash -0.00001 is valid!');
+        assert.ok(isValidHashValue(mx.hash(-.0000001)), 'hash -0.0000001 is valid!');
+        assert.ok(isValidHashValue(mx.hash(-.000000001)), 'hash -0.000000001 is valid!');
+        assert.ok(isValidHashValue(mx.hash(-.00000000001)), 'hash -0.00000000001 is valid!');
+        assert.ok(isValidHashValue(mx.hash(-.0000000000001)), 'hash -0.0000000000001 is valid!');
+        assert.ok(isValidHashValue(mx.hash(-.000000000000001)), 'hash -0.000000000000001 is valid!');
+        assert.ok(isValidHashValue(mx.hash(-.00000000000000001)), 'hash -0.00000000000000001 is valid!');
+        assert.ok(isValidHashValue(mx.hash(-.0000000000000000001)), 'hash -0.0000000000000000001 is valid!');
 
-        assert.ok(isValidHashValue(1, 2, 3, 4, 5, 6, 7, 8, 9), 'hash multiple int values!');
-        assert.ok(isValidHashValue(0X7FFFFF, 0X7FFFFF, 0X7FFFFF, 0X7FFFFF), 'hash multiple big int values!');
-        assert.ok(isValidHashValue(.1, .2, .3, .4, .5, .6, .7, .8, .9), 'hash multiple float values!');
-        assert.ok(isValidHashValue(0X7FFFFF + .1, 0X7FFFFF + .2, 0X7FFFFF + .3, 0X7FFFFF + .4), 'hash multiple big float values!');
+        assert.ok(isValidHashValue(mx.hash(1, 2, 3, 4, 5, 6, 7, 8, 9)), 'hash multiple int values!');
+        assert.ok(isValidHashValue(mx.hash(0X7FFFFF, 0X7FFFFF, 0X7FFFFF, 0X7FFFFF)), 'hash multiple big int values!');
+        assert.ok(isValidHashValue(mx.hash(.1, .2, .3, .4, .5, .6, .7, .8, .9)), 'hash multiple float values!');
+        assert.ok(isValidHashValue(mx.hash(0X7FFFFF + .1, 0X7FFFFF + .2, 0X7FFFFF + .3, 0X7FFFFF + .4)), 'hash multiple big float values!');
 
 
         assert.equal(mx.hash(0b10), 2, 'hash binary value 0b10!');

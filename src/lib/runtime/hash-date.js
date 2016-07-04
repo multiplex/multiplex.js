@@ -1,4 +1,4 @@
-export default function compute31BitDateHash(obj) {
-    let _time = obj.getTime();
+export default function compute31BitDateHash(val) {
+    let _time = val.getTime();
     return _time ^ (_time >> 5);
 }

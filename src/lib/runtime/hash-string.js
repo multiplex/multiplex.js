@@ -1,10 +1,10 @@
-export default function compute31BitStringHash(obj) {
+export default function compute31BitStringHash(val) {
     let _hash = 0X7FFF,         // string hash seed
-        _len = obj.length,
+        _len = val.length,
         _i = 0;
 
     for (; _i < _len;) {
-        _hash = ((((_hash << 5) - _hash) | 0) + obj.charCodeAt(_i++)) | 0;
+        _hash = ((((_hash << 5) - _hash) | 0) + val.charCodeAt(_i++)) | 0;
     }
 
     return _hash >> 32;
