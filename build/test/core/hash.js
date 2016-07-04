@@ -21,9 +21,10 @@
     qtest('basic hash', function (assert) {
         assert.equal(mx.hash(), 0, 'hash method without arguments!');
         assert.equal(mx.hash(null), 0, 'hash null is zero!');
-        assert.notEqual(mx.hash(null, null), 0, 'hash multiple null values is not zero!');
         assert.equal(mx.hash(undefined), 0, 'hash undefined is zero!');
+        assert.notEqual(mx.hash(null, null), 0, 'hash multiple null values is not zero!');
         assert.notEqual(mx.hash(undefined, undefined), 0, 'hash multiple undefined values is not zero!');
+        assert.ok(mx.hash(null) === 0 && mx.hash(undefined) === 0 && mx.hash(0) === 0, 'null, undefined and zero yield to zero!');
     });
 
     qtest('numeric hash', function (assert) {
@@ -100,6 +101,35 @@
         assert.equal(mx.hash(0b10), 2, 'hash binary value 0b10!');
         assert.equal(mx.hash(0o10), 8, 'hash octal value 0o10!');
         assert.equal(mx.hash(0x10), 16, 'hash hex value 0x10!');
+    });
+
+
+    qtest('string hash', function (assert) {
+        assert.equal(mx.hash(''), mx.hash(''), 'hash empty string!');
+        assert.equal(mx.hash('Hello World!'), mx.hash('Hello World!'), 'hash "Hello World!" string!');
+        assert.notEqual(mx.hash('hello world!'), mx.hash('Hello World!'), 'hash "Hello World!" is not equal to "hello world"!');
+        assert.notEqual(mx.hash('0'), mx.hash(0), 'hash "0" is not equal to 0');
+        assert.notEqual(mx.hash('1'), mx.hash(1), 'hash string "1" is not equal to 1');
+
+        assert.ok(isValidHashValue(mx.hash('this is a test')), 'valid simple text');
+        assert.ok(isValidHashValue(mx.hash('A', 'B', 'C', 'D', 'E')), 'Combinne string hash codes');
+        assert.ok(isValidHashValue(mx.hash(mx.hash(new Array(10000).join('A')))), 'valid hash for a very long string!');
+        assert.ok(isValidHashValue(mx.hash(new Array(10000).join('A'), new Array(10000).join('B'))), 'Combinne string hash codes for a big array');
+    });
+
+
+    qtest('date hash', function (assert) {
+        assert.equal(mx.hash(new Date(2016, 6, 4)), mx.hash(new Date(2016, 6, 4)), 'hash exact dates are equal!');
+        assert.equal(mx.hash(new Date(2116, 6, 4)), mx.hash(new Date(2116, 6, 4)), 'hash 100 years from now!');
+        assert.equal(mx.hash(new Date(3016, 6, 4)), mx.hash(new Date(3016, 6, 4)), 'hash 1000 years from now!');
+        assert.equal(mx.hash(new Date(1016, 6, 4)), mx.hash(new Date(1016, 6, 4)), 'hash 1000 years before!');
+        assert.equal(mx.hash(new Date(100, 6, 4)), mx.hash(new Date(100, 6, 4)), 'hash 2300 years before!');
+
+        assert.ok(isValidHashValue(mx.hash(new Date(2016, 6, 4))), 'valid hash now');
+        assert.ok(isValidHashValue(mx.hash(new Date(2116, 6, 4))), 'valid hash 100 years from now!');
+        assert.ok(isValidHashValue(mx.hash(new Date(3016, 6, 4))), 'valid hash 1000 years from now!');
+        assert.ok(isValidHashValue(mx.hash(new Date(1016, 6, 4))), 'valid hash 1000 years before!');
+        assert.ok(isValidHashValue(mx.hash(new Date(100, 6, 4))), 'valid hash 2300 years before!');
     });
 
 }));
