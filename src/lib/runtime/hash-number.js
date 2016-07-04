@@ -7,7 +7,7 @@ export default function compute31BitNumberHash(val) {
     var _hash = 0;
 
     // integer number
-    if (val < MAX_SAFE_INTEGER && val > MIN_SAFE_INTEGER && val % 1 === 0) {
+    if (val <= MAX_SAFE_INTEGER && val >= MIN_SAFE_INTEGER && val % 1 === 0) {
         return val >> 32;
     }
 

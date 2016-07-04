@@ -30,6 +30,7 @@ if (typeof WeakMap === 'function') {
             }
 
             __objectHashMap.set(val, _hash);
+            return _hash;
         }
     };
 }
