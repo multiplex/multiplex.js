@@ -7,5 +7,5 @@ export default function compute31BitStringHash(obj) {
         _hash = ((((_hash << 5) - _hash) | 0) + obj.charCodeAt(_i++)) | 0;
     }
 
-    return _hash & 0X7FFFFFFF;
+    return _hash >> 32;
 }

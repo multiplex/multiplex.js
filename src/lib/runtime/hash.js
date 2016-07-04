@@ -1,9 +1,8 @@
 import hashSymbol from './hash-symbol';
-import compute31BitDateHash from './hash-date';
 import compute31BitNumberHash from './hash-number';
 import compute31BitStringHash from './hash-string';
+import compute31BitDateHash from './hash-date';
 import compute31BitObjecHash from './hash-object';
-
 
 /**
 * Serves as a hash function for a particular type, suitable for use in hashing algorithms and data structures such as a hash table.
@@ -47,7 +46,7 @@ export default function hash(obj) {
 
         // Compute overriden 'hash' method
         else if (typeof obj[hashSymbol] === 'function') {
-            _hash = obj[hashSymbol]();
+            _hash = obj[hashSymbol]() >> 32;
         }
 
         // Compute 'Object' type hash for all other types
@@ -64,7 +63,7 @@ export default function hash(obj) {
 
         while (_i < _len) {
             // Josh Bloch hash method to combine 2 hash
-            _hash = (17 * 31 + _hash) * 31 + hash(arguments[_i++]);
+            _hash = ((17 * 31 + _hash) * 31 + hash(arguments[_i++])) >> 32;
         }
     }
 

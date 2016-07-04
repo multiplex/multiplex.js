@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (July 03, 2016)
+* Version 2.0.0 (July 04, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under Apache License Version 2.0
@@ -165,25 +165,23 @@
 
     var hashSymbol = (typeof Symbol === 'function' && typeof Symbol('hash') === 'symbol') ? Symbol('hash') : '__hash__';
 
-    function compute31BitDateHash(obj) {
-        var _time = obj.getTime();
-        return _time ^ (_time >> 5);
-    }
+    var POSITIVE_INFINITY = Number.POSITIVE_INFINITY || Infinity;
+    var NEGATIVE_INFINITY = Number.NEGATIVE_INFINITY || -Infinity;
+    var MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER || 0x1FFFFFFFFFFFFF;
+    var MIN_SAFE_INTEGER = Number.MIN_SAFE_INTEGER || -0x1FFFFFFFFFFFFF;
 
     function compute31BitNumberHash(obj) {
         var _hash = 0;
 
         // integer number
-        if (obj % 1 === 0) {
+        if (obj < MAX_SAFE_INTEGER && obj > MIN_SAFE_INTEGER && obj % 1 === 0) {
             return obj >> 32;
         }
 
-        // floating numbers
+        // non-integer numbers
         switch (obj) {
-            case Number.POSITIVE_INFINITY: _hash = 0x7F800000; break;
-            case Number.NEGATIVE_INFINITY: _hash = 0xFF800000; break;
-            case +0.0: _hash = 0x40000000; break;
-            case -0.0: _hash = 0xC0000000; break;
+            case POSITIVE_INFINITY: _hash = 0x7F800000; break;
+            case NEGATIVE_INFINITY: _hash = 0xFF800000; break;
             default:
 
                 if (obj <= -0.0) {
@@ -209,7 +207,7 @@
                 break;
         }
 
-        return _hash & 0X7FFFFFFF;
+        return _hash >> 32;
     }
 
     function compute31BitStringHash(obj) {
@@ -221,7 +219,12 @@
             _hash = ((((_hash << 5) - _hash) | 0) + obj.charCodeAt(_i++)) | 0;
         }
 
-        return _hash & 0X7FFFFFFF;
+        return _hash >> 32;
+    }
+
+    function compute31BitDateHash(obj) {
+        var _time = obj.getTime();
+        return _time ^ (_time >> 5);
     }
 
     var getPrototypeOf = Object.getPrototypeOf || function (obj) {
@@ -251,10 +254,10 @@
 
                     for (var _p in obj) {
                         // Josh Bloch hash method
-                        _hash = (17 * 31 + _hash) * 31 + compute31BitStringHash(_p) + hash(obj[_p]);
+                        _hash = ((17 * 31 + _hash) * 31 + compute31BitStringHash(_p) + hash(obj[_p])) >> 32;
                     }
 
-                    _hash = _hash & 0X7FFFFFFF;
+                    _hash = _hash;
                 }
                 else {
                     _hash = __objetHashIndex++ >> 32;
@@ -284,10 +287,8 @@
                         }
 
                         // Josh Bloch hash method
-                        _hash = (17 * 31 + _hash) * 31 + compute31BitStringHash(_p) + hash(obj[_p]);
+                        _hash = ((17 * 31 + _hash) * 31 + compute31BitStringHash(_p) + hash(obj[_p])) >> 32;
                     }
-
-                    _hash = _hash & 0X7FFFFFFF;
                 }
                 else {
                     _hash = __objetHashIndex++ >> 32;
@@ -340,7 +341,7 @@
 
             // Compute overriden 'hash' method
             else if (typeof obj[hashSymbol] === 'function') {
-                _hash = obj[hashSymbol]();
+                _hash = obj[hashSymbol]() >> 32;
             }
 
             // Compute 'Object' type hash for all other types
@@ -357,7 +358,7 @@
 
             while (_i < _len) {
                 // Josh Bloch hash method to combine 2 hash
-                _hash = (17 * 31 + _hash) * 31 + hash(arguments[_i++]);
+                _hash = ((17 * 31 + _hash) * 31 + hash(arguments[_i++])) >> 32;
             }
         }
 
