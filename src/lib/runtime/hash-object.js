@@ -19,10 +19,8 @@ export default function compute31BitObjecHash(obj) {
 
             for (let _p in obj) {
                 // Josh Bloch hash method
-                _hash = (17 * 31 + _hash) * 31 + compute31BitStringHash(_p) + hash(obj[_p]);
+                _hash = ((17 * 31 + _hash) * 31 + compute31BitStringHash(_p) + hash(obj[_p])) >> 32;
             }
-
-            _hash = _hash & 0X7FFFFFFF;
         }
         else {
             _hash = __objetHashIndex++ >> 32;
