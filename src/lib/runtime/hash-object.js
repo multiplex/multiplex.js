@@ -10,50 +10,50 @@ var compute31BitObjecHash;
 if (typeof WeakMap === 'function') {
     var __objectHashMap = new WeakMap();
 
-    compute31BitObjecHash = function (obj) {
-        var _hash = __objectHashMap.get(obj);
+    compute31BitObjecHash = function (val) {
+        var _hash = __objectHashMap.get(val);
 
         if (_hash == null) {
-            if (isObjectLiteral(obj)) {
+            if (isObjectLiteral(val)) {
                 _hash = __objectHashSeed;
-                __objectHashMap.set(obj, 0);           // prevents recursion
+                __objectHashMap.set(val, 0);           // prevents recursion
 
                 // only object literals fall into following code, no need to check for hasOwnProperty
 
-                for (var _p in obj) {
+                for (var _p in val) {
                     // Josh Bloch hash method
-                    _hash = ((17 * 31 + _hash) * 31 + compute31BitStringHash(_p) + hash(obj[_p])) >> 32;
+                    _hash = ((17 * 31 + _hash) * 31 + compute31BitStringHash(_p) + hash(val[_p])) >> 32;
                 }
             }
             else {
                 _hash = __objetHashIndex++ >> 32;
             }
 
-            __objectHashMap.set(obj, _hash);
+            __objectHashMap.set(val, _hash);
         }
     };
 }
 else {
-    compute31BitObjecHash = function (obj) {
+    compute31BitObjecHash = function (val) {
         var _hash = 0;
 
-        if (typeof obj[hashSymbol] !== 'function') {
-            obj[hashSymbol] = function () {            // prevents recursion
+        if (typeof val[hashSymbol] !== 'function') {
+            val[hashSymbol] = function () {            // prevents recursion
                 return _hash;
             };
 
-            if (isObjectLiteral(obj)) {
+            if (isObjectLiteral(val)) {
                 _hash = __objectHashSeed;
 
                 // only object literals fall into following code, no need to check for hasOwnProperty
 
-                for (var _p in obj) {
+                for (var _p in val) {
                     if (_p === hashSymbol) {
                         continue;
                     }
 
                     // Josh Bloch hash method
-                    _hash = ((17 * 31 + _hash) * 31 + compute31BitStringHash(_p) + hash(obj[_p])) >> 32;
+                    _hash = ((17 * 31 + _hash) * 31 + compute31BitStringHash(_p) + hash(val[_p])) >> 32;
                 }
             }
             else {

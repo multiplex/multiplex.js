@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (July 04, 2016)
+* Version 2.0.0 (July 05, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under Apache License Version 2.0
@@ -170,27 +170,27 @@
     var MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER || 0x1FFFFFFFFFFFFF;
     var MIN_SAFE_INTEGER = Number.MIN_SAFE_INTEGER || -0x1FFFFFFFFFFFFF;
 
-    function compute31BitNumberHash(obj) {
+    function compute31BitNumberHash(val) {
         var _hash = 0;
 
         // integer number
-        if (obj < MAX_SAFE_INTEGER && obj > MIN_SAFE_INTEGER && obj % 1 === 0) {
-            return obj >> 32;
+        if (val < MAX_SAFE_INTEGER && val > MIN_SAFE_INTEGER && val % 1 === 0) {
+            return val >> 32;
         }
 
         // non-integer numbers
-        switch (obj) {
+        switch (val) {
             case POSITIVE_INFINITY: _hash = 0x7F800000; break;
             case NEGATIVE_INFINITY: _hash = 0xFF800000; break;
             default:
 
-                if (obj <= -0.0) {
+                if (val <= -0.0) {
                     _hash = 0x80000000;
-                    obj = -obj;
+                    val = -val;
                 }
 
-                var _exponent = Math.floor(Math.log(obj) / Math.log(2)),
-                    _significand = ((obj / Math.pow(2, _exponent)) * 0x00800000) | 0;
+                var _exponent = Math.floor(Math.log(val) / Math.log(2)),
+                    _significand = ((val / Math.pow(2, _exponent)) * 0x00800000) | 0;
 
                 _exponent += 127;
 
@@ -210,20 +210,20 @@
         return _hash >> 32;
     }
 
-    function compute31BitStringHash(obj) {
+    function compute31BitStringHash(val) {
         var _hash = 0X7FFF,         // string hash seed
-            _len = obj.length,
+            _len = val.length,
             _i = 0;
 
         for (; _i < _len;) {
-            _hash = ((((_hash << 5) - _hash) | 0) + obj.charCodeAt(_i++)) | 0;
+            _hash = ((((_hash << 5) - _hash) | 0) + val.charCodeAt(_i++)) | 0;
         }
 
         return _hash >> 32;
     }
 
-    function compute31BitDateHash(obj) {
-        var _time = obj.getTime();
+    function compute31BitDateHash(val) {
+        var _time = val.getTime();
         return _time ^ (_time >> 5);
     }
 
@@ -242,52 +242,50 @@
     if (typeof WeakMap === 'function') {
         var __objectHashMap = new WeakMap();
 
-        compute31BitObjecHash = function (obj) {
-            var _hash = __objectHashMap.get(obj);
+        compute31BitObjecHash = function (val) {
+            var _hash = __objectHashMap.get(val);
 
             if (_hash == null) {
-                if (isObjectLiteral(obj)) {
+                if (isObjectLiteral(val)) {
                     _hash = __objectHashSeed;
-                    __objectHashMap.set(obj, 0);           // prevents recursion
+                    __objectHashMap.set(val, 0);           // prevents recursion
 
                     // only object literals fall into following code, no need to check for hasOwnProperty
 
-                    for (var _p in obj) {
+                    for (var _p in val) {
                         // Josh Bloch hash method
-                        _hash = ((17 * 31 + _hash) * 31 + compute31BitStringHash(_p) + hash(obj[_p])) >> 32;
+                        _hash = ((17 * 31 + _hash) * 31 + compute31BitStringHash(_p) + hash(val[_p])) >> 32;
                     }
-
-                    _hash = _hash;
                 }
                 else {
                     _hash = __objetHashIndex++ >> 32;
                 }
 
-                __objectHashMap.set(obj, _hash);
+                __objectHashMap.set(val, _hash);
             }
         };
     }
     else {
-        compute31BitObjecHash = function (obj) {
+        compute31BitObjecHash = function (val) {
             var _hash = 0;
 
-            if (typeof obj[hashSymbol] !== 'function') {
-                obj[hashSymbol] = function () {            // prevents recursion
+            if (typeof val[hashSymbol] !== 'function') {
+                val[hashSymbol] = function () {            // prevents recursion
                     return _hash;
                 };
 
-                if (isObjectLiteral(obj)) {
+                if (isObjectLiteral(val)) {
                     _hash = __objectHashSeed;
 
                     // only object literals fall into following code, no need to check for hasOwnProperty
 
-                    for (var _p in obj) {
+                    for (var _p in val) {
                         if (_p === hashSymbol) {
                             continue;
                         }
 
                         // Josh Bloch hash method
-                        _hash = ((17 * 31 + _hash) * 31 + compute31BitStringHash(_p) + hash(obj[_p])) >> 32;
+                        _hash = ((17 * 31 + _hash) * 31 + compute31BitStringHash(_p) + hash(val[_p])) >> 32;
                     }
                 }
                 else {
