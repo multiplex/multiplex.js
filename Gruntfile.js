@@ -23,7 +23,7 @@ module.exports = function (grunt) {
             '* Version ' + pkg.version + ' (' + grunt.template.today('mmmm dd, yyyy') + ')',
             '',
             '* Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>',
-            '* Licensed under Apache License Version 2.0',
+            '* Licensed under MIT License',
             '* ' + pkg.homepage,
             '*/',
             ''
