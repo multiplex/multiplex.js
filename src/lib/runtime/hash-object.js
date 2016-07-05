@@ -1,4 +1,5 @@
 import hash from './hash';
+import combineHash from './hash-combine';
 import compute31BitStringHash from './hash-string';
 import isObjectLiteral from '../utils/is-object-literal';
 
@@ -18,8 +19,7 @@ export default function compute31BitObjecHash(val) {
             // only object literals fall into following code, no need to check for hasOwnProperty
 
             for (let _p in val) {
-                // Josh Bloch hash method
-                _hash = ((17 * 31 + _hash) * 31 + compute31BitStringHash(_p) + hash(val[_p])) >> 32;
+                _hash = combineHash(_hash, compute31BitStringHash(_p) + hash(val[_p]));
             }
         }
         else {
