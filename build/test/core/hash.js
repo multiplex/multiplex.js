@@ -22,17 +22,20 @@
         assert.equal(mx.hash(), 0, 'hash method without arguments!');
         assert.equal(mx.hash(null), 0, 'hash null is zero!');
         assert.equal(mx.hash(undefined), 0, 'hash undefined is zero!');
-        assert.notEqual(mx.hash(null, null), 0, 'hash multiple null values is not zero!');
-        assert.notEqual(mx.hash(undefined, undefined), 0, 'hash multiple undefined values is not zero!');
-        assert.ok(mx.hash(null) === 0 && mx.hash(undefined) === 0 && mx.hash(0) === 0, 'null, undefined and zero yield to zero!');
     });
+
+
+    qtest('boolean hash', function (assert) {
+        assert.equal(mx.hash(true), 1, 'hash true is 1!');
+        assert.equal(mx.hash(false), 0, 'hash false is 0!');
+    });
+
 
     qtest('numeric hash', function (assert) {
         assert.equal(mx.hash(NaN), 0, 'hash NaN is zero!');
 
         assert.equal(mx.hash(0), 0, 'hash 0 is 0!');
         assert.equal(mx.hash(-0), 0, 'hash -0 is 0!');
-        assert.notEqual(mx.hash(0, 0), 0, 'hash multiple zero values is not zero!');
 
         assert.equal(mx.hash(1), 1, 'hash 1 is 1!');
         assert.equal(mx.hash(2), 2, 'hash 2 is 2!');

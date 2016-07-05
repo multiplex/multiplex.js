@@ -1,4 +1,5 @@
 import hashSymbol from './hash-symbol';
+import combineHash from './hash-combine';
 import compute31BitNumberHash from './hash-number';
 import compute31BitStringHash from './hash-string';
 import compute31BitDateHash from './hash-date';
@@ -62,8 +63,7 @@ export default function hash(obj) {
             _i = 1;
 
         while (_i < _len) {
-            // Josh Bloch hash method to combine 2 hash
-            _hash = ((17 * 31 + _hash) * 31 + hash(arguments[_i++])) >> 32;
+            _hash = combineHash(_hash, hash(arguments[_i++]));
         }
     }
 

@@ -1,5 +1,6 @@
 import hash from './hash';
 import hashSymbol from './hash-symbol';
+import combineHash from './hash-combine';
 import compute31BitStringHash from './hash-string';
 import isObjectLiteral from '../utils/is-object-literal';
 
@@ -21,8 +22,7 @@ if (typeof WeakMap === 'function') {
                 // only object literals fall into following code, no need to check for hasOwnProperty
 
                 for (var _p in val) {
-                    // Josh Bloch hash method
-                    _hash = ((17 * 31 + _hash) * 31 + compute31BitStringHash(_p) + hash(val[_p])) >> 32;
+                    _hash = combineHash(_hash, compute31BitStringHash(_p) + hash(val[_p]));
                 }
             }
             else {
@@ -53,8 +53,7 @@ else {
                         continue;
                     }
 
-                    // Josh Bloch hash method
-                    _hash = ((17 * 31 + _hash) * 31 + compute31BitStringHash(_p) + hash(val[_p])) >> 32;
+                    _hash = combineHash(_hash, compute31BitStringHash(_p) + hash(val[_p]));
                 }
             }
             else {

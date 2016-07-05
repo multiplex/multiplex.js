@@ -165,6 +165,11 @@
 
     var hashSymbol = (typeof Symbol === 'function' && typeof Symbol('hash') === 'symbol') ? Symbol('hash') : '__hash__';
 
+    function combineHash(h1, h2) {
+        return ((h1 << 7) | (h1 >> 25)) ^ h2;
+        //return ((17 * 31 + h1) * 31 + h2) >> 32;
+    }
+
     var POSITIVE_INFINITY = Number.POSITIVE_INFINITY || Infinity;
     var NEGATIVE_INFINITY = Number.NEGATIVE_INFINITY || -Infinity;
     var MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER || 0x1FFFFFFFFFFFFF;
@@ -174,7 +179,7 @@
         var _hash = 0;
 
         // integer number
-        if (val < MAX_SAFE_INTEGER && val > MIN_SAFE_INTEGER && val % 1 === 0) {
+        if (val <= MAX_SAFE_INTEGER && val >= MIN_SAFE_INTEGER && val % 1 === 0) {
             return val >> 32;
         }
 
@@ -253,8 +258,7 @@
                     // only object literals fall into following code, no need to check for hasOwnProperty
 
                     for (var _p in val) {
-                        // Josh Bloch hash method
-                        _hash = ((17 * 31 + _hash) * 31 + compute31BitStringHash(_p) + hash(val[_p])) >> 32;
+                        _hash = combineHash(_hash, compute31BitStringHash(_p) + hash(val[_p]));
                     }
                 }
                 else {
@@ -262,6 +266,7 @@
                 }
 
                 __objectHashMap.set(val, _hash);
+                return _hash;
             }
         };
     }
@@ -284,8 +289,7 @@
                             continue;
                         }
 
-                        // Josh Bloch hash method
-                        _hash = ((17 * 31 + _hash) * 31 + compute31BitStringHash(_p) + hash(val[_p])) >> 32;
+                        _hash = combineHash(_hash, compute31BitStringHash(_p) + hash(val[_p]));
                     }
                 }
                 else {
@@ -355,8 +359,7 @@
                 _i = 1;
 
             while (_i < _len) {
-                // Josh Bloch hash method to combine 2 hash
-                _hash = ((17 * 31 + _hash) * 31 + hash(arguments[_i++])) >> 32;
+                _hash = combineHash(_hash, hash(arguments[_i++]));
             }
         }
 
