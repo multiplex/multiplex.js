@@ -16,7 +16,7 @@ export default function hash(obj, ...rest) {
     let _hash;
 
     // null/undefined hash is 0
-    if (obj == null) {
+    if (obj === null || obj === undefined) {
         _hash = 0;
     }
 

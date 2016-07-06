@@ -1,9 +1,9 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (July 05, 2016)
+* Version 2.0.0 (July 07, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
-* Licensed under Apache License Version 2.0
+* Licensed under MIT License
 * https://github.com/multiplex/multiplex.js
 */
 
@@ -279,7 +279,7 @@
         let _hash;
 
         // null/undefined hash is 0
-        if (obj == null) {
+        if (obj === null || obj === undefined) {
             _hash = 0;
         }
 

@@ -114,15 +114,85 @@ qtest('string hash', function (assert) {
 
 
 qtest('date hash', function (assert) {
-    assert.equal(mx.hash(new Date(2016, 6, 4)), mx.hash(new Date(2016, 6, 4)), 'hash exact dates are equal!');
-    assert.equal(mx.hash(new Date(2116, 6, 4)), mx.hash(new Date(2116, 6, 4)), 'hash 100 years from now!');
-    assert.equal(mx.hash(new Date(3016, 6, 4)), mx.hash(new Date(3016, 6, 4)), 'hash 1000 years from now!');
-    assert.equal(mx.hash(new Date(1016, 6, 4)), mx.hash(new Date(1016, 6, 4)), 'hash 1000 years before!');
-    assert.equal(mx.hash(new Date(100, 6, 4)), mx.hash(new Date(100, 6, 4)), 'hash 2300 years before!');
+    assert.equal(mx.hash(new Date(2016, 1, 1)), mx.hash(new Date(2016, 1, 1)), 'hash exact dates are equal!');
+    assert.equal(mx.hash(new Date(2116, 1, 1)), mx.hash(new Date(2116, 1, 1)), 'hash 100 years from now!');
+    assert.equal(mx.hash(new Date(3016, 1, 1)), mx.hash(new Date(3016, 1, 1)), 'hash 1000 years from now!');
+    assert.equal(mx.hash(new Date(1016, 1, 1)), mx.hash(new Date(1016, 1, 1)), 'hash 1000 years before!');
+    assert.equal(mx.hash(new Date(100, 1, 1)), mx.hash(new Date(100, 1, 1)), 'hash 1900 years before!');
 
-    assert.ok(isValidHashValue(mx.hash(new Date(2016, 6, 4))), 'valid hash now');
-    assert.ok(isValidHashValue(mx.hash(new Date(2116, 6, 4))), 'valid hash 100 years from now!');
-    assert.ok(isValidHashValue(mx.hash(new Date(3016, 6, 4))), 'valid hash 1000 years from now!');
-    assert.ok(isValidHashValue(mx.hash(new Date(1016, 6, 4))), 'valid hash 1000 years before!');
-    assert.ok(isValidHashValue(mx.hash(new Date(100, 6, 4))), 'valid hash 2300 years before!');
+    assert.ok(isValidHashValue(mx.hash(new Date(2016, 1, 1))), 'valid hash now');
+    assert.ok(isValidHashValue(mx.hash(new Date(2116, 1, 1))), 'valid hash 100 years from now!');
+    assert.ok(isValidHashValue(mx.hash(new Date(3016, 1, 1))), 'valid hash 1000 years from now!');
+    assert.ok(isValidHashValue(mx.hash(new Date(1016, 1, 1))), 'valid hash 1000 years before!');
+    assert.ok(isValidHashValue(mx.hash(new Date(100, 1, 1))), 'valid hash 1900 years before!');
+});
+
+
+qtest('class types hash', function (assert) {
+    function SimpleClass(val) {
+        this._val = val;
+    };
+
+    function SimpleClassWithHash(val) {
+        this._val = val;
+
+        this[mx.hashSymbol] = function () {
+            return mx.hash(this._val);
+        }
+    };
+
+    var obj1 = new SimpleClass(1),
+        obj2 = new SimpleClassWithHash(1),
+        arr = [1],
+        fun = function () { },
+        err = new Error();
+
+    assert.ok(isValidHashValue(mx.hash(obj1)), 'valid hash class instance');
+    assert.equal(mx.hash(obj1), mx.hash(obj1), 'hash code for class instance is constant!');
+    assert.notEqual(mx.hash(obj1), mx.hash(new SimpleClass(1)), 'hash code for different class instances are different!');
+
+    assert.ok(isValidHashValue(mx.hash(obj2)), 'valid hash class instance overriding hash method');
+    assert.equal(mx.hash(obj2), mx.hash(obj2), 'hash code for class instance overriding hash method is constant!');
+    assert.equal(mx.hash(obj2), mx.hash(new SimpleClassWithHash(1)), 'hash code for different class instances overriding hash method are equal!');
+
+
+    assert.ok(isValidHashValue(mx.hash(arr)), 'valid hash Array instance');
+    assert.equal(mx.hash(arr), mx.hash(arr), 'hash code for Array instance is constant!');
+    assert.notEqual(mx.hash(arr), mx.hash([1]), 'hash code for different Array instances are different!');
+
+    assert.ok(isValidHashValue(mx.hash(fun)), 'valid hash Function instance');
+    assert.equal(mx.hash(fun), mx.hash(fun), 'hash code for Function instance is constant!');
+    assert.notEqual(mx.hash(fun), mx.hash(function () { }), 'hash code for different Function instances are different!');
+
+    assert.ok(isValidHashValue(mx.hash(err)), 'valid hash Error instance');
+    assert.equal(mx.hash(err), mx.hash(err), 'hash code for Error instance is constant!');
+    assert.notEqual(mx.hash(err), mx.hash(new Error()), 'hash code for different Error instances are different!');
+});
+
+
+qtest('class object literal hash', function (assert) {
+    assert.ok(isValidHashValue(mx.hash({})), 'valid hash object literal');
+    assert.equal(mx.hash({}), mx.hash({}), 'hash code for empty equal object literals is equal!');
+    assert.equal(mx.hash({ val: 1 }), mx.hash({ val: 1 }), 'hash code for equal object literals is equal!');
+    assert.equal(mx.hash({ val: 1, sub: { val: 2, sum: { val: 3 } } }), mx.hash({ val: 1, sub: { val: 2, sum: { val: 3 } } }), 'hash code for equal complex object literals is equal!');
+    assert.notEqual(mx.hash({ method: function () { } }), mx.hash({ method: function () { } }), 'object literal hash method does include methods!');
+
+    assert.notEqual(mx.hash({ val: 1 }), mx.hash({ val: 2 }), 'hash code for non equal object literals is not equal!');
+    assert.notEqual(mx.hash({ val: 1, sub: { val: 2, sum: { val: 3 } } }), mx.hash({ val: 1, sub: { val: 2, sum: { val: 4 } } }), 'hash code for non equal complex object literals is not equal!');
+
+    var o1 = {};
+    o1.prop = o1;
+    assert.ok(isValidHashValue(mx.hash(o1)), 'hash code for object literals with circular reference');
+
+    var o2 = { val: 1 };
+    var o3 = { val: 1 };
+    Object.defineProperty(o2, 'name', { value: 'o2', enumerable: false });
+    Object.defineProperty(o3, 'name', { value: 'o3', enumerable: false });
+    assert.equal(mx.hash(o2), mx.hash(o3), 'object literal hash method does not include non-enumerable properties!');
+
+    o2.Id = 1;
+    o3.Id = 2;
+    assert.equal(mx.hash(o2), mx.hash(o3), 'object literal hash does not change, even if properties change!');
+
+    assert.equal(mx.hash(Object.seal({ val: 1 })), mx.hash(Object.seal({ val: 1 })), 'object literal hash does works for frozen objects!');
 });
