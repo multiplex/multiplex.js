@@ -178,7 +178,7 @@
     });
 
 
-    qtest('class object literal hash', function (assert) {
+    qtest('object literal hash', function (assert) {
         assert.ok(isValidHashValue(mx.hash({})), 'valid hash object literal');
         assert.equal(mx.hash({}), mx.hash({}), 'hash code for empty equal object literals is equal!');
         assert.equal(mx.hash({ val: 1 }), mx.hash({ val: 1 }), 'hash code for equal object literals is equal!');

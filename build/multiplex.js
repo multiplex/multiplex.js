@@ -245,25 +245,25 @@
     let __objetHashIndex = __objectHashSeed;
 
 
-    function compute31BitObjecHash(val) {
-        let _hash = __objectHashMap.get(val);
+    function compute31BitObjecHash(obj) {
+        let _hash = __objectHashMap.get(obj);
 
         if (_hash == null) {
-            if (isObjectLiteral(val)) {
+            if (isObjectLiteral(obj)) {
                 _hash = __objectHashSeed;
-                __objectHashMap.set(val, 0);           // prevents recursion
+                __objectHashMap.set(obj, 0);           // prevents recursion
 
                 // only object literals fall into following code, no need to check for hasOwnProperty
 
-                for (let _p in val) {
-                    _hash = combineHash(_hash, compute31BitStringHash(_p) + hash(val[_p]));
+                for (let _p in obj) {
+                    _hash = combineHash(_hash, compute31BitStringHash(_p) + hash(obj[_p]));
                 }
             }
             else {
                 _hash = __objetHashIndex++ >> 32;
             }
 
-            __objectHashMap.set(val, _hash);
+            __objectHashMap.set(obj, _hash);
         }
 
         return _hash;
