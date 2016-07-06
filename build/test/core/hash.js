@@ -100,9 +100,8 @@
         assert.ok(isValidHashValue(mx.hash(.1, .2, .3, .4, .5, .6, .7, .8, .9)), 'hash multiple float values!');
         assert.ok(isValidHashValue(mx.hash(0X7FFFFF + .1, 0X7FFFFF + .2, 0X7FFFFF + .3, 0X7FFFFF + .4)), 'hash multiple big float values!');
 
-
-        assert.equal(mx.hash(0b10), 2, 'hash binary value 0b10!');
-        assert.equal(mx.hash(0o10), 8, 'hash octal value 0o10!');
+        //assert.equal(mx.hash(0b10), 2, 'hash binary value 0b10!');
+        //assert.equal(mx.hash(0o10), 8, 'hash octal value 0o10!');
         assert.equal(mx.hash(0x10), 16, 'hash hex value 0x10!');
     });
 
@@ -178,7 +177,7 @@
     });
 
 
-    qtest('class object literal hash', function (assert) {
+    qtest('object literal hash', function (assert) {
         assert.ok(isValidHashValue(mx.hash({})), 'valid hash object literal');
         assert.equal(mx.hash({}), mx.hash({}), 'hash code for empty equal object literals is equal!');
         assert.equal(mx.hash({ val: 1 }), mx.hash({ val: 1 }), 'hash code for equal object literals is equal!');
@@ -202,9 +201,7 @@
         o3.Id = 2;
         assert.equal(mx.hash(o2), mx.hash(o3), 'object literal hash does not change, even if properties change!');
 
-        if (Object.seal) {
-            assert.equal(mx.hash(Object.seal({ val: 1 })), mx.hash(Object.seal({ val: 1 })), 'object literal hash does works for frozen objects!');
-        }
+        assert.equal(mx.hash(Object.seal({ val: 1 })), mx.hash(Object.seal({ val: 1 })), 'object literal hash does works for frozen objects!');
     });
 
 }));

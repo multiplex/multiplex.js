@@ -169,7 +169,7 @@ qtest('class types hash', function (assert) {
 });
 
 
-qtest('class object literal hash', function (assert) {
+qtest('object literal hash', function (assert) {
     assert.ok(isValidHashValue(mx.hash({})), 'valid hash object literal');
     assert.equal(mx.hash({}), mx.hash({}), 'hash code for empty equal object literals is equal!');
     assert.equal(mx.hash({ val: 1 }), mx.hash({ val: 1 }), 'hash code for equal object literals is equal!');
@@ -193,7 +193,5 @@ qtest('class object literal hash', function (assert) {
     o3.Id = 2;
     assert.equal(mx.hash(o2), mx.hash(o3), 'object literal hash does not change, even if properties change!');
 
-    if (Object.seal) {
-        assert.equal(mx.hash(Object.seal({ val: 1 })), mx.hash(Object.seal({ val: 1 })), 'object literal hash does works for frozen objects!');
-    }
+    assert.equal(mx.hash(Object.seal({ val: 1 })), mx.hash(Object.seal({ val: 1 })), 'object literal hash does works for frozen objects!');
 });

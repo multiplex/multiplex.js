@@ -232,12 +232,8 @@
         return _time ^ (_time >> 5);
     }
 
-    var getPrototypeOf = Object.getPrototypeOf || function (obj) {
-        return obj.__proto__ == Object.prototype;
-    };
-
     function isObjectLiteral(obj) {
-        return getPrototypeOf(obj) === Object.prototype;
+        return Object.getPrototypeOf(obj) === Object.prototype;
     }
 
     var __objectHashSeed = Math.floor(Math.random() * 0XFFFF) + 0XFFFF;
@@ -247,53 +243,57 @@
     if (typeof WeakMap === 'function') {
         var __objectHashMap = new WeakMap();
 
-        compute31BitObjecHash = function (val) {
-            var _hash = __objectHashMap.get(val);
+        compute31BitObjecHash = function (obj) {
+            var _hash = __objectHashMap.get(obj);
 
             if (_hash == null) {
-                if (isObjectLiteral(val)) {
+                if (isObjectLiteral(obj)) {
                     _hash = __objectHashSeed;
-                    __objectHashMap.set(val, 0);           // prevents recursion
+                    __objectHashMap.set(obj, 0);           // prevents recursion
 
                     // only object literals fall into following code, no need to check for hasOwnProperty
 
-                    for (var _p in val) {
-                        _hash = combineHash(_hash, compute31BitStringHash(_p) + hash(val[_p]));
+                    for (var _p in obj) {
+                        _hash = combineHash(_hash, compute31BitStringHash(_p) + hash(obj[_p]));
                     }
                 }
                 else {
                     _hash = __objetHashIndex++ >> 32;
                 }
 
-                __objectHashMap.set(val, _hash);
+                __objectHashMap.set(obj, _hash);
                 return _hash;
             }
         };
     }
     else {
-        compute31BitObjecHash = function (val) {
+        compute31BitObjecHash = function (obj) {
             var _hash = 0;
 
-            if (typeof val[hashSymbol] !== 'function') {
-                val[hashSymbol] = function () {            // prevents recursion
-                    return _hash;
-                };
+            if (typeof obj[hashSymbol] !== 'function') {
+                var _frozon = Object.isFrozen && Object.isFrozen(obj);
 
-                if (isObjectLiteral(val)) {
+                if (!_frozon) {
+                    obj[hashSymbol] = function () {            // prevents recursion
+                        return _hash;
+                    };
+                }
+
+                if (isObjectLiteral(obj)) {
                     _hash = __objectHashSeed;
 
                     // only object literals fall into following code, no need to check for hasOwnProperty
 
-                    for (var _p in val) {
+                    for (var _p in obj) {
                         if (_p === hashSymbol) {
                             continue;
                         }
 
-                        _hash = combineHash(_hash, compute31BitStringHash(_p) + hash(val[_p]));
+                        _hash = combineHash(_hash, compute31BitStringHash(_p) + hash(obj[_p]));
                     }
                 }
                 else {
-                    _hash = __objetHashIndex++ >> 32;
+                    _hash = _frozon ? __objectHashSeed : __objetHashIndex++ >> 32;
                 }
             }
 
