@@ -2,7 +2,10 @@ module.exports = function (grunt) {
     var path = require('path'),
         dirs = grunt.config('dirs'),
         files = grunt.config('files'),
-        banner = grunt.config('banner');
+        banner = grunt.config('banner'),
+        minfiles = {};
+
+    minfiles[path.join(dirs.release, files.minified)] = [path.join(dirs.release, files.main)];
 
     // minify es5 publish source (es6 minification is not supported)
     // include "banner" in the beginning
@@ -43,9 +46,7 @@ module.exports = function (grunt) {
                 }
             },
             dist: {
-                files: {
-                    [path.join(dirs.release, files.minified)]: [path.join(dirs.release, files.main)]
-                }
+                files: minfiles
             }
         }
     });
