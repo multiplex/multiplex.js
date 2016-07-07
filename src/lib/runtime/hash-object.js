@@ -5,7 +5,7 @@ import isObjectLiteral from '../utils/is-object-literal';
 
 const __objectHashSeed = Math.floor(Math.random() * 0XFFFF) + 0XFFFF;
 const __objectHashMap = new WeakMap();
-let __objetHashIndex = __objectHashSeed;
+let __objectHashIndex = __objectHashSeed;
 
 
 export default function compute31BitObjecHash(obj) {
@@ -22,7 +22,7 @@ export default function compute31BitObjecHash(obj) {
             }
         }
         else {
-            _hash = __objetHashIndex++ >> 32;
+            _hash = __objectHashIndex++ >> 32;
         }
 
         __objectHashMap.set(obj, _hash);
