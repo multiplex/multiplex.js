@@ -11,7 +11,7 @@
     "nocomma": true,
     "notypeof": true,
     "shadow": true,
-    "proto": true,
+    "proto": false,
     "undef": true,
     "unused": true,
     "esnext": true,
