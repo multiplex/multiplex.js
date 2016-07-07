@@ -167,11 +167,14 @@
         return value instanceof Multiplex ? value : new Multiplex(value);
     }
 
+    function value(obj) {
+        return typeof obj.valueOf === 'function' ? obj.valueOf() : 0;
+    }
+
     const hashSymbol =  Symbol('hash');
 
     function combineHash(h1, h2) {
         return ((h1 << 7) | (h1 >> 25)) ^ h2;
-        //return ((17 * 31 + h1) * 31 + h2) >> 32;
     }
 
     const POSITIVE_INFINITY = Number.POSITIVE_INFINITY || Infinity;
@@ -248,13 +251,12 @@
     function compute31BitObjecHash(obj) {
         let _hash = __objectHashMap.get(obj);
 
-        if (_hash == null) {
+        if (_hash === undefined) {
             if (isObjectLiteral(obj)) {
                 _hash = __objectHashSeed;
                 __objectHashMap.set(obj, 0);           // prevents recursion
 
                 // only object literals fall into following code, no need to check for hasOwnProperty
-
                 for (let _p in obj) {
                     _hash = combineHash(_hash, compute31BitStringHash(_p) + hash(obj[_p]));
                 }
@@ -307,6 +309,13 @@
             // Compute 'Date' object type hash
             if (obj instanceof Date) {
                 _hash = compute31BitDateHash(obj);
+            }
+
+            // Compute built-in types hash
+            else if (obj instanceof Number ||
+                obj instanceof String ||
+                obj instanceof Boolean) {
+                _hash = hash(value(obj));
             }
 
             // Compute overriden 'hash' method
