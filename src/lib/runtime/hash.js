@@ -1,3 +1,4 @@
+import value from '../utils/value-of';
 import hashSymbol from './hash-symbol';
 import combineHash from './hash-combine';
 import compute31BitNumberHash from './hash-number';
@@ -43,6 +44,13 @@ export default function hash(obj) {
         // Compute 'Date' object type hash
         if (obj instanceof Date) {
             _hash = compute31BitDateHash(obj);
+        }
+
+        // Compute built-in types hash
+        else if (obj instanceof Number ||
+            obj instanceof String ||
+            obj instanceof Boolean) {
+            _hash = hash(value(obj));
         }
 
         // Compute overriden 'hash' method
