@@ -246,7 +246,7 @@
         compute31BitObjecHash = function (obj) {
             var _hash = __objectHashMap.get(obj);
 
-            if (_hash == null) {
+            if (_hash === undefined) {
                 if (isObjectLiteral(obj)) {
                     _hash = __objectHashSeed;
                     __objectHashMap.set(obj, 0);           // prevents recursion
@@ -269,32 +269,29 @@
     else {
         compute31BitObjecHash = function (obj) {
             var _hash = 0;
+            var _extensible = Object.isExtensible && Object.isExtensible(obj);
 
-            if (typeof obj[hashSymbol] !== 'function') {
-                var _frozon = Object.isFrozen && Object.isFrozen(obj);
+            if (_extensible) {
+                obj[hashSymbol] = function () {            // prevents recursion
+                    return _hash;
+                };
+            }
 
-                if (!_frozon) {
-                    obj[hashSymbol] = function () {            // prevents recursion
-                        return _hash;
-                    };
-                }
+            if (isObjectLiteral(obj)) {
+                _hash = __objectHashSeed;
 
-                if (isObjectLiteral(obj)) {
-                    _hash = __objectHashSeed;
+                // only object literals fall into following code, no need to check for hasOwnProperty
 
-                    // only object literals fall into following code, no need to check for hasOwnProperty
-
-                    for (var _p in obj) {
-                        if (_p === hashSymbol) {
-                            continue;
-                        }
-
-                        _hash = combineHash(_hash, compute31BitStringHash(_p) + hash(obj[_p]));
+                for (var _p in obj) {
+                    if (_p === hashSymbol) {
+                        continue;
                     }
+
+                    _hash = combineHash(_hash, compute31BitStringHash(_p) + hash(obj[_p]));
                 }
-                else {
-                    _hash = _frozon ? __objectHashSeed : __objetHashIndex++ >> 32;
-                }
+            }
+            else {
+                _hash = _extensible ? __objetHashIndex++ >> 32 : __objectHashSeed;
             }
 
             return _hash;
