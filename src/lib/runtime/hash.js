@@ -1,10 +1,10 @@
-import value from '../utils/value-of';
-import hashSymbol from './hash-symbol';
+import valueOf from '../utils/value-of';
 import combineHash from './hash-combine';
 import compute31BitNumberHash from './hash-number';
 import compute31BitStringHash from './hash-string';
 import compute31BitDateHash from './hash-date';
 import compute31BitObjecHash from './hash-object';
+
 
 /**
 * Serves as a hash function for a particular type, suitable for use in hashing algorithms and data structures such as a hash table.
@@ -47,15 +47,16 @@ export default function hash(obj) {
         }
 
         // Compute built-in types hash
-        else if (obj instanceof Number ||
+        else if (
+            obj instanceof Number ||
             obj instanceof String ||
             obj instanceof Boolean) {
-            _hash = hash(value(obj));
+            _hash = hash(valueOf(obj));
         }
 
         // Compute overriden 'hash' method
-        else if (typeof obj[hashSymbol] === 'function') {
-            _hash = obj[hashSymbol]() >> 32;
+        else if (typeof obj.__hash__ === 'function') {
+            _hash = obj.__hash__() >> 32;
         }
 
         // Compute 'Object' type hash for all other types
