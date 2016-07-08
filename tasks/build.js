@@ -1,4 +1,6 @@
 module.exports = function (grunt) {
+    'use strict';
+
     var rollup = require('rollup'),
         path = require('path'),
         dirs = grunt.config('dirs'),

@@ -1,4 +1,6 @@
 module.exports = function (grunt) {
+    'use strict';
+
     grunt.task.registerTask('qtest', 'run all unit tests', function () {
         var done = this.async(),
             dirs = grunt.config('dirs'),

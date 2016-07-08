@@ -1,4 +1,6 @@
 module.exports = function (grunt) {
+    'use strict';
+
     var path = require('path'),
         dirs = grunt.config('dirs'),
         files = grunt.config('files'),

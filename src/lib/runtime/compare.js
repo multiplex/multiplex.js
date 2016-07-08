@@ -13,13 +13,13 @@ export default function compare(objA, objB) {
     }
 
     // null or undefined is less than everything
-    else if (objA == null) {
-        return objB == null ? 0 : -1;
+    else if (objA === null || objA === undefined) {
+        return objB == objA ? 0 : -1;
     }
 
     // Everything is greater than null or undefined
-    else if (objB == null) {
-        return objA == null ? 0 : 1;
+    else if (objB === null || objB === undefined) {
+        return objA == objB ? 0 : 1;
     }
 
     // numbers compare using 'gt' operator
