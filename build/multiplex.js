@@ -496,25 +496,29 @@
         }
 
         // null or undefined is less than everything
-        else if (objA === null || objA === undefined) {
-            return -1;
+        else if (objA == null) {
+            return objB == null ? 0 : -1;
         }
 
         // Everything is greater than null or undefined
-        else if (objB === null || objB === undefined) {
-            return 1;
+        else if (objB == null) {
+            return objA == null ? 0 : 1;
         }
 
         // numbers compare using 'gt' operator
         else if (typeof objA === 'number') {
-            return isNaN(objA) ? -1 :
-                isNaN(objB) ? 1 :
-                    objA > objB ? 1 : -1;
+            if (isNaN(objA)) {
+                return isNaN(objB) ? 0 : -1;
+            }
+            else if (isNaN(objB)) {
+                return 1;
+            }
+            return objA > objB ? 1 : -1;
         }
 
         // booleans compare using 'gt' operator
         else if (typeof objA === 'boolean') {
-            return objA ? 1 : -1;
+            return objA > objB ? 1 : -1;
         }
 
         // Strings are compared using String.prototype.localeCompare method
