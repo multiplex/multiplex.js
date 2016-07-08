@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (July 07, 2016)
+* Version 2.0.0 (July 08, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -163,11 +163,20 @@
         return value instanceof Multiplex ? value : new Multiplex(value);
     }
 
-    var hashSymbol = (typeof Symbol === 'function' && typeof Symbol('hash') === 'symbol') ? Symbol('hash') : '__hash__';
+    function valueOf(obj) {
+        if (obj === null || obj === undefined) {
+            return 0;
+        }
+        else if (obj instanceof Date) {
+            return typeof obj.getTime === 'function' ? obj.getTime() : 0;
+        }
+        else {
+            return typeof obj.valueOf === 'function' ? obj.valueOf() : 0;
+        }
+    }
 
     function combineHash(h1, h2) {
         return ((h1 << 7) | (h1 >> 25)) ^ h2;
-        //return ((17 * 31 + h1) * 31 + h2) >> 32;
     }
 
     var POSITIVE_INFINITY = Number.POSITIVE_INFINITY || Infinity;
@@ -188,6 +197,10 @@
             case POSITIVE_INFINITY: _hash = 0x7F800000; break;
             case NEGATIVE_INFINITY: _hash = 0xFF800000; break;
             default:
+                if (isNaN(val)) {
+                    _hash = 0;
+                    break;
+                }
 
                 if (val <= -0.0) {
                     _hash = 0x80000000;
@@ -227,22 +240,25 @@
         return _hash >> 32;
     }
 
-    function compute31BitDateHash(val) {
-        var _time = val.getTime();
+    function compute31BitDateHash(date) {
+        var _time = valueOf(date);
         return _time ^ (_time >> 5);
     }
+
+    var hashSymbol = '__hash__';
 
     function isObjectLiteral(obj) {
         return Object.getPrototypeOf(obj) === Object.prototype;
     }
 
     var __objectHashSeed = Math.floor(Math.random() * 0XFFFF) + 0XFFFF;
-    var __objetHashIndex = __objectHashSeed;
+    var __objectHashIndex = __objectHashSeed;
     var compute31BitObjecHash;
 
     if (typeof WeakMap === 'function') {
         var __objectHashMap = new WeakMap();
 
+        // using Weakmap as 'hash' repository when possible
         compute31BitObjecHash = function (obj) {
             var _hash = __objectHashMap.get(obj);
 
@@ -252,18 +268,18 @@
                     __objectHashMap.set(obj, 0);           // prevents recursion
 
                     // only object literals fall into following code, no need to check for hasOwnProperty
-
                     for (var _p in obj) {
                         _hash = combineHash(_hash, compute31BitStringHash(_p) + hash(obj[_p]));
                     }
                 }
                 else {
-                    _hash = __objetHashIndex++ >> 32;
+                    _hash = __objectHashIndex++ >> 32;
                 }
 
                 __objectHashMap.set(obj, _hash);
-                return _hash;
             }
+
+            return _hash;
         };
     }
     else {
@@ -271,6 +287,7 @@
             var _hash = 0;
             var _extensible = Object.isExtensible && Object.isExtensible(obj);
 
+            // only override 'hash' method when object is extensible (not sealed or frozen)
             if (_extensible) {
                 obj[hashSymbol] = function () {            // prevents recursion
                     return _hash;
@@ -281,7 +298,6 @@
                 _hash = __objectHashSeed;
 
                 // only object literals fall into following code, no need to check for hasOwnProperty
-
                 for (var _p in obj) {
                     if (_p === hashSymbol) {
                         continue;
@@ -291,7 +307,8 @@
                 }
             }
             else {
-                _hash = _extensible ? __objetHashIndex++ >> 32 : __objectHashSeed;
+                // return constant hash codes for non-extensible class instances
+                _hash = _extensible ? __objectHashIndex++ >> 32 : __objectHashSeed;
             }
 
             return _hash;
@@ -338,9 +355,17 @@
                 _hash = compute31BitDateHash(obj);
             }
 
+            // Compute built-in types hash
+            else if (
+                obj instanceof Number ||
+                obj instanceof String ||
+                obj instanceof Boolean) {
+                _hash = hash(valueOf(obj));
+            }
+
             // Compute overriden 'hash' method
-            else if (typeof obj[hashSymbol] === 'function') {
-                _hash = obj[hashSymbol]() >> 32;
+            else if (typeof obj.__hash__ === 'function') {
+                _hash = obj.__hash__() >> 32;
             }
 
             // Compute 'Object' type hash for all other types
@@ -363,97 +388,100 @@
         return _hash;
     }
 
-    var equalsSymbol = (typeof Symbol === 'function' && typeof Symbol('equals') === 'symbol') ? Symbol('equals') : '__eq__';
+    function computeObjectEquals(objA, objB) {
+        // Objects having different hash code are not equal
+        if (hash(objA) !== hash(objB)) {
+            return false;
+        }
+
+
+        /// Process equality for object literals:
+        /// object literals may have equal hash code, we process equality by each property.
+        /// regular 'class' instances have different hash code, hence do not fall into following code.
+        /// object objA is direct descendant of Object hence no need to check 'hasOwnProperty'
+
+        var _val, _prop;
+
+        for (_prop in objA) {
+            _val = objA[_prop];
+
+            /// Object methods are not considered for equality
+            if (typeof _val === 'function') {
+                continue;
+            }
+
+            if (!equals(_val, objB[_prop])) {
+                return false;
+            }
+        }
+
+        /// no need to browse objB properties, all properties of objA is checked against objB
+        /// it is very unlikely for object literals with the same hash code to have different properties
+        /// even in such a rare case, objects are considered equal
+
+        return true;
+    }
 
     /**
     * Determines whether the specified object instances are considered equal.
     * @param {Object} objA The first object to compare.
     * @param {Object} objB The second object to compare.
-    * @param {EqualityComparer=} comparer An equality comparer to compare values.
     * @returns {Boolean} if the objA parameter is the same instance as the objB parameter, or if both are null, or if objA.equals(objB) returns true; otherwise, false.
     */
-    function equals(objA, objB, comparer) {
-        // Objects are identical (including null)
+    function equals(objA, objB) {
+        // Objects are identical
         if (objA === objB) {
             return true;
         }
 
-        // null is not equal to any object
-        else if (objA == null || objB == null) {
-            return false;
-        }
 
-
-        // compare using 'equalityComparer' provided
-        if (comparer) {
-            return comparer.hash(objA) === comparer.hash(objB) && comparer.equals(objA, objB);
-        }
-
-
-        // Objects check for equality for primitive types
-        if (typeof objA === 'number' ||
-            typeof objA === 'string' ||
-            typeof objA === 'boolean') {
+        // null/undefined is not equal to any object
+        else if (
+            objA === null || objA === undefined ||
+            objB === null || objB === undefined) {
             return objA == objB;
         }
 
+
+        // built-in value types
+        else if (
+            typeof objA === 'number' ||
+            typeof objA === 'string' ||
+            typeof objA === 'boolean') {
+            return valueOf(objA) === valueOf(objB);
+        }
+
+        // object types equality
         else if (typeof objA === 'object') {
-            // Objects are from 'Date' type
-            if (objA instanceof Date) {
-                return objB instanceof Date && objA.getTime() === objB.getTime();
+            // Objects are built-in types
+            if (
+                objA instanceof Date ||
+                objA instanceof Number ||
+                objA instanceof String ||
+                objA instanceof Boolean) {
+                return valueOf(objA) === valueOf(objB);
             }
 
             // Compute overriden 'equals' method for Object types
-            else if (typeof objA[equalsSymbol] === 'function') {
-                return objA[equalsSymbol](objB);
+            else if (typeof objA.__eq__ === 'function') {
+                return objA.__eq__(objB);
             }
 
             // Object types
             else if (typeof objB === 'object') {
-                // Objects having different hash code are not equal
-                if (hash(objA) !== hash(objB)) {
-                    return false;
-                }
-
-
-                /// Process equality for object literals:
-                /// object literals may have equal hash code, we process equality by each property.
-                /// regular 'class' instances have different hash code, hence do not fall into following code.
-                /// object objA is direct descendant of Object hence no need to check 'hasOwnProperty'
-
-                var _val, _prop;
-
-                for (_prop in objA) {
-                    _val = objA[_prop];
-
-                    /// Object methods are not considered for equality
-                    if (typeof _val === 'function') {
-                        continue;
-                    }
-
-                    if (!equals(_val, objB[_prop])) {
-                        return false;
-                    }
-                }
-
-                /// no need to browse objB properties, all properties of objA is checked against objB
-                /// it is very unlikely for object literals with the same hash code to have different properties
-                /// even in such a rare case, objects are considered equal
-
-                return true;
+                return computeObjectEquals(objA, objB);
             }
 
-            // Objects are equal (with auto type conversion)
-            // Objects from the same type are considered equal (eg. new Number(1) and 1)
-            return objA == objB;
+            // Objects are already not equal
+            return false;
         }
 
 
-        // Objects are already not equal
-        return false;
+        // Other types: check with auto type conversion
+        return objA == objB;
     }
 
-    var compareSymbol = (typeof Symbol === 'function' && typeof Symbol('compare') === 'symbol') ? Symbol('compare') : '__cmp__';
+    var equalsSymbol = '__eq__';
 
     /**
     * Performs a comparison of two objects of the same type and returns a value indicating whether one object is less than, equal to, or greater than the other.
@@ -468,61 +496,47 @@
         }
 
         // null or undefined is less than everything
-        else if (objA == null) {
+        else if (objA === null || objA === undefined) {
             return -1;
         }
 
         // Everything is greater than null or undefined
-        else if (objB == null) {
+        else if (objB === null || objB === undefined) {
             return 1;
         }
+
+        // numbers compare using 'gt' operator
+        else if (typeof objA === 'number') {
+            return isNaN(objA) ? -1 :
+                isNaN(objB) ? 1 :
+                    objA > objB ? 1 : -1;
+        }
+
+        // booleans compare using 'gt' operator
+        else if (typeof objA === 'boolean') {
+            return objA ? 1 : -1;
+        }
+
+        // Strings are compared using String.prototype.localeCompare method
+        else if (typeof objA === 'string') {
+            return objA.localeCompare(objB);
+        }
+
+        // Compute overriden 'compare' method for Object types
+        else if (typeof objA.__cmp__ === 'function') {
+            return objA.__cmp__(objB);
+        }
+
+        // All other objects are compared using 'valudOf' method
         else {
-            // numbers compare using 'gt' operator
-            if (typeof objA === 'number') {
-                return isNaN(objA) ? -1 :
-                    isNaN(objB) ? 1 :
-                        objA > objB ? 1 : -1;
-            }
+            var _v1 = valueOf(objA),
+                _v2 = valueOf(objB);
 
-            // booleans compare using 'gt' operator
-            if (typeof objA === 'boolean') {
-                return objA > objB ? 1 : -1;
-            }
-
-            // Strings are compared using String.prototype.localeCompare method
-            else if (typeof objA === 'string') {
-                return objA.localeCompare(objB);
-            }
-
-            else {
-                try {
-                    // Dates are compared using 'getTime' method
-                    if (objA instanceof Date &&
-                        objB instanceof Date) {
-                        var _t1 = objA.getTime(),
-                            _t2 = objB.getTime();
-
-                        return _t1 > _t2 ? 1 : (_t1 < _t2 ? -1 : 0);
-                    }
-                    // Compute overriden 'compare' method for Object types
-                    else if (typeof objA[compareSymbol] === 'function') {
-                        return objA[compareSymbol](objB);
-                    }
-                    // All other objects are compared using 'valudOf' method
-                    else {
-                        var _v1 = typeof objA.valueOf === 'function' ? objA.valueOf() : 0,
-                            _v2 = typeof objB.valueOf === 'function' ? objB.valueOf() : 0;
-
-                        return _v1 > _v2 ? 1 : (_v1 < _v2 ? -1 : 0);
-                    }
-                }
-                // in case 'getTime' or 'valueOf' throw error
-                catch (e) {
-                    return 0;
-                }
-            }
+            return _v1 > _v2 ? 1 : (_v1 < _v2 ? -1 : 0);
         }
     }
+
+    var compareSymbol = '__cmp__';
 
     mx.hash = hash;
     mx.hashSymbol = hashSymbol;
