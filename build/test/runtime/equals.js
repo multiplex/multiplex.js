@@ -45,6 +45,11 @@
     });
 
 
+    qtest('Other types equals', function (assert) {
+        assert.ok(mx.equals(Symbol('test'), Symbol('test')) === false, 'simple Symbols are not equal');
+    });
+
+
     qtest('equals using __eq__ method', function (assert) {
         function SimpleEquals(val) {
             this._val = val;
