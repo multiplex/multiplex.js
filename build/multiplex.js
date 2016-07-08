@@ -490,7 +490,8 @@
 
         // Strings are compared using String.prototype.localeCompare method
         else if (typeof objA === 'string') {
-            return objA.localeCompare(objB);
+            let _res = objA.localeCompare(objB);
+            return _res > 0 ? 1 : (_res < 0 ? -1 : 0);
         }
 
         // Compute overriden 'compare' method for Object types
