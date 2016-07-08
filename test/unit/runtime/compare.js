@@ -106,7 +106,7 @@ qtest('compare using __cmp__ method', function (assert) {
         this._val = val;
 
         this[mx.compareSymbol] = function (obj) {
-            return mx.compare(this._val, obj._val);
+            return this._val > obj._val ? 1 : (this._val < obj._val ? -1 : 0);
         }
     };
 

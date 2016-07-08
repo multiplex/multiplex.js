@@ -34,11 +34,7 @@ export default function equals(objA, objB) {
     // object types equality
     else if (typeof objA === 'object') {
         // Objects are built-in types
-        if (
-            objA instanceof Date ||
-            objA instanceof Number ||
-            objA instanceof String ||
-            objA instanceof Boolean) {
+        if (objA instanceof Date) {
             return valueOf(objA) === valueOf(objB);
         }
 
