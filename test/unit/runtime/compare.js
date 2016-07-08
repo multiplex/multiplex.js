@@ -17,9 +17,15 @@ qtest('numeric compare', function (assert) {
     var MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER || 0x1FFFFFFFFFFFFF;
     var MIN_SAFE_INTEGER = Number.MIN_SAFE_INTEGER || -0x1FFFFFFFFFFFFF;
 
+    assert.equal(mx.compare(0, null), 1, 'any numeric value is greater than null');
+    assert.equal(mx.compare(0, undefined), 1, 'any numeric value is greater than undefined');
+
+    assert.equal(mx.compare(NaN, null), 1, 'NaN is greater than null');
+    assert.equal(mx.compare(NaN, undefined), 1, 'NaN is greater than undefined');
     assert.equal(mx.compare(NaN, NaN), 0, 'compare NaN values');
     assert.equal(mx.compare(NaN, 0), -1, 'NaN is less than any value');
     assert.equal(mx.compare(0, NaN), 1, 'any value is greater than NaN');
+
     assert.equal(mx.compare(0, -0), 0, '0 is equal to -0');
     assert.equal(mx.compare(1, 0), 1, 'simple greater than compare');
     assert.equal(mx.compare(0, 1), -1, 'simple less than compare');
@@ -35,6 +41,9 @@ qtest('numeric compare', function (assert) {
 
 
 qtest('string compare', function (assert) {
+    assert.equal(mx.compare('', null), 1, 'any string value is greater than null');
+    assert.equal(mx.compare('', undefined), 1, 'any string value is greater than undefined');
+
     assert.equal(mx.compare('', ''), 0, 'compare empty strings');
     assert.equal(mx.compare('', ' '), -1, 'empty string is less than any string value');
     assert.equal(mx.compare(' ', ''), 1, 'any string value is greater than empty string');
@@ -65,6 +74,12 @@ qtest('string compare', function (assert) {
 
 
 qtest('boolean compare', function (assert) {
+    assert.equal(mx.compare(true, null), 1, 'true is greater than null');
+    assert.equal(mx.compare(true, undefined), 1, 'true is greater than undefined');
+
+    assert.equal(mx.compare(false, null), 1, 'false is greater than null');
+    assert.equal(mx.compare(false, undefined), 1, 'false is greater than undefined');
+
     assert.equal(mx.compare(true, true), 0, 'compare true values');
     assert.equal(mx.compare(false, false), 0, 'compare false values');
     assert.equal(mx.compare(true, false), 1, 'true is greater than false');
@@ -95,6 +110,8 @@ qtest('compare using __cmp__ method', function (assert) {
         }
     };
 
+    assert.equal(mx.compare(new SimpleCompare(1), null), 1, 'any object using comparer function is greater than null');
+    assert.equal(mx.compare(new SimpleCompare(1), undefined), 1, 'any object using comparer function is greater than undefined');
     assert.equal(mx.compare(new SimpleCompare(1), new SimpleCompare(1)), 0, 'compare equal objects overriding compare method');
     assert.equal(mx.compare(new SimpleCompare(1), new SimpleCompare(0)), 1, 'compare greater than objects overriding compare method');
     assert.equal(mx.compare(new SimpleCompare(0), new SimpleCompare(1)), -1, 'compare less than objects overriding compare method');
@@ -102,6 +119,9 @@ qtest('compare using __cmp__ method', function (assert) {
 
 
 qtest('compare regular objects', function (assert) {
+    assert.equal(mx.compare({}, null), 1, 'any object is greater than null');
+    assert.equal(mx.compare({}, undefined), 1, 'any object is greater than undefined');
+
     assert.equal(mx.compare({}, {}), 0, 'compare empty object literals');
     assert.equal(mx.compare({ val: 1 }, { val: 2 }), 0, 'compare object literals');
     assert.equal(mx.compare({ val: 2 }, { val: 1 }), 0, 'compare object literals');
@@ -120,6 +140,8 @@ qtest('compare regular objects', function (assert) {
         }
     };
 
+    assert.equal(mx.compare(o1, null), 1, 'any object using valueOf function is greater than null');
+    assert.equal(mx.compare(o1, undefined), 1, 'any object using valueOf function is greater than undefined');
     assert.equal(mx.compare(o1, o2), -1, 'compare object literals using valueOf method: less than');
     assert.equal(mx.compare(o2, o1), 1, 'compare object literals using valueOf method: greater than');
 
@@ -128,6 +150,8 @@ qtest('compare regular objects', function (assert) {
     var d2 = new Date(2016, 1, 1);
     var d3 = new Date(2016, 1, 1, 1);
 
+    assert.equal(mx.compare(d1, null), 1, 'any date is greater than null');
+    assert.equal(mx.compare(d1, undefined), 1, 'any date is greater than undefined');
     assert.equal(mx.compare(d1, d2), 0, 'compare equal Dates');
     assert.equal(mx.compare(d1, d3), -1, 'compare less than Date');
     assert.equal(mx.compare(d3, d2), 1, 'compare greater than Date');
