@@ -16,6 +16,10 @@ export default function compute31BitNumberHash(val) {
         case POSITIVE_INFINITY: _hash = 0x7F800000; break;
         case NEGATIVE_INFINITY: _hash = 0xFF800000; break;
         default:
+            if (Number.isNaN(val)) {
+                _hash = 0;
+                break;
+            }
 
             if (val <= -0.0) {
                 _hash = 0x80000000;
