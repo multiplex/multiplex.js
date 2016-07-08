@@ -1,2 +1,2 @@
-const hashSymbol =  Symbol('hash');
+const hashSymbol =  '__hash__';
 export default hashSymbol;
