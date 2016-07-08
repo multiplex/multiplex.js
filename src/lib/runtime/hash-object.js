@@ -5,7 +5,7 @@ import compute31BitStringHash from './hash-string';
 import isObjectLiteral from '../utils/is-object-literal';
 
 var __objectHashSeed = Math.floor(Math.random() * 0XFFFF) + 0XFFFF;
-var __objetHashIndex = __objectHashSeed;
+var __objectHashIndex = __objectHashSeed;
 var compute31BitObjecHash;
 
 if (typeof WeakMap === 'function') {
@@ -26,12 +26,13 @@ if (typeof WeakMap === 'function') {
                 }
             }
             else {
-                _hash = __objetHashIndex++ >> 32;
+                _hash = __objectHashIndex++ >> 32;
             }
 
             __objectHashMap.set(obj, _hash);
-            return _hash;
         }
+
+        return _hash;
     };
 }
 else {
@@ -60,7 +61,7 @@ else {
         }
         else {
             // return constant hash codes for non-extensible class instances
-            _hash = _extensible ? __objetHashIndex++ >> 32 : __objectHashSeed;
+            _hash = _extensible ? __objectHashIndex++ >> 32 : __objectHashSeed;
         }
 
         return _hash;
