@@ -1,4 +1,4 @@
-import compareSymbol from './compare-symbol';
+import valueOf from '../utils/value-of';
 
 /**
 * Performs a comparison of two objects of the same type and returns a value indicating whether one object is less than, equal to, or greater than the other.
@@ -13,58 +13,42 @@ export default function compare(objA, objB) {
     }
 
     // null or undefined is less than everything
-    else if (objA == null) {
+    else if (objA === null || objA === undefined) {
         return -1;
     }
 
     // Everything is greater than null or undefined
-    else if (objB == null) {
+    else if (objB === null || objB === undefined) {
         return 1;
     }
+
+    // numbers compare using 'gt' operator
+    else if (typeof objA === 'number') {
+        return isNaN(objA) ? -1 :
+            isNaN(objB) ? 1 :
+                objA > objB ? 1 : -1;
+    }
+
+    // booleans compare using 'gt' operator
+    else if (typeof objA === 'boolean') {
+        return objA ? 1 : -1;
+    }
+
+    // Strings are compared using String.prototype.localeCompare method
+    else if (typeof objA === 'string') {
+        return objA.localeCompare(objB);
+    }
+
+    // Compute overriden 'compare' method for Object types
+    else if (typeof objA.__cmp__ === 'function') {
+        return objA.__cmp__(objB);
+    }
+
+    // All other objects are compared using 'valudOf' method
     else {
-        // numbers compare using 'gt' operator
-        if (typeof objA === 'number') {
-            return isNaN(objA) ? -1 :
-                isNaN(objB) ? 1 :
-                    objA > objB ? 1 : -1;
-        }
+        var _v1 = valueOf(objA),
+            _v2 = valueOf(objB);
 
-        // booleans compare using 'gt' operator
-        if (typeof objA === 'boolean') {
-            return objA > objB ? 1 : -1;
-        }
-
-        // Strings are compared using String.prototype.localeCompare method
-        else if (typeof objA === 'string') {
-            return objA.localeCompare(objB);
-        }
-
-        else {
-            try {
-                // Dates are compared using 'getTime' method
-                if (objA instanceof Date &&
-                    objB instanceof Date) {
-                    var _t1 = objA.getTime(),
-                        _t2 = objB.getTime();
-
-                    return _t1 > _t2 ? 1 : (_t1 < _t2 ? -1 : 0);
-                }
-                // Compute overriden 'compare' method for Object types
-                else if (typeof objA[compareSymbol] === 'function') {
-                    return objA[compareSymbol](objB);
-                }
-                // All other objects are compared using 'valudOf' method
-                else {
-                    var _v1 = typeof objA.valueOf === 'function' ? objA.valueOf() : 0,
-                        _v2 = typeof objB.valueOf === 'function' ? objB.valueOf() : 0;
-
-                    return _v1 > _v2 ? 1 : (_v1 < _v2 ? -1 : 0);
-                }
-            }
-            // in case 'getTime' or 'valueOf' throw error
-            catch (e) {
-                return 0;
-            }
-        }
+        return _v1 > _v2 ? 1 : (_v1 < _v2 ? -1 : 0);
     }
 }
