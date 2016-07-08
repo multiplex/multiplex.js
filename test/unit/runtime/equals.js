@@ -37,6 +37,13 @@ qtest('Date equals', function (assert) {
 });
 
 
+qtest('Other types equals', function (assert) {
+    if (typeof Symbol === 'function') {
+        assert.ok(mx.equals(Symbol('test'), Symbol('test')) === false, 'simple Symbols are not equal');
+    }
+});
+
+
 qtest('equals using __eq__ method', function (assert) {
     function SimpleEquals(val) {
         this._val = val;
@@ -53,13 +60,12 @@ qtest('equals using __eq__ method', function (assert) {
 
 
 qtest('equals using object literals', function (assert) {
-    assert.equal(mx.equals({}, {}), true, 'equal objects overriding euqls method');
-    assert.equal(mx.equals({ val: 1 }, { val: 1 }), true, 'greater than objects overriding euqls method');
-    assert.equal(mx.equals({ val: 1, sum: { name: 'A' } }, { val: 1, sum: { name: 'A' } }), true, 'less than objects overriding euqls method');
-
     assert.equal(mx.equals({}, {}), true, 'equal empty objects literals');
     assert.equal(mx.equals({ val: 1 }, { val: 1 }), true, 'equal objects literals with properties');
     assert.equal(mx.equals({ val: 1, sum: { name: 'A' } }, { val: 1, sum: { name: 'A' } }), true, 'equal object literals with complex object literals as properties');
+
+    assert.equal(mx.equals({ val: 1 }, { val: 2 }), false, 'non equal objects literals with properties');
+    assert.equal(mx.equals({ val: 1, sum: { name: 'A' } }, { val: 1, sum: { name: 'B' } }), false, 'non equal object literals with complex object literals as properties');
 });
 
 

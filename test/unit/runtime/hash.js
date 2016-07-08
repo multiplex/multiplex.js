@@ -20,6 +20,7 @@ qtest('basic hash', function (assert) {
 qtest('boolean hash', function (assert) {
     assert.equal(mx.hash(true), 1, 'hash true is 1!');
     assert.equal(mx.hash(false), 0, 'hash false is 0!');
+    assert.ok(isValidHashValue(mx.hash(new Boolean(true))), 'hash Boolean class values!');
 });
 
 
@@ -95,6 +96,7 @@ qtest('numeric hash', function (assert) {
     //assert.equal(mx.hash(0b10), 2, 'hash binary value 0b10!');
     //assert.equal(mx.hash(0o10), 8, 'hash octal value 0o10!');
     assert.equal(mx.hash(0x10), 16, 'hash hex value 0x10!');
+    assert.ok(isValidHashValue(mx.hash(new Number(1))), 'hash Number class values!');
 });
 
 
@@ -109,6 +111,7 @@ qtest('string hash', function (assert) {
     assert.ok(isValidHashValue(mx.hash('A', 'B', 'C', 'D', 'E')), 'Combinne string hash codes');
     assert.ok(isValidHashValue(mx.hash(mx.hash(new Array(10000).join('A')))), 'valid hash for a very long string!');
     assert.ok(isValidHashValue(mx.hash(new Array(10000).join('A'), new Array(10000).join('B'))), 'Combinne string hash codes for a big array');
+    assert.ok(isValidHashValue(mx.hash(new String('strig'))), 'hash String class values!');
 });
 
 
