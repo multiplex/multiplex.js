@@ -1,4 +1,6 @@
 module.exports = function (grunt) {
+    'use strict';
+
     var dirs = grunt.config('dirs'),
         files = grunt.config('files'),
         banner = grunt.config('banner'),

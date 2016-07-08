@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (July 08, 2016)
+* Version 2.0.0 (July 09, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -463,13 +463,13 @@
         }
 
         // null or undefined is less than everything
-        else if (objA == null) {
-            return objB == null ? 0 : -1;
+        else if (objA === null || objA === undefined) {
+            return objB == objA ? 0 : -1;
         }
 
         // Everything is greater than null or undefined
-        else if (objB == null) {
-            return objA == null ? 0 : 1;
+        else if (objB === null || objB === undefined) {
+            return objA == objB ? 0 : 1;
         }
 
         // numbers compare using 'gt' operator

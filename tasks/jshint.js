@@ -1,4 +1,6 @@
 module.exports = function (grunt) {
+    'use strict';
+
     var dirs = grunt.config('dirs');
 
     grunt.config.merge({
