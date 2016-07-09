@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (July 09, 2016)
+* Version 2.0.0 (July 10, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -262,10 +262,14 @@
     function compute31BitObjecHash(obj) {
         let _hash = __objectHashMap.get(obj);
 
+        // hash not found in the repositoty
         if (_hash === undefined) {
+            // create object-literals hash based on their visible properties
             if (isObjectLiteral(obj)) {
                 _hash = __objectHashSeed;
-                __objectHashMap.set(obj, 0);           // prevents recursion
+
+                // early seed prevents mutually recursive structures to stack overflow
+                __objectHashMap.set(obj, 0);
 
                 // only object literals fall into following code, no need to check for hasOwnProperty
                 for (let _p in obj) {
@@ -276,6 +280,7 @@
                 _hash = __objectHashIndex++ >> 32;
             }
 
+            // assign the hash value until the lifetime of the object
             __objectHashMap.set(obj, _hash);
         }
 
@@ -359,6 +364,7 @@
 
     function computeObjectEquals(objA, objB) {
         // Objects having different hash code are not equal
+        // also prevents mutually recursive structures to stack overflow
         if (hash(objA) !== hash(objB)) {
             return false;
         }

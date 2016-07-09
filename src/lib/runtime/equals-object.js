@@ -3,6 +3,7 @@ import equals from './equals';
 
 export default function computeObjectEquals(objA, objB) {
     // Objects having different hash code are not equal
+    // also prevents mutually recursive structures to stack overflow
     if (hash(objA) !== hash(objB)) {
         return false;
     }

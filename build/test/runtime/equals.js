@@ -152,6 +152,29 @@
         assert.equal(mx.equals({}, {}), true, 'equal empty objects literals');
         assert.equal(mx.equals({ val: 1 }, { val: 1 }), true, 'equal objects literals with properties');
         assert.equal(mx.equals({ val: 1, sum: { name: 'A' } }, { val: 1, sum: { name: 'A' } }), true, 'equal object literals with complex object literals as properties');
+
+        var o1 = {
+            val: 1,
+            name: function () {
+                return this.val;
+            }
+        }
+
+        var o2 = {
+            val: 1,
+            name: function () {
+                return this.val;
+            }
+        }
+
+        assert.equal(mx.equals(o1, o2), false, 'equality does not include object methods however they have different hash values ');
+
+        var v1 = { val: 1 };
+        var v2 = { val: 1 };
+        assert.equal(mx.equals(v1, v2), true, 'object literal equality works at runtime, meaning property change after testing equality might result in non equality');
+
+        v1.name = 1;
+        assert.equal(mx.equals(v1, v2), false, 'adding new property to an object literal does not change its hash code, but ruins equality');
     });
 
 
