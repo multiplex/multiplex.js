@@ -197,7 +197,8 @@
             case POSITIVE_INFINITY: _hash = 0x7F800000; break;
             case NEGATIVE_INFINITY: _hash = 0xFF800000; break;
             default:
-                if (isNaN(val)) {
+                // NaN
+                if (val !== val) {
                     _hash = 0;
                     break;
                 }
@@ -443,18 +444,20 @@
         }
 
 
-        // built-in value types
-        else if (
-            typeof objA === 'number' ||
-            typeof objA === 'string' ||
-            typeof objA === 'boolean') {
-            return valueOf(objA) === valueOf(objB);
+        // objA: NaN & objB: NaN
+        else if (objA !== objA && objB !== objB) {
+            return true;
         }
 
+
         // object types equality
-        else if (typeof objA === 'object') {
-            // Objects are built-in types
-            if (objA instanceof Date) {
+        else if (typeof objA === 'object' && typeof objB === 'object') {
+            // built-in object types
+            if (
+                (objA instanceof Date && objB instanceof Date) ||
+                (objA instanceof Number && objB instanceof Number) ||
+                (objA instanceof String && objB instanceof String) ||
+                (objA instanceof Boolean && objB instanceof Boolean)) {
                 return valueOf(objA) === valueOf(objB);
             }
 
@@ -464,17 +467,12 @@
             }
 
             // Object types
-            else if (typeof objB === 'object') {
-                return computeObjectEquals(objA, objB);
-            }
-
-            // Objects are already not equal
-            return false;
+            return computeObjectEquals(objA, objB);
         }
 
 
-        // Other types: check with auto type conversion
-        return objA == objB;
+        // Objects are already not equal
+        return false;
     }
 
     var equalsSymbol = '__eq__';
@@ -503,10 +501,12 @@
 
         // numbers compare using 'gt' operator
         else if (typeof objA === 'number') {
-            if (isNaN(objA)) {
-                return isNaN(objB) ? 0 : -1;
+            // objA: NaN
+            if (objA !== objA) {
+                return objB !== objB ? 0 : -1;
             }
-            else if (isNaN(objB)) {
+            // objB: NaN
+            else if (objB !== objB) {
                 return 1;
             }
             return objA > objB ? 1 : -1;

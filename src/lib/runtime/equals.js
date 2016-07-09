@@ -23,18 +23,20 @@ export default function equals(objA, objB) {
     }
 
 
-    // built-in value types
-    else if (
-        typeof objA === 'number' ||
-        typeof objA === 'string' ||
-        typeof objA === 'boolean') {
-        return valueOf(objA) === valueOf(objB);
+    // objA: NaN & objB: NaN
+    else if (objA !== objA && objB !== objB) {
+        return true;
     }
 
+
     // object types equality
-    else if (typeof objA === 'object') {
-        // Objects are built-in types
-        if (objA instanceof Date) {
+    else if (typeof objA === 'object' && typeof objB === 'object') {
+        // built-in object types
+        if (
+            (objA instanceof Date && objB instanceof Date) ||
+            (objA instanceof Number && objB instanceof Number) ||
+            (objA instanceof String && objB instanceof String) ||
+            (objA instanceof Boolean && objB instanceof Boolean)) {
             return valueOf(objA) === valueOf(objB);
         }
 
@@ -44,15 +46,10 @@ export default function equals(objA, objB) {
         }
 
         // Object types
-        else if (typeof objB === 'object') {
-            return computeObjectEquals(objA, objB);
-        }
-
-        // Objects are already not equal
-        return false;
+        return computeObjectEquals(objA, objB);
     }
 
 
-    // Other types: check with auto type conversion
-    return objA == objB;
+    // Objects are already not equal
+    return false;
 }
