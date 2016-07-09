@@ -45,6 +45,15 @@ qtest('numeric compare', function (assert) {
     assert.equal(mx.compare(MAX_SAFE_INTEGER, POSITIVE_INFINITY), -1, 'any value is less than POSITIVE_INFINITY');
     assert.equal(mx.compare(NEGATIVE_INFINITY, MIN_SAFE_INTEGER), -1, 'POSITIVE_INFINITY is less then any value');
     assert.equal(mx.compare(MIN_SAFE_INTEGER, NEGATIVE_INFINITY), 1, 'any value is greater than NEGATIVE_INFINITY');
+
+    for (var i = 0; i < 64; i++) {
+        var num1 = Math.pow(2, i);
+        var num2 = Math.pow(2, i + 1);
+
+        assert.equal(mx.compare(num1, num1), 0, 'compare equal numbers: ' + num1);
+        assert.equal(mx.compare(num1, num2), -1, 'compare numbers: "' + num1 + '", "' + num2 + '"');
+        assert.equal(mx.compare(num2, num1), 1, 'compare numbers: "' + num2 + '", "' + num1 + '"');
+    }
 });
 
 
@@ -78,6 +87,15 @@ qtest('string compare', function (assert) {
     assert.equal(mx.compare('true', true), 0, 'equal to non-string compare: true');
     assert.equal(mx.compare('', {}), -1, 'less than non-string compare: object');
     assert.equal(mx.compare('[object Object]', {}), 0, 'equal to non-string compare: object');
+
+    var characters = '0123456789abcdefghijklmnopqrstuvwxyz';
+    for (var i = 0; i < characters.length - 1; i++) {
+        var char1 = characters.charAt(i);
+        var char2 = characters.charAt(i + 1);
+        assert.equal(mx.compare(char1, char1), 0, 'compare equal ASCII characters: "' + char1 + '"!');
+        assert.equal(mx.compare(char1, char2), -1, 'compare ASCII characters: "' + char1 + '", "' + char2 + '"!');
+        assert.equal(mx.compare(char2, char1), 1, 'compare ASCII character: "' + char2 + '", "' + char1 + '"!');
+    }
 });
 
 
@@ -163,4 +181,13 @@ qtest('compare regular objects', function (assert) {
     assert.equal(mx.compare(d1, d2), 0, 'compare equal Dates');
     assert.equal(mx.compare(d1, d3), -1, 'compare less than Date');
     assert.equal(mx.compare(d3, d2), 1, 'compare greater than Date');
+
+    for (var i = 1; i <= 365; i++) {
+        var date1 = new Date(2016, 0, i);
+        var date2 = new Date(2016, 0, i + 1);
+
+        assert.equal(mx.compare(date1, date1), 0, 'compare equal dates: ' + date1);
+        assert.equal(mx.compare(date1, date2), -1, 'compare dates: "' + date1 + '", "' + date2 + '"');
+        assert.equal(mx.compare(date2, date1), 1, 'compare dates: "' + date2 + '", "' + date1 + '"');
+    }
 });
