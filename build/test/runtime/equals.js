@@ -49,6 +49,9 @@
         if (typeof Symbol === 'function') {
             assert.ok(mx.equals(Symbol('test'), Symbol('test')) === false, 'simple Symbols are not equal');
         }
+        else {
+            assert.ok(mx.equals(1, 1), 'dummy test to pass by earlier versions of node');
+        }
     });
 
 

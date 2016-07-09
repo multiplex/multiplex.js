@@ -12,7 +12,7 @@
     qmodule('hash');
 
     var MAX_HASH_VALUE = 0X7FFFFFFF;
-    var MIN_HASH_VALUE = -0X7FFFFFFF;
+    var MIN_HASH_VALUE = -0X7FFFFFFF - 1;
 
     function isValidHashValue(hash) {
         return hash >= MIN_HASH_VALUE && hash <= MAX_HASH_VALUE;
@@ -105,6 +105,14 @@
         //assert.equal(mx.hash(0o10), 8, 'hash octal value 0o10!');
         assert.equal(mx.hash(0x10), 16, 'hash hex value 0x10!');
         assert.ok(isValidHashValue(mx.hash(new Number(1))), 'hash Number class values!');
+
+        for (var i = 0; i < 64; i++) {
+            var num = Math.pow(2, i);
+            assert.equal(mx.hash(num), mx.hash(num), 'hash number "' + num + '"!');
+            assert.equal(mx.hash(-num), mx.hash(-num), 'hash number "' + -num + '"!');
+            assert.ok(isValidHashValue(mx.hash(num)), 'valid number "' + num + '" hash');
+            assert.ok(isValidHashValue(mx.hash(-num)), 'valid number "' + -num + '" hash');
+        }
     });
 
 
@@ -120,21 +128,33 @@
         assert.ok(isValidHashValue(mx.hash(mx.hash(new Array(10000).join('A')))), 'valid hash for a very long string!');
         assert.ok(isValidHashValue(mx.hash(new Array(10000).join('A'), new Array(10000).join('B'))), 'Combinne string hash codes for a big array');
         assert.ok(isValidHashValue(mx.hash(new String('strig'))), 'hash String class values!');
+
+        for (var i = 0; i < 128; i++) {
+            var char = String.fromCharCode(i);
+            assert.equal(mx.hash(char), mx.hash(char), 'hash ASCII character "' + char + '"!');
+            assert.ok(isValidHashValue(mx.hash(char)), 'valid ASCII character "' + char + '" hash');
+        }
     });
 
 
     qtest('date hash', function (assert) {
-        assert.equal(mx.hash(new Date(2016, 1, 1)), mx.hash(new Date(2016, 1, 1)), 'hash exact dates are equal!');
-        assert.equal(mx.hash(new Date(2116, 1, 1)), mx.hash(new Date(2116, 1, 1)), 'hash 100 years from now!');
-        assert.equal(mx.hash(new Date(3016, 1, 1)), mx.hash(new Date(3016, 1, 1)), 'hash 1000 years from now!');
-        assert.equal(mx.hash(new Date(1016, 1, 1)), mx.hash(new Date(1016, 1, 1)), 'hash 1000 years before!');
-        assert.equal(mx.hash(new Date(100, 1, 1)), mx.hash(new Date(100, 1, 1)), 'hash 1900 years before!');
+        assert.equal(mx.hash(new Date(2016, 0, 1)), mx.hash(new Date(2016, 0, 1)), 'hash exact dates are equal!');
+        assert.equal(mx.hash(new Date(2116, 0, 1)), mx.hash(new Date(2116, 0, 1)), 'hash 100 years from now!');
+        assert.equal(mx.hash(new Date(3016, 0, 1)), mx.hash(new Date(3016, 0, 1)), 'hash 1000 years from now!');
+        assert.equal(mx.hash(new Date(1016, 0, 1)), mx.hash(new Date(1016, 0, 1)), 'hash 1000 years before!');
+        assert.equal(mx.hash(new Date(100, 0, 1)), mx.hash(new Date(100, 0, 1)), 'hash 1900 years before!');
 
-        assert.ok(isValidHashValue(mx.hash(new Date(2016, 1, 1))), 'valid hash now');
-        assert.ok(isValidHashValue(mx.hash(new Date(2116, 1, 1))), 'valid hash 100 years from now!');
-        assert.ok(isValidHashValue(mx.hash(new Date(3016, 1, 1))), 'valid hash 1000 years from now!');
-        assert.ok(isValidHashValue(mx.hash(new Date(1016, 1, 1))), 'valid hash 1000 years before!');
-        assert.ok(isValidHashValue(mx.hash(new Date(100, 1, 1))), 'valid hash 1900 years before!');
+        assert.ok(isValidHashValue(mx.hash(new Date(2016, 0, 1))), 'valid hash now');
+        assert.ok(isValidHashValue(mx.hash(new Date(2116, 0, 1))), 'valid hash 100 years from now!');
+        assert.ok(isValidHashValue(mx.hash(new Date(3016, 0, 1))), 'valid hash 1000 years from now!');
+        assert.ok(isValidHashValue(mx.hash(new Date(1016, 0, 1))), 'valid hash 1000 years before!');
+        assert.ok(isValidHashValue(mx.hash(new Date(100, 0, 1))), 'valid hash 1900 years before!');
+
+        for (var i = 1; i <= 365; i++) {
+            var date = new Date(2016, 0, i);
+            assert.equal(mx.hash(date), mx.hash(date), 'hash date"' + date + '"!');
+            assert.ok(isValidHashValue(mx.hash(date)), 'valid date "' + date + '" hash');
+        }
     });
 
 
@@ -205,6 +225,12 @@
         assert.equal(mx.hash(o2), mx.hash(o3), 'object literal hash does not change, even if properties change!');
 
         assert.equal(mx.hash(Object.seal({ val: 1 })), mx.hash(Object.seal({ val: 1 })), 'object literal hash does works for frozen objects!');
+
+        for (var i = 1; i <= 100; i++) {
+            var obj = { val: i };
+            assert.equal(mx.hash(obj), mx.hash(obj), 'hash object literal"{ val: ' + i + ' }"!');
+            assert.ok(isValidHashValue(mx.hash(obj)), 'valid object literal "{ val: ' + i + ' }" hash');
+        }
     });
 
 }));
