@@ -136,9 +136,9 @@
             }
         };
 
-        assert.equal(mx.equals(new SimpleEquals(1), new SimpleEquals(1)), true, 'equal objects overriding euqls method');
-        assert.equal(mx.equals(new SimpleEquals(1), new SimpleEquals(0)), false, 'non-equal objects overriding euqls method');
-        assert.equal(mx.equals(new SimpleEquals(0), new SimpleEquals(1)), false, 'non-equal objects overriding euqls method');
+        assert.equal(mx.equals(new SimpleEquals(1), new SimpleEquals(1)), true, 'equal objects overriding equals method');
+        assert.equal(mx.equals(new SimpleEquals(1), new SimpleEquals(0)), false, 'non-equal objects overriding equals method');
+        assert.equal(mx.equals(new SimpleEquals(0), new SimpleEquals(1)), false, 'non-equal objects overriding equals method');
     });
 
 
