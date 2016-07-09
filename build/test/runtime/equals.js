@@ -100,16 +100,27 @@
 
 
     qtest('boolean equals', function (assert) {
-        assert.ok(mx.equals(true, true), 'simple true values are equal');
-        assert.ok(mx.equals(false, false), 'simple false values are equal');
-        assert.ok(mx.equals(true, false) === false, 'simple true and false values not equal');
-        assert.ok(mx.equals(false, true) === false, 'simple false and true values not equal');
+        assert.ok(mx.equals(true, true), 'true values are equal');
+        assert.ok(mx.equals(false, false), 'false values are equal');
+        assert.ok(mx.equals(true, false) === false, 'true and false values not equal');
+        assert.ok(mx.equals(false, true) === false, 'false and true values not equal');
+        assert.ok(mx.equals(true, new Boolean(true)) === false, 'true and Boolean(true) values are not equal');
+        assert.ok(mx.equals(false, new Boolean(false)) === false, 'false and Boolean(false) values are not equal');
     });
 
 
     qtest('Date equals', function (assert) {
-        assert.ok(mx.equals(new Date(2016, 1, 1), new Date(2016, 1, 1)), 'simple Date values are equal');
-        assert.ok(mx.equals(new Date(2016, 1, 1), new Date(2017, 1, 1)) === false, 'simple Date values are not equal');
+        assert.ok(mx.equals(new Date(2016, 0, 1), new Date(2016, 0, 1)), 'simple Date values are equal');
+        assert.ok(mx.equals(new Date(2016, 0, 1), new Date(2017, 0, 1)) === false, 'simple Date values not equal');
+
+        for (var i = 1; i <= 365; i++) {
+            var date1 = new Date(2016, 0, i);
+            var date2 = new Date(2016, 0, i + 1);
+
+            assert.ok(mx.equals(date1, date1), 'equal dates: ' + date1);
+            assert.ok(mx.equals(date1, date2) === false, 'non equal dates: "' + date1 + '", "' + date2 + '"');
+            assert.ok(mx.equals(date2, date1) === false, 'non equal dates: "' + date2 + '", "' + date1 + '"');
+        }
     });
 
 
@@ -127,16 +138,16 @@
             }
         };
 
-        assert.equal(mx.equals(new SimpleEquals(1), new SimpleEquals(1)), true, 'equal objects overriding euqls method');
-        assert.equal(mx.equals(new SimpleEquals(1), new SimpleEquals(0)), false, 'non-equal objects overriding euqls method');
-        assert.equal(mx.equals(new SimpleEquals(0), new SimpleEquals(1)), false, 'non-equal objects overriding euqls method');
+        assert.equal(mx.equals(new SimpleEquals(1), new SimpleEquals(1)), true, 'equal objects overriding equals method');
+        assert.equal(mx.equals(new SimpleEquals(1), new SimpleEquals(0)), false, 'non-equal objects overriding equals method');
+        assert.equal(mx.equals(new SimpleEquals(0), new SimpleEquals(1)), false, 'non-equal objects overriding equals method');
     });
 
 
     qtest('equals using object literals', function (assert) {
-        assert.equal(mx.equals({}, {}), true, 'equal objects overriding euqls method');
-        assert.equal(mx.equals({ val: 1 }, { val: 1 }), true, 'greater than objects overriding euqls method');
-        assert.equal(mx.equals({ val: 1, sum: { name: 'A' } }, { val: 1, sum: { name: 'A' } }), true, 'less than objects overriding euqls method');
+        assert.equal(mx.equals({}, {}), true, 'equal objects overriding equals method');
+        assert.equal(mx.equals({ val: 1 }, { val: 1 }), true, 'greater than objects overriding equals method');
+        assert.equal(mx.equals({ val: 1, sum: { name: 'A' } }, { val: 1, sum: { name: 'A' } }), true, 'less than objects overriding equals method');
 
         assert.equal(mx.equals({}, {}), true, 'equal empty objects literals');
         assert.equal(mx.equals({ val: 1 }, { val: 1 }), true, 'equal objects literals with properties');
