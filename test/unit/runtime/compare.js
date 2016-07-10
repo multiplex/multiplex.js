@@ -1,5 +1,5 @@
-import mx from '../../multiplex'
-import {qmodule, qtest} from '../../qunit'
+import mx from '../../multiplex';
+import {qmodule, qtest} from '../../qunit';
 
 qmodule('compare');
 
