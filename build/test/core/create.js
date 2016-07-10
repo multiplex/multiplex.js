@@ -129,8 +129,14 @@
         val[0] = 1;
 
         var it = mx(val);
-        assert.equal(count(it), 1, 'arguments iterable count');
-        assert.deepEqual(toArray(it), [1], 'arguments iterable to array');
+        assert.equal(count(it), 1, 'array-like iterable count');
+        assert.deepEqual(toArray(it), [1], 'array-like iterable to array');
+
+        if (typeof Int8Array === 'object') {
+            var arr = new Int8Array([1]);
+            assert.equal(count(arr), 1, 'Int8Array iterable count');
+            assert.deepEqual(toArray(arr), [1], 'Int8Array iterable to array');
+        }
     });
 
 
