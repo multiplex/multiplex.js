@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (July 10, 2016)
+* Version 2.0.0 (July 11, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -12,6 +12,9 @@
     typeof define === 'function' && define.amd ? define(factory) :
     (global.mx = factory());
 }(this, function () { 'use strict';
+
+    var iteratorSymbol = (typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol') ?
+        Symbol.iterator : '@@iterator';
 
     function error(msg) {
         throw new Error(msg);
@@ -55,17 +58,20 @@
         this.next = factory;
     }
 
-    var iteratorSymbol = (typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol') ? Symbol.iterator : '@@iterator';
+    function isFunc(fn) {
+        return typeof fn === 'function';
+    }
 
     var toString = Object.prototype.toString;
     var TypedArray = typeof Int8Array !== 'undefined' ? Object.getPrototypeOf(Int8Array) : function () { };
+    var NodeListType = typeof NodeList !== 'undefined' ? NodeList : function () { };
 
     function isArrayLike(obj) {
         if (
             typeof obj === 'string' ||                              // String
             obj instanceof Array ||                                 // Arrays
             obj instanceof TypedArray ||                            // typed-array
-            obj instanceof NodeList) {                              // NodeList: document.querySelectorAll
+            obj instanceof NodeListType) {                          // NodeList: document.querySelectorAll
             return true;
         }
         else if (obj !== null &&
@@ -81,27 +87,18 @@
         return false;
     }
 
-    function Multiplex(obj) {
-        this._iterable = obj;
-    }
-
-    Multiplex.prototype[iteratorSymbol] = function () {
-        return iteratorFactory(this._iterable);
-    };
-
-
     function iteratorFactory(obj) {
         obj = obj || [];
 
 
         /// iterable/generator function
-        if (typeof obj === 'function') {
+        if (isFunc(obj)) {
             return obj();
         }
 
 
         // iterable: Array, String, Map, Set, NodeList, Arguments, Iterable objects
-        else if (typeof obj[iteratorSymbol] === 'function') {
+        else if (isFunc(obj[iteratorSymbol])) {
             return obj[iteratorSymbol]();
         }
 
@@ -126,24 +123,20 @@
         }
 
 
-        else {
-            // simple iterator over non-objects
-            if (typeof obj !== 'object') {
-                return iteratorFactory([obj]);
-            }
-
+        // Object.entries iterator
+        else if (typeof obj === 'object') {
             var _index = -1,
                 _keys = Object.keys(obj),
                 _length = _keys.length;
 
-            // key-value iterator
+            // [key, value] iterator
             return new Iterator(function () {
                 if (++_index < _length) {
                     return {
-                        value: {
-                            key: _keys[_index],
-                            value: obj[_keys[_index]]
-                        },
+                        value: [
+                            _keys[_index],
+                            obj[_keys[_index]]
+                        ],
                         done: false
                     };
                 }
@@ -152,7 +145,19 @@
                 };
             });
         }
+
+
+        // simple iterator over non-objects
+        return iteratorFactory([obj]);
     }
+
+    function Multiplex(obj) {
+        this._iterable = obj;
+    }
+
+    Multiplex.prototype[iteratorSymbol] = function () {
+        return iteratorFactory(this._iterable);
+    };
 
     /**
     * Creates a new Multiplex instance.
@@ -164,10 +169,7 @@
     }
 
     function valueOf(obj) {
-        if (obj === null || obj === undefined) {
-            return 0;
-        }
-        else if (obj instanceof Date) {
+        if (obj instanceof Date) {
             return typeof obj.getTime === 'function' ? obj.getTime() : 0;
         }
         else {
@@ -553,6 +555,10 @@
     mx.equalsSymbol = equalsSymbol;
     mx.compare = compare;
     mx.compareSymbol = compareSymbol;
+    mx.iteratorSymbol = iteratorSymbol;
+
+    mx.Iterator = Iterator;
+    mx.Multiplex = Multiplex;
     mx.version = '2.0.0';
 
     return mx;
