@@ -1,12 +1,13 @@
 var toString = Object.prototype.toString;
 var TypedArray = typeof Int8Array !== 'undefined' ? Object.getPrototypeOf(Int8Array) : function () { };
+var NodeListType = typeof NodeList !== 'undefined' ? NodeList : function () { };
 
 export default function isArrayLike(obj) {
     if (
         typeof obj === 'string' ||                              // String
         obj instanceof Array ||                                 // Arrays
         obj instanceof TypedArray ||                            // typed-array
-        obj instanceof NodeList) {                              // NodeList: document.querySelectorAll
+        obj instanceof NodeListType) {                          // NodeList: document.querySelectorAll
         return true;
     }
     else if (obj !== null &&
