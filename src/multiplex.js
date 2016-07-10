@@ -13,10 +13,6 @@ import {
 } from './lib/runtime/runtime';
 
 
-export var Iterator;
-export var Multiplex;
-
-
 mx.hash = hash;
 mx.hashSymbol = hashSymbol;
 mx.equals = equals;
