@@ -63,15 +63,15 @@
     }
 
     var toString = Object.prototype.toString;
-    var TypedArray = typeof Int8Array !== 'undefined' ? Object.getPrototypeOf(Int8Array) : function TypedArray() { };
-    var NodeListType = typeof NodeList !== 'undefined' ? NodeList : function NodeList() { };
+    var nodeListType = typeof NodeList !== 'undefined' ? true : false;
+    var TypedArray = typeof Int8Array !== 'undefined' ? Object.getPrototypeOf(Int8Array) : null;
 
     function isArrayLike(obj) {
         if (
             typeof obj === 'string' ||                              // String
             obj instanceof Array ||                                 // Arrays
-            obj instanceof TypedArray ||                            // typed-array
-            obj instanceof NodeListType) {                          // NodeList: document.querySelectorAll
+            (TypedArray && obj instanceof TypedArray) ||            // typed-array
+            (nodeListType && obj instanceof NodeList)) {            // NodeList: document.querySelectorAll
             return true;
         }
         else if (obj !== null &&
