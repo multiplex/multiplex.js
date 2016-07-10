@@ -64,15 +64,15 @@
     }
 
     const toString = Object.prototype.toString;
+    const nodeListType = typeof NodeList !== 'undefined' ? true : false;
     const TypedArray = Object.getPrototypeOf(Int8Array);
-    const NodeListType = typeof NodeList !== 'undefined' ? NodeList : function () { };
 
     function isArrayLike(obj) {
         if (
             typeof obj === 'string' ||                              // String
             obj instanceof Array ||                                 // Arrays
             obj instanceof TypedArray ||                            // typed-array
-            obj instanceof NodeListType) {                          // NodeList: document.querySelectorAll
+            (nodeListType && obj instanceof NodeList)) {            // NodeList: document.querySelectorAll
             return true;
         }
         else if (obj !== null &&
