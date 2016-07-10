@@ -1,6 +1,6 @@
 var toString = Object.prototype.toString;
-var TypedArray = typeof Int8Array !== 'undefined' ? Object.getPrototypeOf(Int8Array) : function () { };
-var NodeListType = typeof NodeList !== 'undefined' ? NodeList : function () { };
+var TypedArray = typeof Int8Array !== 'undefined' ? Object.getPrototypeOf(Int8Array) : function TypedArray() { };
+var NodeListType = typeof NodeList !== 'undefined' ? NodeList : function NodeList() { };
 
 export default function isArrayLike(obj) {
     if (
