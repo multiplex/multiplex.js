@@ -57,12 +57,11 @@
 
         assert.throws(function () {
             new mx.Iterator(1);
-        }, 'Iterator throws exception when passed anything beside a "next" function factory')
+        }, 'Iterator throws exception when passed anything beside a "next" function factory');
     });
 
 
     qtest('from generator function', function (assert) {
-
         try {
             var it = mx(eval('(function*() { yield 1; })'));
             assert.equal(count(it), 1, 'generator function count');
@@ -153,15 +152,15 @@
                         return {
                             value: val.items[index++],
                             done: false
-                        }
+                        };
                     }
 
                     return {
                         done: true
                     };
                 }
-            }
-        }
+            };
+        };
 
         var it = mx(val);
         assert.equal(count(it), 1, 'arguments iterable count');

@@ -38,8 +38,8 @@
         assert.equal(mx.compare(1, 0), 1, 'simple greater than compare');
         assert.equal(mx.compare(0, 1), -1, 'simple less than compare');
 
-        assert.equal(mx.compare(.5, .1), 1, 'float number greater than compare');
-        assert.equal(mx.compare(.1, .5), -1, 'float number less than compare');
+        assert.equal(mx.compare(0.5, 0.1), 1, 'float number greater than compare');
+        assert.equal(mx.compare(0.1, 0.5), -1, 'float number less than compare');
 
         assert.equal(mx.compare(5e-100, 1e-100), 1, 'high precision float number greater than compare');
         assert.equal(mx.compare(1e-100, 5e-100), -1, 'high precision float number less than compare');
@@ -136,8 +136,8 @@
 
             this[mx.compareSymbol] = function (obj) {
                 return this._val > obj._val ? 1 : (this._val < obj._val ? -1 : 0);
-            }
-        };
+            };
+        }
 
         assert.equal(mx.compare(new SimpleCompare(1), null), 1, 'any object using comparer function is greater than null');
         assert.equal(mx.compare(new SimpleCompare(1), undefined), 1, 'any object using comparer function is greater than undefined');

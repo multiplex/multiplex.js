@@ -31,8 +31,8 @@
 
         assert.ok(mx.equals(1, 1), 'simple numeric values are equal');
         assert.ok(mx.equals(0, 1) === false, 'simple numeric values not equal');
-        assert.ok(mx.equals(.1, .1), 'simple float numeric values are equal');
-        assert.ok(mx.equals(.1, .2) === false, 'simple float numeric values not equal');
+        assert.ok(mx.equals(0.1, 0.1), 'simple float numeric values are equal');
+        assert.ok(mx.equals(0.1, 0.2) === false, 'simple float numeric values not equal');
 
         assert.ok(mx.equals(1e-100, 1e-100), 'high precision float number equals');
         assert.ok(mx.equals(1e-100, 5e-100) === false, 'high precision float number non equals');
@@ -133,8 +133,8 @@
 
             this[mx.equalsSymbol] = function (obj) {
                 return this._val === obj._val;
-            }
-        };
+            };
+        }
 
         assert.equal(mx.equals(new SimpleEquals(1), new SimpleEquals(1)), true, 'equal objects overriding equals method');
         assert.equal(mx.equals(new SimpleEquals(1), new SimpleEquals(0)), false, 'non-equal objects overriding equals method');
@@ -162,7 +162,7 @@
     qtest('class type equals', function (assert) {
         function SimpleClass(val) {
             this._val = val;
-        };
+        }
 
         var o1 = new SimpleClass(1);
         var o2 = new SimpleClass(1);
