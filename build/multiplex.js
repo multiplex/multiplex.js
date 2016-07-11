@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (July 11, 2016)
+* Version 2.0.0 (July 12, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -63,17 +63,43 @@
         return typeof fn === 'function';
     }
 
-    const toString = Object.prototype.toString;
-
     function isArrayLike(obj) {
-        if (obj !== null &&
-            typeof obj === 'object' &&
-            typeof obj.length === 'number') {                                       // Array-likes have 'length' property
+        // JS array-types:
+        // - Array
+        // - String
+        //
+        // - Typed arrays:
+        //      Int8Array, Int16Array, Int32Array,
+        //      Uint8Array, Uint16Array, Unit32Array, Uint8ClampedArray
+        //      Float32Array, Float64Array,
+        //      Float32Array, Float64Array,
+        //
+        // - NodeList: document.querySelectorAll
+        // - HTMLCollection: document.forms
+        // - HTMLFormControlsCollection: forms.elements
+        // - arguments object
 
-            if (
-                (typeof NodeList === 'function' && obj instanceof NodeList) ||      // NodeList: document.querySelectorAll
-                typeof obj.splice === 'function' ||                                 // third party libraries. eg. jQuery
-                toString.call(obj) === '[object Arguments]') {                      // arguments
+        if (obj === null || obj === undefined) {
+            return false;
+        }
+
+
+        if (typeof obj === 'string' ||
+            obj instanceof Array) {
+            return true;
+        }
+
+
+        if (typeof obj === 'object' &&                      // array-likes are objects
+            typeof obj.length === 'number') {               // array-likes have 'length' property
+            let len = obj.length;
+
+            if (typeof obj.splice === 'function' ||
+                (
+                    len >= 0 &&                             // length property must be > 1
+                    len % 1 === 0 &&                        // length property must be integer
+                    obj[len - 1] !== undefined              // at least one index is being checked
+                )) {
                 return true;
             }
         }
