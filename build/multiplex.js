@@ -79,10 +79,6 @@
         // - HTMLFormControlsCollection: forms.elements
         // - arguments object
 
-        if (obj === null || obj === undefined) {
-            return false;
-        }
-
 
         if (typeof obj === 'string' ||
             obj instanceof Array) {
@@ -90,7 +86,8 @@
         }
 
 
-        if (typeof obj === 'object' &&                      // array-likes are objects
+        if (obj != null &&
+            typeof obj === 'object' &&                      // array-likes are objects
             typeof obj.length === 'number') {               // array-likes have 'length' property
             let len = obj.length;
 
