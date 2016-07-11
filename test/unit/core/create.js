@@ -120,7 +120,7 @@ qtest('from array-like object', function (assert) {
     assert.deepEqual(toArray(it), [1], 'array-like iterable to array');
 
     if (typeof Int8Array === 'function') {
-        var arr = new Int8Array([1]);
+        var arr = mx(new Int8Array([1]));
         assert.equal(count(arr), 1, 'Int8Array iterable count');
         assert.deepEqual(toArray(arr), [1], 'Int8Array iterable to array');
     }

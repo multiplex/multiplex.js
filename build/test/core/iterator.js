@@ -60,6 +60,10 @@
         assert.throws(function () {
             new mx.Iterator(true);
         }, 'Iterator throws exception when passed boolean');
+
+        assert.throws(function () {
+            new mx.Iterator({});
+        }, 'Iterator throws exception when passed object');
     });
 
 }));
