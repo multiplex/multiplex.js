@@ -1,3 +1,5 @@
+// jshint unused:false
+
 import mx from '../../multiplex';
 import {qmodule, qtest} from '../../qunit';
 
@@ -44,7 +46,7 @@ qtest('from iterable function', function (assert) {
 
     assert.throws(function () {
         new mx.Iterator(1);
-    }, 'Iterator throws exception when passed anything beside a "next" function factory')
+    }, 'Iterator throws exception when passed anything beside a "next" function factory');
 });
 
 
@@ -122,14 +124,14 @@ qtest('from iterable object', function (assert) {
                         return {
                             value: val.items[index++],
                             done: false
-                        }
+                        };
                     }
 
                     return {
                         done: true
                     };
                 }
-            }
+            };
         }
     };
 

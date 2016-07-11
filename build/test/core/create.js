@@ -52,7 +52,7 @@
 
         assert.throws(function () {
             new mx.Iterator(1);
-        }, 'Iterator throws exception when passed anything beside a "next" function factory')
+        }, 'Iterator throws exception when passed anything beside a "next" function factory');
     });
 
 
@@ -130,14 +130,14 @@
                             return {
                                 value: val.items[index++],
                                 done: false
-                            }
+                            };
                         }
 
                         return {
                             done: true
                         };
                     }
-                }
+                };
             }
         };
 
