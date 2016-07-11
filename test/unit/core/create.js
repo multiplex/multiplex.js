@@ -43,10 +43,6 @@ qtest('from iterable function', function (assert) {
     });
     assert.equal(count(it), 1, 'iterable function count');
     assert.deepEqual(toArray(it), [1], 'iterable function to array');
-
-    assert.throws(function () {
-        new mx.Iterator(1);
-    }, 'Iterator throws exception when passed anything beside a "next" function factory');
 });
 
 
