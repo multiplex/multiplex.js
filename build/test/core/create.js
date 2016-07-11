@@ -109,7 +109,7 @@
         assert.equal(count(it), 1, 'Array-like iterable count');
         assert.deepEqual(toArray(it), [1], 'Array-like iterable to array');
 
-        let arr = new Int8Array([1]);
+        let arr = mx(new Int8Array([1]));
         assert.equal(count(arr), 1, 'Int8Array iterable count');
         assert.deepEqual(toArray(arr), [1], 'Int8Array iterable to array');
     });

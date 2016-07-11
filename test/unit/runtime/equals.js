@@ -147,8 +147,8 @@ qtest('equals using object literals', function (assert) {
     assert.equal(mx.equals({ val: 1 }, { val: 1 }), true, 'equal objects literals with properties');
     assert.equal(mx.equals({ val: 1, sum: { name: 'A' } }, { val: 1, sum: { name: 'A' } }), true, 'equal object literals with complex object literals as properties');
 
-    var v1 = { val: 1 };
-    var v2 = { val: 1 };
+    var v1 = { val: 1, toString: Object.prototype.toString };
+    var v2 = { val: 1, toString: Object.prototype.toString };
     assert.equal(mx.equals(v1, v2), true, 'object literal equality works at runtime, meaning property change after testing equality might result in non equality');
 
     v1.name = 1;
