@@ -46,10 +46,6 @@ qtest('from iterable function', function (assert) {
     });
     assert.equal(count(it), 1, 'iterable function count');
     assert.deepEqual(toArray(it), [1], 'iterable function to array');
-
-    assert.throws(function () {
-        new mx.Iterator(1);
-    }, 'Iterator throws exception when passed anything beside a "next" function factory');
 });
 
 
@@ -80,7 +76,7 @@ qtest('from string', function (assert) {
 
 
 qtest('from map', function (assert) {
-    if (typeof Map === 'object') {
+    if (typeof Map === 'function') {
         var val = [[{}, 1]];
         var it = mx(new Map(val));
         assert.equal(count(it), 1, 'map iterable count');
@@ -93,7 +89,7 @@ qtest('from map', function (assert) {
 
 
 qtest('from set', function (assert) {
-    if (typeof Set === 'object') {
+    if (typeof Set === 'function') {
         var val = [{}];
         var it = mx(new Set(val));
         assert.equal(count(it), 1, 'set iterable count');
@@ -123,7 +119,7 @@ qtest('from array-like object', function (assert) {
     assert.equal(count(it), 1, 'array-like iterable count');
     assert.deepEqual(toArray(it), [1], 'array-like iterable to array');
 
-    if (typeof Int8Array === 'object') {
+    if (typeof Int8Array === 'function') {
         var arr = new Int8Array([1]);
         assert.equal(count(arr), 1, 'Int8Array iterable count');
         assert.deepEqual(toArray(arr), [1], 'Int8Array iterable to array');
