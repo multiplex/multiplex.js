@@ -1,13 +1,11 @@
 export default function isArrayLike(obj) {
-    // JS array-types:
     // - Array
     // - String
     //
     // - Typed arrays:
     //      Int8Array, Int16Array, Int32Array,
     //      Uint8Array, Uint16Array, Unit32Array, Uint8ClampedArray
-    //      Float32Array, Float64Array,
-    //      Float32Array, Float64Array,
+    //      Float32Array, Float64Array
     //
     // - NodeList: document.querySelectorAll
     // - HTMLCollection: document.forms
