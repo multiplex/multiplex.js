@@ -22,6 +22,7 @@ module.exports = function (grunt) {
                     except: [
                         'mx',
                         'multiplex',
+                        'Iterable',
                         'Iterator',
                         'Collection',
                         'ReadOnlyCollection',
