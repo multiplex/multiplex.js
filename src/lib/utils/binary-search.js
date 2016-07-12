@@ -1,5 +1,5 @@
 export default function binarySearch(array, index, length, value, comparer) {
-    let _lo = index,
+    var _lo = index,
         _hi = index + length - 1,
         _order = 0,
         _i = 0;
