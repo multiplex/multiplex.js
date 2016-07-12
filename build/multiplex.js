@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (July 12, 2016)
+* Version 2.0.0 (July 13, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -63,15 +63,13 @@
     }
 
     function isArrayLike(obj) {
-        // JS array-types:
         // - Array
         // - String
         //
         // - Typed arrays:
         //      Int8Array, Int16Array, Int32Array,
         //      Uint8Array, Uint16Array, Unit32Array, Uint8ClampedArray
-        //      Float32Array, Float64Array,
-        //      Float32Array, Float64Array,
+        //      Float32Array, Float64Array
         //
         // - NodeList: document.querySelectorAll
         // - HTMLCollection: document.forms
@@ -167,21 +165,21 @@
         return iteratorFactory([obj]);
     }
 
-    function Multiplex(obj) {
-        this._iterable = obj;
+    function Iterable(val) {
+        this._val = val;
     }
 
-    Multiplex.prototype[iteratorSymbol] = function () {
-        return iteratorFactory(this._iterable);
+    Iterable.prototype[iteratorSymbol] = function () {
+        return iteratorFactory(this._val);
     };
 
     /**
-    * Creates a new Multiplex instance.
-    * @param {Multiplex|Iterable|Array|String|Function|Function*|Object} value An Multiplex object.
-    * @returns {Multiplex}
+    * Creates a new Iterable instance.
+    * @param {Iterable|Array|String|Function|Function*|Object} value An Iterable object.
+    * @returns {Iterable}
     */
     function mx(value) {
-        return value instanceof Multiplex ? value : new Multiplex(value);
+        return value instanceof Iterable ? value : new Iterable(value);
     }
 
     function valueOf(obj) {
@@ -573,8 +571,8 @@
     mx.compareSymbol = compareSymbol;
     mx.iteratorSymbol = iteratorSymbol;
 
+    mx.Iterable = Iterable;
     mx.Iterator = Iterator;
-    mx.Multiplex = Multiplex;
     mx.version = '2.0.0';
 
     return mx;
