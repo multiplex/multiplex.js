@@ -1,4 +1,3 @@
-import iteratorSymbol from './iterator-symbol';
 import iteratorFactory from './iterator-factory';
 
 export default class Iterable {
@@ -6,7 +5,11 @@ export default class Iterable {
         this._val = val;
     }
 
-    [iteratorSymbol]() {
+    [Symbol.iterator]() {
         return iteratorFactory(this._val);
+    }
+
+    get [Symbol.toStringTag]() {
+        return 'Iterable';
     }
 }
