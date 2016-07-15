@@ -46,7 +46,7 @@ export default function compare(objA, objB) {
         return _res > 0 ? 1 : (_res < 0 ? -1 : 0);
     }
 
-    // Compute overriden 'compare' method for Object types
+    // Compute overridden 'compare' method for Object types
     else if (typeof objA.__cmp__ === 'function') {
         return objA.__cmp__(objB);
     }
