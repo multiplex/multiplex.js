@@ -58,9 +58,8 @@ module.exports = function (grunt) {
 
     // releasing a new version
     grunt.registerTask('release', [
-        'clean',
+        'clean:release',
         'default',
-        'copy',
-        'uglify'
+        'copy:release'
     ]);
 };

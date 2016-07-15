@@ -100,7 +100,9 @@ module.exports = function (grunt) {
         var tasks = [
             'clean:build',
             'transpile',
-            'build-testrunner'
+            'build-testrunner',
+            'copy:build',
+            'uglify'
         ];
         grunt.task.run(tasks);
     });

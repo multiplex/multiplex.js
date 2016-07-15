@@ -3,30 +3,19 @@ module.exports = function (grunt) {
 
     var dirs = grunt.config('dirs'),
         files = grunt.config('files'),
-        banner = grunt.config('banner'),
-        path = require('path');
+        banner = grunt.config('banner');
 
     grunt.config.merge({
         copy: {
-            // copy built files to the release directory
-            main: {
-                files: [
-                    {
-                        dest: path.join(dirs.release, files.main),
-                        src: [path.join(dirs.build, files.main)]
-                    }
-                ]
-            },
-
-            // copy "typescript" files to the release directory
+            // copy "typescript" files to the build directory
             // include "banner" in the beginning
-            typings: {
+            build: {
                 files: [
                     {
                         expand: true,
                         flatten: true,
                         cwd: dirs.typings,
-                        dest: dirs.release,
+                        dest: dirs.build,
                         src: [files.typings],
                         filter: 'isFile'
                     }
@@ -36,6 +25,20 @@ module.exports = function (grunt) {
                         return banner + '\n' + content;
                     }
                 }
+            },
+
+            // copy "build" files to the release directory
+            release: {
+                files: [
+                    {
+                        expand: true,
+                        flatten: false,
+                        cwd: dirs.build,
+                        dest: dirs.release,
+                        src: ['*.{js,js.map,d.ts}'],
+                        filter: 'isFile'
+                    }
+                ]
             }
         }
     });

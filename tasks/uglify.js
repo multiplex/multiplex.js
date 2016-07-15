@@ -7,7 +7,7 @@ module.exports = function (grunt) {
         banner = grunt.config('banner'),
         minfiles = {};
 
-    minfiles[path.join(dirs.release, files.minified)] = [path.join(dirs.release, files.main)];
+    minfiles[path.join(dirs.build, files.minified)] = [path.join(dirs.build, files.main)];
 
     // minify es5 publish source (es6 minification is not supported)
     // include "banner" in the beginning
