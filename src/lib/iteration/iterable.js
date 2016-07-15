@@ -1,12 +1,14 @@
 import iterator from './iterator-factory';
 
 export default class Iterable {
-    constructor(val) {
-        this._val = val;
+    constructor(source = null) {
+        if (source != null) {
+            this._source = source;
+        }
     }
 
     [Symbol.iterator]() {
-        return iterator(this._val);
+        return iterator(this._source);
     }
 
     toString() {
@@ -14,6 +16,6 @@ export default class Iterable {
     }
 
     valueOf() {
-        return this._val;
+        return this._source == null ? this : this._source;
     }
 }
