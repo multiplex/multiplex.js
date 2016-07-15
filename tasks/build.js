@@ -77,19 +77,21 @@ module.exports = function (grunt) {
     });
 
     grunt.task.registerTask('build-testrunner', 'creates testrunner html file to run unit-tests', function () {
-        var testrunner = grunt.file.read(dirs.unit + '/testrunner.html'),
+        var testrunner = 'testrunner',
             units = grunt.file.expand({ cwd: dirs.unit }, '**/*.js').map(function (file) {
-                return '\n            "' + file + '"';
+                return '\n    \'' + file + '\'';
             }),
-            script = [
-                '    <script>',
-                '        require([' + units.join(','),
-                '        ]);',
-                '    </script>'
-            ];
+            script = 'require([' + units.join(',') + '\n]);\n';
 
-        testrunner = testrunner.replace(/.*<tests\/>/, script.join('\n'));
-        grunt.file.write(path.join(dirs.build, dirs.test, 'testrunner.html'), testrunner);
+        grunt.file.write(
+            path.join(dirs.build, dirs.test, testrunner + '.js'),
+            script
+        );
+
+        grunt.file.copy(
+            path.join(dirs.unit, testrunner),
+            path.join(dirs.build, dirs.test, testrunner + '.html')
+        );
     });
 
 
