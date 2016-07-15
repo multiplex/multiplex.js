@@ -1,3 +1,4 @@
+import extend from '../utils/extend';
 import assertType from '../utils/assert-type';
 
 
@@ -19,7 +20,7 @@ export function ArrayIterator(arr) {
     var _index = -1,
         _length = arr.length;
 
-    this.next = function () {
+    Iterator.call(this, function () {
         if (++_index < _length) {
             return {
                 value: arr[_index],
@@ -30,7 +31,7 @@ export function ArrayIterator(arr) {
         return {
             done: true
         };
-    };
+    });
 }
 
 
@@ -44,7 +45,7 @@ export function ObjectIterator(obj) {
         _length = _keys.length;
 
     // [key, value] iterator
-    this.next = function () {
+    Iterator.call(this, function () {
         if (++_index < _length) {
             return {
                 value: [
@@ -57,7 +58,7 @@ export function ObjectIterator(obj) {
         return {
             done: true
         };
-    };
+    });
 }
 
 
@@ -65,9 +66,14 @@ export function ObjectIterator(obj) {
 * Creates an empty iteration.
 */
 export function EmptyIterator() {
-    this.next = function () {
+    Iterator.call(this, function () {
         return {
             done: true
         };
-    };
+    });
 }
+
+
+extend(ArrayIterator, Iterator);
+extend(ObjectIterator, Iterator);
+extend(EmptyIterator, Iterator);

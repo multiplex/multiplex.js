@@ -13,6 +13,23 @@
     (global.mx = factory());
 }(this, function () { 'use strict';
 
+    function isFunction(fn) {
+        return typeof fn === 'function';
+    }
+
+    function extend(Type, Base) {
+        if (isFunction(Object.create)) {
+            Type.prototype = Object.create(Base.prototype);
+        }
+        else {
+            var _ = function () { };
+            _.prototype = Base.prototype;
+            Type.prototype = new _();
+        }
+
+        Type.prototype.constructor = Type;
+    }
+
     function error(msg) {
         throw new Error(msg);
     }
@@ -69,7 +86,7 @@
         var _index = -1,
             _length = arr.length;
 
-        this.next = function () {
+        Iterator.call(this, function () {
             if (++_index < _length) {
                 return {
                     value: arr[_index],
@@ -80,7 +97,7 @@
             return {
                 done: true
             };
-        };
+        });
     }
 
 
@@ -94,7 +111,7 @@
             _length = _keys.length;
 
         // [key, value] iterator
-        this.next = function () {
+        Iterator.call(this, function () {
             if (++_index < _length) {
                 return {
                     value: [
@@ -107,7 +124,7 @@
             return {
                 done: true
             };
-        };
+        });
     }
 
 
@@ -115,19 +132,20 @@
     * Creates an empty iteration.
     */
     function EmptyIterator() {
-        this.next = function () {
+        Iterator.call(this, function () {
             return {
                 done: true
             };
-        };
+        });
     }
+
+
+    extend(ArrayIterator, Iterator);
+    extend(ObjectIterator, Iterator);
+    extend(EmptyIterator, Iterator);
 
     var iteratorSymbol = (typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol') ?
         Symbol.iterator : '@@iterator';
-
-    function isFunction(fn) {
-        return typeof fn === 'function';
-    }
 
     function toString(obj) {
         return typeof obj.toString === 'function' ? obj.toString() : '';
@@ -212,8 +230,10 @@
         }
     }
 
-    function Iterable(val) {
-        this._source = val == null ? this : val;
+    function Iterable(source) {
+        if (source != null) {
+            this._source = source;
+        }
     }
 
     Iterable.prototype[iteratorSymbol] = function () {
@@ -225,7 +245,7 @@
     };
 
     Iterable.prototype.valueOf = function () {
-        return this._source;
+        return this._source == null ? this : this._source;
     };
 
     function valueOf(obj) {
