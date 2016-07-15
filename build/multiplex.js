@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (July 15, 2016)
+* Version 2.0.0 (July 16, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -257,6 +257,8 @@
         }
     }
 
+    var hashSymbol = '__hash__';
+
     function combineHash(h1, h2) {
         return ((h1 << 7) | (h1 >> 25)) ^ h2;
     }
@@ -327,8 +329,6 @@
         var _time = valueOf(date);
         return _time ^ (_time >> 5);
     }
-
-    var hashSymbol = '__hash__';
 
     function isObjectLiteral(obj) {
         return Object.getPrototypeOf(obj) === Object.prototype;
@@ -453,9 +453,9 @@
                 _hash = hash(valueOf(obj));
             }
 
-            // Compute overriden 'hash' method
-            else if (typeof obj.__hash__ === 'function') {
-                _hash = obj.__hash__() >> 32;
+            // Compute overridden 'hash' method
+            else if (typeof obj[hashSymbol] === 'function') {
+                _hash = obj[hashSymbol]() >> 32;
             }
 
             // Compute 'Object' type hash for all other types
@@ -477,6 +477,8 @@
 
         return _hash;
     }
+
+    var equalsSymbol = '__eq__';
 
     function computeObjectEquals(objA, objB) {
         // Objects having different hash code are not equal
@@ -551,9 +553,9 @@
                 return valueOf(objA) === valueOf(objB);
             }
 
-            // Compute overriden 'equals' method for Object types
-            else if (typeof objA.__eq__ === 'function') {
-                return objA.__eq__(objB);
+            // Compute overridden 'equals' method for Object types
+            else if (typeof objA[equalsSymbol] === 'function') {
+                return objA[equalsSymbol](objB);
             }
 
             // Object types
@@ -565,7 +567,7 @@
         return false;
     }
 
-    var equalsSymbol = '__eq__';
+    var compareSymbol = '__cmp__';
 
     /**
     * Performs a comparison of two objects of the same type and returns a value indicating whether one object is less than, equal to, or greater than the other.
@@ -613,9 +615,9 @@
             return _res > 0 ? 1 : (_res < 0 ? -1 : 0);
         }
 
-        // Compute overriden 'compare' method for Object types
-        else if (typeof objA.__cmp__ === 'function') {
-            return objA.__cmp__(objB);
+        // Compute overridden 'compare' method for Object types
+        else if (typeof objA[compareSymbol] === 'function') {
+            return objA[compareSymbol](objB);
         }
 
         // All other objects are compared using 'valudOf' method
@@ -627,7 +629,29 @@
         }
     }
 
-    var compareSymbol = '__cmp__';
+    function assign(target, source) {
+        if (isFunction(Object.assign)) {
+            Object.assign(target, source);
+        }
+        else {
+            for (var prop in source) {
+                target[prop] = source[prop];
+            }
+        }
+
+        return target;
+    }
+
+    function linq(iterable) {
+        assign(iterable, {
+        });
+
+        assign(iterable.prototype, {
+        });
+    }
+
+    linq(Iterable);
+
 
     /**
     * Creates a new Iterable instance.
