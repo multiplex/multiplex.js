@@ -1,1 +1,2 @@
-export {mx as default} from '../src/multiplex';
+import mx from '../src/multiplex';
+export default mx;
