@@ -1,3 +1,5 @@
+import toString from './to-string';
+
 export default function isArrayLike(obj) {
     // - Array
     // - String
@@ -11,6 +13,7 @@ export default function isArrayLike(obj) {
     // - HTMLCollection: document.forms
     // - HTMLFormControlsCollection: forms.elements
     // - arguments object
+    // - objects with 'length' and 'slice' properties
 
 
     if (typeof obj === 'string' ||
@@ -19,18 +22,22 @@ export default function isArrayLike(obj) {
     }
 
 
-    if (obj != null &&
+    else if (obj != null &&
         typeof obj === 'object' &&                      // array-likes are objects
         typeof obj.length === 'number') {               // array-likes have 'length' property
-        let len = obj.length;
 
-        if (typeof obj.splice === 'function' ||
-            (
-                len >= 0 &&                             // length property must be > 1
-                len % 1 === 0 &&                        // length property must be integer
-                obj[len - 1] !== undefined              // at least one index is being checked
-            )) {
+        if (typeof obj.splice === 'function' ||             // third party libraries. eg. jQuery
+            toString(obj) === '[object Arguments]') {       // arguments object
             return true;
+        }
+
+        else {
+            let len = obj.length;
+            if (len > 0 &&                                  // length property must be > 0
+                len % 1 === 0 &&                            // length property must be integer
+                obj[len - 1] !== undefined) {               // at least one index is being checked)
+                return true;
+            }
         }
     }
 
