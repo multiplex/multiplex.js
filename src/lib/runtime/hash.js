@@ -1,4 +1,5 @@
 import valueOf from '../utils/value-of';
+import hashSymbol from './hash-symbol';
 import combineHash from './hash-combine';
 import compute31BitNumberHash from './hash-number';
 import compute31BitStringHash from './hash-string';
@@ -55,8 +56,8 @@ export default function hash(obj) {
         }
 
         // Compute overridden 'hash' method
-        else if (typeof obj.__hash__ === 'function') {
-            _hash = obj.__hash__() >> 32;
+        else if (typeof obj[hashSymbol] === 'function') {
+            _hash = obj[hashSymbol]() >> 32;
         }
 
         // Compute 'Object' type hash for all other types
