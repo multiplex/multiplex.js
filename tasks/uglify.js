@@ -47,7 +47,7 @@ module.exports = function (grunt) {
             },
             dist: {
                 files: {
-                    [path.join(dirs.release, files.minified)]: [path.join(dirs.release, files.main)]
+                    [path.join(dirs.build, files.minified)]: [path.join(dirs.build, files.main)]
                 }
             }
         }

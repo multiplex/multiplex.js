@@ -99,7 +99,9 @@ module.exports = function (grunt) {
         var tasks = [
             'clean:build',
             'transpile',
-            'build-testrunner'
+            'build-testrunner',
+            'copy:build'
+            //'uglify'      //es6 not supported
         ];
         grunt.task.run(tasks);
     });
