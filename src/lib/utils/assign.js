@@ -9,4 +9,6 @@ export default function assign(target, source) {
             target[prop] = source[prop];
         }
     }
+
+    return target;
 }
