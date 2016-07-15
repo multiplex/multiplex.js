@@ -40,7 +40,7 @@ export default function equals(objA, objB) {
             return valueOf(objA) === valueOf(objB);
         }
 
-        // Compute overriden 'equals' method for Object types
+        // Compute overridden 'equals' method for Object types
         else if (typeof objA.__eq__ === 'function') {
             return objA.__eq__(objB);
         }

@@ -54,7 +54,7 @@ export default function hash(obj) {
             _hash = hash(valueOf(obj));
         }
 
-        // Compute overriden 'hash' method
+        // Compute overridden 'hash' method
         else if (typeof obj.__hash__ === 'function') {
             _hash = obj.__hash__() >> 32;
         }
