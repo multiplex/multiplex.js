@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (July 13, 2016)
+* Version 2.0.0 (July 15, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -13,9 +13,6 @@
     (global.mx = factory());
 }(this, function () { 'use strict';
 
-    var iteratorSymbol = (typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol') ?
-        Symbol.iterator : '@@iterator';
-
     function error(msg) {
         throw new Error(msg);
     }
@@ -26,18 +23,23 @@
         if (obj === null || obj === undefined) {
             return false;
         }
+
         if (typeof obj === 'number') {
             return type === Number;
         }
+
         else if (typeof obj === 'string') {
             return type === String;
         }
+
         else if (typeof obj === 'function') {
             return type === Function;
         }
+
         else if (typeof obj === 'boolean') {
             return type === Boolean;
         }
+
         else {
             return obj instanceof type;
         }
@@ -50,7 +52,7 @@
     }
 
     /**
-    * Supports a simple iteration over an Iterable .
+    * Supports an iteration over an object using specified factory method.
     * @param {Function} factory A function to yield the next item in the sequence.
     */
     function Iterator(factory) {
@@ -58,8 +60,77 @@
         this.next = factory;
     }
 
-    function isFunc(fn) {
+
+    /**
+    * Supports an iteration over an Array or Array-Like.
+    * @param {Array} arr An array or array-like object.
+    */
+    function ArrayIterator(arr) {
+        var _index = -1,
+            _length = arr.length;
+
+        this.next = function () {
+            if (++_index < _length) {
+                return {
+                    value: arr[_index],
+                    done: false
+                };
+            }
+
+            return {
+                done: true
+            };
+        };
+    }
+
+
+    /**
+    * Supports an iteration over an Object.
+    * @param {Object} obj An object instance.
+    */
+    function ObjectIterator(obj) {
+        var _index = -1,
+            _keys = Object.keys(obj),
+            _length = _keys.length;
+
+        // [key, value] iterator
+        this.next = function () {
+            if (++_index < _length) {
+                return {
+                    value: [
+                        _keys[_index],
+                        obj[_keys[_index]]
+                    ],
+                    done: false
+                };
+            }
+            return {
+                done: true
+            };
+        };
+    }
+
+
+    /**
+    * Creates an empty iteration.
+    */
+    function EmptyIterator() {
+        this.next = function () {
+            return {
+                done: true
+            };
+        };
+    }
+
+    var iteratorSymbol = (typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol') ?
+        Symbol.iterator : '@@iterator';
+
+    function isFunction(fn) {
         return typeof fn === 'function';
+    }
+
+    function toString(obj) {
+        return typeof obj.toString === 'function' ? obj.toString() : '';
     }
 
     function isArrayLike(obj) {
@@ -75,6 +146,7 @@
         // - HTMLCollection: document.forms
         // - HTMLFormControlsCollection: forms.elements
         // - arguments object
+        // - objects with 'length' and 'slice' properties
 
 
         if (typeof obj === 'string' ||
@@ -83,104 +155,78 @@
         }
 
 
-        if (obj != null &&
-            typeof obj === 'object' &&                      // array-likes are objects
-            typeof obj.length === 'number') {               // array-likes have 'length' property
-            var len = obj.length;
+        else if (obj != null &&
+            typeof obj === 'object' &&                          // array-likes are objects
+            typeof obj.length === 'number') {                   // array-likes have 'length' property
 
-            if (typeof obj.splice === 'function' ||
-                (
-                    len >= 0 &&                             // length property must be > 1
-                    len % 1 === 0 &&                        // length property must be integer
-                    obj[len - 1] !== undefined              // at least one index is being checked
-                )) {
+            if (typeof obj.splice === 'function' ||             // third party libraries. eg. jQuery
+                toString(obj) === '[object Arguments]') {       // arguments object
                 return true;
+            }
+            else {
+                var len = obj.length;
+                if (len > 0 &&                                  // length property must be > 0
+                    len % 1 === 0 &&                            // length property must be integer
+                    obj[len - 1] !== undefined) {               // at least one index is being checked)
+                    return true;
+                }
             }
         }
 
         return false;
     }
 
-    function iteratorFactory(obj) {
-        obj = obj || [];
+    /**
+    * Creates an iterator object
+    * @param {Object} obj An object to create iterator from.
+    */
+    function iterator (obj) {
+        // empty iteration
+        if (obj === null || obj === undefined) {
+            return new EmptyIterator();
+        }
 
-
-        /// iterable/generator function
-        if (isFunc(obj)) {
+        // iterable/generator function
+        else if (isFunction(obj)) {
             return obj();
         }
 
-
         // iterable: Array, String, Map, Set, NodeList, Arguments, Iterable objects
-        else if (isFunc(obj[iteratorSymbol])) {
+        else if (isFunction(obj[iteratorSymbol])) {
             return obj[iteratorSymbol]();
         }
 
-
         // array-like objects
         else if (isArrayLike(obj)) {
-            var _index = -1,
-                _length = obj.length;
-
-            return new Iterator(function () {
-                if (++_index < _length) {
-                    return {
-                        value: obj[_index],
-                        done: false
-                    };
-                }
-
-                return {
-                    done: true
-                };
-            });
+            return new ArrayIterator(obj);
         }
-
 
         // Object.entries iterator
         else if (typeof obj === 'object') {
-            var _index = -1,
-                _keys = Object.keys(obj),
-                _length = _keys.length;
-
-            // [key, value] iterator
-            return new Iterator(function () {
-                if (++_index < _length) {
-                    return {
-                        value: [
-                            _keys[_index],
-                            obj[_keys[_index]]
-                        ],
-                        done: false
-                    };
-                }
-                return {
-                    done: true
-                };
-            });
+            return new ObjectIterator(obj);
         }
 
-
         // simple iterator over non-objects
-        return iteratorFactory([obj]);
+        else {
+            return new ArrayIterator([obj]);
+        }
     }
 
     function Iterable(val) {
-        this._val = val;
+        this._source = val == null ? this : val;
     }
 
     Iterable.prototype[iteratorSymbol] = function () {
-        return iteratorFactory(this._val);
+        return iterator(this._source);
     };
 
-    /**
-    * Creates a new Iterable instance.
-    * @param {Iterable|Array|String|Function|Function*|Object} value An Iterable object.
-    * @returns {Iterable}
-    */
-    function mx(value) {
-        return value instanceof Iterable ? value : new Iterable(value);
-    }
+    Iterable.prototype.toString = function () {
+        return '[Iterable]';
+    };
+
+    Iterable.prototype.valueOf = function () {
+        return this._source;
+    };
 
     function valueOf(obj) {
         if (obj instanceof Date) {
@@ -562,6 +608,17 @@
     }
 
     var compareSymbol = '__cmp__';
+
+    /**
+    * Creates a new Iterable instance.
+    * @param {Iterable|Array|String|Function|Function*|Object} value An Iterable object.
+    * @returns {Iterable}
+    */
+    function mx(value) {
+        return value instanceof Iterable ? value : new Iterable(value);
+    }
+
+
 
     mx.hash = hash;
     mx.hashSymbol = hashSymbol;

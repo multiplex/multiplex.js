@@ -1,7 +1,7 @@
-import isFunc from './is-function';
+import isFunction from './is-function';
 
 export default function assign(target, source) {
-    if (isFunc(Object.assign)) {
+    if (isFunction(Object.assign)) {
         Object.assign(target, source);
     }
     else {
