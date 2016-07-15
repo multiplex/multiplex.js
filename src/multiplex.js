@@ -11,6 +11,10 @@ import {
     compareSymbol
 } from './lib/runtime/runtime';
 
+import linq from './lib/linq/_linq';
+
+linq(Iterable);
+
 
 /**
 * Creates a new Iterable instance.
