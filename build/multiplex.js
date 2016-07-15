@@ -67,12 +67,12 @@
     * Supports an iteration over an Array or Array-Like.
     * @param {Array} arr An array or array-like object.
     */
-    class ArrayIterator {
+    class ArrayIterator extends Iterator {
         constructor(arr) {
             let _index = -1,
                 _length = arr.length;
 
-            this.next = function () {
+            super(() => {
                 if (++_index < _length) {
                     return {
                         value: arr[_index],
@@ -83,7 +83,7 @@
                 return {
                     done: true
                 };
-            };
+            });
         }
     }
 
@@ -92,14 +92,14 @@
     * Supports an iteration over an Object.
     * @param {Object} obj An object instance.
     */
-    class ObjectIterator {
+    class ObjectIterator extends Iterator {
         constructor(obj) {
             let _index = -1,
                 _keys = Object.keys(obj),
                 _length = _keys.length;
 
             // [key, value] iterator
-            this.next = function () {
+            super(() => {
                 if (++_index < _length) {
                     return {
                         value: [
@@ -112,7 +112,7 @@
                 return {
                     done: true
                 };
-            };
+            });
         }
     }
 
@@ -120,11 +120,9 @@
     /**
     * Creates an empty iteration.
     */
-    class EmptyIterator {
-        next() {
-            return {
-                done: true
-            };
+    class EmptyIterator extends Iterator {
+        constructor() {
+            super(() => ({ done: true }));
         }
     }
 
@@ -218,12 +216,14 @@
     }
 
     class Iterable {
-        constructor(val) {
-            this._val = val;
+        constructor(source = null) {
+            if (source != null) {
+                this._source = source;
+            }
         }
 
         [Symbol.iterator]() {
-            return iterator(this._val);
+            return iterator(this._source);
         }
 
         toString() {
@@ -231,7 +231,7 @@
         }
 
         valueOf() {
-            return this._val;
+            return this._source == null ? this : this._source;
         }
     }
 
@@ -400,7 +400,7 @@
                 _hash = hash(valueOf(obj));
             }
 
-            // Compute overriden 'hash' method
+            // Compute overridden 'hash' method
             else if (typeof obj.__hash__ === 'function') {
                 _hash = obj.__hash__() >> 32;
             }
@@ -500,7 +500,7 @@
                 return valueOf(objA) === valueOf(objB);
             }
 
-            // Compute overriden 'equals' method for Object types
+            // Compute overridden 'equals' method for Object types
             else if (typeof objA.__eq__ === 'function') {
                 return objA.__eq__(objB);
             }
@@ -561,7 +561,7 @@
             return _res > 0 ? 1 : (_res < 0 ? -1 : 0);
         }
 
-        // Compute overriden 'compare' method for Object types
+        // Compute overridden 'compare' method for Object types
         else if (typeof objA.__cmp__ === 'function') {
             return objA.__cmp__(objB);
         }

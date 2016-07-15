@@ -16,12 +16,12 @@ export default class Iterator {
 * Supports an iteration over an Array or Array-Like.
 * @param {Array} arr An array or array-like object.
 */
-export class ArrayIterator {
+export class ArrayIterator extends Iterator {
     constructor(arr) {
         let _index = -1,
             _length = arr.length;
 
-        this.next = function () {
+        super(() => {
             if (++_index < _length) {
                 return {
                     value: arr[_index],
@@ -32,7 +32,7 @@ export class ArrayIterator {
             return {
                 done: true
             };
-        };
+        });
     }
 }
 
@@ -41,14 +41,14 @@ export class ArrayIterator {
 * Supports an iteration over an Object.
 * @param {Object} obj An object instance.
 */
-export class ObjectIterator {
+export class ObjectIterator extends Iterator {
     constructor(obj) {
         let _index = -1,
             _keys = Object.keys(obj),
             _length = _keys.length;
 
         // [key, value] iterator
-        this.next = function () {
+        super(() => {
             if (++_index < _length) {
                 return {
                     value: [
@@ -61,7 +61,7 @@ export class ObjectIterator {
             return {
                 done: true
             };
-        };
+        });
     }
 }
 
@@ -69,10 +69,8 @@ export class ObjectIterator {
 /**
 * Creates an empty iteration.
 */
-export class EmptyIterator {
-    next() {
-        return {
-            done: true
-        };
+export class EmptyIterator extends Iterator {
+    constructor() {
+        super(() => ({ done: true }));
     }
 }
