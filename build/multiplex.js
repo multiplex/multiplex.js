@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (July 15, 2016)
+* Version 2.0.0 (July 16, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -244,6 +244,8 @@
         }
     }
 
+    const hashSymbol =  '__hash__';
+
     function combineHash(h1, h2) {
         return ((h1 << 7) | (h1 >> 25)) ^ h2;
     }
@@ -401,8 +403,8 @@
             }
 
             // Compute overridden 'hash' method
-            else if (typeof obj.__hash__ === 'function') {
-                _hash = obj.__hash__() >> 32;
+            else if (typeof obj[hashSymbol] === 'function') {
+                _hash = obj[hashSymbol]() >> 32;
             }
 
             // Compute 'Object' type hash for all other types
@@ -425,7 +427,7 @@
         return _hash;
     }
 
-    const hashSymbol =  '__hash__';
+    const equalsSymbol =  '__eq__';
 
     function computeObjectEquals(objA, objB) {
         // Objects having different hash code are not equal
@@ -501,8 +503,8 @@
             }
 
             // Compute overridden 'equals' method for Object types
-            else if (typeof objA.__eq__ === 'function') {
-                return objA.__eq__(objB);
+            else if (typeof objA[equalsSymbol] === 'function') {
+                return objA[equalsSymbol](objB);
             }
 
             return computeObjectEquals(objA, objB);
@@ -513,7 +515,7 @@
         return false;
     }
 
-    const equalsSymbol =  '__eq__';
+    const compareSymbol = '__cmp__';
 
     /**
     * Performs a comparison of two objects of the same type and returns a value indicating whether one object is less than, equal to, or greater than the other.
@@ -562,8 +564,8 @@
         }
 
         // Compute overridden 'compare' method for Object types
-        else if (typeof objA.__cmp__ === 'function') {
-            return objA.__cmp__(objB);
+        else if (typeof objA[compareSymbol] === 'function') {
+            return objA[compareSymbol](objB);
         }
 
         // All other objects are compared using 'valudOf' method
@@ -575,7 +577,16 @@
         }
     }
 
-    const compareSymbol = '__cmp__';
+    function linq(iterable) {
+        Object.assign(iterable, {
+        });
+
+        Object.assign(iterable.prototype, {
+        });
+    }
+
+    linq(Iterable);
+
 
     /**
     * Creates a new Iterable instance.
