@@ -1,11 +1,20 @@
 module.exports = function (grunt) {
     'use strict';
 
+    // polyfill es6 Promise
+    if (typeof Promise === 'undefined') {
+        global.Promise = require('es6-promise').Promise;
+    }
+
+    // polyfill es6 Map (used in rollup)
+    if (typeof Map === 'undefined') {
+        global.Map = require('es6-map');
+    }
+
     var rollup = require('rollup'),
         path = require('path'),
         dirs = grunt.config('dirs'),
-        files = grunt.config('files'),
-        Promise = typeof (Promise) === 'function' ? Promise : require('es6-promise').Promise;
+        files = grunt.config('files');
 
 
     // transpile es6 modules
@@ -29,13 +38,13 @@ module.exports = function (grunt) {
     // transpile unit tests
     function transpileTests() {
         var units = grunt.file.expand({ cwd: dirs.unit }, '**/*.js');
-        console.log(units.map);
-        console.log(Promise.all);
+        var pattern = /^.*multiplex$/;
+
         return Promise.all(units.map(function (file) {
             return rollup.rollup({
                 entry: path.join(dirs.unit, file),
                 external: function (id) {
-                    if (id.endsWith('multiplex')) {
+                    if (pattern.test(id)) {
                         return true;
                     }
                 }
@@ -47,7 +56,7 @@ module.exports = function (grunt) {
                     sourceMap: false,
                     dest: path.join(dirs.build, dirs.test, file),
                     globals: function (id) {
-                        if (id.endsWith('multiplex')) {
+                        if (pattern.test(id)) {
                             return 'mx';
                         }
                     }
