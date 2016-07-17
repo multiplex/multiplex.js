@@ -29,7 +29,8 @@ module.exports = function (grunt) {
     // transpile unit tests
     function transpileTests() {
         var units = grunt.file.expand({ cwd: dirs.unit }, '**/*.js');
-
+        console.log(units.map);
+        console.log(Promise.all);
         return Promise.all(units.map(function (file) {
             return rollup.rollup({
                 entry: path.join(dirs.unit, file),
