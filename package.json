@@ -56,10 +56,10 @@
         "grunt-jscs": "3.0.1",
         "es6-promise": "3.2.1",
         "benchmark": "2.1.0",
-        "qunit": "0.9.1",
-        "rollup": "0.34.1",
-        "coveralls": "2.11.11",
-        "nyc": "7.0.0"
+        "qunit": "^0.9.1",
+        "rollup": "^0.32.1",
+        "coveralls": "^2.11.9",
+        "nyc": "^6.6.1"
     },
     "scripts": {
         "build": "npm install && grunt",

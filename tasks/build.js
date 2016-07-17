@@ -5,7 +5,7 @@ module.exports = function (grunt) {
         path = require('path'),
         dirs = grunt.config('dirs'),
         files = grunt.config('files'),
-        Promise = require('es6-promise').Promise;
+        Promise = typeof (Promise) === 'function' ? Promise : require('es6-promise').Promise;
 
 
     // transpile es6 modules
