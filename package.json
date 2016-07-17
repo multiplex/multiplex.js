@@ -55,6 +55,7 @@
         "grunt-benchmark": "1.0.0",
         "grunt-jscs": "3.0.1",
         "es6-promise": "3.2.1",
+        "es6-map": "0.1.4",
         "benchmark": "2.1.0",
         "qunit": "0.9.1",
         "rollup": "0.34.1",
