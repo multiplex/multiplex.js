@@ -4,7 +4,8 @@ module.exports = function (grunt) {
     var rollup = require('rollup'),
         path = require('path'),
         dirs = grunt.config('dirs'),
-        files = grunt.config('files');
+        files = grunt.config('files'),
+        Promise = require('es6-promise').Promise;
 
 
     // transpile es6 modules
