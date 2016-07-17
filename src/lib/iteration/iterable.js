@@ -1,5 +1,10 @@
 import iterator from './iterator-factory';
 
+/**
+* Creates a new Iterable instance.
+* @param {Iterable|Array|String|Function|Function*|Object} source An Iterable object.
+* @returns {Iterable}
+*/
 export default class Iterable {
     constructor(source = null) {
         if (source != null) {
