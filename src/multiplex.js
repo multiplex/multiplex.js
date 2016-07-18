@@ -11,6 +11,7 @@ import {
     compareSymbol
 } from './lib/runtime/runtime';
 
+import Collection from './lib/collections/collection';
 import linq from './lib/linq/_linq';
 
 linq(Iterable);
@@ -37,5 +38,6 @@ mx.iteratorSymbol = iteratorSymbol;
 
 mx.Iterable = Iterable;
 mx.Iterator = Iterator;
+mx.Collection = Collection;
 
 export default mx;
