@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (July 18, 2016)
+* Version 2.0.0 (July 19, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -32,6 +32,10 @@
 
     function error(msg) {
         throw new Error(msg);
+    }
+
+    function arraySizeError() {
+        error('The number of elements in the source is greater than the number of elements that the destination array can contain.');
     }
 
     function isType(obj, type) {
@@ -268,6 +272,12 @@
     Iterable.prototype[iteratorSymbol] = function () {
         return iterator(this._source);
     };
+
+    mixin(Iterable, {
+        from: function (value) {
+            return value instanceof Iterable ? value : new Iterable(value);
+        }
+    });
 
     mixin(Iterable.prototype, {
         toString: function () {
@@ -660,6 +670,139 @@
         }
     }
 
+    function isString(val) {
+        return val != null && typeof val === 'string';
+    }
+
+    function isArray(val) {
+        return val instanceof Array;
+    }
+
+    /**
+    * Buffers an Iterale object into an array.
+    * @param {Iterale} value An Iterale object.
+    * @returns {Array}
+    */
+    function buffer(value) {
+        value = value || [];
+
+        if (isArray(value)) {                               // fast buffer arrays
+            return value.concat();                          // 'concat' is fastest way to duplicate an array
+        }
+
+        else if (isString(value)) {                         // fast buffer strings
+            return value.split('');                         // buffer string to char-array
+        }
+
+        else {
+            if (isType(value, Iterable)) {
+                var source = value.valueOf();
+
+                if (isArray(source)) {                      // fast buffer array/string enumerable
+                    return source.concat();                 // 'concat' is fastest way to duplicate an array
+                }
+                else if (isString(source)) {                // fast buffer strings
+                    return source.split('');                // buffer string to char-array
+                }
+                else if (isFunction(source.slice)) {        // fast buffer enumerable with slice function: List
+                    return source.slice(0);
+                }
+            }
+
+            var it = iterator(value),
+                result;
+
+            // do it the hard way
+            // collections have fixed element count
+            if (value instanceof Collection) {
+                var count = 0,
+                    arr = new Array(value.count());
+
+                while (!(result = it.next()).done) {
+                    arr[count++] = result.value;
+                }
+
+                return arr;
+            }
+            else {
+                var count = 0,
+                    length = 16,
+                    arr = new Array(length);
+
+                while (!(result = it.next()).done) {
+                    if (count >= length) {
+                        length *= 4;
+                        arr.length = length;
+                    }
+
+                    arr[count++] = result.value;
+                }
+
+                arr.length = count;
+                return arr;
+            }
+        }
+    }
+
+    function assertNotNull(obj) {
+        if (obj == null) {
+            error('Value cannot be null.');
+        }
+    }
+
+    /**
+    * Buffers an Iterable instance into a given array.
+    * @param {Iterable} value An Iterable object.
+    * @param {Array} array The one-dimensional Array that is the destination of the elements copied from Iterable.
+    * @param {Number} index The zero-based index in array at which copying begins.
+    */
+    function bufferTo(value, array, index) {
+        assertNotNull(array);
+        assertType(index, Number);
+
+        if (index > array.length || value.count() > array.length) {
+            arraySizeError();
+        }
+
+        var arr = buffer(value),
+            len = arr.length,
+            i = -1;
+
+
+        while (++i < len) {
+            array[index + i] = arr[i];
+        }
+    }
+
+    /**
+    * Initializes a new instance of the abstract Collection class.
+    * @param {Iterable=} value Iterable whose elements are copied to the new collection.
+    */
+    function Collection(value) {
+        Iterable.call(this, buffer(value));
+    }
+
+    extend(Collection, extend);
+
+    mixin(Collection, {
+        /**
+        * Gets the number of elements contained in the Collection.
+        * @returns {Number}
+        */
+        count: function () {
+            return this.valueOf().length;
+        },
+
+        /**
+        * Copies the Collection to an existing one-dimensional Array, starting at the specified array index.
+        * @param {Array} array The one-dimensional Array that is the destination of the elements copied from Collection.
+        * @param {Number} arrayIndex The zero-based index in array at which copying begins.
+        */
+        copyTo: function (array, arrayIndex) {
+            bufferTo(this.valueOf(), array, arrayIndex);
+        }
+    });
+
     function select(source, selector) {
         assertType(selector, Function);
 
@@ -717,6 +860,7 @@
 
     mx.Iterable = Iterable;
     mx.Iterator = Iterator;
+    mx.Collection = Collection;
     mx.version = '2.0.0';
 
     return mx;
