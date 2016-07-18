@@ -14,7 +14,7 @@ export default function Collection(value) {
 
 extend(Collection, extend);
 
-mixin(Collection, {
+mixin(Collection.prototype, {
     /**
     * Gets the number of elements contained in the Collection.
     * @returns {Number}
