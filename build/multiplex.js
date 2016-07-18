@@ -230,6 +230,30 @@
         }
     }
 
+    function mixin(obj, properties, attributes) {
+        attributes = attributes || {};
+
+        for (var _prop in properties) {
+            define(obj, _prop, {
+                value: properties[_prop],
+                writable: attributes.writable || false,
+                enumerable: attributes.enumerable || false,
+                configurable: attributes.configurable || false
+            });
+        }
+
+        return obj;
+    }
+
+    function define(obj, prop, attributes) {
+        if (isFunction(Object.defineProperty)) {
+            Object.defineProperty(obj, prop, attributes);
+        }
+        else {
+            obj[prop] = attributes.get ? attributes.get.apply(obj) : attributes.value;
+        }
+    }
+
     /**
     * Creates a new Iterable instance.
     * @param {Iterable|Array|String|Function|Function*|Object} source An Iterable object.
@@ -245,13 +269,15 @@
         return iterator(this._source);
     };
 
-    Iterable.prototype.toString = function () {
-        return '[Iterable]';
-    };
+    mixin(Iterable.prototype, {
+        toString: function () {
+            return '[Iterable]';
+        },
 
-    Iterable.prototype.valueOf = function () {
-        return this._source == null ? this : this._source;
-    };
+        valueOf: function () {
+            return this._source == null ? this : this._source;
+        }
+    });
 
     function valueOf(obj) {
         if (obj instanceof Date) {
@@ -634,19 +660,6 @@
         }
     }
 
-    function assign(target, source) {
-        if (isFunction(Object.assign)) {
-            Object.assign(target, source);
-        }
-        else {
-            for (var prop in source) {
-                target[prop] = source[prop];
-            }
-        }
-
-        return target;
-    }
-
     function select(source, selector) {
         assertType(selector, Function);
 
@@ -670,10 +683,10 @@
     }
 
     function linq(iterable) {
-        assign(iterable, {
+        mixin(iterable, {
         });
 
-        assign(iterable.prototype, {
+        mixin(iterable.prototype, {
             select: function (selector) {
                 return select(this, selector);
             }

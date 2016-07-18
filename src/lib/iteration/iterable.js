@@ -1,5 +1,6 @@
 import iterator from './iterator-factory';
 import iteratorSymbol from './iterator-symbol';
+import mixin from '../utils/mixin';
 
 /**
 * Creates a new Iterable instance.
@@ -16,11 +17,12 @@ Iterable.prototype[iteratorSymbol] = function () {
     return iterator(this._source);
 };
 
-Iterable.prototype.toString = function () {
-    return '[Iterable]';
-};
+mixin(Iterable.prototype, {
+    toString: function () {
+        return '[Iterable]';
+    },
 
-Iterable.prototype.valueOf = function () {
-    return this._source == null ? this : this._source;
-};
-
+    valueOf: function () {
+        return this._source == null ? this : this._source;
+    }
+});
