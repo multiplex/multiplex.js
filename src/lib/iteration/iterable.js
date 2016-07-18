@@ -17,6 +17,12 @@ Iterable.prototype[iteratorSymbol] = function () {
     return iterator(this._source);
 };
 
+mixin(Iterable, {
+    from: function (value) {
+        return value instanceof Iterable ? value : new Iterable(value);
+    }
+});
+
 mixin(Iterable.prototype, {
     toString: function () {
         return '[Iterable]';
