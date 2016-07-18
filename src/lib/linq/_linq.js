@@ -1,10 +1,11 @@
+import mixin from '../utils/mixin';
 import select from './select';
 
 export default function linq(iterable) {
-    Object.assign(iterable, {
+    mixin(iterable, {
     });
 
-    Object.assign(iterable.prototype, {
+    mixin(iterable.prototype, {
         select(selector) {
             return select(this, selector);
         }

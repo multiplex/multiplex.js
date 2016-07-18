@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (July 17, 2016)
+* Version 2.0.0 (July 18, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -582,6 +582,21 @@
         }
     }
 
+    function mixin(obj, properties, attributes) {
+        attributes = attributes || {};
+
+        for (var _prop in properties) {
+            Object.defineProperty(obj, _prop, {
+                value: properties[_prop],
+                writable: attributes.writable || false,
+                enumerable: attributes.enumerable || false,
+                configurable: attributes.configurable || false
+            });
+        }
+
+        return obj;
+    }
+
     function select(source, selector) {
         assertType(selector, Function);
 
@@ -595,10 +610,10 @@
     }
 
     function linq(iterable) {
-        Object.assign(iterable, {
+        mixin(iterable, {
         });
 
-        Object.assign(iterable.prototype, {
+        mixin(iterable.prototype, {
             select(selector) {
                 return select(this, selector);
             }
