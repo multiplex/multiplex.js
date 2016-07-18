@@ -16,6 +16,10 @@ export default class Iterable {
         return iterator(this._source);
     }
 
+    static from(value) {
+        return value instanceof Iterable ? value : new Iterable(value);
+    }
+
     toString() {
         return '[Iterable]';
     }
