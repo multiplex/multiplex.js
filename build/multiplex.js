@@ -767,7 +767,7 @@
     * @returns {Iterable}
     */
     function mx(value) {
-        return value instanceof Iterable ? value : new Iterable(value);
+        return Iterable.from(value);
     }
 
 
