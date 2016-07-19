@@ -1,18 +1,16 @@
 import Iterable from '../iteration/iterable';
 import mixin from '../utils/mixin';
 import extend from '../utils/extend';
-import buffer from '../utils/buffer';
 import bufferTo from '../utils/buffer-to';
+import error, {ERROR_NOT_IMPLEMENTED} from '../utils/error';
 
 /**
 * Initializes a new instance of the abstract Collection class.
-* @param {Iterable=} value Iterable whose elements are copied to the new collection.
 */
-export default function Collection(value) {
-    Iterable.call(this, buffer(value));
+export default function Collection() {
 }
 
-extend(Collection, extend);
+extend(Collection, Iterable);
 
 mixin(Collection.prototype, {
     /**
@@ -20,7 +18,8 @@ mixin(Collection.prototype, {
     * @returns {Number}
     */
     count: function () {
-        return this.valueOf().length;
+        // abstract method
+        error(ERROR_NOT_IMPLEMENTED);
     },
 
     /**

@@ -34,9 +34,8 @@
         throw new Error(msg);
     }
 
-    function arraySizeError() {
-        error('The number of elements in the source is greater than the number of elements that the destination array can contain.');
-    }
+    var ERROR_ARRAY_SIZE = 'The number of elements in the source is greater than the number of elements that the destination array can contain.';
+    var ERROR_NOT_IMPLEMENTED = 'Method not implemented.';
 
     function isType(obj, type) {
         // use 'typeof' operator in an if clause yields in better performance than switch-case
@@ -670,6 +669,12 @@
         }
     }
 
+    function assertNotNull(obj) {
+        if (obj == null) {
+            error('Value cannot be null.');
+        }
+    }
+
     function isString(val) {
         return val != null && typeof val === 'string';
     }
@@ -744,12 +749,6 @@
         }
     }
 
-    function assertNotNull(obj) {
-        if (obj == null) {
-            error('Value cannot be null.');
-        }
-    }
-
     /**
     * Buffers an Iterable instance into a given array.
     * @param {Iterable} value An Iterable object.
@@ -761,7 +760,7 @@
         assertType(index, Number);
 
         if (index > array.length || value.count() > array.length) {
-            arraySizeError();
+            error(ERROR_ARRAY_SIZE);
         }
 
         var arr = buffer(value),
@@ -776,21 +775,20 @@
 
     /**
     * Initializes a new instance of the abstract Collection class.
-    * @param {Iterable=} value Iterable whose elements are copied to the new collection.
     */
-    function Collection(value) {
-        Iterable.call(this, buffer(value));
+    function Collection() {
     }
 
-    extend(Collection, extend);
+    extend(Collection, Iterable);
 
-    mixin(Collection, {
+    mixin(Collection.prototype, {
         /**
         * Gets the number of elements contained in the Collection.
         * @returns {Number}
         */
         count: function () {
-            return this.valueOf().length;
+            // abstract method
+            error(ERROR_NOT_IMPLEMENTED);
         },
 
         /**
