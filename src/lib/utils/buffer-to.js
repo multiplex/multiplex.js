@@ -1,6 +1,6 @@
 import assertType from './assert-type';
 import assertNotNull from './assert-not-null';
-import {arraySizeError} from './error';
+import error, {ERROR_ARRAY_SIZE} from './error';
 import buffer from './buffer';
 
 /**
@@ -14,7 +14,7 @@ export default function bufferTo(value, array, index) {
     assertType(index, Number);
 
     if (index > array.length || value.count() > array.length) {
-        arraySizeError();
+        error(ERROR_ARRAY_SIZE);
     }
 
     let arr = buffer(value),
