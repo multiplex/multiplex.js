@@ -50,7 +50,7 @@
         "grunt-contrib-copy": "1.0.0",
         "grunt-contrib-qunit": "1.2.0",
         "grunt-contrib-jshint": "1.0.0",
-        "grunt-contrib-uglify": "1.0.1",
+        "grunt-contrib-uglify": "2.0.0",
         "grunt-contrib-watch": "1.0.0",
         "grunt-benchmark": "1.0.0",
         "grunt-jscs": "3.0.1",
@@ -60,7 +60,7 @@
         "qunit": "0.9.1",
         "rollup": "0.34.1",
         "coveralls": "2.11.11",
-        "nyc": "7.0.0"
+        "nyc": "7.1.0"
     },
     "scripts": {
         "build": "npm install && grunt",
