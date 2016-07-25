@@ -6,6 +6,7 @@ import ArrayIterable from './iterable-array';
 import ObjectIterable from './iterable-object';
 import GeneratorIterable from './iterable-generator';
 import EmptyIterable from './iterable-empty';
+import iteratorSymbol from './iterator-symbol';
 
 
 export default function iterable(value) {
@@ -25,7 +26,7 @@ export default function iterable(value) {
         return new GeneratorIterable(value);
     }
 
-    else if (isFunction(value[Symbol.iterator])) {
+    else if (isFunction(value[iteratorSymbol])) {
         return new Iterable(value);
     }
 

@@ -4,6 +4,7 @@ import isArrayLike from '../utils/is-array-like';
 import ArrayIterator from './iterator-array';
 import ObjectIterator from './iterator-object';
 import EmptyIterator from './iterator-empty';
+import iteratorSymbol from './iterator-symbol';
 
 /**
 * Creates an iterator object
@@ -22,8 +23,8 @@ export default function iterator(obj) {
     }
 
     // iterable: Array, String, Map, Set, NodeList, Arguments, Iterable objects
-    else if (isFunction(obj[Symbol.iterator])) {
-        return obj[Symbol.iterator]();
+    else if (isFunction(obj[iteratorSymbol])) {
+        return obj[iteratorSymbol]();
     }
 
 

@@ -241,6 +241,9 @@
         }
     });
 
+    var iteratorSymbol = (typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol') ?
+        Symbol.iterator : '@@iterator';
+
     /**
     * Creates an iterator object
     * @param {Object} obj An object to create iterator from.
@@ -258,8 +261,8 @@
         }
 
         // iterable: Array, String, Map, Set, NodeList, Arguments, Iterable objects
-        else if (isFunction(obj[Symbol.iterator])) {
-            return obj[Symbol.iterator]();
+        else if (isFunction(obj[iteratorSymbol])) {
+            return obj[iteratorSymbol]();
         }
 
 
@@ -279,9 +282,6 @@
             return new ArrayIterator([obj]);
         }
     }
-
-    var iteratorSymbol = (typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol') ?
-        Symbol.iterator : '@@iterator';
 
     /**
     * Defines abstract Iterable class.
@@ -403,7 +403,7 @@
             return new GeneratorIterable(value);
         }
 
-        else if (isFunction(value[Symbol.iterator])) {
+        else if (isFunction(value[iteratorSymbol])) {
             return new Iterable(value);
         }
 
