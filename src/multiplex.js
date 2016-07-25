@@ -1,6 +1,6 @@
-import Iterator from './lib/iteration/iterator';
 import Iterable from './lib/iteration/iterable';
-import iteratorSymbol from './lib/iteration/iterator-symbol';
+import Iterator from './lib/iteration/iterator';
+import factory from './lib/iteration/iterable-factory';
 
 import {
     hash,
@@ -23,7 +23,7 @@ linq(Iterable);
 * @returns {Iterable}
 */
 function mx(value) {
-    return Iterable.from(value);
+    return factory(value);
 }
 
 
@@ -34,7 +34,7 @@ mx.equals = equals;
 mx.equalsSymbol = equalsSymbol;
 mx.compare = compare;
 mx.compareSymbol = compareSymbol;
-mx.iteratorSymbol = iteratorSymbol;
+mx.iteratorSymbol = Symbol.iterator;
 
 mx.Iterable = Iterable;
 mx.Iterator = Iterator;

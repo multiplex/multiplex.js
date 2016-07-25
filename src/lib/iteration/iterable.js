@@ -1,9 +1,6 @@
-import iterator from './iterator-factory';
-
 /**
-* Creates a new Iterable instance.
-* @param {Iterable|Array|String|Function|Function*|Object} source An Iterable object.
-* @returns {Iterable}
+* Defines abstract Iterable class.
+* @param {Object} source An Iterable object.
 */
 export default class Iterable {
     constructor(source = null) {
@@ -13,11 +10,11 @@ export default class Iterable {
     }
 
     [Symbol.iterator]() {
-        return iterator(this._source);
+        return this._source[Symbol.iterator]();
     }
 
-    static from(value) {
-        return value instanceof Iterable ? value : new Iterable(value);
+    get [Symbol.toStringTag]() {
+        return 'Iterable';
     }
 
     toString() {
@@ -25,6 +22,7 @@ export default class Iterable {
     }
 
     valueOf() {
-        return this._source == null ? this : this._source;
+        return this._source;
     }
 }
+
