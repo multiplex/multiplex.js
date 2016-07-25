@@ -1,5 +1,5 @@
 import Iterable from './iterable';
-import Iterator from './iterator';
+import ObjectIterator from './iterator-object';
 import iteratorSymbol from './iterator-symbol';
 import mixin from '../utils/mixin';
 import extend from '../utils/extend';
@@ -21,41 +21,6 @@ ObjectIterable.prototype[iteratorSymbol] = function () {
 mixin(ObjectIterable.prototype, {
     toString: function () {
         return '[Object Iterable]';
-    }
-});
-
-
-/**
-* Supports an iteration over Object properties.
-* @param {Object} obj An object instance.
-*/
-export function ObjectIterator(obj) {
-    var index = -1,
-        keys = Object.keys(obj),
-        length = keys.length;
-
-    // [key, value] iterator
-    Iterator.call(this, function () {
-        if (++index < length) {
-            return {
-                value: [
-                    keys[index],
-                    obj[keys[index]]
-                ],
-                done: false
-            };
-        }
-        return {
-            done: true
-        };
-    });
-}
-
-extend(ObjectIterator, Iterator);
-
-mixin(ObjectIterator.prototype, {
-    toString: function () {
-        return '[Object Iterator]';
     }
 });
 

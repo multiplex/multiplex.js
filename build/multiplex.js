@@ -96,33 +96,6 @@
         }
     });
 
-    var iteratorSymbol = (typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol') ?
-        Symbol.iterator : '@@iterator';
-
-    /**
-    * Defines abstract Iterable class.
-    * @param {Object} source An Iterable object.
-    */
-    function Iterable(source) {
-        if (source != null) {
-            this._source = source;
-        }
-    }
-
-    Iterable.prototype[iteratorSymbol] = function () {
-        return this._source[Symbol.iterator]();
-    };
-
-    mixin(Iterable.prototype, {
-        toString: function () {
-            return '[Iterable]';
-        },
-
-        valueOf: function () {
-            return this._source;
-        }
-    });
-
     function isObject(obj) {
         return typeof obj === 'object';
     }
@@ -188,28 +161,6 @@
     }
 
     /**
-    * Creates a new ArrayIterable instance.
-    * @param {Array|String|Array-like} value An array-like object.
-    */
-    function ArrayIterable(value) {
-        Iterable.call(this, value);
-    }
-
-    extend(ArrayIterable, Iterable);
-
-    ArrayIterable.prototype[iteratorSymbol] = function () {
-        var arr = this.valueOf();
-        return isFunction(arr[iteratorSymbol]) ? arr[iteratorSymbol]() : new ArrayIterator(arr);
-    };
-
-    mixin(ArrayIterable.prototype, {
-        toString: function () {
-            return '[Array Iterable]';
-        }
-    });
-
-
-    /**
     * Supports an iteration over an Array or Array-Like object.
     * @param {Array|String|Array-like} arr An array or array-like object.
     */
@@ -238,27 +189,6 @@
             return '[Array Iterator]';
         }
     });
-
-    /**
-    * Creates a new ObjectIterable instance.
-    * @param {Object} value An object instance.
-    */
-    function ObjectIterable(value) {
-        Iterable.call(this, value);
-    }
-
-    extend(ObjectIterable, Iterable);
-
-    ObjectIterable.prototype[iteratorSymbol] = function () {
-        return new ObjectIterator(this.valueOf());
-    };
-
-    mixin(ObjectIterable.prototype, {
-        toString: function () {
-            return '[Object Iterable]';
-        }
-    });
-
 
     /**
     * Supports an iteration over Object properties.
@@ -295,6 +225,130 @@
     });
 
     /**
+    * Supports an iteration over an empty Iterable.
+    */
+    function EmptyIterator() {
+        Iterator.call(this, function () {
+            return { done: true };
+        });
+    }
+
+    extend(EmptyIterator, Iterator);
+
+    mixin(EmptyIterator.prototype, {
+        toString: function () {
+            return '[Empty Iterator]';
+        }
+    });
+
+    /**
+    * Creates an iterator object
+    * @param {Object} obj An object to create iterator from.
+    */
+    function iterator(obj) {
+        // empty iteration
+        if (obj === null || obj === undefined) {
+            return new EmptyIterator();
+        }
+
+
+        // iterable/generator function
+        else if (isFunction(obj)) {
+            return obj();
+        }
+
+        // iterable: Array, String, Map, Set, NodeList, Arguments, Iterable objects
+        else if (isFunction(obj[Symbol.iterator])) {
+            return obj[Symbol.iterator]();
+        }
+
+
+        // array-like objects
+        else if (isArrayLike(obj)) {
+            return new ArrayIterator(obj);
+        }
+
+
+        // Object.entries iterator
+        else if (isObject(obj)) {
+            return new ObjectIterator(obj);
+        }
+
+        // simple iterator over non-objects
+        else {
+            return new ArrayIterator([obj]);
+        }
+    }
+
+    var iteratorSymbol = (typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol') ?
+        Symbol.iterator : '@@iterator';
+
+    /**
+    * Defines abstract Iterable class.
+    * @param {Iterable|Array|String|Function|Function*|Object} source An Iterable object.
+    */
+    function Iterable(source) {
+        if (source != null) {
+            this._source = source;
+        }
+    }
+
+    Iterable.prototype[iteratorSymbol] = function () {
+        return iterator(this._source);
+    };
+
+    mixin(Iterable.prototype, {
+        toString: function () {
+            return '[Iterable]';
+        },
+
+        valueOf: function () {
+            return this._source;
+        }
+    });
+
+    /**
+    * Creates a new ArrayIterable instance.
+    * @param {Array|String|Array-like} value An array-like object.
+    */
+    function ArrayIterable(value) {
+        Iterable.call(this, value);
+    }
+
+    extend(ArrayIterable, Iterable);
+
+    ArrayIterable.prototype[iteratorSymbol] = function () {
+        var arr = this.valueOf();
+        return isFunction(arr[iteratorSymbol]) ? arr[iteratorSymbol]() : new ArrayIterator(arr);
+    };
+
+    mixin(ArrayIterable.prototype, {
+        toString: function () {
+            return '[Array Iterable]';
+        }
+    });
+
+    /**
+    * Creates a new ObjectIterable instance.
+    * @param {Object} value An object instance.
+    */
+    function ObjectIterable(value) {
+        Iterable.call(this, value);
+    }
+
+    extend(ObjectIterable, Iterable);
+
+    ObjectIterable.prototype[iteratorSymbol] = function () {
+        return new ObjectIterator(this.valueOf());
+    };
+
+    mixin(ObjectIterable.prototype, {
+        toString: function () {
+            return '[Object Iterable]';
+        }
+    });
+
+    /**
     * Creates a new GeneratorIterable instance.
     * @param {Function|Function*} value A generator function.
     */
@@ -323,9 +377,7 @@
     extend(EmptyIterable, Iterable);
 
     EmptyIterable.prototype[iteratorSymbol] = function () {
-        return new Iterator(function () {
-            return { done: true };
-        });
+        return new EmptyIterator();
     };
 
     mixin(EmptyIterable.prototype, {
@@ -749,14 +801,6 @@
 
     function isString(val) {
         return val != null && typeof val === 'string';
-    }
-
-    /**
-    * Creates an iterator object
-    * @param {Object} obj An object to create iterator from.
-    */
-    function iterator(obj) {
-        return iterable(obj)[Symbol.iterator]();
     }
 
     /**

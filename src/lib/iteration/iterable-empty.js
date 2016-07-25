@@ -1,5 +1,5 @@
 import Iterable from './iterable';
-import Iterator from './iterator';
+import EmptyIterator from './iterator-empty';
 import iteratorSymbol from './iterator-symbol';
 import mixin from '../utils/mixin';
 import extend from '../utils/extend';
@@ -13,9 +13,7 @@ export default function EmptyIterable() {
 extend(EmptyIterable, Iterable);
 
 EmptyIterable.prototype[iteratorSymbol] = function () {
-    return new Iterator(function () {
-        return { done: true };
-    });
+    return new EmptyIterator();
 };
 
 mixin(EmptyIterable.prototype, {
