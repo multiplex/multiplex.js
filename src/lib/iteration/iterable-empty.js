@@ -1,5 +1,5 @@
 import Iterable from './iterable';
-import Iterator from './iterator';
+import EmptyIterator from './iterator-empty';
 
 /**
 * Creates a new EmptyIterable instance.
@@ -10,7 +10,7 @@ export default class EmptyIterable extends Iterable {
     }
 
     [Symbol.iterator]() {
-        return new Iterator(() => ({ done: true }));
+        return new EmptyIterator();
     }
 
     get [Symbol.toStringTag]() {

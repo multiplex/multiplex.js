@@ -13,32 +13,60 @@
     (global.mx = factory());
 }(this, function () { 'use strict';
 
-    /**
-    * Defines abstract Iterable class.
-    * @param {Object} source An Iterable object.
-    */
-    class Iterable {
-        constructor(source = null) {
-            if (source != null) {
-                this._source = source;
+    function isObject(obj) {
+        return typeof obj === 'object';
+    }
+
+    function isFunction(fn) {
+        return typeof fn === 'function';
+    }
+
+    function toString(obj) {
+        return typeof obj.toString === 'function' ? obj.toString() : '';
+    }
+
+    function isArrayLike(obj) {
+        // - Array
+        // - String
+        //
+        // - Typed arrays:
+        //      Int8Array, Int16Array, Int32Array,
+        //      Uint8Array, Uint16Array, Unit32Array, Uint8ClampedArray
+        //      Float32Array, Float64Array
+        //
+        // - NodeList: document.querySelectorAll
+        // - HTMLCollection: document.forms
+        // - HTMLFormControlsCollection: forms.elements
+        // - arguments object
+        // - objects with 'length' and 'slice' properties
+
+
+        if (typeof obj === 'string' ||
+            obj instanceof Array) {
+            return true;
+        }
+
+
+        else if (obj != null &&
+            typeof obj === 'object' &&                      // array-likes are objects
+            typeof obj.length === 'number') {               // array-likes have 'length' property
+
+            if (typeof obj.splice === 'function' ||             // third party libraries. eg. jQuery
+                toString(obj) === '[object Arguments]') {       // arguments object
+                return true;
+            }
+
+            else {
+                let len = obj.length;
+                if (len > 0 &&                                  // length property must be > 0
+                    len % 1 === 0 &&                            // length property must be integer
+                    obj[len - 1] !== undefined) {               // at least one index is being checked)
+                    return true;
+                }
             }
         }
 
-        [Symbol.iterator]() {
-            return this._source[Symbol.iterator]();
-        }
-
-        get [Symbol.toStringTag]() {
-            return 'Iterable';
-        }
-
-        toString() {
-            return '[Iterable]';
-        }
-
-        valueOf() {
-            return this._source;
-        }
+        return false;
     }
 
     function error(msg) {
@@ -100,86 +128,6 @@
         }
     }
 
-    function isObject(obj) {
-        return typeof obj === 'object';
-    }
-
-    function isFunction(fn) {
-        return typeof fn === 'function';
-    }
-
-    function toString(obj) {
-        return typeof obj.toString === 'function' ? obj.toString() : '';
-    }
-
-    function isArrayLike(obj) {
-        // - Array
-        // - String
-        //
-        // - Typed arrays:
-        //      Int8Array, Int16Array, Int32Array,
-        //      Uint8Array, Uint16Array, Unit32Array, Uint8ClampedArray
-        //      Float32Array, Float64Array
-        //
-        // - NodeList: document.querySelectorAll
-        // - HTMLCollection: document.forms
-        // - HTMLFormControlsCollection: forms.elements
-        // - arguments object
-        // - objects with 'length' and 'slice' properties
-
-
-        if (typeof obj === 'string' ||
-            obj instanceof Array) {
-            return true;
-        }
-
-
-        else if (obj != null &&
-            typeof obj === 'object' &&                      // array-likes are objects
-            typeof obj.length === 'number') {               // array-likes have 'length' property
-
-            if (typeof obj.splice === 'function' ||             // third party libraries. eg. jQuery
-                toString(obj) === '[object Arguments]') {       // arguments object
-                return true;
-            }
-
-            else {
-                let len = obj.length;
-                if (len > 0 &&                                  // length property must be > 0
-                    len % 1 === 0 &&                            // length property must be integer
-                    obj[len - 1] !== undefined) {               // at least one index is being checked)
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
-    * Creates a new ArrayIterable instance.
-    * @param {Array|String|Array-like} value An array-like object.
-    */
-    class ArrayIterable extends Iterable {
-        constructor(value) {
-            super(value);
-        }
-
-        [Symbol.iterator]() {
-            let arr = this.valueOf();
-            return isFunction(arr[Symbol.iterator]) ? arr[Symbol.iterator]() : new ArrayIterator(arr);
-        }
-
-        get [Symbol.toStringTag]() {
-            return 'Array Iterable';
-        }
-
-        toString() {
-            return '[Array Iterable]';
-        }
-    }
-
-
     /**
     * Supports an iteration over an Array or Array-Like object.
     * @param {Array|String|Array-like} arr An array or array-like object.
@@ -211,29 +159,6 @@
             return '[Array Iterator]';
         }
     }
-
-    /**
-    * Creates a new ObjectIterable instance.
-    * @param {Object} value An object instance.
-    */
-    class ObjectIterable extends Iterable {
-        constructor(value) {
-            super(value);
-        }
-
-        [Symbol.iterator]() {
-            return new ObjectIterator(this.valueOf());
-        }
-
-        get [Symbol.toStringTag]() {
-            return 'Object Iterable';
-        }
-
-        toString() {
-            return '[Object Iterable]';
-        }
-    }
-
 
     /**
     * Supports an iteration over Object properties.
@@ -272,6 +197,135 @@
     }
 
     /**
+    * Supports an iteration over an empty Iterable.
+    */
+    class EmptyIterator extends Iterator {
+        constructor() {
+            super(() => ({ done: true }));
+        }
+
+        get [Symbol.toStringTag]() {
+            return 'Empty Iterator';
+        }
+
+        toString() {
+            return '[Empty Iterator]';
+        }
+    }
+
+    /**
+    * Creates an iterator object
+    * @param {Object} obj An object to create iterator from.
+    */
+    function iterator(obj) {
+        // empty iteration
+        if (obj === null || obj === undefined) {
+            return new EmptyIterator();
+        }
+
+
+        // iterable/generator function
+        else if (isFunction(obj)) {
+            return obj();
+        }
+
+        // iterable: Array, String, Map, Set, NodeList, Arguments, Iterable objects
+        else if (isFunction(obj[Symbol.iterator])) {
+            return obj[Symbol.iterator]();
+        }
+
+
+        // array-like objects
+        else if (isArrayLike(obj)) {
+            return new ArrayIterator(obj);
+        }
+
+
+        // Object.entries iterator
+        else if (isObject(obj)) {
+            return new ObjectIterator(obj);
+        }
+
+        // simple iterator over non-objects
+        else {
+            return new ArrayIterator([obj]);
+        }
+    }
+
+    /**
+    * Defines abstract Iterable class.
+    * @param {Iterable|Array|String|Function|Function*|Object} source An Iterable object.
+    */
+    class Iterable {
+        constructor(source = null) {
+            if (source != null) {
+                this._source = source;
+            }
+        }
+
+        [Symbol.iterator]() {
+            return iterator(this._source);
+        }
+
+        get [Symbol.toStringTag]() {
+            return 'Iterable';
+        }
+
+        toString() {
+            return '[Iterable]';
+        }
+
+        valueOf() {
+            return this._source;
+        }
+    }
+
+    /**
+    * Creates a new ArrayIterable instance.
+    * @param {Array|String|Array-like} value An array-like object.
+    */
+    class ArrayIterable extends Iterable {
+        constructor(value) {
+            super(value);
+        }
+
+        [Symbol.iterator]() {
+            let arr = this.valueOf();
+            return isFunction(arr[Symbol.iterator]) ? arr[Symbol.iterator]() : new ArrayIterator(arr);
+        }
+
+        get [Symbol.toStringTag]() {
+            return 'Array Iterable';
+        }
+
+        toString() {
+            return '[Array Iterable]';
+        }
+    }
+
+    /**
+    * Creates a new ObjectIterable instance.
+    * @param {Object} value An object instance.
+    */
+    class ObjectIterable extends Iterable {
+        constructor(value) {
+            super(value);
+        }
+
+        [Symbol.iterator]() {
+            return new ObjectIterator(this.valueOf());
+        }
+
+        get [Symbol.toStringTag]() {
+            return 'Object Iterable';
+        }
+
+        toString() {
+            return '[Object Iterable]';
+        }
+    }
+
+    /**
     * Creates a new GeneratorIterable instance.
     * @param {Function|Function*} value A generator function.
     */
@@ -302,7 +356,7 @@
         }
 
         [Symbol.iterator]() {
-            return new Iterator(() => ({ done: true }));
+            return new EmptyIterator();
         }
 
         get [Symbol.toStringTag]() {

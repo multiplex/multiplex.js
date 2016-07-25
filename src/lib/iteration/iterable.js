@@ -1,6 +1,8 @@
+import iterator from './iterator-factory';
+
 /**
 * Defines abstract Iterable class.
-* @param {Object} source An Iterable object.
+* @param {Iterable|Array|String|Function|Function*|Object} source An Iterable object.
 */
 export default class Iterable {
     constructor(source = null) {
@@ -10,7 +12,7 @@ export default class Iterable {
     }
 
     [Symbol.iterator]() {
-        return this._source[Symbol.iterator]();
+        return iterator(this._source);
     }
 
     get [Symbol.toStringTag]() {
