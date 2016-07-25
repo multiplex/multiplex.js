@@ -1,5 +1,6 @@
 import Iterator from './lib/iteration/iterator';
 import Iterable from './lib/iteration/iterable';
+import factory from './lib/iteration/iterable-factory';
 import iteratorSymbol from './lib/iteration/iterator-symbol';
 
 import {
@@ -23,7 +24,7 @@ linq(Iterable);
 * @returns {Iterable}
 */
 function mx(value) {
-    return Iterable.from(value);
+    return factory(value);
 }
 
 

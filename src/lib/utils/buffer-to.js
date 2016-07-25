@@ -13,16 +13,15 @@ export default function bufferTo(value, array, index) {
     assertNotNull(array);
     assertType(index, Number);
 
-    if (index > array.length || value.count() > array.length) {
+    var source = buffer(value),
+        sourcelen = source.length,
+        arraylen = array.length;
+
+    if (index > arraylen || sourcelen > arraylen) {
         error(ERROR_ARRAY_SIZE);
     }
 
-    var arr = buffer(value),
-        len = arr.length,
-        i = -1;
-
-
-    while (++i < len) {
-        array[index + i] = arr[i];
+    while (sourcelen-- > 0) {
+        array[index + sourcelen] = source[sourcelen];
     }
 }

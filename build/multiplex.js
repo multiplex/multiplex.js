@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (July 19, 2016)
+* Version 2.0.0 (July 26, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -17,17 +17,28 @@
         return typeof fn === 'function';
     }
 
-    function extend(Type, Base) {
-        if (isFunction(Object.create)) {
-            Type.prototype = Object.create(Base.prototype);
-        }
-        else {
-            var _ = function () { };
-            _.prototype = Base.prototype;
-            Type.prototype = new _();
+    function mixin(obj, properties, attributes) {
+        attributes = attributes || {};
+
+        for (var _prop in properties) {
+            define(obj, _prop, {
+                value: properties[_prop],
+                writable: attributes.writable || false,
+                enumerable: attributes.enumerable || false,
+                configurable: attributes.configurable || false
+            });
         }
 
-        Type.prototype.constructor = Type;
+        return obj;
+    }
+
+    function define(obj, prop, attributes) {
+        if (isFunction(Object.defineProperty)) {
+            Object.defineProperty(obj, prop, attributes);
+        }
+        else {
+            obj[prop] = attributes.get ? attributes.get.apply(obj) : attributes.value;
+        }
     }
 
     function error(msg) {
@@ -35,7 +46,6 @@
     }
 
     var ERROR_ARRAY_SIZE = 'The number of elements in the source is greater than the number of elements that the destination array can contain.';
-    var ERROR_NOT_IMPLEMENTED = 'Method not implemented.';
 
     function isType(obj, type) {
         // use 'typeof' operator in an if clause yields in better performance than switch-case
@@ -80,75 +90,42 @@
         this.next = factory;
     }
 
-
-    /**
-    * Supports an iteration over an Array or Array-Like.
-    * @param {Array} arr An array or array-like object.
-    */
-    function ArrayIterator(arr) {
-        var _index = -1,
-            _length = arr.length;
-
-        Iterator.call(this, function () {
-            if (++_index < _length) {
-                return {
-                    value: arr[_index],
-                    done: false
-                };
-            }
-
-            return {
-                done: true
-            };
-        });
-    }
-
-
-    /**
-    * Supports an iteration over an Object.
-    * @param {Object} obj An object instance.
-    */
-    function ObjectIterator(obj) {
-        var _index = -1,
-            _keys = Object.keys(obj),
-            _length = _keys.length;
-
-        // [key, value] iterator
-        Iterator.call(this, function () {
-            if (++_index < _length) {
-                return {
-                    value: [
-                        _keys[_index],
-                        obj[_keys[_index]]
-                    ],
-                    done: false
-                };
-            }
-            return {
-                done: true
-            };
-        });
-    }
-
-
-    /**
-    * Creates an empty iteration.
-    */
-    function EmptyIterator() {
-        Iterator.call(this, function () {
-            return {
-                done: true
-            };
-        });
-    }
-
-
-    extend(ArrayIterator, Iterator);
-    extend(ObjectIterator, Iterator);
-    extend(EmptyIterator, Iterator);
+    mixin(Iterator.prototype, {
+        toString: function () {
+            return '[Iterator]';
+        }
+    });
 
     var iteratorSymbol = (typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol') ?
         Symbol.iterator : '@@iterator';
+
+    /**
+    * Defines abstract Iterable class.
+    * @param {Object} source An Iterable object.
+    */
+    function Iterable(source) {
+        if (source != null) {
+            this._source = source;
+        }
+    }
+
+    Iterable.prototype[iteratorSymbol] = function () {
+        return this._source[Symbol.iterator]();
+    };
+
+    mixin(Iterable.prototype, {
+        toString: function () {
+            return '[Iterable]';
+        },
+
+        valueOf: function () {
+            return this._source;
+        }
+    });
+
+    function isObject(obj) {
+        return typeof obj === 'object';
+    }
 
     function toString(obj) {
         return typeof obj.toString === 'function' ? obj.toString() : '';
@@ -197,96 +174,193 @@
         return false;
     }
 
-    /**
-    * Creates an iterator object
-    * @param {Object} obj An object to create iterator from.
-    */
-    function iterator (obj) {
-        // empty iteration
-        if (obj === null || obj === undefined) {
-            return new EmptyIterator();
-        }
-
-        // iterable/generator function
-        else if (isFunction(obj)) {
-            return obj();
-        }
-
-        // iterable: Array, String, Map, Set, NodeList, Arguments, Iterable objects
-        else if (isFunction(obj[iteratorSymbol])) {
-            return obj[iteratorSymbol]();
-        }
-
-        // array-like objects
-        else if (isArrayLike(obj)) {
-            return new ArrayIterator(obj);
-        }
-
-        // Object.entries iterator
-        else if (typeof obj === 'object') {
-            return new ObjectIterator(obj);
-        }
-
-        // simple iterator over non-objects
-        else {
-            return new ArrayIterator([obj]);
-        }
-    }
-
-    function mixin(obj, properties, attributes) {
-        attributes = attributes || {};
-
-        for (var _prop in properties) {
-            define(obj, _prop, {
-                value: properties[_prop],
-                writable: attributes.writable || false,
-                enumerable: attributes.enumerable || false,
-                configurable: attributes.configurable || false
-            });
-        }
-
-        return obj;
-    }
-
-    function define(obj, prop, attributes) {
-        if (isFunction(Object.defineProperty)) {
-            Object.defineProperty(obj, prop, attributes);
+    function extend(Type, Base) {
+        if (isFunction(Object.create)) {
+            Type.prototype = Object.create(Base.prototype);
         }
         else {
-            obj[prop] = attributes.get ? attributes.get.apply(obj) : attributes.value;
+            var _ = function () { };
+            _.prototype = Base.prototype;
+            Type.prototype = new _();
         }
+
+        Type.prototype.constructor = Type;
     }
 
     /**
-    * Creates a new Iterable instance.
-    * @param {Iterable|Array|String|Function|Function*|Object} source An Iterable object.
-    * @returns {Iterable}
+    * Creates a new ArrayIterable instance.
+    * @param {Array|String|Array-like} value An array-like object.
     */
-    function Iterable(source) {
-        if (source != null) {
-            this._source = source;
-        }
+    function ArrayIterable(value) {
+        Iterable.call(this, value);
     }
 
-    Iterable.prototype[iteratorSymbol] = function () {
-        return iterator(this._source);
+    extend(ArrayIterable, Iterable);
+
+    ArrayIterable.prototype[iteratorSymbol] = function () {
+        var arr = this.valueOf();
+        return isFunction(arr[iteratorSymbol]) ? arr[iteratorSymbol]() : new ArrayIterator(arr);
     };
 
-    mixin(Iterable, {
-        from: function (value) {
-            return value instanceof Iterable ? value : new Iterable(value);
-        }
-    });
-
-    mixin(Iterable.prototype, {
+    mixin(ArrayIterable.prototype, {
         toString: function () {
-            return '[Iterable]';
-        },
-
-        valueOf: function () {
-            return this._source == null ? this : this._source;
+            return '[Array Iterable]';
         }
     });
+
+
+    /**
+    * Supports an iteration over an Array or Array-Like object.
+    * @param {Array|String|Array-like} arr An array or array-like object.
+    */
+    function ArrayIterator(arr) {
+        var index = -1,
+            length = arr.length;
+
+        Iterator.call(this, function () {
+            if (++index < length) {
+                return {
+                    value: arr[index],
+                    done: false
+                };
+            }
+
+            return {
+                done: true
+            };
+        });
+    }
+
+    extend(ArrayIterator, Iterator);
+
+    mixin(ArrayIterator.prototype, {
+        toString: function () {
+            return '[Array Iterator]';
+        }
+    });
+
+    /**
+    * Creates a new ObjectIterable instance.
+    * @param {Object} value An object instance.
+    */
+    function ObjectIterable(value) {
+        Iterable.call(this, value);
+    }
+
+    extend(ObjectIterable, Iterable);
+
+    ObjectIterable.prototype[iteratorSymbol] = function () {
+        return new ObjectIterator(this.valueOf());
+    };
+
+    mixin(ObjectIterable.prototype, {
+        toString: function () {
+            return '[Object Iterable]';
+        }
+    });
+
+
+    /**
+    * Supports an iteration over Object properties.
+    * @param {Object} obj An object instance.
+    */
+    function ObjectIterator(obj) {
+        var index = -1,
+            keys = Object.keys(obj),
+            length = keys.length;
+
+        // [key, value] iterator
+        Iterator.call(this, function () {
+            if (++index < length) {
+                return {
+                    value: [
+                        keys[index],
+                        obj[keys[index]]
+                    ],
+                    done: false
+                };
+            }
+            return {
+                done: true
+            };
+        });
+    }
+
+    extend(ObjectIterator, Iterator);
+
+    mixin(ObjectIterator.prototype, {
+        toString: function () {
+            return '[Object Iterator]';
+        }
+    });
+
+    /**
+    * Creates a new GeneratorIterable instance.
+    * @param {Function|Function*} value A generator function.
+    */
+    function GeneratorIterable(value) {
+        Iterable.call(this, value);
+    }
+
+    extend(GeneratorIterable, Iterable);
+
+    GeneratorIterable.prototype[iteratorSymbol] = function () {
+        return this.valueOf()();
+    };
+
+    mixin(GeneratorIterable.prototype, {
+        toString: function () {
+            return '[Generator Iterable]';
+        }
+    });
+
+    /**
+    * Creates a new EmptyIterable instance.
+    */
+    function EmptyIterable() {
+    }
+
+    extend(EmptyIterable, Iterable);
+
+    EmptyIterable.prototype[iteratorSymbol] = function () {
+        return new Iterator(function () {
+            return { done: true };
+        });
+    };
+
+    mixin(EmptyIterable.prototype, {
+        toString: function () {
+            return '[Empty Iterable]';
+        }
+    });
+
+    function iterable(value) {
+        if (value === null || value === undefined) {
+            return new EmptyIterable();
+        }
+
+        if (value instanceof Iterable) {
+            return value;
+        }
+
+        else if (isArrayLike(value)) {
+            return new ArrayIterable(value);
+        }
+
+        else if (isFunction(value)) {
+            return new GeneratorIterable(value);
+        }
+
+        else if (isFunction(value[Symbol.iterator])) {
+            return new Iterable(value);
+        }
+
+        else if (isObject(value)) {
+            return new ObjectIterable(value);
+        }
+
+        return new ArrayIterable([value]);
+    }
 
     function valueOf(obj) {
         if (obj instanceof Date) {
@@ -669,18 +743,20 @@
         }
     }
 
-    function assertNotNull(obj) {
-        if (obj == null) {
-            error('Value cannot be null.');
-        }
+    function isArray(val) {
+        return val instanceof Array;
     }
 
     function isString(val) {
         return val != null && typeof val === 'string';
     }
 
-    function isArray(val) {
-        return val instanceof Array;
+    /**
+    * Creates an iterator object
+    * @param {Object} obj An object to create iterator from.
+    */
+    function iterator(obj) {
+        return iterable(obj)[Symbol.iterator]();
     }
 
     /**
@@ -689,63 +765,61 @@
     * @returns {Array}
     */
     function buffer(value) {
-        value = value || [];
-
-        if (isArray(value)) {                               // fast buffer arrays
-            return value.concat();                          // 'concat' is fastest way to duplicate an array
+        if (value == null) {                                // empty value
+            return [];
         }
 
-        else if (isString(value)) {                         // fast buffer strings
-            return value.split('');                         // buffer string to char-array
+        else if (isArrayLike(value)) {                      // array-likes have fixed element count
+            return arrayBuffer(value);
         }
 
+        else if (value instanceof ArrayIterable) {          // ArrayIterable wrapper
+            return arrayBuffer(value.valueOf());
+        }
+
+        else if (value instanceof Collection) {             // Collections have 'toArray' method
+            return value.toArray();
+        }
+
+        // do it the hard way
         else {
-            if (isType(value, Iterable)) {
-                var source = value.valueOf();
-
-                if (isArray(source)) {                      // fast buffer array/string enumerable
-                    return source.concat();                 // 'concat' is fastest way to duplicate an array
-                }
-                else if (isString(source)) {                // fast buffer strings
-                    return source.split('');                // buffer string to char-array
-                }
-                else if (isFunction(source.slice)) {        // fast buffer enumerable with slice function: List
-                    return source.slice(0);
-                }
-            }
-
             var it = iterator(value),
+                count = 0,
+                length = 16,
+                arr = new Array(length),
                 result;
 
-            // do it the hard way
-            // collections have fixed element count
-            if (value instanceof Collection) {
-                var count = 0,
-                    arr = new Array(value.count());
-
-                while (!(result = it.next()).done) {
-                    arr[count++] = result.value;
+            while (!(result = it.next()).done) {
+                if (count >= length) {
+                    length *= 4;
+                    arr.length = length;
                 }
 
-                return arr;
+                arr[count++] = result.value;
             }
-            else {
-                var count = 0,
-                    length = 16,
-                    arr = new Array(length);
 
-                while (!(result = it.next()).done) {
-                    if (count >= length) {
-                        length *= 4;
-                        arr.length = length;
-                    }
+            arr.length = count;
+            return arr;
+        }
+    }
 
-                    arr[count++] = result.value;
-                }
 
-                arr.length = count;
-                return arr;
-            }
+    function arrayBuffer(value) {
+        if (isArray(value)) {                  	// fast buffer arrays
+            return value.concat();            	// 'concat' is fastest way to duplicate an array
+        }
+
+        else if (isString(value)) {           	// fast buffer strings
+            return value.split('');        	    // buffer string to char-array
+        }
+
+        // use the despised Array constructor as a function
+        return value.length === 1 ? [value[0]] : Array.apply(null, value);
+    }
+
+    function assertNotNull(obj) {
+        if (obj == null) {
+            error('Value cannot be null.');
         }
     }
 
@@ -759,24 +833,26 @@
         assertNotNull(array);
         assertType(index, Number);
 
-        if (index > array.length || value.count() > array.length) {
+        var source = buffer(value),
+            sourcelen = source.length,
+            arraylen = array.length;
+
+        if (index > arraylen || sourcelen > arraylen) {
             error(ERROR_ARRAY_SIZE);
         }
 
-        var arr = buffer(value),
-            len = arr.length,
-            i = -1;
-
-
-        while (++i < len) {
-            array[index + i] = arr[i];
+        while (sourcelen-- > 0) {
+            array[index + sourcelen] = source[sourcelen];
         }
     }
 
     /**
     * Initializes a new instance of the abstract Collection class.
     */
-    function Collection() {
+    function Collection(value) {
+        if (value != null) {
+            Iterable.call(this, buffer(value));
+        }
     }
 
     extend(Collection, Iterable);
@@ -787,8 +863,7 @@
         * @returns {Number}
         */
         count: function () {
-            // abstract method
-            error(ERROR_NOT_IMPLEMENTED);
+            return (this.valueOf() || []).length;
         },
 
         /**
@@ -797,7 +872,19 @@
         * @param {Number} arrayIndex The zero-based index in array at which copying begins.
         */
         copyTo: function (array, arrayIndex) {
-            bufferTo(this.valueOf(), array, arrayIndex);
+            bufferTo(this.valueOf() || [], array, arrayIndex);
+        },
+
+        /**
+        * Creates an array of the elements from Collection.
+        * @returns {Array}
+        */
+        toArray: function () {
+            return (this.valueOf() || []).concat();
+        },
+
+        toString: function () {
+            return '[Collection]';
         }
     });
 
@@ -843,7 +930,7 @@
     * @returns {Iterable}
     */
     function mx(value) {
-        return Iterable.from(value);
+        return iterable(value);
     }
 
 
