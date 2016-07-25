@@ -1,16 +1,18 @@
-import Iterable from '../iteration/iterable';
+import ArrayIterable from '../iteration/iterable';
+import buffer from '../utils/buffer';
 import bufferTo from '../utils/buffer-to';
-import error, {ERROR_NOT_IMPLEMENTED} from '../utils/error';
 
 /**
 * Initializes a new instance of the abstract Collection class.
+* @param {Iterable=} value Iterable whose elements are copied to the new collection.
 */
-export default class Collection extends Iterable {
-    constructor() {
-        // abstract class
-        if (new.target === Collection) {
-            error(ERROR_NOT_IMPLEMENTED);
+export default class Collection extends ArrayIterable {
+    constructor(value = null) {
+        if (value != null) {
+            value = buffer(value);
         }
+
+        super(value);
     }
 
     /**
@@ -18,8 +20,7 @@ export default class Collection extends Iterable {
     * @returns {Number}
     */
     count() {
-        // abstract method
-        error(ERROR_NOT_IMPLEMENTED);
+        return (this.valueOf() || []).length;
     }
 
     /**
@@ -28,6 +29,22 @@ export default class Collection extends Iterable {
     * @param {Number} arrayIndex The zero-based index in array at which copying begins.
     */
     copyTo(array, arrayIndex) {
-        bufferTo(this, array, arrayIndex);
+        bufferTo(this.valueOf() || [], array, arrayIndex);
+    }
+
+    /**
+    * Creates an array of the elements from Collection.
+    * @returns {Array}
+    */
+    toArray() {
+        return (this.valueOf() || []).concat();
+    }
+
+    get [Symbol.toStringTag]() {
+        return 'Collection';
+    }
+
+    toString() {
+        return '[Collection]';
     }
 }
