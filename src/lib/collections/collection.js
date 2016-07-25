@@ -1,16 +1,19 @@
-import Iterable from '../iteration/iterable';
+import ArrayIterable from '../iteration/iterable';
 import mixin from '../utils/mixin';
 import extend from '../utils/extend';
+import buffer from '../utils/buffer';
 import bufferTo from '../utils/buffer-to';
-import error, {ERROR_NOT_IMPLEMENTED} from '../utils/error';
 
 /**
 * Initializes a new instance of the abstract Collection class.
 */
-export default function Collection() {
+export default function Collection(value) {
+    if (value != null) {
+        ArrayIterable.call(this, buffer(value));
+    }
 }
 
-extend(Collection, Iterable);
+extend(Collection, ArrayIterable);
 
 mixin(Collection.prototype, {
     /**
@@ -18,8 +21,7 @@ mixin(Collection.prototype, {
     * @returns {Number}
     */
     count: function () {
-        // abstract method
-        error(ERROR_NOT_IMPLEMENTED);
+        return (this.valueOf() || []).length;
     },
 
     /**
@@ -28,7 +30,19 @@ mixin(Collection.prototype, {
     * @param {Number} arrayIndex The zero-based index in array at which copying begins.
     */
     copyTo: function (array, arrayIndex) {
-        bufferTo(this.valueOf(), array, arrayIndex);
+        bufferTo(this.valueOf() || [], array, arrayIndex);
+    },
+
+    /**
+    * Creates an array of the elements from Collection.
+    * @returns {Array}
+    */
+    toArray: function () {
+        return (this.valueOf() || []).concat();
+    },
+
+    toString: function () {
+        return '[Collection]';
     }
 });
 
