@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (July 26, 2016)
+* Version 2.0.0 (July 27, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -737,16 +737,16 @@
             return [];
         }
 
+        else if (value instanceof Collection) {             // Collections have 'toArray' method
+            return value.toArray();
+        }
+
         else if (isArrayLike(value)) {                      // array-likes have fixed element count
             return arrayBuffer(value);
         }
 
         else if (value instanceof ArrayIterable) {          // ArrayIterable wrapper
             return arrayBuffer(value.valueOf());
-        }
-
-        else if (value instanceof Collection) {             // Collections have 'toArray' method
-            return value.toArray();
         }
 
         // do it the hard way
@@ -823,6 +823,7 @@
             }
 
             super(value);
+            this.length = value == null ? 0 : value.length;
         }
 
         /**
@@ -830,7 +831,7 @@
         * @returns {Number}
         */
         count() {
-            return (this.valueOf() || []).length;
+            return this.length;
         }
 
         /**
