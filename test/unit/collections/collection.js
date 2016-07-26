@@ -27,3 +27,9 @@ qtest('toArray', function (assert) {
     assert.deepEqual(new Collection(mx({ val: 1 })).toArray(), [['val', 1]], 'create collection from ObjectIterable and toArray');
     assert.deepEqual(new Collection(mx([1, 2, 3]).select(t => t * 2)).toArray(), [2, 4, 6], 'create collection from Iterable and toArray');
 });
+
+
+qtest('methods', function (assert) {
+    var col = new Collection();
+    assert.ok(col.toString(), '[Collection]');
+});
