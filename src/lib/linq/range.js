@@ -15,7 +15,7 @@ export default function rangeIterator(start, count) {
     return new Iterable(function* () {
         let index = -1;
 
-        if (++index < count) {
+        while (++index < count) {
             yield start + index;
         }
     });

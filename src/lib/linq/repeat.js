@@ -12,7 +12,7 @@ export default function repeatIterator(element, count) {
     return new Iterable(function* () {
         let index = count;
 
-        if (index-- > 0) {
+        while (index-- > 0) {
             yield element;
         }
     });
