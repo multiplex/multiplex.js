@@ -21,7 +21,9 @@
         assert.equal(new Collection(new Collection([1])).length, 1, 'create collection from another collection');
         assert.equal(new Collection(mx([1, 2, 3])).length, 3, 'create collection from ArrayIterable');
         assert.equal(new Collection(mx({ val: 1 })).length, 1, 'create collection from ObjectIterable');
-        assert.equal(new Collection(mx([1, 2, 3]).select(t => t * 2)).length, 3, 'create collection from Iterable');
+        assert.equal(new Collection(mx([1, 2, 3]).select(function (t) {
+            return t * 2;
+        })).length, 3, 'create collection from Iterable');
     });
 
 
