@@ -22,7 +22,7 @@
     }
 
     function toString(obj) {
-        return typeof obj.toString === 'function' ? obj.toString() : '';
+        return isFunction(obj.toString) ? obj.toString() : '';
     }
 
     function isArrayLike(obj) {
@@ -40,14 +40,16 @@
         // - arguments object
         // - objects with 'length' and 'slice' properties
 
+        if (obj === null || obj === undefined) {
+            return false;
+        }
 
-        if (typeof obj === 'string' ||
+        else if (typeof obj === 'string' ||
             obj instanceof Array) {
             return true;
         }
 
-
-        else if (obj != null &&
+        else if (
             typeof obj === 'object' &&                      // array-likes are objects
             typeof obj.length === 'number') {               // array-likes have 'length' property
 
@@ -326,28 +328,6 @@
     }
 
     /**
-    * Creates a new GeneratorIterable instance.
-    * @param {Function|Function*} value A generator function.
-    */
-    class GeneratorIterable extends Iterable {
-        constructor(value) {
-            super(value);
-        }
-
-        [Symbol.iterator]() {
-            return this.valueOf()();
-        }
-
-        get [Symbol.toStringTag]() {
-            return 'Generator Iterable';
-        }
-
-        toString() {
-            return '[Generator Iterable]';
-        }
-    }
-
-    /**
     * Creates a new EmptyIterable instance.
     */
     class EmptyIterable extends Iterable {
@@ -382,7 +362,7 @@
         }
 
         else if (isFunction(value)) {
-            return new GeneratorIterable(value);
+            return new Iterable(value);
         }
 
         else if (isFunction(value[Symbol.iterator])) {
@@ -398,10 +378,10 @@
 
     function valueOf(obj) {
         if (obj instanceof Date) {
-            return typeof obj.getTime === 'function' ? obj.getTime() : 0;
+            return isFunction(obj.getTime) ? obj.getTime() : 0;
         }
         else {
-            return typeof obj.valueOf === 'function' ? obj.valueOf() : 0;
+            return isFunction(obj.valueOf) ? obj.valueOf() : 0;
         }
     }
 
@@ -743,7 +723,7 @@
     }
 
     function isString(val) {
-        return val != null && typeof val === 'string';
+        return typeof val === 'string';
     }
 
     /**
