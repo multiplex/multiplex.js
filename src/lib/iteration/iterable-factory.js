@@ -4,7 +4,6 @@ import isArrayLike from '../utils/is-array-like';
 import Iterable from './iterable';
 import ArrayIterable from './iterable-array';
 import ObjectIterable from './iterable-object';
-import GeneratorIterable from './iterable-generator';
 import EmptyIterable from './iterable-empty';
 import iteratorSymbol from './iterator-symbol';
 
@@ -23,7 +22,7 @@ export default function iterable(value) {
     }
 
     else if (isFunction(value)) {
-        return new GeneratorIterable(value);
+        return new Iterable(value);
     }
 
     else if (isFunction(value[iteratorSymbol])) {
