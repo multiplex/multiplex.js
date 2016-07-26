@@ -3,7 +3,7 @@ import Iterator from '../iteration/iterator';
 import iterator from '../iteration/iterator-factory';
 import assertType from '../utils/assert-type';
 
-export default function select(source, selector) {
+export default function selectIterator(source, selector) {
     assertType(selector, Function);
 
     return new Iterable(function () {

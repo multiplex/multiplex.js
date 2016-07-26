@@ -45,6 +45,7 @@
         throw new Error(msg);
     }
 
+    var ERROR_ARGUMENT_OUT_OF_RANGE = 'Argument was out of the range of valid values.';
     var ERROR_ARRAY_SIZE = 'The number of elements in the source is greater than the number of elements that the destination array can contain.';
 
     function isType(obj, type) {
@@ -914,7 +915,58 @@
         }
     });
 
-    function select(source, selector) {
+    function rangeIterator(start, count) {
+        assertType(start, Number);
+        assertType(count, Number);
+
+        var max = start + count - 1;
+
+        if (count < 0 || max > Number.MAX_VALUE) {
+            error(ERROR_ARGUMENT_OUT_OF_RANGE);
+        }
+
+        return new Iterable(function () {
+            var index = -1;
+
+            return new Iterator(function () {
+                if (++index < count) {
+                    return {
+                        value: start + index,
+                        done: false
+                    };
+                }
+                return {
+                    done: true
+                };
+            });
+        });
+    }
+
+    function repeatIterator(element, count) {
+        assertType(count, Number);
+
+        if (count < 0) {
+            error(ERROR_ARGUMENT_OUT_OF_RANGE);
+        }
+
+        return new Iterable(function () {
+            var index = count;
+
+            return new Iterator(function () {
+                if (index-- > 0) {
+                    return {
+                        value: element,
+                        done: false
+                    };
+                }
+                return {
+                    done: true
+                };
+            });
+        });
+    }
+
+    function selectIterator(source, selector) {
         assertType(selector, Function);
 
         return new Iterable(function () {
@@ -936,13 +988,56 @@
         });
     }
 
+    function toArray(source) {
+        return buffer(source);
+    }
+
     function linq(iterable) {
         mixin(iterable, {
+
+            /**
+            * Returns an empty Iterable.
+            * @returns {Iterable}
+            */
+            empty: function () {
+                return new EmptyIterable();
+            },
+
+            /**
+            * Generates a sequence of integral numbers within a specified range.
+            * @param {Number} start The value of the first integer in the sequence.
+            * @param {Number} count The number of sequential integers to generate.
+            * @returns {Iterable}
+            */
+            range: rangeIterator,
+
+            /**
+            * Generates a sequence that contains one repeated value.
+            * @param {Object} element The value to be repeated.
+            * @param {Number} count The number of times to repeat the value in the generated sequence.
+            * @returns {Iterable}
+            */
+            repeat: repeatIterator
         });
 
         mixin(iterable.prototype, {
+
+            /**
+            * Projects each element of a sequence into a new form.
+            * @param {Function} selector A transform function to apply to each source element; the second parameter of the function represents the index of the source element. eg. function(item, index)
+            * @returns {Iterable}
+            */
             select: function (selector) {
-                return select(this, selector);
+                return selectIterator(this, selector);
+            },
+
+
+            /**
+            * Creates an array from an Iterable.
+            * @returns {Array}
+            */
+            toArray: function () {
+                return toArray(this);
             }
         });
     }
