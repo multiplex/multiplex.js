@@ -36,6 +36,10 @@ mx.compare = compare;
 mx.compareSymbol = compareSymbol;
 mx.iteratorSymbol = Symbol.iterator;
 
+mx.empty = Iterable.empty;
+mx.range = Iterable.range;
+mx.repeat = Iterable.repeat;
+
 mx.Iterable = Iterable;
 mx.Iterator = Iterator;
 mx.Collection = Collection;

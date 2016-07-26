@@ -887,7 +887,7 @@
         return new Iterable(function* () {
             let index = -1;
 
-            if (++index < count) {
+            while (++index < count) {
                 yield start + index;
             }
         });
@@ -903,7 +903,7 @@
         return new Iterable(function* () {
             let index = count;
 
-            if (index-- > 0) {
+            while (index-- > 0) {
                 yield element;
             }
         });
@@ -995,6 +995,10 @@
     mx.compare = compare;
     mx.compareSymbol = compareSymbol;
     mx.iteratorSymbol = Symbol.iterator;
+
+    mx.empty = Iterable.empty;
+    mx.range = Iterable.range;
+    mx.repeat = Iterable.repeat;
 
     mx.Iterable = Iterable;
     mx.Iterator = Iterator;
