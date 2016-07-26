@@ -15,14 +15,16 @@ export default function isArrayLike(obj) {
     // - arguments object
     // - objects with 'length' and 'slice' properties
 
+    if (obj === null || obj === undefined) {
+        return false;
+    }
 
-    if (typeof obj === 'string' ||
+    else if (typeof obj === 'string' ||
         obj instanceof Array) {
         return true;
     }
 
-
-    else if (obj != null &&
+    else if (
         typeof obj === 'object' &&                          // array-likes are objects
         typeof obj.length === 'number') {                   // array-likes have 'length' property
 
