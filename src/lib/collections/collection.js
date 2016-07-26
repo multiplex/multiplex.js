@@ -9,8 +9,11 @@ import bufferTo from '../utils/buffer-to';
 */
 export default function Collection(value) {
     if (value != null) {
-        ArrayIterable.call(this, buffer(value));
+        value = buffer(value);
     }
+
+    ArrayIterable.call(this, value);
+    this.length = value == null ? 0 : value.length;
 }
 
 extend(Collection, ArrayIterable);
