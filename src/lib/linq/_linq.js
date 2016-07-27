@@ -1,9 +1,10 @@
 import mixin from '../utils/mixin';
+import buffer from '../utils/buffer';
 import EmptyIterable from '../iteration/iterable-empty';
 import rangeIterator from './range';
 import repeatIterator from './repeat';
 import selectIterator from './select';
-import toArray from './to-array';
+import whereIterator from './where';
 
 export default function linq(iterable) {
     mixin(iterable, {
@@ -44,13 +45,21 @@ export default function linq(iterable) {
             return selectIterator(this, selector);
         },
 
+        /**
+         * Filters a sequence of values based on a predicate. Each element's index is used in the logic of the predicate function.
+         * @param {Function} predicate A function to test each source element for a condition; the second parameter of the function represents the index of the source element. eg. function(item, index)
+         * @returns {Iterable}
+         */
+        where: function (predicate) {
+            return whereIterator(this, predicate);
+        },
 
         /**
         * Creates an array from an Iterable.
         * @returns {Array}
         */
         toArray: function () {
-            return toArray(this);
+            return buffer(this);
         }
     });
 }

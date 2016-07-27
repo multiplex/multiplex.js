@@ -995,8 +995,28 @@
         });
     }
 
-    function toArray(source) {
-        return buffer(source);
+    function whereIterator(source, predicate) {
+        assertType(predicate, Function);
+
+        return new Iterable(function () {
+            var it = iterator(source),
+                index = 0,
+                result;
+
+            return new Iterator(function () {
+                if (!(result = it.next()).done) {
+                    if (predicate(result.value, index++)) {
+                        return {
+                            value: result.value,
+                            done: false
+                        };
+                    }
+                }
+                return {
+                    done: true
+                };
+            });
+        });
     }
 
     function linq(iterable) {
@@ -1038,13 +1058,21 @@
                 return selectIterator(this, selector);
             },
 
+            /**
+             * Filters a sequence of values based on a predicate. Each element's index is used in the logic of the predicate function.
+             * @param {Function} predicate A function to test each source element for a condition; the second parameter of the function represents the index of the source element. eg. function(item, index)
+             * @returns {Iterable}
+             */
+            where: function (predicate) {
+                return whereIterator(this, predicate);
+            },
 
             /**
             * Creates an array from an Iterable.
             * @returns {Array}
             */
             toArray: function () {
-                return toArray(this);
+                return buffer(this);
             }
         });
     }
