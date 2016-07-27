@@ -1,6 +1,7 @@
 import isArray from './is-array';
 import isString from './is-string';
 import isArrayLike from './is-array-like';
+import iterable from '../iteration/iterable-factory';
 import Collection from '../collections/collection';
 import ArrayIterable from '../iteration/iterable-array';
 
@@ -32,7 +33,7 @@ export default function buffer(value) {
             length = 16,
             arr = new Array(length);
 
-        for (let element of value) {
+        for (let element of iterable(value)) {
             if (count >= length) {
                 length *= 4;
                 arr.length = length;
