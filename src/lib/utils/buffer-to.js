@@ -1,7 +1,7 @@
 import assertType from './assert-type';
 import assertNotNull from './assert-not-null';
-import error, {ERROR_ARRAY_SIZE} from './error';
 import buffer from './buffer';
+import error, {ERROR_ARRAY_SIZE, ERROR_ARGUMENT_OUT_OF_RANGE} from './error';
 
 /**
 * Buffers an Iterable instance into a given array.
@@ -17,7 +17,11 @@ export default function bufferTo(value, array, index) {
         sourcelen = source.length,
         arraylen = array.length;
 
-    if (index > arraylen || sourcelen > arraylen) {
+    if (index < 0) {
+        error(ERROR_ARGUMENT_OUT_OF_RANGE);
+    }
+
+    if (index > arraylen || (sourcelen + index) > arraylen) {
         error(ERROR_ARRAY_SIZE);
     }
 
