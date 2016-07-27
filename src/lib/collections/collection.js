@@ -24,7 +24,7 @@ mixin(Collection.prototype, {
     * @returns {Number}
     */
     count: function () {
-        return (this.valueOf() || []).length;
+        return this.length;
     },
 
     /**
