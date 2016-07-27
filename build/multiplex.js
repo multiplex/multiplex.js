@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (July 27, 2016)
+* Version 2.0.0 (July 28, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -755,7 +755,7 @@
                 length = 16,
                 arr = new Array(length);
 
-            for (let element of value) {
+            for (let element of iterable(value)) {
                 if (count >= length) {
                     length *= 4;
                     arr.length = length;
@@ -803,7 +803,11 @@
             sourcelen = source.length,
             arraylen = array.length;
 
-        if (index > arraylen || sourcelen > arraylen) {
+        if (index < 0) {
+            error(ERROR_ARGUMENT_OUT_OF_RANGE);
+        }
+
+        if (index > arraylen || (sourcelen + index) > arraylen) {
             error(ERROR_ARRAY_SIZE);
         }
 

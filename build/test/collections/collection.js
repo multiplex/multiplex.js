@@ -21,12 +21,19 @@
         assert.equal(new Collection(new Collection([1])).length, 1, 'create collection from another collection');
         assert.equal(new Collection(mx([1, 2, 3])).length, 3, 'create collection from ArrayIterable');
         assert.equal(new Collection(mx({ val: 1 })).length, 1, 'create collection from ObjectIterable');
+        assert.equal(new Collection(mx.range(0, 1000).toArray()).length, 1000, 'create collection from big array');
         assert.equal(new Collection(mx([1, 2, 3]).select(t => t * 2)).length, 3, 'create collection from Iterable');
+        assert.equal(new Collection(function* () {
+            let count = 100;
+            while (count-- > 0) {
+                yield count;
+            }
+        }).length, 100, 'create collection from Generator');
     });
 
 
     qtest('toArray', function (assert) {
-        assert.deepEqual(new Collection().toArray(), [], 'empty collection tpArray');
+        assert.deepEqual(new Collection().toArray(), [], 'empty collection toArray');
         assert.deepEqual(new Collection([1, 2, 3]).toArray(), [1, 2, 3], 'create collection from array then toarray');
         assert.deepEqual(new Collection('string').toArray(), ['s', 't', 'r', 'i', 'n', 'g'], 'create collection from string and toarray');
         assert.deepEqual(new Collection(arguments).toArray(), [assert], 'create collection from arguments and toArray');
@@ -34,6 +41,64 @@
         assert.deepEqual(new Collection(mx([1, 2, 3])).toArray(), [1, 2, 3], 'create collection from ArrayIterable and toArray');
         assert.deepEqual(new Collection(mx({ val: 1 })).toArray(), [['val', 1]], 'create collection from ObjectIterable and toArray');
         assert.deepEqual(new Collection(mx([1, 2, 3]).select(t => t * 2)).toArray(), [2, 4, 6], 'create collection from Iterable and toArray');
+        assert.deepEqual(new Collection(function* () {
+            yield 1;
+            yield 2;
+            yield 3;
+        }).toArray(), [1, 2, 3], 'create collection from Generator and toArray');
+    });
+
+
+    qtest('collection count', function (assert) {
+        assert.equal(new Collection().count(), 0, 'empty collection');
+        assert.equal(new Collection([1, 2, 3]).count(), 3, 'create collection from array');
+        assert.equal(new Collection('string').count(), 6, 'create collection from string');
+        assert.equal(new Collection(arguments).count(), 1, 'create collection from arguments');
+        assert.equal(new Collection(new Collection([1])).count(), 1, 'create collection from another collection');
+        assert.equal(new Collection(mx([1, 2, 3])).count(), 3, 'create collection from ArrayIterable');
+        assert.equal(new Collection(mx({ val: 1 })).count(), 1, 'create collection from ObjectIterable');
+        assert.equal(new Collection(mx.range(0, 1000).toArray()).count(), 1000, 'create collection from big array');
+        assert.equal(new Collection(mx([1, 2, 3]).select(t => t * 2)).count(), 3, 'create collection from Iterable');
+        assert.equal(new Collection(function* () {
+            let count = 100;
+            while (count-- > 0) {
+                yield count;
+            }
+        }).count(), 100, 'create collection from Generator');
+    });
+
+
+    qtest('copyTo', function (assert) {
+        var col = new Collection([1, 2, 3, 4, 5]);
+        var arr1 = [0, 0, 0, 0, 0];
+        var arr2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        var arr3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        var arr4 = [];
+
+        col.copyTo(arr1, 0);
+        assert.deepEqual(arr1, [1, 2, 3, 4, 5], 'fixed size copy');
+
+        col.copyTo(arr2, 0);
+        assert.deepEqual(arr2, [1, 2, 3, 4, 5, 0, 0, 0, 0, 0], 'destination is bigger copy');
+
+        col.copyTo(arr3, 5);
+        assert.deepEqual(arr3, [0, 0, 0, 0, 0, 1, 2, 3, 4, 5], 'destination is bigger copy from middle');
+
+        assert.throws(function () {
+            col.copyTo(arr1, -1);
+        }, 'invalid input');
+
+        assert.throws(function () {
+            col.copyTo(arr1, 6);
+        }, 'invalid input');
+
+        assert.throws(function () {
+            col.copyTo(arr4, 0);
+        }, 'destination is smaller');
+
+        assert.throws(function () {
+            col.copyTo(arr2, 8);
+        }, 'destination does not have enough room');
     });
 
 
