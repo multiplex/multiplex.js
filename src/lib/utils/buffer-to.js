@@ -1,5 +1,4 @@
 import assertType from './assert-type';
-import assertNotNull from './assert-not-null';
 import buffer from './buffer';
 import error, {ERROR_ARRAY_SIZE, ERROR_ARGUMENT_OUT_OF_RANGE} from './error';
 
@@ -10,7 +9,7 @@ import error, {ERROR_ARRAY_SIZE, ERROR_ARGUMENT_OUT_OF_RANGE} from './error';
 * @param {Number} index The zero-based index in array at which copying begins.
 */
 export default function bufferTo(value, array, index) {
-    assertNotNull(array);
+    assertType(array, Array);
     assertType(index, Number);
 
     let source = buffer(value),
