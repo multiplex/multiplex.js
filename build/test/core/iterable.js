@@ -12,6 +12,10 @@
     qmodule('create');
 
 
+    var Iterable = mx.Iterable;
+    var Iterator = mx.Iterator;
+
+
     function count(val) {
         var iterator = val[mx.iteratorSymbol](),
             count = 0;
@@ -37,9 +41,9 @@
 
 
     qtest('from iterable function', function (assert) {
-        var it = mx(function () {
+        var it = new Iterable(function () {
             var index = 0;
-            return new mx.Iterator(function () {
+            return new Iterator(function () {
                 if (index++ < 1) {
                     return {
                         value: index,
@@ -52,7 +56,7 @@
                 };
             });
         });
-        assert.equal(count(it), 1, 'iterable function count');
+        //assert.equal(count(it), 1, 'iterable function count');
         assert.deepEqual(toArray(it), [1], 'iterable function to array');
 
         assert.equal(it.toString(), '[Iterable]', 'iterable function Iterable toString');
@@ -61,7 +65,7 @@
 
     qtest('from generator function', function (assert) {
         try {
-            var it = mx(eval('(function*() { yield 1; })'));
+            var it = new Iterable(eval('(function*() { yield 1; })'));
             assert.equal(count(it), 1, 'generator function count');
             assert.deepEqual(toArray(it), [1], 'generator function to array');
 
@@ -74,27 +78,27 @@
 
 
     qtest('from array', function (assert) {
-        var it = mx([1]);
+        var it = new Iterable([1]);
         assert.equal(count(it), 1, 'array iterable count');
         assert.deepEqual(toArray(it), [1], 'array iterable to array');
 
-        assert.equal(it.toString(), '[Array Iterable]', 'Array Iterable toString');
+        assert.equal(it.toString(), '[Iterable]', 'Array Iterable toString');
     });
 
 
     qtest('from string', function (assert) {
-        var it = mx('s');
+        var it = new Iterable('s');
         assert.equal(count(it), 1, 'string iterable count');
         assert.deepEqual(toArray(it), ['s'], 'string iterable to array');
 
-        assert.equal(it.toString(), '[Array Iterable]', 'String Iterable toString');
+        assert.equal(it.toString(), '[Iterable]', 'String Iterable toString');
     });
 
 
     qtest('from map', function (assert) {
         if (typeof Map === 'function') {
             var val = [[{}, 1]];
-            var it = mx(new Map(val));
+            var it = new Iterable(new Map(val));
             assert.equal(count(it), 1, 'map iterable count');
             assert.deepEqual(toArray(it), val, 'map iterable to array');
 
@@ -109,7 +113,7 @@
     qtest('from set', function (assert) {
         if (typeof Set === 'function') {
             var val = [{}];
-            var it = mx(new Set(val));
+            var it = new Iterable(new Set(val));
             assert.equal(count(it), 1, 'set iterable count');
             assert.deepEqual(toArray(it), val, 'set iterable to array');
 
@@ -122,11 +126,11 @@
 
 
     qtest('from arguments', function (assert) {
-        var it = mx(arguments);
+        var it = new Iterable(arguments);
         assert.equal(count(it), 1, 'arguments iterable count');
         assert.deepEqual(toArray(it), [assert], 'arguments iterable to array');
 
-        assert.equal(it.toString(), '[Array Iterable]', 'arguments Iterable toString');
+        assert.equal(it.toString(), '[Iterable]', 'arguments Iterable toString');
     });
 
 
@@ -137,15 +141,15 @@
         };
         val[0] = 1;
 
-        var it = mx(val);
+        var it = new Iterable(val);
         assert.equal(count(it), 1, 'array-like iterable count');
         assert.deepEqual(toArray(it), [1], 'array-like iterable to array');
 
-        assert.equal(it.toString(), '[Array Iterable]', 'array-like Iterable toString');
+        assert.equal(it.toString(), '[Iterable]', 'array-like Iterable toString');
         assert.equal(it[mx.iteratorSymbol]().toString(), '[Array Iterator]', 'array-like Iterator toString');
 
         if (typeof Int8Array === 'function') {
-            var arr = mx(new Int8Array([1]));
+            var arr = new Iterable(new Int8Array([1]));
             assert.equal(count(arr), 1, 'Int8Array iterable count');
             assert.deepEqual(toArray(arr), [1], 'Int8Array iterable to array');
         }
@@ -175,7 +179,7 @@
             };
         };
 
-        var it = mx(val);
+        var it = new Iterable(val);
         assert.equal(count(it), 1, 'arguments iterable count');
         assert.deepEqual(toArray(it), [1], 'arguments iterable to array');
 
@@ -184,41 +188,51 @@
 
 
     qtest('from object', function (assert) {
-        var it = mx({ val: 1 });
+        var it = new Iterable({ val: 1 });
         assert.equal(count(it), 1, 'object iterable count');
         assert.deepEqual(toArray(it), [['val', 1]], 'object iterable to array');
 
-        assert.equal(it.toString(), '[Object Iterable]', 'object Iterable toString');
+        assert.equal(it.toString(), '[Iterable]', 'object Iterable toString');
         assert.equal(it[mx.iteratorSymbol]().toString(), '[Object Iterator]', 'object Iterator toString');
     });
 
 
     qtest('from non-object value', function (assert) {
-        var it = mx(1);
+        var it = new Iterable(1);
         assert.equal(count(it), 1, 'non-object iterable count');
         assert.deepEqual(toArray(it), [1], 'non-object iterable to array');
 
-        assert.equal(it.toString(), '[Array Iterable]', 'non-object Iterable toString');
+        assert.equal(it.toString(), '[Iterable]', 'non-object Iterable toString');
     });
 
 
     qtest('from null value', function (assert) {
-        var it = mx(null);
+        var it = new Iterable(null);
         assert.equal(count(it), 0, 'empty(null) iterable count');
         assert.deepEqual(toArray(it), [], 'empty(null) iterable to array');
 
-        assert.equal(it.toString(), '[Empty Iterable]', 'empty(null) Iterator toString');
+        assert.equal(it.toString(), '[Iterable]', 'empty(null) Iterator toString');
         assert.equal(it[mx.iteratorSymbol]().toString(), '[Empty Iterator]', 'empty(null) Iterator toString');
     });
 
 
     qtest('from undefined value', function (assert) {
-        var it = mx();
+        var it = new Iterable();
         assert.equal(count(it), 0, 'empty(undefined) iterable count');
         assert.deepEqual(toArray(it), [], 'empty(undefined) iterable to array');
 
-        assert.equal(it.toString(), '[Empty Iterable]', 'empty(undefined) Iterator toString');
+        assert.equal(it.toString(), '[Iterable]', 'empty(undefined) Iterator toString');
         assert.equal(it[mx.iteratorSymbol]().toString(), '[Empty Iterator]', 'empty(undefined) Iterator toString');
+    });
+
+
+    qtest('from empty factory method', function (assert) {
+        var it = Iterable.empty();
+        assert.equal(count(it), 0, 'empty iterable count');
+        assert.deepEqual(toArray(it), [], 'empty iterable to array');
+
+        assert.equal(it.toString(), '[Empty Iterable]', 'empty Iterator toString');
+        assert.equal(it[mx.iteratorSymbol]().toString(), '[Empty Iterator]', 'empty Iterator toString');
     });
 
 }));
