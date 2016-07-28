@@ -33,7 +33,7 @@ mixin(Collection.prototype, {
     * @param {Number} arrayIndex The zero-based index in array at which copying begins.
     */
     copyTo: function (array, arrayIndex) {
-        bufferTo(this.valueOf() || [], array, arrayIndex);
+        bufferTo(this.valueOf(), array, arrayIndex);
     },
 
     /**
