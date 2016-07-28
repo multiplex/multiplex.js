@@ -30,7 +30,7 @@ export default class Collection extends ArrayIterable {
     * @param {Number} arrayIndex The zero-based index in array at which copying begins.
     */
     copyTo(array, arrayIndex) {
-        bufferTo(this.valueOf() || [], array, arrayIndex);
+        bufferTo(this.valueOf(), array, arrayIndex);
     }
 
     /**
