@@ -15,11 +15,7 @@ export default function isArrayLike(obj) {
     // - arguments object
     // - objects with 'length' and 'slice' properties
 
-    if (obj === null || obj === undefined) {
-        return false;
-    }
-
-    else if (typeof obj === 'string' ||
+    if (typeof obj === 'string' ||
         obj instanceof Array) {
         return true;
     }
