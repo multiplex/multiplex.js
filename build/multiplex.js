@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (July 28, 2016)
+* Version 2.0.0 (July 29, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -120,11 +120,7 @@
         // - arguments object
         // - objects with 'length' and 'slice' properties
 
-        if (obj === null || obj === undefined) {
-            return false;
-        }
-
-        else if (typeof obj === 'string' ||
+        if (typeof obj === 'string' ||
             obj instanceof Array) {
             return true;
         }
@@ -844,12 +840,6 @@
         return value.length === 1 ? [value[0]] : Array.apply(null, value);
     }
 
-    function assertNotNull(obj) {
-        if (obj == null) {
-            error('Value cannot be null.');
-        }
-    }
-
     /**
     * Buffers an Iterable instance into a given array.
     * @param {Iterable} value An Iterable object.
@@ -857,7 +847,7 @@
     * @param {Number} index The zero-based index in array at which copying begins.
     */
     function bufferTo(value, array, index) {
-        assertNotNull(array);
+        assertType(array, Array);
         assertType(index, Number);
 
         var source = buffer(value),
@@ -906,7 +896,7 @@
         * @param {Number} arrayIndex The zero-based index in array at which copying begins.
         */
         copyTo: function (array, arrayIndex) {
-            bufferTo(this.valueOf() || [], array, arrayIndex);
+            bufferTo(this.valueOf(), array, arrayIndex);
         },
 
         /**

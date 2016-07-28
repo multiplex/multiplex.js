@@ -56,4 +56,6 @@ qtest('create iterator', function (assert) {
     assert.throws(function () {
         new mx.Iterator({});
     }, 'Iterator throws exception when passed object');
+
+    assert.equal(it.toString(), '[Iterator]', 'Iterator toString');
 });
