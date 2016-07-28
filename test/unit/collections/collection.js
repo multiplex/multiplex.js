@@ -24,7 +24,7 @@ qtest('create collection', function (assert) {
 });
 
 
-qtest('toArray', function (assert) {
+qtest('collection toArray', function (assert) {
     assert.deepEqual(new Collection().toArray(), [], 'empty collection toArray');
     assert.deepEqual(new Collection([1, 2, 3]).toArray(), [1, 2, 3], 'create collection from array then toarray');
     assert.deepEqual(new Collection('string').toArray(), ['s', 't', 'r', 'i', 'n', 'g'], 'create collection from string and toarray');
@@ -61,7 +61,7 @@ qtest('collection count', function (assert) {
 });
 
 
-qtest('copyTo', function (assert) {
+qtest('collection copyTo', function (assert) {
     var col = new Collection([1, 2, 3, 4, 5]);
     var arr1 = [0, 0, 0, 0, 0];
     var arr2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -77,13 +77,24 @@ qtest('copyTo', function (assert) {
     col.copyTo(arr3, 5);
     assert.deepEqual(arr3, [0, 0, 0, 0, 0, 1, 2, 3, 4, 5], 'destination is bigger copy from middle');
 
+    new Collection().copyTo(arr4, 0);
+    assert.deepEqual(arr4, [], 'empty collection copy to');
+
+    assert.throws(function () {
+        col.copyTo(null, 0);
+    }, 'null array input');
+
+    assert.throws(function () {
+        col.copyTo({}, 0);
+    }, 'invalid array input');
+
     assert.throws(function () {
         col.copyTo(arr1, -1);
-    }, 'invalid input');
+    }, 'invalid index');
 
     assert.throws(function () {
         col.copyTo(arr1, 6);
-    }, 'invalid input');
+    }, 'invalid index');
 
     assert.throws(function () {
         col.copyTo(arr4, 0);
@@ -95,8 +106,8 @@ qtest('copyTo', function (assert) {
 });
 
 
-qtest('methods', function (assert) {
+qtest('collection toString', function (assert) {
     var col = new Collection();
-    assert.ok(col.toString(), '[Collection]');
-    assert.ok(Object.prototype.toString.apply(col), '[object Collection]');
+    assert.equal(col.toString(), '[Collection]', 'Collection toString');
+    assert.equal(Object.prototype.toString.apply(col), '[object Collection]', 'Collection toStringTag');
 });
