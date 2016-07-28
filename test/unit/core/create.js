@@ -195,7 +195,7 @@ qtest('from non-object value', function (assert) {
 
 
 qtest('from null value', function (assert) {
-    let it = mx(null);
+    var it = mx(null);
     assert.equal(count(it), 0, 'empty(null) iterable count');
     assert.deepEqual(toArray(it), [], 'empty(null) iterable to array');
 
@@ -204,7 +204,7 @@ qtest('from null value', function (assert) {
 
 
 qtest('from undefined value', function (assert) {
-    let it = mx();
+    var it = mx();
     assert.equal(count(it), 0, 'empty(undefined) iterable count');
     assert.deepEqual(toArray(it), [], 'empty(undefined) iterable to array');
 
