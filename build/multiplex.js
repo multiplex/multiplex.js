@@ -970,6 +970,18 @@
         }
     }
 
+    function asArray(value) {
+        if (isArrayLike(value)) {                       // array-likes have fixed element count
+            return value;
+        }
+
+        else if (value instanceof ArrayIterable) {      // ArrayIterable wrapper
+            return value.valueOf();
+        }
+
+        return null;
+    }
+
     function forOf(source, action) {
         var arr = asArray(source);
 
@@ -995,19 +1007,6 @@
                 }
             }
         }
-    }
-
-
-    function asArray(value) {
-        if (isArrayLike(value)) {                       // array-likes have fixed element count
-            return value;
-        }
-
-        else if (value instanceof ArrayIterable) {      // ArrayIterable wrapper
-            return value.valueOf();
-        }
-
-        return null;
     }
 
     function identityFunction(val) {

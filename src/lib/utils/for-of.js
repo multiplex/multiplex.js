@@ -1,7 +1,5 @@
-import isArrayLike from './is-array-like';
+import asArray from './as-array';
 import iterator from '../iteration/iterator-factory';
-import ArrayIterable from '../iteration/iterable-array';
-
 
 export default function forOf(source, action) {
     var arr = asArray(source);
@@ -30,15 +28,3 @@ export default function forOf(source, action) {
     }
 }
 
-
-function asArray(value) {
-    if (isArrayLike(value)) {                       // array-likes have fixed element count
-        return value;
-    }
-
-    else if (value instanceof ArrayIterable) {      // ArrayIterable wrapper
-        return value.valueOf();
-    }
-
-    return null;
-}
