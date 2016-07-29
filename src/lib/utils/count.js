@@ -1,8 +1,9 @@
 import isArrayLike from './is-array-like';
+import iterable from '../iteration/iterable-factory';
 import Collection from '../collections/collection';
 import ArrayIterable from '../iteration/iterable-array';
 
-// Gets number of items if the value is a Collection, Array or an Array-like, otherwise returns -1.
+/*jshint unused:false*/
 export default function count(value) {
     if (isArrayLike(value)) {
         return value.length;
@@ -16,5 +17,13 @@ export default function count(value) {
         return value.count();
     }
 
-    return -1;
+    else {
+        let count = 0;
+
+        for (let element in iterable(value)) {
+            count++;
+        }
+
+        return count;
+    }
 }

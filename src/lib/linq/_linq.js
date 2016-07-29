@@ -8,6 +8,7 @@ import all from './all';
 import any from './any';
 import average from './average';
 import concat from './concat';
+import count from './count';
 import select from './select';
 import where from './where';
 
@@ -89,6 +90,15 @@ export default function linq(iterable) {
         */
         concat(second) {
             return concat(this, second);
+        },
+
+        /**
+        * Returns the number of elements in a sequence.
+        * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
+        * @returns {Number}
+        */
+        count(predicate) {
+            return count(this, predicate);
         },
 
         /**
