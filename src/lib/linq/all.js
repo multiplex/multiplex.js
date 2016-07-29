@@ -1,19 +1,18 @@
-import iterator from '../iteration/iterator-factory';
 import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
+import forOf from '../utils/for-of';
 
 export default function allIterator(source, predicate) {
     assertNotNull(source);
     assertType(predicate, Function);
 
-    var it = iterator(source),
-        next;
+    var result = true;
 
-    while (!(next = it.next()).done) {
-        if (!predicate(next.value)) {
-            return false;
+    forOf(source, function (element) {
+        if (!predicate(element)) {
+            return result = false;
         }
-    }
+    });
 
-    return true;
+    return result;
 }

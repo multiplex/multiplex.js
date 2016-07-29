@@ -792,16 +792,16 @@
             return [];
         }
 
-        else if (value instanceof Collection) {             // Collections have 'toArray' method
-            return value.toArray();
-        }
-
         else if (isArrayLike(value)) {                      // array-likes have fixed element count
             return arrayBuffer(value);
         }
 
         else if (value instanceof ArrayIterable) {          // ArrayIterable wrapper
             return arrayBuffer(value.valueOf());
+        }
+
+        else if (value instanceof Collection) {             // Collections have 'toArray' method
+            return value.toArray();
         }
 
         // do it the hard way
@@ -968,6 +968,46 @@
         }
     }
 
+    function forOf(source, action) {
+        var arr = asArray(source);
+
+        // fast array iteration
+        if (arr) {
+            var len = arr.length,
+                i = 0;
+
+            for (; i < len;) {
+                if (action(arr[i++]) !== undefined) {
+                    break;
+                }
+            }
+        }
+
+        else {
+            var it = iterator(source),
+                next;
+
+            while (!(next = it.next()).done) {
+                if (action(next.value) !== undefined) {
+                    break;
+                }
+            }
+        }
+    }
+
+
+    function asArray(value) {
+        if (isArrayLike(value)) {                       // array-likes have fixed element count
+            return value;
+        }
+
+        else if (value instanceof ArrayIterable) {      // ArrayIterable wrapper
+            return value.valueOf();
+        }
+
+        return null;
+    }
+
     function identityFunction(val) {
         return val;
     }
@@ -982,13 +1022,11 @@
         resultSelector = resultSelector || identityFunction;
         assertType(resultSelector, Function);
 
-        var result = seed,
-            it = iterator(source),
-            next;
+        var result = seed;
 
-        while (!(next = it.next()).done) {
-            result = func(result, next.value);
-        }
+        forOf(source, function (element) {
+            result = func(result, element);
+        });
 
         return resultSelector(result);
     }
@@ -997,16 +1035,15 @@
         assertNotNull(source);
         assertType(predicate, Function);
 
-        var it = iterator(source),
-            next;
+        var result = true;
 
-        while (!(next = it.next()).done) {
-            if (!predicate(next.value)) {
-                return false;
+        forOf(source, function (element) {
+            if (!predicate(element)) {
+                return result = false;
             }
-        }
+        });
 
-        return true;
+        return result;
     }
 
     function anyIterator(source, predicate) {
@@ -1014,16 +1051,15 @@
         predicate = predicate || trueFunction;
         assertType(predicate, Function);
 
-        var it = iterator(source),
-            next;
+        var result = false;
 
-        while (!(next = it.next()).done) {
-            if (predicate(next.value)) {
-                return true;
+        forOf(source, function (element) {
+            if (predicate(element)) {
+                return result = true;
             }
-        }
+        });
 
-        return false;
+        return result;
     }
 
     function selectIterator(source, selector) {

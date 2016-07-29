@@ -1,6 +1,6 @@
-import iterator from '../iteration/iterator-factory';
 import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
+import forOf from '../utils/for-of';
 import {trueFunction} from './helper-functions';
 
 export default function anyIterator(source, predicate) {
@@ -8,14 +8,13 @@ export default function anyIterator(source, predicate) {
     predicate = predicate || trueFunction;
     assertType(predicate, Function);
 
-    var it = iterator(source),
-        next;
+    var result = false;
 
-    while (!(next = it.next()).done) {
-        if (predicate(next.value)) {
-            return true;
+    forOf(source, function (element) {
+        if (predicate(element)) {
+            return result = true;
         }
-    }
+    });
 
-    return false;
+    return result;
 }
