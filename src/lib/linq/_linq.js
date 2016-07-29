@@ -3,6 +3,9 @@ import buffer from '../utils/buffer';
 import EmptyIterable from '../iteration/iterable-empty';
 import rangeIterator from './range';
 import repeatIterator from './repeat';
+import aggregateIterator from './aggregate';
+import allIterator from './all';
+import anyIterator from './any';
 import selectIterator from './select';
 import whereIterator from './where';
 
@@ -36,6 +39,37 @@ export default function linq(iterable) {
     });
 
     mixin(iterable.prototype, {
+
+        /**
+        * Applies an accumulator function over a sequence.
+        * @param {Object} seed The initial accumulator value.
+        * @param {Function} func An accumulator function to be invoked on each element. eg. function(accumulate, item)
+        * @param {Function} resultSelector A function to transform the final accumulator value into the result value. eg. function(accumulate)
+        * @returns {Object}
+        */
+        aggregate(seed, func, resultSelector = element => element) {
+            return aggregateIterator(this, func, resultSelector);
+        },
+
+        /**
+        * Determines whether all elements of a sequence satisfy a condition.
+        * Returns true if every element of the source sequence passes the test in the specified predicate, or if the sequence is empty; otherwise, false.
+        * @param {Function} predicate A function to test each element for a condition. eg. function(item).
+        * @returns {Boolean}
+        */
+        all(predicate) {
+            return allIterator(this, predicate);
+        },
+
+        /**
+        * Determines whether a sequence contains any elements.
+        * Returns true if any elements in the source sequence contains any elements or pass the test in the specified predicate; otherwise, false.
+        * @param {Function=} predicate A function to test each element for a condition. eg. function(item).
+        * @returns {Boolean}
+        */
+        any(predicate = () => true) {
+            return anyIterator(this, predicate);
+        },
 
         /**
         * Projects each element of a sequence into a new form.
