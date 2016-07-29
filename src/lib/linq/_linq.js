@@ -10,6 +10,7 @@ import average from './average';
 import concat from './concat';
 import count from './count';
 import defaultIfEmpty from './default-if-empty';
+import elementAt from './element-at';
 import select from './select';
 import where from './where';
 
@@ -109,6 +110,15 @@ export default function linq(iterable) {
         */
         defaultIfEmpty(defaultValue) {
             return defaultIfEmpty(this, defaultValue);
+        },
+
+        /**
+        * Returns the element at a specified index in a sequence. Throws an error if the index is less than 0 or greater than or equal to the number of elements in source.
+        * @param {Number} index The zero-based index of the element to retrieve.
+        * @returns {Object}
+        */
+        elementAt: function (index) {
+            return elementAt(this, index);
         },
 
         /**

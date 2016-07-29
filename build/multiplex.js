@@ -1074,6 +1074,49 @@
         });
     }
 
+    function asArray(value) {
+        if (isArrayLike(value)) {                       // array-likes have fixed element count
+            return value;
+        }
+
+        else if (value instanceof ArrayIterable) {      // ArrayIterable wrapper
+            return value.valueOf();
+        }
+
+        return null;
+    }
+
+    function elementAtIterator(source, index) {
+        assertNotNull(source);
+        assertType(index, Number);
+
+        if (index < 0) {
+            error(ERROR_ARGUMENT_OUT_OF_RANGE);
+        }
+
+        let arr = asArray(source);
+
+        // fast find for array-like objects
+        if (arr !== null) {
+            if (index < arr.length) {
+                return arr[index];
+            }
+        }
+
+        else {
+            let it = iterator(source),
+                next;
+
+            while (!(next = it.next()).done) {
+                if (index-- === 0) {
+                    return next.value;
+                }
+            }
+        }
+
+        error(ERROR_ARGUMENT_OUT_OF_RANGE);
+    }
+
     function linq(iterable) {
         mixin(iterable, {
 
@@ -1169,6 +1212,15 @@
             */
             defaultIfEmpty(defaultValue) {
                 return defaultIfEmptyIterator(this, defaultValue);
+            },
+
+            /**
+            * Returns the element at a specified index in a sequence. Throws an error if the index is less than 0 or greater than or equal to the number of elements in source.
+            * @param {Number} index The zero-based index of the element to retrieve.
+            * @returns {Object}
+            */
+            elementAt: function (index) {
+                return elementAtIterator(this, index);
             },
 
             /**
