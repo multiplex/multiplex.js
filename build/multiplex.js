@@ -733,16 +733,16 @@
             return [];
         }
 
-        else if (value instanceof Collection) {             // Collections have 'toArray' method
-            return value.toArray();
-        }
-
         else if (isArrayLike(value)) {                      // array-likes have fixed element count
             return arrayBuffer(value);
         }
 
         else if (value instanceof ArrayIterable) {          // ArrayIterable wrapper
             return arrayBuffer(value.valueOf());
+        }
+
+        else if (value instanceof Collection) {             // Collections have 'toArray' method
+            return value.toArray();
         }
 
         // do it the hard way
