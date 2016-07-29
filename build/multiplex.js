@@ -1091,7 +1091,6 @@
         assertNotNull(source);
 
         if (selector != null) {
-            assertType(selector, Function);
             return averageIterator(selectIterator(source, selector));
         }
 
@@ -1166,6 +1165,41 @@
                 };
             });
         });
+    }
+
+    function count(value) {
+        if (isArrayLike(value)) {
+            return value.length;
+        }
+
+        else if (value instanceof ArrayIterable) {
+            return value.valueOf().length;
+        }
+
+        else if (value instanceof Collection) {
+            return value.count();
+        }
+
+        else {
+            var it = iterator(value),
+                count = 0;
+
+            while (!it.next().done) {
+                count++;
+            }
+
+            return count;
+        }
+    }
+
+    function countIterator(source, predicate) {
+        assertNotNull(source);
+
+        if (predicate != null) {
+            return count(whereIterator(source, predicate));
+        }
+
+        return count(source);
     }
 
     function linq(iterable) {
@@ -1245,6 +1279,15 @@
             */
             concat: function (second) {
                 return concatIterator(this, second);
+            },
+
+            /**
+            * Returns the number of elements in a sequence.
+            * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
+            * @returns {Number}
+            */
+            count: function (predicate) {
+                return countIterator(this, predicate);
             },
 
             /**

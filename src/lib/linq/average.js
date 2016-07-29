@@ -1,6 +1,5 @@
 import select from './select';
 import forOf from '../utils/for-of';
-import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
 import error, {ERROR_NO_ELEMENTS, ERROR_NON_NUMERIC_TYPE} from '../utils/error';
 
@@ -8,7 +7,6 @@ export default function averageIterator(source, selector) {
     assertNotNull(source);
 
     if (selector != null) {
-        assertType(selector, Function);
         return averageIterator(select(source, selector));
     }
 
