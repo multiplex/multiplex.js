@@ -11,13 +11,13 @@ export default function whereIterator(source, predicate) {
     return new Iterable(function () {
         var it = iterator(source),
             index = 0,
-            result;
+            next;
 
         return new Iterator(function () {
-            if (!(result = it.next()).done) {
-                if (predicate(result.value, index++)) {
+            if (!(next = it.next()).done) {
+                if (predicate(next.value, index++)) {
                     return {
-                        value: result.value,
+                        value: next.value,
                         done: false
                     };
                 }

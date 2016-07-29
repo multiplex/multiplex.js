@@ -1070,12 +1070,12 @@
         return new Iterable(function () {
             var it = iterator(source),
                 index = 0,
-                result;
+                next;
 
             return new Iterator(function () {
-                if (!(result = it.next()).done) {
+                if (!(next = it.next()).done) {
                     return {
-                        value: selector(result.value, index++),
+                        value: selector(next.value, index++),
                         done: false
                     };
                 }
@@ -1119,18 +1119,18 @@
         return new Iterable(function () {
             var itFirst = iterator(first),
                 itSecond = iterator(second),
-                result;
+                next;
 
             return new Iterator(function () {
-                if (!(result = itFirst.next()).done) {
+                if (!(next = itFirst.next()).done) {
                     return {
-                        value: result.value,
+                        value: next.value,
                         done: false
                     };
                 }
-                if (!(result = itSecond.next()).done) {
+                if (!(next = itSecond.next()).done) {
                     return {
-                        value: result.value,
+                        value: next.value,
                         done: false
                     };
                 }
@@ -1148,13 +1148,13 @@
         return new Iterable(function () {
             var it = iterator(source),
                 index = 0,
-                result;
+                next;
 
             return new Iterator(function () {
-                if (!(result = it.next()).done) {
-                    if (predicate(result.value, index++)) {
+                if (!(next = it.next()).done) {
+                    if (predicate(next.value, index++)) {
                         return {
-                            value: result.value,
+                            value: next.value,
                             done: false
                         };
                     }
@@ -1231,6 +1231,37 @@
                 };
             });
         });
+    }
+
+    function elementAtIterator(source, index) {
+        assertNotNull(source);
+        assertType(index, Number);
+
+        if (index < 0) {
+            error(ERROR_ARGUMENT_OUT_OF_RANGE);
+        }
+
+        var arr = asArray(source);
+
+        // fast find for array-like objects
+        if (arr !== null) {
+            if (index < arr.length) {
+                return arr[index];
+            }
+        }
+
+        else {
+            var it = iterator(source),
+                next;
+
+            while (!(next = it.next()).done) {
+                if (index-- === 0) {
+                    return next.value;
+                }
+            }
+        }
+
+        error(ERROR_ARGUMENT_OUT_OF_RANGE);
     }
 
     function linq(iterable) {
@@ -1328,6 +1359,15 @@
             */
             defaultIfEmpty: function (defaultValue) {
                 return defaultIfEmptyIterator(this, defaultValue);
+            },
+
+            /**
+            * Returns the element at a specified index in a sequence. Throws an error if the index is less than 0 or greater than or equal to the number of elements in source.
+            * @param {Number} index The zero-based index of the element to retrieve.
+            * @returns {Object}
+            */
+            elementAt: function (index) {
+                return elementAtIterator(this, index);
             },
 
             /**

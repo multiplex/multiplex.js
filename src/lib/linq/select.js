@@ -11,12 +11,12 @@ export default function selectIterator(source, selector) {
     return new Iterable(function () {
         var it = iterator(source),
             index = 0,
-            result;
+            next;
 
         return new Iterator(function () {
-            if (!(result = it.next()).done) {
+            if (!(next = it.next()).done) {
                 return {
-                    value: selector(result.value, index++),
+                    value: selector(next.value, index++),
                     done: false
                 };
             }

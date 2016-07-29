@@ -10,18 +10,18 @@ export default function concatIterator(first, second) {
     return new Iterable(function () {
         var itFirst = iterator(first),
             itSecond = iterator(second),
-            result;
+            next;
 
         return new Iterator(function () {
-            if (!(result = itFirst.next()).done) {
+            if (!(next = itFirst.next()).done) {
                 return {
-                    value: result.value,
+                    value: next.value,
                     done: false
                 };
             }
-            if (!(result = itSecond.next()).done) {
+            if (!(next = itSecond.next()).done) {
                 return {
-                    value: result.value,
+                    value: next.value,
                     done: false
                 };
             }
