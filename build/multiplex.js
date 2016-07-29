@@ -963,7 +963,72 @@
         });
     }
 
+    function assertNotNull(obj) {
+        if (obj == null) {
+            error('Value cannot be null.');
+        }
+    }
+
+    function identityFunction(val) {
+        return val;
+    }
+
+    function trueFunction() {
+        return true;
+    }
+
+    function aggregateIterator(source, seed, func, resultSelector) {
+        assertNotNull(source);
+        assertType(func, Function);
+        resultSelector = resultSelector || identityFunction;
+        assertType(resultSelector, Function);
+
+        var result = seed,
+            it = iterator(source),
+            next;
+
+        while (!(next = it.next()).done) {
+            result = func(result, next.value);
+        }
+
+        return resultSelector(result);
+    }
+
+    function allIterator(source, predicate) {
+        assertNotNull(source);
+        assertType(predicate, Function);
+
+        var it = iterator(source),
+            next;
+
+        while (!(next = it.next()).done) {
+            if (!predicate(next.value)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    function anyIterator(source, predicate) {
+        assertNotNull(source);
+        predicate = predicate || trueFunction;
+        assertType(predicate, Function);
+
+        var it = iterator(source),
+            next;
+
+        while (!(next = it.next()).done) {
+            if (predicate(next.value)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     function selectIterator(source, selector) {
+        assertNotNull(source);
         assertType(selector, Function);
 
         return new Iterable(function () {
@@ -986,6 +1051,7 @@
     }
 
     function whereIterator(source, predicate) {
+        assertNotNull(source);
         assertType(predicate, Function);
 
         return new Iterable(function () {
@@ -1038,6 +1104,37 @@
         });
 
         mixin(iterable.prototype, {
+
+            /**
+            * Applies an accumulator function over a sequence.
+            * @param {Object} seed The initial accumulator value.
+            * @param {Function} func An accumulator function to be invoked on each element. eg. function(accumulate, item)
+            * @param {Function} resultSelector A function to transform the final accumulator value into the result value. eg. function(accumulate)
+            * @returns {Object}
+            */
+            aggregate: function (seed, func, resultSelector) {
+                return aggregateIterator(this, func, resultSelector);
+            },
+
+            /**
+            * Determines whether all elements of a sequence satisfy a condition.
+            * Returns true if every element of the source sequence passes the test in the specified predicate, or if the sequence is empty; otherwise, false.
+            * @param {Function} predicate A function to test each element for a condition. eg. function(item).
+            * @returns {Boolean}
+            */
+            all: function (predicate) {
+                return allIterator(this, predicate);
+            },
+
+            /**
+            * Determines whether a sequence contains any elements.
+            * Returns true if any elements in the source sequence contains any elements or pass the test in the specified predicate; otherwise, false.
+            * @param {Function=} predicate A function to test each element for a condition. eg. function(item).
+            * @returns {Boolean}
+            */
+            any: function (predicate) {
+                return anyIterator(this, predicate);
+            },
 
             /**
             * Projects each element of a sequence into a new form.
