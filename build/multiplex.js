@@ -1055,6 +1055,25 @@
         return count(source);
     }
 
+    function defaultIfEmptyIterator(source, defaultValue) {
+        assertNotNull(source);
+
+        return new Iterable(function* () {
+            let it = iterator(source),
+                next = it.next();
+
+            if (!next.done) {
+                do {
+                    yield next.value;
+                }
+                while (!(next = it.next()).done);
+            }
+            else {
+                yield defaultValue;
+            }
+        });
+    }
+
     function linq(iterable) {
         mixin(iterable, {
 
@@ -1141,6 +1160,15 @@
             */
             count(predicate) {
                 return countIterator(this, predicate);
+            },
+
+            /**
+            * Returns the elements of the specified sequence or the specified value in a collection if the sequence is empty.
+            * @param {Object=} defaultValue The value to return if the sequence is empty.
+            * @returns {Iterable}
+            */
+            defaultIfEmpty(defaultValue) {
+                return defaultIfEmptyIterator(this, defaultValue);
             },
 
             /**
