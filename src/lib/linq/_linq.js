@@ -1,13 +1,14 @@
 import mixin from '../utils/mixin';
 import buffer from '../utils/buffer';
 import EmptyIterable from '../iteration/iterable-empty';
-import rangeIterator from './range';
-import repeatIterator from './repeat';
-import aggregateIterator from './aggregate';
-import allIterator from './all';
-import anyIterator from './any';
-import selectIterator from './select';
-import whereIterator from './where';
+import range from './range';
+import repeat from './repeat';
+import aggregate from './aggregate';
+import all from './all';
+import any from './any';
+import average from './average';
+import select from './select';
+import where from './where';
 
 export default function linq(iterable) {
     mixin(iterable, {
@@ -26,7 +27,7 @@ export default function linq(iterable) {
         * @param {Number} count The number of sequential integers to generate.
         * @returns {Iterable}
         */
-        range: rangeIterator,
+        range: range,
 
         /**
         * Generates a sequence that contains one repeated value.
@@ -34,7 +35,7 @@ export default function linq(iterable) {
         * @param {Number} count The number of times to repeat the value in the generated sequence.
         * @returns {Iterable}
         */
-        repeat: repeatIterator
+        repeat: repeat
     });
 
     mixin(iterable.prototype, {
@@ -47,7 +48,7 @@ export default function linq(iterable) {
         * @returns {Object}
         */
         aggregate: function (seed, func, resultSelector) {
-            return aggregateIterator(this, func, resultSelector);
+            return aggregate(this, func, resultSelector);
         },
 
         /**
@@ -57,7 +58,7 @@ export default function linq(iterable) {
         * @returns {Boolean}
         */
         all: function (predicate) {
-            return allIterator(this, predicate);
+            return all(this, predicate);
         },
 
         /**
@@ -67,7 +68,16 @@ export default function linq(iterable) {
         * @returns {Boolean}
         */
         any: function (predicate) {
-            return anyIterator(this, predicate);
+            return any(this, predicate);
+        },
+
+        /**
+        * Computes the average of a sequence of numeric values.
+        * @param {Function=} selector A transform function to apply to each element. eg.function(item).
+        * @returns {Number}
+        */
+        average: function (selector) {
+            return average(this, selector);
         },
 
         /**
@@ -76,7 +86,7 @@ export default function linq(iterable) {
         * @returns {Iterable}
         */
         select: function (selector) {
-            return selectIterator(this, selector);
+            return select(this, selector);
         },
 
         /**
@@ -85,7 +95,7 @@ export default function linq(iterable) {
          * @returns {Iterable}
          */
         where: function (predicate) {
-            return whereIterator(this, predicate);
+            return where(this, predicate);
         },
 
         /**
