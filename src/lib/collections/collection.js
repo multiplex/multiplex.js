@@ -13,7 +13,6 @@ export default class Collection extends ArrayIterable {
         }
 
         super(value);
-        this.length = value == null ? 0 : value.length;
     }
 
     /**
@@ -21,7 +20,7 @@ export default class Collection extends ArrayIterable {
     * @returns {Number}
     */
     count() {
-        return this.length;
+        return this.valueOf() ? this.valueOf().length : 0;
     }
 
     /**

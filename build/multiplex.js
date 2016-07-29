@@ -817,7 +817,6 @@
             }
 
             super(value);
-            this.length = value == null ? 0 : value.length;
         }
 
         /**
@@ -825,7 +824,7 @@
         * @returns {Number}
         */
         count() {
-            return this.length;
+            return this.valueOf() ? this.valueOf().length : 0;
         }
 
         /**
