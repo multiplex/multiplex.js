@@ -1275,6 +1275,31 @@
         });
     }
 
+    function zipIterator(first, second, resultSelector) {
+        assertNotNull(first);
+        assertNotNull(second);
+        assertType(resultSelector, Function);
+
+        return new Iterable(function () {
+            var it1 = iterator(first),
+                it2 = iterator(second),
+                next1,
+                next2;
+
+            return new Iterator(function () {
+                if (!(next1 = it1.next()).done && !(next2 = it2.next()).done) {
+                    return {
+                        value: resultSelector(next1.value, next2.value),
+                        done: false
+                    };
+                }
+                return {
+                    done: true
+                };
+            });
+        });
+    }
+
     function linq(iterable) {
         mixin(iterable, {
 
@@ -1399,6 +1424,14 @@
             },
 
             /**
+            * Creates an array from an Iterable.
+            * @returns {Array}
+            */
+            toArray: function () {
+                return buffer(this);
+            },
+
+            /**
              * Filters a sequence of values based on a predicate. Each element's index is used in the logic of the predicate function.
              * @param {Function} predicate A function to test each source element for a condition; the second parameter of the function represents the index of the source element. eg. function(item, index)
              * @returns {Iterable}
@@ -1408,11 +1441,13 @@
             },
 
             /**
-            * Creates an array from an Iterable.
-            * @returns {Array}
+            * Merges two sequences by using the specified predicate function.
+            * @param {Iterable} second The second sequence to merge.
+            * @param {Function} resultSelector A function that specifies how to merge the elements from the two sequences. eg. function(first, second)
+            * @returns {Iterable}
             */
-            toArray: function () {
-                return buffer(this);
+            zip: function (second, resultSelector) {
+                return zipIterator(this, second, resultSelector);
             }
         });
     }

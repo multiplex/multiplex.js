@@ -14,6 +14,7 @@ import elementAt from './element-at';
 import forEach from './for-each';
 import select from './select';
 import where from './where';
+import zip from './zip';
 
 export default function linq(iterable) {
     mixin(iterable, {
@@ -139,6 +140,14 @@ export default function linq(iterable) {
         },
 
         /**
+        * Creates an array from an Iterable.
+        * @returns {Array}
+        */
+        toArray: function () {
+            return buffer(this);
+        },
+
+        /**
          * Filters a sequence of values based on a predicate. Each element's index is used in the logic of the predicate function.
          * @param {Function} predicate A function to test each source element for a condition; the second parameter of the function represents the index of the source element. eg. function(item, index)
          * @returns {Iterable}
@@ -148,11 +157,13 @@ export default function linq(iterable) {
         },
 
         /**
-        * Creates an array from an Iterable.
-        * @returns {Array}
+        * Merges two sequences by using the specified predicate function.
+        * @param {Iterable} second The second sequence to merge.
+        * @param {Function} resultSelector A function that specifies how to merge the elements from the two sequences. eg. function(first, second)
+        * @returns {Iterable}
         */
-        toArray: function () {
-            return buffer(this);
+        zip: function (second, resultSelector) {
+            return zip(this, second, resultSelector);
         }
     });
 }
