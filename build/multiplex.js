@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (July 29, 2016)
+* Version 2.0.0 (July 30, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -1114,6 +1114,35 @@
         return sum / count;
     }
 
+    function concatIterator(first, second) {
+        assertNotNull(first);
+        assertNotNull(second);
+
+        return new Iterable(function () {
+            var itFirst = iterator(first),
+                itSecond = iterator(second),
+                result;
+
+            return new Iterator(function () {
+                if (!(result = itFirst.next()).done) {
+                    return {
+                        value: result.value,
+                        done: false
+                    };
+                }
+                if (!(result = itSecond.next()).done) {
+                    return {
+                        value: result.value,
+                        done: false
+                    };
+                }
+                return {
+                    done: true
+                };
+            });
+        });
+    }
+
     function whereIterator(source, predicate) {
         assertNotNull(source);
         assertType(predicate, Function);
@@ -1207,6 +1236,15 @@
             */
             average: function (selector) {
                 return averageIterator(this, selector);
+            },
+
+            /**
+            * Concatenates two sequences.
+            * @param {Iterable} second The sequence to concatenate to current sequence.
+            * @returns {Iterable}
+            */
+            concat: function (second) {
+                return concatIterator(this, second);
             },
 
             /**
