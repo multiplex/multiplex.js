@@ -29,21 +29,7 @@ export default function buffer(value) {
 
     // do it the hard way
     else {
-        let count = 0,
-            length = 16,
-            arr = new Array(length);
-
-        for (let element of iterable(value)) {
-            if (count >= length) {
-                length *= 4;
-                arr.length = length;
-            }
-
-            arr[count++] = element;
-        }
-
-        arr.length = count;
-        return arr;
+        return [...iterator(value)];
     }
 }
 
