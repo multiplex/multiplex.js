@@ -1264,6 +1264,17 @@
         error(ERROR_ARGUMENT_OUT_OF_RANGE);
     }
 
+    function forEachIterator(source, action) {
+        assertNotNull(source);
+        assertType(action, Function);
+
+        var index = 0;
+
+        forOf(source, function (element) {
+            action(element, index++);
+        });
+    }
+
     function linq(iterable) {
         mixin(iterable, {
 
@@ -1368,6 +1379,14 @@
             */
             elementAt: function (index) {
                 return elementAtIterator(this, index);
+            },
+
+            /**
+            * Performs the specified action on each element of an Iterable.
+            * @param {Function} action The action function to perform on each element of an Iterable. eg. function(item, index)
+            */
+            forEach: function (action) {
+                return forEachIterator(this, action);
             },
 
             /**
