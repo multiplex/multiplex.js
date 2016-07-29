@@ -7,6 +7,7 @@ import aggregate from './aggregate';
 import all from './all';
 import any from './any';
 import average from './average';
+import concat from './concat';
 import select from './select';
 import where from './where';
 
@@ -77,8 +78,17 @@ export default function linq(iterable) {
         * @param {Function=} selector A transform function to apply to each element. eg.function(item).
         * @returns {Number}
         */
-        average: function (selector = null) {
+        average(selector = null) {
             return average(this, selector);
+        },
+
+        /**
+        * Concatenates two sequences.
+        * @param {Iterable} second The sequence to concatenate to current sequence.
+        * @returns {Iterable}
+        */
+        concat(second) {
+            return concat(this, second);
         },
 
         /**
