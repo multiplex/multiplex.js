@@ -13,7 +13,6 @@ export default function Collection(value) {
     }
 
     ArrayIterable.call(this, value);
-    this.length = value == null ? 0 : value.length;
 }
 
 extend(Collection, ArrayIterable);
@@ -24,7 +23,7 @@ mixin(Collection.prototype, {
     * @returns {Number}
     */
     count: function () {
-        return this.length;
+        return this.valueOf() ? this.valueOf().length : 0;
     },
 
     /**

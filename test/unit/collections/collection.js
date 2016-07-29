@@ -6,18 +6,18 @@ qmodule('collection');
 var Collection = mx.Collection;
 
 qtest('create collection', function (assert) {
-    assert.equal(new Collection().length, 0, 'empty collection');
-    assert.equal(new Collection([1, 2, 3]).length, 3, 'create collection from array');
-    assert.equal(new Collection('string').length, 6, 'create collection from string');
-    assert.equal(new Collection(arguments).length, 1, 'create collection from arguments');
-    assert.equal(new Collection(new Collection([1])).length, 1, 'create collection from another collection');
-    assert.equal(new Collection(mx([1, 2, 3])).length, 3, 'create collection from ArrayIterable');
-    assert.equal(new Collection(mx({ val: 1 })).length, 1, 'create collection from ObjectIterable');
-    assert.equal(new Collection(mx.range(0, 1000).toArray()).length, 1000, 'create collection from big array');
+    assert.equal(new Collection().valueOf(), undefined, 'empty collection');
+    assert.equal(new Collection([1, 2, 3]).valueOf().length, 3, 'create collection from array');
+    assert.equal(new Collection('string').valueOf().length, 6, 'create collection from string');
+    assert.equal(new Collection(arguments).valueOf().length, 1, 'create collection from arguments');
+    assert.equal(new Collection(new Collection([1])).valueOf().length, 1, 'create collection from another collection');
+    assert.equal(new Collection(mx([1, 2, 3])).valueOf().length, 3, 'create collection from ArrayIterable');
+    assert.equal(new Collection(mx({ val: 1 })).valueOf().length, 1, 'create collection from ObjectIterable');
+    assert.equal(new Collection(mx.range(0, 1000).toArray()).valueOf().length, 1000, 'create collection from big array');
 
     assert.equal(new Collection(mx([1, 2, 3]).select(function (t) {
         return t * 2;
-    })).length, 3, 'create collection from Iterable');
+    })).valueOf().length, 3, 'create collection from Iterable');
 
     assert.equal(new Collection(function () {
         var index = 0;
@@ -32,7 +32,7 @@ qtest('create collection', function (assert) {
                 done: true
             };
         });
-    }).length, 100, 'create collection from Generator');
+    }).valueOf().length, 100, 'create collection from Generator');
 });
 
 

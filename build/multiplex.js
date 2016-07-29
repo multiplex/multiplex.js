@@ -876,7 +876,6 @@
         }
 
         Iterable.call(this, value);
-        this.length = value == null ? 0 : value.length;
     }
 
     extend(Collection, Iterable);
@@ -887,7 +886,7 @@
         * @returns {Number}
         */
         count: function () {
-            return this.length;
+            return this.valueOf() ? this.valueOf().length : 0;
         },
 
         /**
