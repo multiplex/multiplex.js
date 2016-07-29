@@ -11,6 +11,7 @@ import concat from './concat';
 import count from './count';
 import defaultIfEmpty from './default-if-empty';
 import elementAt from './element-at';
+import forEach from './for-each';
 import select from './select';
 import where from './where';
 
@@ -117,8 +118,16 @@ export default function linq(iterable) {
         * @param {Number} index The zero-based index of the element to retrieve.
         * @returns {Object}
         */
-        elementAt: function (index) {
+        elementAt(index) {
             return elementAt(this, index);
+        },
+
+        /**
+        * Performs the specified action on each element of an Iterable.
+        * @param {Function} action The action function to perform on each element of an Iterable. eg. function(item, index)
+        */
+        forEach(action) {
+            return forEach(this, action);
         },
 
         /**
