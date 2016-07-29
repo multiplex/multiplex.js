@@ -9,6 +9,7 @@ import any from './any';
 import average from './average';
 import concat from './concat';
 import count from './count';
+import defaultIfEmpty from './default-if-empty';
 import select from './select';
 import where from './where';
 
@@ -98,6 +99,15 @@ export default function linq(iterable) {
         */
         count: function (predicate) {
             return count(this, predicate);
+        },
+
+        /**
+        * Returns the elements of the specified sequence or the specified value in a collection if the sequence is empty.
+        * @param {Object=} defaultValue The value to return if the sequence is empty.
+        * @returns {Iterable}
+        */
+        defaultIfEmpty: function (defaultValue) {
+            return defaultIfEmpty(this, defaultValue);
         },
 
         /**
