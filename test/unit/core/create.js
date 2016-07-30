@@ -52,6 +52,7 @@ qtest('from iterable function', function (assert) {
 
 
 qtest('from generator function', function (assert) {
+    /*jshint evil:true*/
     try {
         var it = mx(eval('(function*() { yield 1; })'));
         assert.equal(count(it), 1, 'generator function count');

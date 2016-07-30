@@ -13,13 +13,7 @@ export default function concatIterator(first, second) {
             next;
 
         return new Iterator(function () {
-            if (!(next = itFirst.next()).done) {
-                return {
-                    value: next.value,
-                    done: false
-                };
-            }
-            if (!(next = itSecond.next()).done) {
+            if (!(next = itFirst.next()).done || !(next = itSecond.next()).done) {
                 return {
                     value: next.value,
                     done: false

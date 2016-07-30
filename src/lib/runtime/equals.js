@@ -20,7 +20,7 @@ export default function equals(objA, objB) {
     else if (
         objA === null || objA === undefined ||
         objB === null || objB === undefined) {
-        return objA == objB;
+        return false;
     }
 
 

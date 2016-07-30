@@ -21,12 +21,14 @@
         attributes = attributes || {};
 
         for (var _prop in properties) {
-            define(obj, _prop, {
-                value: properties[_prop],
-                writable: attributes.writable || false,
-                enumerable: attributes.enumerable || false,
-                configurable: attributes.configurable || false
-            });
+            if (properties.hasOwnProperty(_prop)) {
+                define(obj, _prop, {
+                    value: properties[_prop],
+                    writable: attributes.writable || false,
+                    enumerable: attributes.enumerable || false,
+                    configurable: attributes.configurable || false
+                });
+            }
         }
 
         return obj;
@@ -148,17 +150,18 @@
         return false;
     }
 
-    function extend(Type, Base) {
+    /*jshint newcap:false*/
+    function extend(type, superType) {
         if (isFunction(Object.create)) {
-            Type.prototype = Object.create(Base.prototype);
+            type.prototype = Object.create(superType.prototype);
         }
         else {
-            var _ = function () { };
-            _.prototype = Base.prototype;
-            Type.prototype = new _();
+            var Super = function () { };
+            Super.prototype = superType.prototype;
+            type.prototype = new Super();
         }
 
-        Type.prototype.constructor = Type;
+        type.prototype.constructor = type;
     }
 
     /**
@@ -679,7 +682,7 @@
         else if (
             objA === null || objA === undefined ||
             objB === null || objB === undefined) {
-            return objA == objB;
+            return false;
         }
 
 
@@ -730,12 +733,12 @@
 
         // null or undefined is less than everything
         else if (objA === null || objA === undefined) {
-            return objB == objA ? 0 : -1;
+            return objB === null || objB === undefined ? 0 : -1;
         }
 
         // Everything is greater than null or undefined
         else if (objB === null || objB === undefined) {
-            return objA == objB ? 0 : 1;
+            return objA === null || objA === undefined ? 0 : 1;
         }
 
         // numbers compare using 'gt' operator
@@ -1122,13 +1125,7 @@
                 next;
 
             return new Iterator(function () {
-                if (!(next = itFirst.next()).done) {
-                    return {
-                        value: next.value,
-                        done: false
-                    };
-                }
-                if (!(next = itSecond.next()).done) {
+                if (!(next = itFirst.next()).done || !(next = itSecond.next()).done) {
                     return {
                         value: next.value,
                         done: false

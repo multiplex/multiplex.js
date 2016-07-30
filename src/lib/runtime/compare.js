@@ -15,12 +15,12 @@ export default function compare(objA, objB) {
 
     // null or undefined is less than everything
     else if (objA === null || objA === undefined) {
-        return objB == objA ? 0 : -1;
+        return objB === null || objB === undefined ? 0 : -1;
     }
 
     // Everything is greater than null or undefined
     else if (objB === null || objB === undefined) {
-        return objA == objB ? 0 : 1;
+        return objA === null || objA === undefined ? 0 : 1;
     }
 
     // numbers compare using 'gt' operator
