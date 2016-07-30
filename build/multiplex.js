@@ -1349,6 +1349,48 @@
         });
     }
 
+    function HashSet(comparer) {
+        this._comparer = comparer;
+    }
+
+    function unionIterator(first, second, comparer) {
+        assertNotNull(first);
+        assertNotNull(second);
+        comparer = EqualityComparer.from(comparer);
+
+        return new Iterable(function () {
+            var set = new HashSet(comparer),
+                it1 = iterator(first),
+                it2 = iterator(second),
+                next1,
+                next2;
+
+            return new Iterator(function () {
+                while (!(next1 = it1.next()).done) {
+                    if (set.add(next1.value)) {
+                        return {
+                            value: next1.value,
+                            done: false
+                        };
+                    }
+                }
+
+                while (!(next2 = it2.next()).done) {
+                    if (set.add(next2.value)) {
+                        return {
+                            value: next2.value,
+                            done: false
+                        };
+                    }
+                }
+
+                return {
+                    done: true
+                };
+            });
+        });
+    }
+
     function zipIterator(first, second, resultSelector) {
         assertNotNull(first);
         assertNotNull(second);
@@ -1513,6 +1555,16 @@
             */
             toArray: function () {
                 return buffer(this);
+            },
+
+            /**
+            * Produces the set union of two sequences by using a specified EqualityComparer.
+            * @param {Iterable} second An Enumerable whose distinct elements form the second set for the union.
+            * @param {EqualityComparer=} comparer The EqualityComparer to compare values.
+            * @returns {Iterable}
+            */
+            union: function (second, comparer) {
+                return unionIterator(this, second, comparer);
             },
 
             /**

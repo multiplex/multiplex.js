@@ -14,6 +14,7 @@ import defaultIfEmpty from './default-if-empty';
 import elementAt from './element-at';
 import forEach from './for-each';
 import select from './select';
+import union from './union';
 import where from './where';
 import zip from './zip';
 
@@ -156,6 +157,16 @@ export default function linq(iterable) {
         */
         toArray: function () {
             return buffer(this);
+        },
+
+        /**
+        * Produces the set union of two sequences by using a specified EqualityComparer.
+        * @param {Iterable} second An Enumerable whose distinct elements form the second set for the union.
+        * @param {EqualityComparer=} comparer The EqualityComparer to compare values.
+        * @returns {Iterable}
+        */
+        union: function (second, comparer) {
+            return union(this, second, comparer);
         },
 
         /**
