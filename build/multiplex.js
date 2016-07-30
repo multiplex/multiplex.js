@@ -1349,9 +1349,27 @@
         });
     }
 
+    function toArray(source) {
+        assertNotNull(source);
+        return buffer(source);
+    }
+
+    function List(value) {
+        this._value = value;
+    }
+
+    extend(List, Collection);
+
+    function toList(source) {
+        assertNotNull(source);
+        return new List(source);
+    }
+
     function HashSet(comparer) {
         this._comparer = comparer;
     }
+
+    extend(HashSet, Collection);
 
     function unionIterator(first, second, comparer) {
         assertNotNull(first);
@@ -1554,7 +1572,15 @@
             * @returns {Array}
             */
             toArray: function () {
-                return buffer(this);
+                return toArray(this);
+            },
+
+            /**
+            * Creates a List from an Enumerable.
+            * @returns {List}
+            */
+            toList: function () {
+                return toList(this);
             },
 
             /**
