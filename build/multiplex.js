@@ -1203,6 +1203,29 @@
         });
     }
 
+    function sequenceEqualIterator(first, second, comparer = null) {
+        assertNotNull(first);
+        assertNotNull(second);
+        comparer = EqualityComparer.from(comparer);
+
+        let it1 = iterator(first),
+            it2 = iterator(second),
+            next1,
+            next2;
+
+        while (!(next1 = it1.next()).done) {
+            if ((next2 = it2.next()).done || !comparer.equals(next1.value, next2.value)) {
+                return false;
+            }
+        }
+
+        if (!it2.next().done) {
+            return false;
+        }
+
+        return true;
+    }
+
     function skipIterator(source, count) {
         assertNotNull(source);
         assertType(count, Number);
@@ -1491,6 +1514,16 @@
             */
             select(selector) {
                 return selectIterator(this, selector);
+            },
+
+            /**
+            * Determines whether two sequences are equal by comparing their elements by using an EqualityComparer.
+            * @param {Iterable} second An Iterable to compare to the first sequence.
+            * @param {EqualityComparer=} comparer The EqualityComparer to compare values.
+            * @returns {Boolean}
+            */
+            sequenceEqual(second, comparer) {
+                return sequenceEqualIterator(this, second, comparer);
             },
 
             /**
