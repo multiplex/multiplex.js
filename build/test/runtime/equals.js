@@ -14,8 +14,8 @@
     qtest('basic equals', function (assert) {
         assert.ok(mx.equals(null, null), 'null values are equals');
         assert.ok(mx.equals(undefined, undefined), 'undefined values are equal');
-        assert.ok(mx.equals(null, undefined), 'null and undefined values are equal');
-        assert.ok(mx.equals(undefined, null), 'undefined and null values are equal');
+        assert.ok(mx.equals(null, undefined) === false, 'null and undefined values are not equal');
+        assert.ok(mx.equals(undefined, null) === false, 'undefined and null values are not equal');
     });
 
 

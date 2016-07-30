@@ -8,7 +8,7 @@ import bufferTo from '../utils/buffer-to';
 * Initializes a new instance of the abstract Collection class.
 */
 export default function Collection(value) {
-    if (value != null) {
+    if (value !== null && value !== undefined) {
         value = buffer(value);
     }
 

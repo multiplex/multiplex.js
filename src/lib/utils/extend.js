@@ -1,14 +1,15 @@
 import isFunction from './is-function';
 
-export default function extend(Type, Base) {
+/*jshint newcap:false*/
+export default function extend(type, superType) {
     if (isFunction(Object.create)) {
-        Type.prototype = Object.create(Base.prototype);
+        type.prototype = Object.create(superType.prototype);
     }
     else {
-        var _ = function () { };
-        _.prototype = Base.prototype;
-        Type.prototype = new _();
+        var Super = function () { };
+        Super.prototype = superType.prototype;
+        type.prototype = new Super();
     }
 
-    Type.prototype.constructor = Type;
+    type.prototype.constructor = type;
 }

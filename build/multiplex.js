@@ -21,12 +21,14 @@
         attributes = attributes || {};
 
         for (var _prop in properties) {
-            define(obj, _prop, {
-                value: properties[_prop],
-                writable: attributes.writable || false,
-                enumerable: attributes.enumerable || false,
-                configurable: attributes.configurable || false
-            });
+            if (properties.hasOwnProperty(_prop)) {
+                define(obj, _prop, {
+                    value: properties[_prop],
+                    writable: attributes.writable || false,
+                    enumerable: attributes.enumerable || false,
+                    configurable: attributes.configurable || false
+                });
+            }
         }
 
         return obj;
@@ -148,17 +150,18 @@
         return false;
     }
 
-    function extend(Type, Base) {
+    /*jshint newcap:false*/
+    function extend(type, superType) {
         if (isFunction(Object.create)) {
-            Type.prototype = Object.create(Base.prototype);
+            type.prototype = Object.create(superType.prototype);
         }
         else {
-            var _ = function () { };
-            _.prototype = Base.prototype;
-            Type.prototype = new _();
+            var Super = function () { };
+            Super.prototype = superType.prototype;
+            type.prototype = new Super();
         }
 
-        Type.prototype.constructor = Type;
+        type.prototype.constructor = type;
     }
 
     /**
@@ -289,7 +292,7 @@
     * @param {Iterable|Array|String|Function|Function*|Object} source An Iterable object.
     */
     function Iterable(source) {
-        if (source != null) {
+        if (source !== null && source !== undefined) {
             this._source = source;
         }
     }
@@ -679,7 +682,7 @@
         else if (
             objA === null || objA === undefined ||
             objB === null || objB === undefined) {
-            return objA == objB;
+            return false;
         }
 
 
@@ -730,25 +733,17 @@
 
         // null or undefined is less than everything
         else if (objA === null || objA === undefined) {
-            return objB == objA ? 0 : -1;
+            return -1;
         }
 
         // Everything is greater than null or undefined
         else if (objB === null || objB === undefined) {
-            return objA == objB ? 0 : 1;
+            return 1;
         }
 
         // numbers compare using 'gt' operator
         else if (typeof objA === 'number') {
-            // objA: NaN
-            if (objA !== objA) {
-                return objB !== objB ? 0 : -1;
-            }
-            // objB: NaN
-            else if (objB !== objB) {
-                return 1;
-            }
-            return objA > objB ? 1 : -1;
+            return objA > objB || isNaN(objB) ? 1 : -1;
         }
 
         // booleans compare using 'gt' operator
@@ -758,8 +753,8 @@
 
         // Strings are compared using String.prototype.localeCompare method
         else if (typeof objA === 'string') {
-            var _res = objA.localeCompare(objB);
-            return _res > 0 ? 1 : (_res < 0 ? -1 : 0);
+            var res = objA.localeCompare(objB);
+            return res > 0 ? 1 : (res < 0 ? -1 : 0);
         }
 
         // Compute overridden 'compare' method for Object types
@@ -769,10 +764,10 @@
 
         // All other objects are compared using 'valudOf' method
         else {
-            var _v1 = valueOf(objA),
-                _v2 = valueOf(objB);
+            var v1 = valueOf(objA),
+                v2 = valueOf(objB);
 
-            return _v1 > _v2 ? 1 : (_v1 < _v2 ? -1 : 0);
+            return v1 > v2 ? 1 : (v1 < v2 ? -1 : 0);
         }
     }
 
@@ -790,7 +785,7 @@
     * @returns {Array}
     */
     function buffer(value) {
-        if (value == null) {                                // empty value
+        if (value === null || value === undefined) {        // empty value
             return [];
         }
 
@@ -873,7 +868,7 @@
     * Initializes a new instance of the abstract Collection class.
     */
     function Collection(value) {
-        if (value != null) {
+        if (value !== null && value !== undefined) {
             value = buffer(value);
         }
 
@@ -965,7 +960,7 @@
     }
 
     function assertNotNull(obj) {
-        if (obj == null) {
+        if (obj === null || obj === undefined) {
             error('Value cannot be null.');
         }
     }
@@ -1040,7 +1035,8 @@
 
         forOf(source, function (element) {
             if (!predicate(element)) {
-                return result = false;
+                result = false;
+                return result;
             }
         });
 
@@ -1056,7 +1052,8 @@
 
         forOf(source, function (element) {
             if (predicate(element)) {
-                return result = true;
+                result = true;
+                return result;
             }
         });
 
@@ -1089,7 +1086,7 @@
     function averageIterator(source, selector) {
         assertNotNull(source);
 
-        if (selector != null) {
+        if (selector) {
             return averageIterator(selectIterator(source, selector));
         }
 
@@ -1122,13 +1119,7 @@
                 next;
 
             return new Iterator(function () {
-                if (!(next = itFirst.next()).done) {
-                    return {
-                        value: next.value,
-                        done: false
-                    };
-                }
-                if (!(next = itSecond.next()).done) {
+                if (!(next = itFirst.next()).done || !(next = itSecond.next()).done) {
                     return {
                         value: next.value,
                         done: false
@@ -1139,6 +1130,89 @@
                 };
             });
         });
+    }
+
+    /**
+    * Provides a base class for implementations of the EqualityComparer.
+    */
+    function EqualityComparer(hashCodeProvider, equality) {
+        assertType(hashCodeProvider, Function);
+        assertType(equality, Function);
+
+        this._hash = hashCodeProvider;
+        this._equals = equality;
+    }
+
+
+    var defaultEqualityComparer = new EqualityComparer(hash, equals);
+
+
+    mixin(EqualityComparer.prototype, {
+        /**
+        * Determines whether the specified objects are equal.
+        * @param {Object} x The first object of type Object to compare.
+        * @param {Object} y The second object of type Object to compare.
+        * @returns true if the specified objects are equal; otherwise, false.
+        */
+        equals: function (x, y) {
+            return this._equals(x, y);
+        },
+
+        /**
+        * Returns a hash code for the specified object.
+        * @param {Object} obj The Object for which a hash code is to be returned.
+        * @returns A hash code for the specified object.
+        */
+        hash: function (obj) {
+            return this._hash(obj);
+        },
+
+        toString: function () {
+            return '[EqualityComparer]';
+        }
+    });
+
+
+    mixin(EqualityComparer, {
+        /**
+        * Gets a default sort order comparer for the type specified by the generic argument.
+        */
+        defaultComparer: defaultEqualityComparer,
+
+        /**
+        * Gets or creates a new EqualityComparer object.
+        * @param {EqualityComparer|Object} value An EqualityComparer object.
+        * @returns {EqualityComparer}
+        */
+        from: function (value) {
+            if (value instanceof EqualityComparer) {
+                return value;
+            }
+
+            else if (value && isFunction(value.hash) && isFunction(value.equals)) {
+                return new EqualityComparer(value.hash, value.equals);
+            }
+
+            else {
+                return defaultEqualityComparer;
+            }
+        }
+    });
+
+    function containsIterator(source, value, comparer) {
+        assertNotNull(source);
+        comparer = EqualityComparer.from(comparer);
+
+        var result = false;
+
+        forOf(source, function (element) {
+            if (comparer.equals(element, value)) {
+                result = true;
+                return result;
+            }
+        });
+
+        return result;
     }
 
     function whereIterator(source, predicate) {
@@ -1194,7 +1268,7 @@
     function countIterator(source, predicate) {
         assertNotNull(source);
 
-        if (predicate != null) {
+        if (predicate) {
             return count(whereIterator(source, predicate));
         }
 
@@ -1377,6 +1451,16 @@
             */
             concat: function (second) {
                 return concatIterator(this, second);
+            },
+
+            /**
+            * Determines whether a sequence contains a specified element by using an equality comparer.
+            * @param {Object} value The value to locate in the sequence.
+            * @param {EqualityComparer=} comparer An equality comparer to compare values.
+            * @returns {Boolean}
+            */
+            contains: function (value, comparer) {
+                return containsIterator(this, value, comparer);
             },
 
             /**

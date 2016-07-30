@@ -1,0 +1,24 @@
+languages:
+   JavaScript: true
+
+engines:
+  eslint:
+    enabled: true
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - javascript
+
+ratings:
+  paths:
+  - src/**
+  - tasks/**
+
+exclude_paths:
+- "build/"
+- "test/"
+- "test/unit/"
+- "benchmark/"
+- "external/"
+- "**.d.ts"

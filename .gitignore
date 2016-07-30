@@ -2,12 +2,13 @@
 *.suo
 *.ide
 *.log
+.coveralls.yml
 
 # Release
 /dist
 
 # Others
-.*
+.*/
 coverage
 nyc_output
 node_modules

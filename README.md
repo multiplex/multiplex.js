@@ -1,5 +1,6 @@
 [![npm version][npm-version-image]][npm-url] 
-[![build status][travis-image]][travis-url] 
+[![build status][travis-image]][travis-url]
+[![code climate][climate-image]][climate-url]
 [![coverage status][coverage-image]][coverage-url] 
 [![apache license][license-image]][license-url]
 
@@ -30,7 +31,6 @@ Multiplex is a set of data-structures and implementation of .Net LINQ methods in
 * LINQ support over built-in [Array](#--array-and-string) and [String](#--array-and-string) classes and [jQuery](#--array-like-objects-arguments-nodelist-jquery) objects.
 * Built-in `hash` and `equals` functions to identify objects in a hash-based collection.
 * *JSDoc* documentation.
-* IntelliSense support for *VisualStudio*.
 
 
 
@@ -466,8 +466,11 @@ When the tests pass, the built version of Multiplex will be put in the `build/` 
 [license-url]: LICENSE
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg
 
-[travis-url]: https://travis-ci.org/multiplex/multiplex.js?branch=develop
-[travis-image]: https://travis-ci.org/multiplex/multiplex.js.svg?branch=develop
+[travis-url]: https://travis-ci.org/multiplex/multiplex.js
+[travis-image]: https://travis-ci.org/multiplex/multiplex.js.svg
 
-[coverage-url]: https://coveralls.io/github/multiplex/multiplex.js?branch=develop
-[coverage-image]: https://coveralls.io/repos/github/multiplex/multiplex.js/badge.svg?branch=develop
+[climate-url]: https://codeclimate.com/github/multiplex/multiplex.js
+[climate-image]: https://codeclimate.com/github/multiplex/multiplex.js/badges/gpa.svg
+
+[coverage-url]: https://coveralls.io/github/multiplex/multiplex.js
+[coverage-image]: https://coveralls.io/repos/github/multiplex/multiplex.js/badge.svg

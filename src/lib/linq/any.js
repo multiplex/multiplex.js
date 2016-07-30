@@ -1,6 +1,6 @@
+import forOf from '../utils/for-of';
 import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
-import forOf from '../utils/for-of';
 import {trueFunction} from './helper-functions';
 
 export default function anyIterator(source, predicate) {
@@ -12,7 +12,8 @@ export default function anyIterator(source, predicate) {
 
     forOf(source, function (element) {
         if (predicate(element)) {
-            return result = true;
+            result = true;
+            return result;
         }
     });
 
