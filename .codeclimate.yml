@@ -4,8 +4,6 @@ languages:
 engines:
   eslint:
     enabled: true
-  nodesecurity:
-    enabled: true
   duplication:
     enabled: true
     config:
