@@ -1,5 +1,4 @@
 import mixin from '../utils/mixin';
-import buffer from '../utils/buffer';
 import EmptyIterable from '../iteration/iterable-empty';
 import range from './range';
 import repeat from './repeat';
@@ -14,6 +13,10 @@ import defaultIfEmpty from './default-if-empty';
 import elementAt from './element-at';
 import forEach from './for-each';
 import select from './select';
+import take from './take';
+import toArray from './to-array';
+import toList from './to-list';
+import union from './union';
 import where from './where';
 import zip from './zip';
 
@@ -151,11 +154,38 @@ export default function linq(iterable) {
         },
 
         /**
+        * Returns a specified number of contiguous elements from the start of a sequence.
+        * @param {Number} count The number of elements to return.
+        * @returns {Iterable}
+        */
+        take: function (count) {
+            return take(this, count);
+        },
+
+        /**
         * Creates an array from an Iterable.
         * @returns {Array}
         */
         toArray: function () {
-            return buffer(this);
+            return toArray(this);
+        },
+
+        /**
+        * Creates a List from an Enumerable.
+        * @returns {List}
+        */
+        toList: function () {
+            return toList(this);
+        },
+
+        /**
+        * Produces the set union of two sequences by using a specified EqualityComparer.
+        * @param {Iterable} second An Enumerable whose distinct elements form the second set for the union.
+        * @param {EqualityComparer=} comparer The EqualityComparer to compare values.
+        * @returns {Iterable}
+        */
+        union: function (second, comparer) {
+            return union(this, second, comparer);
         },
 
         /**

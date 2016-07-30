@@ -1349,6 +1349,94 @@
         });
     }
 
+    function takeIterator(source, count) {
+        assertNotNull(source);
+        assertType(count, Number);
+
+        var arr = asArray(source);
+
+        if (arr !== null) {
+            return new Iterable(buffer(arr).slice(0, count));
+        }
+
+        return new Iterable(function () {
+            var it = iterator(source),
+                next;
+
+            return new Iterator(function () {
+                if (!(next = it.next()).done && count-- > 0) {
+                    return {
+                        value: next.value,
+                        done: false
+                    };
+                }
+                return {
+                    done: true
+                };
+            });
+        });
+    }
+
+    function toArray(source) {
+        assertNotNull(source);
+        return buffer(source);
+    }
+
+    function List(value) {
+        this._value = value;
+    }
+
+    extend(List, Collection);
+
+    function toList(source) {
+        assertNotNull(source);
+        return new List(source);
+    }
+
+    function HashSet(comparer) {
+        this._comparer = comparer;
+    }
+
+    extend(HashSet, Collection);
+
+    function unionIterator(first, second, comparer) {
+        assertNotNull(first);
+        assertNotNull(second);
+        comparer = EqualityComparer.from(comparer);
+
+        return new Iterable(function () {
+            var set = new HashSet(comparer),
+                it1 = iterator(first),
+                it2 = iterator(second),
+                next1,
+                next2;
+
+            return new Iterator(function () {
+                while (!(next1 = it1.next()).done) {
+                    if (set.add(next1.value)) {
+                        return {
+                            value: next1.value,
+                            done: false
+                        };
+                    }
+                }
+
+                while (!(next2 = it2.next()).done) {
+                    if (set.add(next2.value)) {
+                        return {
+                            value: next2.value,
+                            done: false
+                        };
+                    }
+                }
+
+                return {
+                    done: true
+                };
+            });
+        });
+    }
+
     function zipIterator(first, second, resultSelector) {
         assertNotNull(first);
         assertNotNull(second);
@@ -1508,11 +1596,38 @@
             },
 
             /**
+            * Returns a specified number of contiguous elements from the start of a sequence.
+            * @param {Number} count The number of elements to return.
+            * @returns {Iterable}
+            */
+            take: function (count) {
+                return takeIterator(this, count);
+            },
+
+            /**
             * Creates an array from an Iterable.
             * @returns {Array}
             */
             toArray: function () {
-                return buffer(this);
+                return toArray(this);
+            },
+
+            /**
+            * Creates a List from an Enumerable.
+            * @returns {List}
+            */
+            toList: function () {
+                return toList(this);
+            },
+
+            /**
+            * Produces the set union of two sequences by using a specified EqualityComparer.
+            * @param {Iterable} second An Enumerable whose distinct elements form the second set for the union.
+            * @param {EqualityComparer=} comparer The EqualityComparer to compare values.
+            * @returns {Iterable}
+            */
+            union: function (second, comparer) {
+                return unionIterator(this, second, comparer);
             },
 
             /**
