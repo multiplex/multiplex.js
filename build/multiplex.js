@@ -1190,6 +1190,28 @@
         }
     }
 
+    function takeIterator(source, count) {
+        assertNotNull(source);
+        assertType(count, Number);
+
+        let arr = asArray(source);
+
+        if (arr !== null) {
+            return new Iterable(buffer(arr).slice(0, count));
+        }
+
+        return new Iterable(function* () {
+            if (count > 0) {
+                for (let element of source) {
+                    yield element;
+                    if (--count === 0) {
+                        break;
+                    }
+                }
+            }
+        });
+    }
+
     function toArray(source) {
         assertNotNull(source);
         return buffer(source);
@@ -1387,6 +1409,15 @@
             },
 
             /**
+            * Returns a specified number of contiguous elements from the start of a sequence.
+            * @param {Number} count The number of elements to return.
+            * @returns {Iterable}
+            */
+            take(count) {
+                return takeIterator(this, count);
+            },
+
+            /**
             * Creates an array from an Iterable.
             * @returns {Array}
             */
@@ -1398,7 +1429,7 @@
             * Creates a List from an Enumerable.
             * @returns {List}
             */
-            toList: function () {
+            toList() {
                 return toList(this);
             },
 
