@@ -1377,6 +1377,29 @@
         });
     }
 
+    function takeWhileIterator(source, predicate) {
+        assertNotNull(source);
+        assertType(predicate, Function);
+
+        return new Iterable(function () {
+            var it = iterator(source),
+                index = 0,
+                next;
+
+            return new Iterator(function () {
+                if (!(next = it.next()).done && predicate(next.value, index++)) {
+                    return {
+                        value: next.value,
+                        done: false
+                    };
+                }
+                return {
+                    done: true
+                };
+            });
+        });
+    }
+
     function toArray(source) {
         assertNotNull(source);
         return buffer(source);
@@ -1592,6 +1615,15 @@
             */
             take: function (count) {
                 return takeIterator(this, count);
+            },
+
+            /**
+            * Returns elements from a sequence as long as a specified condition is true. The element's index is used in the logic of the predicate function.
+            * @param {Function=} predicate A function to test each source element for a condition; the second parameter of the function represents the index of the source element. eg. Function(item, index)
+            * @returns {Iterable}
+            */
+            takeWhile: function (predicate) {
+                return takeWhileIterator(this, predicate);
             },
 
             /**
