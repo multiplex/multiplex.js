@@ -3,14 +3,21 @@
 [![coverage status][coverage-image]][coverage-url] 
 [![apache license][license-image]][license-url]
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> refs/remotes/origin/develop
 # Multiplex
 #### Comprehensive data-structure and LINQ library for JavaScript.
 ----------------------------
 
+<<<<<<< HEAD
 ## We are porting to ES6 (ES2015)
 Version 2.0 is going to be written from ground-up in two separate branches: ES6 which is up to the latest stanrad of ECMA (including classes, generators, symbols, spread operator, destructuring,...) and does not support backward compatibility, and ES5 which also benefits from the ES6 standard but is fully backward compatible.
 We try our best not to include breaking changes to the API, however should any new feature is irreversible, we provide a list of breaking changes in the wiki section.
 Keep in mind that the master branch in under development and might be broken, is you wish to fork an stable branch please refer to 'release-1.0' which is already locked for this purpose.
+=======
+>>>>>>> refs/remotes/origin/develop
 
 
 ## What is Multiplex
@@ -467,6 +474,7 @@ When the tests pass, the built version of Multiplex will be put in the `build/` 
 [npm-version-image]: https://badge.fury.io/js/multiplexjs.svg
 
 [license-url]: LICENSE
+<<<<<<< HEAD
 [license-image]: https://img.shields.io/badge/license-Apache-blue.svg
 
 [travis-url]: https://travis-ci.org/multiplex/multiplex.js?branch=master
@@ -474,3 +482,12 @@ When the tests pass, the built version of Multiplex will be put in the `build/` 
 
 [coverage-url]: https://coveralls.io/github/multiplex/multiplex.js?branch=master
 [coverage-image]: https://coveralls.io/repos/github/multiplex/multiplex.js/badge.svg?branch=master
+=======
+[license-image]: https://img.shields.io/badge/license-MIT-blue.svg
+
+[travis-url]: https://travis-ci.org/multiplex/multiplex.js?branch=develop
+[travis-image]: https://travis-ci.org/multiplex/multiplex.js.svg?branch=develop
+
+[coverage-url]: https://coveralls.io/github/multiplex/multiplex.js?branch=develop
+[coverage-image]: https://coveralls.io/repos/github/multiplex/multiplex.js/badge.svg?branch=develop
+>>>>>>> refs/remotes/origin/develop

@@ -1,12 +1,9 @@
 .*
 *.suo
 *.ide
-*.user
-*.userosscache
-*.sln
-*.sln.docstates
-*.csproj
+*.log
 
+<<<<<<< HEAD
 /.editorconfig
 /.gitattributes
 /.jshintrc
@@ -23,3 +20,13 @@
 /bower_components
 /test
 /test/typescript/*.js
+=======
+/build
+/tasks
+/external
+/src/test
+/node_modules
+/bower_components
+/Gruntfile.js
+/bower.json
+>>>>>>> refs/remotes/origin/develop

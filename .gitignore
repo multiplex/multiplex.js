@@ -1,12 +1,9 @@
 # User-specific files
 *.suo
 *.ide
-*.user
-*.userosscache
-*.sln
-*.sln.docstates
-*.csproj
+*.log
 
+<<<<<<< HEAD
 # Build results
 *.dll
 [Bb]in/
@@ -23,3 +20,14 @@
 node_modules
 bower_components
 test/typescript/*.js
+=======
+# Release
+/dist
+
+# Others
+.*
+coverage
+nyc_output
+node_modules
+bower_components
+>>>>>>> refs/remotes/origin/develop

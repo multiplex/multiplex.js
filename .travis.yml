@@ -1,6 +1,7 @@
 language: node_js
 node_js:
   - "node"
+<<<<<<< HEAD
   - "0.12"
   - "0.10"
 sudo: false
@@ -9,3 +10,29 @@ before_script:
   - npm install -g grunt-cli
 
 script: grunt build:travis
+=======
+  - "4"
+  - "0.12"
+  - "0.10"
+
+# using container-based infrastructure
+sudo: false
+
+# clone repositories to a depth of 10 commits
+git:
+  depth: 10
+
+cache:
+  directories:
+    - node_modules
+    - bower_components
+
+before_script:
+  - npm install -g grunt-cli
+
+script: 
+  - grunt build:travis
+
+after_success: 
+  - npm run coveralls
+>>>>>>> refs/remotes/origin/develop

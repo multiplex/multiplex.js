@@ -2,8 +2,15 @@
     "name": "multiplexjs",
     "title": "Multiplex.js",
     "description": "Comprehensive data-structure and LINQ library for JavaScript.",
+<<<<<<< HEAD
     "version": "1.1.0",
     "main": "build/multiplex.js",
+=======
+    "version": "2.0.0",
+    "main": "dist/multiplex.js",
+    "jsnext:main": "dist/multiplex.es6.js",
+    "typings": "dist/multiplex.d.ts",
+>>>>>>> refs/remotes/origin/develop
     "author": "Kamyar Nazeri",
     "license": "Apache-2.0",
     "homepage": "https://github.com/multiplex/multiplex.js",
@@ -21,6 +28,9 @@
         "framework",
         "es6"
     ],
+    "engines": {
+        "node": "*"
+    },
     "bugs": {
         "url": "https://github.com/multiplex/multiplex.js/issues"
     },
@@ -30,7 +40,15 @@
     },
     "dependencies": {},
     "preferGlobal": true,
+    "nyc": {
+        "exclude": [
+            "test",
+            "tasks",
+            "external"
+        ]
+    },
     "devDependencies": {
+<<<<<<< HEAD
         "grunt": "0.4.5",
         "grunt-cli": "0.1.x",
         "grunt-contrib-clean": "0.6.x",
@@ -45,6 +63,30 @@
     "scripts": {
         "build": "npm install && grunt",
         "test": "grunt && grunt test",
+=======
+        "load-grunt-tasks": "3.5.0",
+        "grunt": "1.0.1",
+        "grunt-cli": "1.2.0",
+        "grunt-contrib-clean": "1.0.0",
+        "grunt-contrib-copy": "1.0.0",
+        "grunt-contrib-qunit": "1.2.0",
+        "grunt-contrib-jshint": "1.0.0",
+        "grunt-contrib-uglify": "2.0.0",
+        "grunt-contrib-watch": "1.0.0",
+        "grunt-benchmark": "1.0.0",
+        "grunt-jscs": "3.0.1",
+        "es6-promise": "3.2.1",
+        "es6-map": "0.1.4",
+        "benchmark": "2.1.0",
+        "qunit": "0.9.1",
+        "rollup": "0.34.1",
+        "coveralls": "2.11.11",
+        "nyc": "7.1.0"
+    },
+    "scripts": {
+        "build": "npm install && grunt",
+        "test": "grunt test",
+>>>>>>> refs/remotes/origin/develop
         "coverage": "nyc npm test && nyc report",
         "coveralls": "nyc npm test && nyc report --reporter=text-lcov | coveralls"
     }
