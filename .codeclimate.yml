@@ -6,8 +6,6 @@ engines:
     enabled: true
   duplication:
     enabled: true
-  nodesecurity:
-    enabled: true
 
 ratings:
   paths:
