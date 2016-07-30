@@ -14,6 +14,7 @@ import elementAt from './element-at';
 import forEach from './for-each';
 import select from './select';
 import take from './take';
+import takeWhile from './take-while';
 import toArray from './to-array';
 import toList from './to-list';
 import union from './union';
@@ -161,6 +162,15 @@ export default function linq(iterable) {
         */
         take(count) {
             return take(this, count);
+        },
+
+        /**
+        * Returns elements from a sequence as long as a specified condition is true. The element's index is used in the logic of the predicate function.
+        * @param {Function=} predicate A function to test each source element for a condition; the second parameter of the function represents the index of the source element. eg. Function(item, index)
+        * @returns {Iterable}
+        */
+        takeWhile(predicate) {
+            return takeWhile(this, predicate);
         },
 
         /**
