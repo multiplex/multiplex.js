@@ -15,6 +15,7 @@ ratings:
 exclude_paths:
 - "build/"
 - "test/"
+- "test/unit/"
 - "benchmark/"
 - "external/"
 - "**.d.ts"
