@@ -1377,6 +1377,29 @@
         });
     }
 
+    function takeWhileIterator(source, predicate) {
+        assertNotNull(source);
+        assertType(predicate, Function);
+
+        return new Iterable(function () {
+            var it = iterator(source),
+                index = 0,
+                next;
+
+            return new Iterator(function () {
+                if (!(next = it.next()).done && predicate(next.value, index++)) {
+                    return {
+                        value: next.value,
+                        done: false
+                    };
+                }
+                return {
+                    done: true
+                };
+            });
+        });
+    }
+
     function toArray(source) {
         assertNotNull(source);
         return buffer(source);
@@ -1408,23 +1431,13 @@
             var set = new HashSet(comparer),
                 it1 = iterator(first),
                 it2 = iterator(second),
-                next1,
-                next2;
+                next;
 
             return new Iterator(function () {
-                while (!(next1 = it1.next()).done) {
-                    if (set.add(next1.value)) {
+                while (!(next = it1.next()).done || !(next = it2.next()).done) {
+                    if (set.add(next.value)) {
                         return {
-                            value: next1.value,
-                            done: false
-                        };
-                    }
-                }
-
-                while (!(next2 = it2.next()).done) {
-                    if (set.add(next2.value)) {
-                        return {
-                            value: next2.value,
+                            value: next.value,
                             done: false
                         };
                     }
@@ -1602,6 +1615,15 @@
             */
             take: function (count) {
                 return takeIterator(this, count);
+            },
+
+            /**
+            * Returns elements from a sequence as long as a specified condition is true. The element's index is used in the logic of the predicate function.
+            * @param {Function=} predicate A function to test each source element for a condition; the second parameter of the function represents the index of the source element. eg. Function(item, index)
+            * @returns {Iterable}
+            */
+            takeWhile: function (predicate) {
+                return takeWhileIterator(this, predicate);
             },
 
             /**
