@@ -1190,6 +1190,32 @@
         }
     }
 
+    function skipIterator(source, count) {
+        assertNotNull(source);
+        assertType(count, Number);
+
+        let arr = asArray(source);
+
+        if (arr !== null) {
+            return new Iterable(buffer(arr).slice(count));
+        }
+
+        return new Iterable(function* () {
+            let it = iterator(source),
+                next;
+
+            while (count > 0 && !it.next().done) {
+                count--;
+            }
+
+            if (count <= 0) {
+                while (!(next = it.next()).done) {
+                    yield next.value;
+                }
+            }
+        });
+    }
+
     function takeIterator(source, count) {
         assertNotNull(source);
         assertType(count, Number);
@@ -1423,6 +1449,15 @@
             */
             select(selector) {
                 return selectIterator(this, selector);
+            },
+
+            /**
+            * Bypasses a specified number of elements in a sequence and then returns the remaining elements.
+            * @param {Number} count The number of elements to skip before returning the remaining elements.
+            * @returns {Iterable}
+            */
+            skip(count) {
+                return skipIterator(this, count);
             },
 
             /**
