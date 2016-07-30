@@ -1190,6 +1190,34 @@
         }
     }
 
+    class HashSet {
+        constructor(comparer) {
+            this._comparer = comparer;
+        }
+    }
+
+    function unionIterator(first, second, comparer = null) {
+        assertNotNull(first);
+        assertNotNull(second);
+        comparer = EqualityComparer.from(comparer);
+
+        return new Iterable(function* () {
+            let set = new HashSet(comparer);
+
+            for (let element of first) {
+                if (set.add(element)) {
+                    yield element;
+                }
+            }
+
+            for (let element of second) {
+                if (set.add(element)) {
+                    yield element;
+                }
+            }
+        });
+    }
+
     function zipIterator(first, second, resultSelector) {
         assertNotNull(first);
         assertNotNull(second);
@@ -1346,6 +1374,16 @@
             */
             toArray() {
                 return buffer(this);
+            },
+
+            /**
+            * Produces the set union of two sequences by using a specified EqualityComparer.
+            * @param {Iterable} second An Enumerable whose distinct elements form the second set for the union.
+            * @param {EqualityComparer=} comparer The EqualityComparer to compare values.
+            * @returns {Iterable}
+            */
+            union(second, comparer) {
+                return unionIterator(this, second, comparer);
             },
 
             /**
