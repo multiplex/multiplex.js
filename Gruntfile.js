@@ -17,6 +17,12 @@ module.exports = function (grunt) {
             minified: 'multiplex.min.js',
             typings: 'multiplex.d.ts'
         },
+        lint = [
+            'Gruntfile.js',
+            dirs.source + '/**/*.js',
+            dirs.tasks + '/**/*.js',
+            dirs.test + '/**/*.js'
+        ],
         banner = [
             '/*!',
             '* ' + pkg.title + ' - ' + pkg.description,
@@ -34,6 +40,7 @@ module.exports = function (grunt) {
         pkg: pkg,
         dirs: dirs,
         files: files,
+        lint: lint,
         banner: banner
     });
 
