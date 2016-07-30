@@ -6,6 +6,9 @@ engines:
     enabled: true
   duplication:
     enabled: true
+    config:
+      languages:
+      - javascript
 
 ratings:
   paths:
