@@ -1216,6 +1216,26 @@
         });
     }
 
+    function skipWhileIterator(source, predicate) {
+        assertNotNull(source);
+        assertType(predicate, Function);
+
+        return new Iterable(function* () {
+            let index = 0,
+                yielding = false;
+
+            for (let element of source) {
+                if (!yielding && !predicate(element, index++)) {
+                    yielding = true;
+                }
+
+                if (yielding) {
+                    yield element;
+                }
+            }
+        });
+    }
+
     function takeIterator(source, count) {
         assertNotNull(source);
         assertType(count, Number);
@@ -1458,6 +1478,15 @@
             */
             skip(count) {
                 return skipIterator(this, count);
+            },
+
+            /**
+            * Bypasses elements in a sequence as long as a specified condition is true and then returns the remaining elements. The element's index is used in the logic of the predicate function.
+            * @param {Function=} predicate A function to test each source element for a condition; the second parameter of the function represents the index of the source element. eg. function(item, index)
+            * @returns {Iterable}
+            */
+            skipWhile(predicate) {
+                return skipWhileIterator(this, predicate);
             },
 
             /**

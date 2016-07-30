@@ -14,6 +14,7 @@ import elementAt from './element-at';
 import forEach from './for-each';
 import select from './select';
 import skip from './skip';
+import skipWhile from './skip-while';
 import take from './take';
 import takeWhile from './take-while';
 import toArray from './to-array';
@@ -163,6 +164,15 @@ export default function linq(iterable) {
         */
         skip(count) {
             return skip(this, count);
+        },
+
+        /**
+        * Bypasses elements in a sequence as long as a specified condition is true and then returns the remaining elements. The element's index is used in the logic of the predicate function.
+        * @param {Function=} predicate A function to test each source element for a condition; the second parameter of the function represents the index of the source element. eg. function(item, index)
+        * @returns {Iterable}
+        */
+        skipWhile(predicate) {
+            return skipWhile(this, predicate);
         },
 
         /**
