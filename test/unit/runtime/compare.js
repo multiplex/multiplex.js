@@ -8,8 +8,8 @@ qmodule('compare');
 qtest('basic compare', function (assert) {
     assert.equal(mx.compare(null, null), 0, 'compare null values');
     assert.equal(mx.compare(undefined, undefined), 0, 'compare undefined values');
-    assert.equal(mx.compare(null, undefined), 0, 'compare null and undefined values');
-    assert.equal(mx.compare(undefined, null), 0, 'compare undefined and null values');
+    assert.ok(mx.compare(null, undefined) !== 0, 'compare null and undefined values');
+    assert.ok(mx.compare(undefined, null) !== 0, 'compare undefined and null values');
 });
 
 
@@ -24,9 +24,9 @@ qtest('numeric compare', function (assert) {
 
     assert.equal(mx.compare(Number.NaN, null), 1, 'NaN is greater than null');
     assert.equal(mx.compare(Number.NaN, undefined), 1, 'NaN is greater than undefined');
-    assert.equal(mx.compare(Number.NaN, Number.NaN), 0, 'compare NaN values');
     assert.equal(mx.compare(Number.NaN, 0), -1, 'NaN is less than any value');
     assert.equal(mx.compare(0, Number.NaN), 1, 'any value is greater than NaN');
+    assert.notEqual(mx.compare(Number.NaN, Number.NaN), 0, 'compare NaN values');
 
     assert.equal(mx.compare(0, -0), 0, '0 is equal to -0');
     assert.equal(mx.compare(1, 0), 1, 'simple greater than compare');

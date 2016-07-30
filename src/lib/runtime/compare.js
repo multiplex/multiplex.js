@@ -15,25 +15,17 @@ export default function compare(objA, objB) {
 
     // null or undefined is less than everything
     else if (objA === null || objA === undefined) {
-        return objB === null || objB === undefined ? 0 : -1;
+        return -1;
     }
 
     // Everything is greater than null or undefined
     else if (objB === null || objB === undefined) {
-        return objA === null || objA === undefined ? 0 : 1;
+        return 1;
     }
 
     // numbers compare using 'gt' operator
     else if (typeof objA === 'number') {
-        // objA: NaN
-        if (isNaN(objA)) {
-            return isNaN(objB) ? 0 : -1;
-        }
-        // objB: NaN
-        else if (isNaN(objB)) {
-            return 1;
-        }
-        return objA > objB ? 1 : -1;
+        return objA > objB || isNaN(objB) ? 1 : -1;
     }
 
     // booleans compare using 'gt' operator
@@ -43,8 +35,8 @@ export default function compare(objA, objB) {
 
     // Strings are compared using String.prototype.localeCompare method
     else if (typeof objA === 'string') {
-        let _res = objA.localeCompare(objB);
-        return _res > 0 ? 1 : (_res < 0 ? -1 : 0);
+        let res = objA.localeCompare(objB);
+        return res > 0 ? 1 : (res < 0 ? -1 : 0);
     }
 
     // Compute overridden 'compare' method for Object types
@@ -54,9 +46,9 @@ export default function compare(objA, objB) {
 
     // All other objects are compared using 'valudOf' method
     else {
-        let _v1 = valueOf(objA),
-            _v2 = valueOf(objB);
+        let v1 = valueOf(objA),
+            v2 = valueOf(objB);
 
-        return _v1 > _v2 ? 1 : (_v1 < _v2 ? -1 : 0);
+        return v1 > v2 ? 1 : (v1 < v2 ? -1 : 0);
     }
 }
