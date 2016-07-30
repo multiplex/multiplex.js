@@ -259,7 +259,7 @@
     */
     class Iterable {
         constructor(source = null) {
-            if (source != null) {
+            if (source !== null && source !== undefined) {
                 this._source = source;
             }
         }
@@ -723,7 +723,7 @@
     * @returns {Array}
     */
     function buffer(value) {
-        if (value == null) {                                // empty value
+        if (value === null || value === undefined) {        // empty value
             return [];
         }
 
@@ -792,7 +792,7 @@
     */
     class Collection extends Iterable {
         constructor(value = null) {
-            if (value != null) {
+            if (value !== null && value !== undefined) {
                 value = buffer(value);
             }
 
@@ -886,7 +886,7 @@
     }
 
     function assertNotNull(obj) {
-        if (obj == null) {
+        if (obj === null || obj === undefined) {
             error('Value cannot be null.');
         }
     }
@@ -947,7 +947,7 @@
     function averageIterator(source, selector = null) {
         assertNotNull(source);
 
-        if (selector != null) {
+        if (selector) {
             return averageIterator(selectIterator(source, selector));
         }
 
@@ -1028,7 +1028,7 @@
     function countIterator(source, predicate = null) {
         assertNotNull(source);
 
-        if (predicate != null) {
+        if (predicate) {
             return count(whereIterator(source, predicate));
         }
 

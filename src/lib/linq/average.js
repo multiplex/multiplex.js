@@ -5,7 +5,7 @@ import error, {ERROR_NO_ELEMENTS, ERROR_NON_NUMERIC_TYPE} from '../utils/error';
 export default function averageIterator(source, selector = null) {
     assertNotNull(source);
 
-    if (selector != null) {
+    if (selector) {
         return averageIterator(select(source, selector));
     }
 

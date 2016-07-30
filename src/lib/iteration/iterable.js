@@ -6,7 +6,7 @@ import iterator from './iterator-factory';
 */
 export default class Iterable {
     constructor(source = null) {
-        if (source != null) {
+        if (source !== null && source !== undefined) {
             this._source = source;
         }
     }

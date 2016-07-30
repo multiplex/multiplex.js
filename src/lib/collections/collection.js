@@ -8,7 +8,7 @@ import bufferTo from '../utils/buffer-to';
 */
 export default class Collection extends ArrayIterable {
     constructor(value = null) {
-        if (value != null) {
+        if (value !== null && value !== undefined) {
             value = buffer(value);
         }
 
