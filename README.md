@@ -1,5 +1,6 @@
 [![npm version][npm-version-image]][npm-url] 
-[![build status][travis-image]][travis-url] 
+[![build status][travis-image]][travis-url]
+[![code climate][climate-image]][climate-url]
 [![coverage status][coverage-image]][coverage-url] 
 [![apache license][license-image]][license-url]
 
@@ -468,6 +469,9 @@ When the tests pass, the built version of Multiplex will be put in the `build/` 
 
 [travis-url]: https://travis-ci.org/multiplex/multiplex.js
 [travis-image]: https://travis-ci.org/multiplex/multiplex.js.svg
+
+[climate-url]: https://codeclimate.com/github/multiplex/multiplex.js
+[climate-image]: https://codeclimate.com/github/multiplex/multiplex.js/badges/gpa.svg
 
 [coverage-url]: https://coveralls.io/github/multiplex/multiplex.js
 [coverage-image]: https://coveralls.io/repos/github/multiplex/multiplex.js/badge.svg
