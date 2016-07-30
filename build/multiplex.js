@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (July 30, 2016)
+* Version 2.0.0 (July 31, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -1477,7 +1477,7 @@
             * @param {Object=} defaultValue The value to return if the sequence is empty.
             * @returns {Iterable}
             */
-            defaultIfEmpty(defaultValue) {
+            defaultIfEmpty(defaultValue = null) {
                 return defaultIfEmptyIterator(this, defaultValue);
             },
 
@@ -1522,7 +1522,7 @@
             * @param {EqualityComparer=} comparer The EqualityComparer to compare values.
             * @returns {Boolean}
             */
-            sequenceEqual(second, comparer) {
+            sequenceEqual(second, comparer = null) {
                 return sequenceEqualIterator(this, second, comparer);
             },
 
@@ -1584,7 +1584,7 @@
             * @param {EqualityComparer=} comparer The EqualityComparer to compare values.
             * @returns {Iterable}
             */
-            union(second, comparer) {
+            union(second, comparer = null) {
                 return unionIterator(this, second, comparer);
             },
 
