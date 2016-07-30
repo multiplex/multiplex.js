@@ -26,11 +26,11 @@ export default function compare(objA, objB) {
     // numbers compare using 'gt' operator
     else if (typeof objA === 'number') {
         // objA: NaN
-        if (objA !== objA) {
-            return objB !== objB ? 0 : -1;
+        if (isNaN(objA)) {
+            return isNaN(objB) ? 0 : -1;
         }
         // objB: NaN
-        else if (objB !== objB) {
+        else if (isNaN(objB)) {
             return 1;
         }
         return objA > objB ? 1 : -1;
