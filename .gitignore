@@ -3,24 +3,6 @@
 *.ide
 *.log
 
-<<<<<<< HEAD
-# Build results
-*.dll
-[Bb]in/
-[Oo]bj/
-/build/[Bb]in
-/build/[Oo]bj
-
-# Others
-.vs
-.vscode
-.resources
-.nyc_output
-.coveralls.yml
-node_modules
-bower_components
-test/typescript/*.js
-=======
 # Release
 /dist
 
@@ -30,4 +12,3 @@ coverage
 nyc_output
 node_modules
 bower_components
->>>>>>> refs/remotes/origin/develop

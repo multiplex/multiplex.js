@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-﻿/*--------------------------------------------------------------------------
-* Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Ver 1.1.0 (Jun 12, 2016)
-*
-* Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
-* Licensed under Apache License Version 2.0
-* https://github.com/multiplex/multiplex.js
-*
-*--------------------------------------------------------------------------*/
-
-=======
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
 * Version 2.0.0 (July 30, 2016)
@@ -18,7 +6,6 @@
 * Licensed under MIT License
 * https://github.com/multiplex/multiplex.js
 */
->>>>>>> refs/remotes/origin/develop
 
 declare var multiplex: multiplex.MultiplexStatic;
 
@@ -39,11 +26,7 @@ interface String extends multiplex.Iterable<string> { }
 
 
 
-<<<<<<< HEAD
-declare module multiplex {
-=======
 declare namespace multiplex {
->>>>>>> refs/remotes/origin/develop
 
     /**
     * ES6 Iterable

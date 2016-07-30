@@ -3,24 +3,6 @@
 *.ide
 *.log
 
-<<<<<<< HEAD
-/.editorconfig
-/.gitattributes
-/.jshintrc
-/.jscs.json
-/Gruntfile.js
-/bower.json
-
-/.vs
-/.vscode
-/.resources
-/.git
-/build/bin
-/node_modules
-/bower_components
-/test
-/test/typescript/*.js
-=======
 /build
 /tasks
 /external
@@ -29,4 +11,3 @@
 /bower_components
 /Gruntfile.js
 /bower.json
->>>>>>> refs/remotes/origin/develop
