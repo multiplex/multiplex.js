@@ -1,9 +1,3 @@
-eslint:
-  enabled: true
-
-duplication:
-  enabled: true
-
 ratings:
   paths:
   - src/**
