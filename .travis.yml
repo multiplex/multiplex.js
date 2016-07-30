@@ -25,7 +25,3 @@ script:
 
 after_success: 
   - npm run coveralls
-
-addons:
-    code_climate:
-        repo_token: f0d18567cc2d330035c98da79e86a314a33ab95c781ba14f382e5408acaba0ca
