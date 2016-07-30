@@ -1382,6 +1382,36 @@
         });
     }
 
+    function skipWhileIterator(source, predicate) {
+        assertNotNull(source);
+        assertType(predicate, Function);
+
+        return new Iterable(function () {
+            var it = iterator(source),
+                yielding = false,
+                index = 0,
+                next;
+
+            return new Iterator(function () {
+                while (!(next = it.next()).done) {
+                    if (!yielding && !predicate(next.value, index++)) {
+                        yielding = true;
+                    }
+
+                    if (yielding) {
+                        return {
+                            value: next.value,
+                            done: false
+                        };
+                    }
+                }
+                return {
+                    done: true
+                };
+            });
+        });
+    }
+
     function takeIterator(source, count) {
         assertNotNull(source);
         assertType(count, Number);
@@ -1420,7 +1450,7 @@
                 next;
 
             return new Iterator(function () {
-                if (!(next = it.next()).done && predicate(next.value, index++)) {
+                while (!(next = it.next()).done && predicate(next.value, index++)) {
                     return {
                         value: next.value,
                         done: false
@@ -1648,6 +1678,15 @@
             */
             skip: function (count) {
                 return skipIterator(this, count);
+            },
+
+            /**
+            * Bypasses elements in a sequence as long as a specified condition is true and then returns the remaining elements. The element's index is used in the logic of the predicate function.
+            * @param {Function=} predicate A function to test each source element for a condition; the second parameter of the function represents the index of the source element. eg. function(item, index)
+            * @returns {Iterable}
+            */
+            skipWhile: function (predicate) {
+                return skipWhileIterator(this, predicate);
             },
 
             /**

@@ -14,7 +14,7 @@ export default function takeWhileIterator(source, predicate) {
             next;
 
         return new Iterator(function () {
-            if (!(next = it.next()).done && predicate(next.value, index++)) {
+            while (!(next = it.next()).done && predicate(next.value, index++)) {
                 return {
                     value: next.value,
                     done: false
