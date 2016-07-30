@@ -1190,8 +1190,26 @@
         }
     }
 
-    class HashSet {
+    function toArray(source) {
+        assertNotNull(source);
+        return buffer(source);
+    }
+
+    class List extends Collection {
+        constructor(value) {
+            super();
+            this._value = value;
+        }
+    }
+
+    function toList(source) {
+        assertNotNull(source);
+        return new List(source);
+    }
+
+    class HashSet extends Collection {
         constructor(comparer) {
+            super();
             this._comparer = comparer;
         }
     }
@@ -1373,7 +1391,15 @@
             * @returns {Array}
             */
             toArray() {
-                return buffer(this);
+                return toArray(this);
+            },
+
+            /**
+            * Creates a List from an Enumerable.
+            * @returns {List}
+            */
+            toList: function () {
+                return toList(this);
             },
 
             /**

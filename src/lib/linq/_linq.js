@@ -1,5 +1,4 @@
 import mixin from '../utils/mixin';
-import buffer from '../utils/buffer';
 import EmptyIterable from '../iteration/iterable-empty';
 import range from './range';
 import repeat from './repeat';
@@ -14,6 +13,8 @@ import defaultIfEmpty from './default-if-empty';
 import elementAt from './element-at';
 import forEach from './for-each';
 import select from './select';
+import toArray from './to-array';
+import toList from './to-list';
 import union from './union';
 import where from './where';
 import zip from './zip';
@@ -157,7 +158,15 @@ export default function linq(iterable) {
         * @returns {Array}
         */
         toArray() {
-            return buffer(this);
+            return toArray(this);
+        },
+
+        /**
+        * Creates a List from an Enumerable.
+        * @returns {List}
+        */
+        toList: function () {
+            return toList(this);
         },
 
         /**
