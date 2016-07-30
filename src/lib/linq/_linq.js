@@ -14,6 +14,7 @@ import elementAt from './element-at';
 import forEach from './for-each';
 import ofType from './of-type';
 import select from './select';
+import sequenceEqual from './sequence-equal';
 import skip from './skip';
 import skipWhile from './skip-while';
 import take from './take';
@@ -164,6 +165,16 @@ export default function linq(iterable) {
         */
         select: function (selector) {
             return select(this, selector);
+        },
+
+        /**
+        * Determines whether two sequences are equal by comparing their elements by using an EqualityComparer.
+        * @param {Iterable} second An Iterable to compare to the first sequence.
+        * @param {EqualityComparer=} comparer The EqualityComparer to compare values.
+        * @returns {Boolean}
+        */
+        sequenceEqual: function (second, comparer) {
+            return sequenceEqual(this, second, comparer);
         },
 
         /**
