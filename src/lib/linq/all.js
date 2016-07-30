@@ -10,7 +10,8 @@ export default function allIterator(source, predicate) {
 
     forOf(source, function (element) {
         if (!predicate(element)) {
-            return result = false;
+            result = false;
+            return result;
         }
     });
 

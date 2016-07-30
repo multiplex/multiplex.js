@@ -5,7 +5,7 @@ import assertNotNull from '../utils/assert-not-null';
 export default function countIterator(source, predicate) {
     assertNotNull(source);
 
-    if (predicate != null) {
+    if (predicate) {
         return count(where(source, predicate));
     }
 

@@ -1,6 +1,11 @@
 module.exports = function (grunt) {
     'use strict';
 
+    var rollup = require('rollup'),
+        path = require('path'),
+        dirs = grunt.config('dirs'),
+        files = grunt.config('files');
+
     // polyfill es6 Promise
     if (typeof Promise === 'undefined') {
         global.Promise = require('es6-promise').Promise;
@@ -10,11 +15,6 @@ module.exports = function (grunt) {
     if (typeof Map === 'undefined') {
         global.Map = require('es6-map');
     }
-
-    var rollup = require('rollup'),
-        path = require('path'),
-        dirs = grunt.config('dirs'),
-        files = grunt.config('files');
 
 
     // transpile es6 modules

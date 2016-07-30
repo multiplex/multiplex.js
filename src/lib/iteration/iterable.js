@@ -7,7 +7,7 @@ import mixin from '../utils/mixin';
 * @param {Iterable|Array|String|Function|Function*|Object} source An Iterable object.
 */
 export default function Iterable(source) {
-    if (source != null) {
+    if (source !== null && source !== undefined) {
         this._source = source;
     }
 }

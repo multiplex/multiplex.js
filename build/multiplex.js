@@ -292,7 +292,7 @@
     * @param {Iterable|Array|String|Function|Function*|Object} source An Iterable object.
     */
     function Iterable(source) {
-        if (source != null) {
+        if (source !== null && source !== undefined) {
             this._source = source;
         }
     }
@@ -741,7 +741,7 @@
             return 1;
         }
 
-        // numbers compare using 'gt' operator (not including NaN)
+        // numbers compare using 'gt' operator
         else if (typeof objA === 'number') {
             return objA > objB || isNaN(objB) ? 1 : -1;
         }
@@ -785,7 +785,7 @@
     * @returns {Array}
     */
     function buffer(value) {
-        if (value == null) {                                // empty value
+        if (value === null || value === undefined) {        // empty value
             return [];
         }
 
@@ -868,7 +868,7 @@
     * Initializes a new instance of the abstract Collection class.
     */
     function Collection(value) {
-        if (value != null) {
+        if (value !== null && value !== undefined) {
             value = buffer(value);
         }
 
@@ -960,7 +960,7 @@
     }
 
     function assertNotNull(obj) {
-        if (obj == null) {
+        if (obj === null || obj === undefined) {
             error('Value cannot be null.');
         }
     }
@@ -1035,7 +1035,8 @@
 
         forOf(source, function (element) {
             if (!predicate(element)) {
-                return result = false;
+                result = false;
+                return result;
             }
         });
 
@@ -1051,7 +1052,8 @@
 
         forOf(source, function (element) {
             if (predicate(element)) {
-                return result = true;
+                result = true;
+                return result;
             }
         });
 
@@ -1084,7 +1086,7 @@
     function averageIterator(source, selector) {
         assertNotNull(source);
 
-        if (selector != null) {
+        if (selector) {
             return averageIterator(selectIterator(source, selector));
         }
 
@@ -1183,7 +1185,7 @@
     function countIterator(source, predicate) {
         assertNotNull(source);
 
-        if (predicate != null) {
+        if (predicate) {
             return count(whereIterator(source, predicate));
         }
 

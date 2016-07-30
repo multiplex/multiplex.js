@@ -11,7 +11,7 @@ import ArrayIterable from '../iteration/iterable-array';
 * @returns {Array}
 */
 export default function buffer(value) {
-    if (value == null) {                                // empty value
+    if (value === null || value === undefined) {        // empty value
         return [];
     }
 

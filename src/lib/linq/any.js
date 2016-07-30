@@ -12,7 +12,8 @@ export default function anyIterator(source, predicate) {
 
     forOf(source, function (element) {
         if (predicate(element)) {
-            return result = true;
+            result = true;
+            return result;
         }
     });
 

@@ -27,7 +27,7 @@
         });
         var result;
 
-        assert.ok(it != null, 'iterable function');
+        assert.ok(it !== null, 'iterable function');
 
         result = it.next();
         assert.equal(result.value, 1, 'iterable result value');
