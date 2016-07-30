@@ -29,7 +29,7 @@ export default function buffer(value) {
 
     // do it the hard way
     else {
-        return [...iterator(value)];
+        return [...iterable(value)];
     }
 }
 
