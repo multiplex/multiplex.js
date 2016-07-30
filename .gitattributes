@@ -5,10 +5,17 @@
 *.js eol=lf
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+external/* linguist-vendored=false
+build/*.d.ts linguist-vendored=false
+src/typescript/*.d.ts linguist-vendored=false
+>>>>>>> origin/master
 *.ts linguist-vendored=false
 *.d.ts linguist-vendored=false
 *.html linguist-vendored=false
 *.css linguist-vendored=false
+<<<<<<< HEAD
 =======
 external/* linguist-vendored=false
 build/*.d.ts linguist-vendored=false
@@ -18,3 +25,5 @@ src/typescript/*.d.ts linguist-vendored=false
 *.ts linguist-vendored=false
 *.d.ts linguist-vendored=false
 >>>>>>> refs/remotes/origin/develop
+=======
+>>>>>>> origin/master

@@ -6,6 +6,7 @@
 * Licensed under Apache License Version 2.0
 * https://github.com/multiplex/multiplex.js
 *
+* vim: syntax=javascript
 *--------------------------------------------------------------------------*/
 
 
