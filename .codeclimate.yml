@@ -1,20 +1,22 @@
-eslint:
-  enabled: true
+languages:
+   JavaScript: true
 
-duplication:
-  enabled: true
-    config:
-      languages:
-      - javascript
+engines:
+  eslint:
+    enabled: true
+  duplication:
+    enabled: true
+  nodesecurity:
+    enabled: true
 
 ratings:
   paths:
   - src/**
-  - test/**
   - tasks/**
 
 exclude_paths:
 - "build/"
+- "test/"
 - "benchmark/"
 - "external/"
 - "**.d.ts"
