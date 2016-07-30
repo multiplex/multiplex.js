@@ -12,6 +12,7 @@ import count from './count';
 import defaultIfEmpty from './default-if-empty';
 import elementAt from './element-at';
 import forEach from './for-each';
+import ofType from './of-type';
 import select from './select';
 import skip from './skip';
 import skipWhile from './skip-while';
@@ -146,6 +147,15 @@ export default function linq(iterable) {
         */
         forEach(action) {
             return forEach(this, action);
+        },
+
+        /**
+        * Filters the elements of an Iterable based on a specified type.
+        * @param {Function} type The type to filter the elements of the sequence on.
+        * @returns {Iterable}
+        */
+        ofType(type) {
+            return ofType(this, type);
         },
 
         /**

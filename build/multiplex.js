@@ -1190,6 +1190,19 @@
         }
     }
 
+    function ofTypeIterator(source, type) {
+        assertNotNull(source);
+        assertType(type, Function);
+
+        return new Iterable(function* () {
+            for (let element of source) {
+                if (isType(element, type)) {
+                    yield element;
+                }
+            }
+        });
+    }
+
     function skipIterator(source, count) {
         assertNotNull(source);
         assertType(count, Number);
@@ -1460,6 +1473,15 @@
             */
             forEach(action) {
                 return forEachIterator(this, action);
+            },
+
+            /**
+            * Filters the elements of an Iterable based on a specified type.
+            * @param {Function} type The type to filter the elements of the sequence on.
+            * @returns {Iterable}
+            */
+            ofType(type) {
+                return ofTypeIterator(this, type);
             },
 
             /**
