@@ -31,7 +31,6 @@ Multiplex is a set of data-structures and implementation of .Net LINQ methods in
 * LINQ support over built-in [Array](#--array-and-string) and [String](#--array-and-string) classes and [jQuery](#--array-like-objects-arguments-nodelist-jquery) objects.
 * Built-in `hash` and `equals` functions to identify objects in a hash-based collection.
 * *JSDoc* documentation.
-* IntelliSense support for *VisualStudio*.
 
 
 
