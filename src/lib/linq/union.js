@@ -14,23 +14,13 @@ export default function unionIterator(first, second, comparer) {
         var set = new HashSet(comparer),
             it1 = iterator(first),
             it2 = iterator(second),
-            next1,
-            next2;
+            next;
 
         return new Iterator(function () {
-            while (!(next1 = it1.next()).done) {
-                if (set.add(next1.value)) {
+            while (!(next = it1.next()).done || !(next = it2.next()).done) {
+                if (set.add(next.value)) {
                     return {
-                        value: next1.value,
-                        done: false
-                    };
-                }
-            }
-
-            while (!(next2 = it2.next()).done) {
-                if (set.add(next2.value)) {
-                    return {
-                        value: next2.value,
+                        value: next.value,
                         done: false
                     };
                 }
