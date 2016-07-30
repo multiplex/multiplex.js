@@ -12,7 +12,11 @@ import count from './count';
 import defaultIfEmpty from './default-if-empty';
 import elementAt from './element-at';
 import forEach from './for-each';
+import ofType from './of-type';
 import select from './select';
+import sequenceEqual from './sequence-equal';
+import skip from './skip';
+import skipWhile from './skip-while';
 import take from './take';
 import takeWhile from './take-while';
 import toArray from './to-array';
@@ -146,12 +150,49 @@ export default function linq(iterable) {
         },
 
         /**
+        * Filters the elements of an Iterable based on a specified type.
+        * @param {Function} type The type to filter the elements of the sequence on.
+        * @returns {Iterable}
+        */
+        ofType: function (type) {
+            return ofType(this, type);
+        },
+
+        /**
         * Projects each element of a sequence into a new form.
         * @param {Function} selector A transform function to apply to each source element; the second parameter of the function represents the index of the source element. eg. function(item, index)
         * @returns {Iterable}
         */
         select: function (selector) {
             return select(this, selector);
+        },
+
+        /**
+        * Determines whether two sequences are equal by comparing their elements by using an EqualityComparer.
+        * @param {Iterable} second An Iterable to compare to the first sequence.
+        * @param {EqualityComparer=} comparer The EqualityComparer to compare values.
+        * @returns {Boolean}
+        */
+        sequenceEqual: function (second, comparer) {
+            return sequenceEqual(this, second, comparer);
+        },
+
+        /**
+        * Bypasses a specified number of elements in a sequence and then returns the remaining elements.
+        * @param {Number} count The number of elements to skip before returning the remaining elements.
+        * @returns {Iterable}
+        */
+        skip: function (count) {
+            return skip(this, count);
+        },
+
+        /**
+        * Bypasses elements in a sequence as long as a specified condition is true and then returns the remaining elements. The element's index is used in the logic of the predicate function.
+        * @param {Function=} predicate A function to test each source element for a condition; the second parameter of the function represents the index of the source element. eg. function(item, index)
+        * @returns {Iterable}
+        */
+        skipWhile: function (predicate) {
+            return skipWhile(this, predicate);
         },
 
         /**

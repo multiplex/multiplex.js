@@ -1349,6 +1349,116 @@
         });
     }
 
+    function ofTypeIterator(source, type) {
+        assertNotNull(source);
+        assertType(type, Function);
+
+        return new Iterable(function () {
+            var it = iterator(source),
+                next;
+
+            return new Iterator(function () {
+                if (!(next = it.next()).done) {
+                    if (isType(next.value, type)) {
+                        return {
+                            value: next.value,
+                            done: false
+                        };
+                    }
+                }
+                return {
+                    done: true
+                };
+            });
+        });
+    }
+
+    function sequenceEqualIterator(first, second, comparer) {
+        assertNotNull(first);
+        assertNotNull(second);
+        comparer = EqualityComparer.from(comparer);
+
+        var it1 = iterator(first),
+            it2 = iterator(second),
+            next1,
+            next2;
+
+        while (!(next1 = it1.next()).done) {
+            if ((next2 = it2.next()).done || !comparer.equals(next1.value, next2.value)) {
+                return false;
+            }
+        }
+
+        if (!it2.next().done) {
+            return false;
+        }
+
+        return true;
+    }
+
+    function skipIterator(source, count) {
+        assertNotNull(source);
+        assertType(count, Number);
+
+        var arr = asArray(source);
+
+        if (arr !== null) {
+            return new Iterable(buffer(arr).slice(count));
+        }
+
+        return new Iterable(function () {
+            var it = iterator(source),
+                next;
+
+            return new Iterator(function () {
+                while (count > 0 && !it.next().done) {
+                    count--;
+                }
+                if (count <= 0) {
+                    while (!(next = it.next()).done) {
+                        return {
+                            value: next.value,
+                            done: false
+                        };
+                    }
+                }
+                return {
+                    done: true
+                };
+            });
+        });
+    }
+
+    function skipWhileIterator(source, predicate) {
+        assertNotNull(source);
+        assertType(predicate, Function);
+
+        return new Iterable(function () {
+            var it = iterator(source),
+                yielding = false,
+                index = 0,
+                next;
+
+            return new Iterator(function () {
+                while (!(next = it.next()).done) {
+                    if (!yielding && !predicate(next.value, index++)) {
+                        yielding = true;
+                    }
+
+                    if (yielding) {
+                        return {
+                            value: next.value,
+                            done: false
+                        };
+                    }
+                }
+                return {
+                    done: true
+                };
+            });
+        });
+    }
+
     function takeIterator(source, count) {
         assertNotNull(source);
         assertType(count, Number);
@@ -1387,7 +1497,7 @@
                 next;
 
             return new Iterator(function () {
-                if (!(next = it.next()).done && predicate(next.value, index++)) {
+                while (!(next = it.next()).done && predicate(next.value, index++)) {
                     return {
                         value: next.value,
                         done: false
@@ -1600,12 +1710,49 @@
             },
 
             /**
+            * Filters the elements of an Iterable based on a specified type.
+            * @param {Function} type The type to filter the elements of the sequence on.
+            * @returns {Iterable}
+            */
+            ofType: function (type) {
+                return ofTypeIterator(this, type);
+            },
+
+            /**
             * Projects each element of a sequence into a new form.
             * @param {Function} selector A transform function to apply to each source element; the second parameter of the function represents the index of the source element. eg. function(item, index)
             * @returns {Iterable}
             */
             select: function (selector) {
                 return selectIterator(this, selector);
+            },
+
+            /**
+            * Determines whether two sequences are equal by comparing their elements by using an EqualityComparer.
+            * @param {Iterable} second An Iterable to compare to the first sequence.
+            * @param {EqualityComparer=} comparer The EqualityComparer to compare values.
+            * @returns {Boolean}
+            */
+            sequenceEqual: function (second, comparer) {
+                return sequenceEqualIterator(this, second, comparer);
+            },
+
+            /**
+            * Bypasses a specified number of elements in a sequence and then returns the remaining elements.
+            * @param {Number} count The number of elements to skip before returning the remaining elements.
+            * @returns {Iterable}
+            */
+            skip: function (count) {
+                return skipIterator(this, count);
+            },
+
+            /**
+            * Bypasses elements in a sequence as long as a specified condition is true and then returns the remaining elements. The element's index is used in the logic of the predicate function.
+            * @param {Function=} predicate A function to test each source element for a condition; the second parameter of the function represents the index of the source element. eg. function(item, index)
+            * @returns {Iterable}
+            */
+            skipWhile: function (predicate) {
+                return skipWhileIterator(this, predicate);
             },
 
             /**
