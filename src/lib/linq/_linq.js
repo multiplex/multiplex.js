@@ -13,6 +13,7 @@ import defaultIfEmpty from './default-if-empty';
 import elementAt from './element-at';
 import forEach from './for-each';
 import select from './select';
+import take from './take';
 import toArray from './to-array';
 import toList from './to-list';
 import union from './union';
@@ -150,6 +151,15 @@ export default function linq(iterable) {
         */
         select: function (selector) {
             return select(this, selector);
+        },
+
+        /**
+        * Returns a specified number of contiguous elements from the start of a sequence.
+        * @param {Number} count The number of elements to return.
+        * @returns {Iterable}
+        */
+        take: function (count) {
+            return take(this, count);
         },
 
         /**

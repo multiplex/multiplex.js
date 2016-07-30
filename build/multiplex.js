@@ -1349,6 +1349,34 @@
         });
     }
 
+    function takeIterator(source, count) {
+        assertNotNull(source);
+        assertType(count, Number);
+
+        var arr = asArray(source);
+
+        if (arr !== null) {
+            return new Iterable(buffer(arr).slice(0, count));
+        }
+
+        return new Iterable(function () {
+            var it = iterator(source),
+                next;
+
+            return new Iterator(function () {
+                if (!(next = it.next()).done && count-- > 0) {
+                    return {
+                        value: next.value,
+                        done: false
+                    };
+                }
+                return {
+                    done: true
+                };
+            });
+        });
+    }
+
     function toArray(source) {
         assertNotNull(source);
         return buffer(source);
@@ -1565,6 +1593,15 @@
             */
             select: function (selector) {
                 return selectIterator(this, selector);
+            },
+
+            /**
+            * Returns a specified number of contiguous elements from the start of a sequence.
+            * @param {Number} count The number of elements to return.
+            * @returns {Iterable}
+            */
+            take: function (count) {
+                return takeIterator(this, count);
             },
 
             /**
