@@ -1349,6 +1349,30 @@
         });
     }
 
+    function ofTypeIterator(source, type) {
+        assertNotNull(source);
+        assertType(type, Function);
+
+        return new Iterable(function () {
+            var it = iterator(source),
+                next;
+
+            return new Iterator(function () {
+                if (!(next = it.next()).done) {
+                    if (isType(next.value, type)) {
+                        return {
+                            value: next.value,
+                            done: false
+                        };
+                    }
+                }
+                return {
+                    done: true
+                };
+            });
+        });
+    }
+
     function skipIterator(source, count) {
         assertNotNull(source);
         assertType(count, Number);
@@ -1660,6 +1684,15 @@
             */
             forEach: function (action) {
                 return forEachIterator(this, action);
+            },
+
+            /**
+            * Filters the elements of an Iterable based on a specified type.
+            * @param {Function} type The type to filter the elements of the sequence on.
+            * @returns {Iterable}
+            */
+            ofType: function (type) {
+                return ofTypeIterator(this, type);
             },
 
             /**
