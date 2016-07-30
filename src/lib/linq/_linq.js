@@ -8,6 +8,7 @@ import all from './all';
 import any from './any';
 import average from './average';
 import concat from './concat';
+import contains from './contains';
 import count from './count';
 import defaultIfEmpty from './default-if-empty';
 import elementAt from './element-at';
@@ -94,6 +95,16 @@ export default function linq(iterable) {
         */
         concat(second) {
             return concat(this, second);
+        },
+
+        /**
+        * Determines whether a sequence contains a specified element by using an equality comparer.
+        * @param {Object} value The value to locate in the sequence.
+        * @param {EqualityComparer=} comparer An equality comparer to compare values.
+        * @returns {Boolean}
+        */
+        contains(value, comparer = null) {
+            return contains(this, value, comparer);
         },
 
         /**
