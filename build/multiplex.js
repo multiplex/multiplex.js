@@ -1349,6 +1349,39 @@
         });
     }
 
+    function skipIterator(source, count) {
+        assertNotNull(source);
+        assertType(count, Number);
+
+        var arr = asArray(source);
+
+        if (arr !== null) {
+            return new Iterable(buffer(arr).slice(count));
+        }
+
+        return new Iterable(function () {
+            var it = iterator(source),
+                next;
+
+            return new Iterator(function () {
+                while (count > 0 && !it.next().done) {
+                    count--;
+                }
+                if (count <= 0) {
+                    while (!(next = it.next()).done) {
+                        return {
+                            value: next.value,
+                            done: false
+                        };
+                    }
+                }
+                return {
+                    done: true
+                };
+            });
+        });
+    }
+
     function takeIterator(source, count) {
         assertNotNull(source);
         assertType(count, Number);
@@ -1606,6 +1639,15 @@
             */
             select: function (selector) {
                 return selectIterator(this, selector);
+            },
+
+            /**
+            * Bypasses a specified number of elements in a sequence and then returns the remaining elements.
+            * @param {Number} count The number of elements to skip before returning the remaining elements.
+            * @returns {Iterable}
+            */
+            skip: function (count) {
+                return skipIterator(this, count);
             },
 
             /**

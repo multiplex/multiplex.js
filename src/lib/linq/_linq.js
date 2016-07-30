@@ -13,6 +13,7 @@ import defaultIfEmpty from './default-if-empty';
 import elementAt from './element-at';
 import forEach from './for-each';
 import select from './select';
+import skip from './skip';
 import take from './take';
 import takeWhile from './take-while';
 import toArray from './to-array';
@@ -152,6 +153,15 @@ export default function linq(iterable) {
         */
         select: function (selector) {
             return select(this, selector);
+        },
+
+        /**
+        * Bypasses a specified number of elements in a sequence and then returns the remaining elements.
+        * @param {Number} count The number of elements to skip before returning the remaining elements.
+        * @returns {Iterable}
+        */
+        skip: function (count) {
+            return skip(this, count);
         },
 
         /**
