@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (July 31, 2016)
+* Version 2.0.0 (August 01, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -1344,7 +1344,8 @@
         predicate = predicate || trueFunction;
         assertType(predicate, Function);
 
-        var arr = asArray(source);
+        var arr = asArray(source),
+            result = defaultValue === undefined ? null : defaultValue;
 
         if (arr !== null) {
             for (var i = 0, len = arr.length; i < len; i++) {
@@ -1354,23 +1355,15 @@
             }
         }
         else {
-            var result,
-                found = false;
-
             forOf(source, function (element) {
                 if (predicate(element)) {
                     result = element;
-                    found = true;
-                    return found;
+                    return true;
                 }
             });
-
-            if (found) {
-                return result;
-            }
         }
 
-        return defaultValue;
+        return result;
     }
 
     function firstIterator(source, predicate) {
@@ -1393,6 +1386,46 @@
         forOf(source, function (element) {
             action(element, index++);
         });
+    }
+
+    function lastOrDefaultIterator(source, predicate, defaultValue) {
+        assertNotNull(source);
+        predicate = predicate || trueFunction;
+        assertType(predicate, Function);
+
+        var arr = asArray(source),
+            result = defaultValue === undefined ? null : defaultValue;
+
+        // fast iteration for array-like iterables
+        if (arr !== null) {
+            var len = arr.length;
+
+            while (len-- > 0) {
+                if (predicate(arr[len])) {
+                    return arr[len];
+                }
+            }
+        }
+        else {
+            forOf(source, function (element) {
+                if (predicate(element)) {
+                    result = element;
+                }
+            });
+        }
+
+        return result;
+    }
+
+    function lastIterator(source, predicate) {
+        var value = {},
+            result = lastOrDefaultIterator(source, predicate, value);
+
+        if (result === value) {
+            error(predicate ? ERROR_NO_MATCH : ERROR_NO_ELEMENTS);
+        }
+
+        return result;
     }
 
     function ofTypeIterator(source, type) {
@@ -1775,6 +1808,25 @@
             },
 
             /**
+            * Returns the last element of a sequence that satisfies a specified condition.
+            * @param {Function=} predicate A function to test each source element for a condition. eg. function(item)
+            * @returns {Object}
+            */
+            last: function (predicate) {
+                return lastIterator(this, predicate);
+            },
+
+            /**
+            * Returns the last element of a sequence that satisfies a condition or a default value if no such element is found.
+            * @param {Function=} predicate A function to test each source element for a condition. eg. function(item)
+            * @param {Object=} defaultValue The value to return if no element exists with specified condition.
+            * @returns {Object}
+            */
+            lastOrDefault: function (predicate, defaultValue) {
+                return lastOrDefaultIterator(this, predicate, defaultValue);
+            },
+
+            /**
             * Filters the elements of an Iterable based on a specified type.
             * @param {Function} type The type to filter the elements of the sequence on.
             * @returns {Iterable}
@@ -1847,7 +1899,7 @@
             },
 
             /**
-            * Creates a List from an Enumerable.
+            * Creates a List from an Iterable.
             * @returns {List}
             */
             toList: function () {
@@ -1856,7 +1908,7 @@
 
             /**
             * Produces the set union of two sequences by using a specified EqualityComparer.
-            * @param {Iterable} second An Enumerable whose distinct elements form the second set for the union.
+            * @param {Iterable} second An Iterable whose distinct elements form the second set for the union.
             * @param {EqualityComparer=} comparer The EqualityComparer to compare values.
             * @returns {Iterable}
             */
