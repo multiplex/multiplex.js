@@ -11,6 +11,8 @@ import contains from './contains';
 import count from './count';
 import defaultIfEmpty from './default-if-empty';
 import elementAt from './element-at';
+import first from './first';
+import firstOrDefault from './first-or-default';
 import forEach from './for-each';
 import ofType from './of-type';
 import select from './select';
@@ -139,6 +141,25 @@ export default function linq(iterable) {
         */
         elementAt: function (index) {
             return elementAt(this, index);
+        },
+
+        /**
+        * Returns the first element in a sequence that satisfies a specified condition. this method throws an exception if there is no element in the sequence.
+        * @param {Function=} predicate A function to test each source element for a condition. eg. function(item)
+        * @returns {Object}
+        */
+        first: function (predicate) {
+            return first(this, predicate);
+        },
+
+        /**
+        * Returns the first element of the sequence that satisfies a condition or a default value if no such element is found.
+        * @param {Function=} predicate A function to test each source element for a condition. eg. function(item)
+        * @param {Object=} defaultValue The value to return if no element exists with specified condition.
+        * @returns {Object}
+        */
+        firstOrDefault: function (predicate, defaultValue) {
+            return firstOrDefault(this, predicate, defaultValue);
         },
 
         /**
