@@ -50,6 +50,7 @@
     var ERROR_ARGUMENT_OUT_OF_RANGE = 'Argument was out of the range of valid values.';
     var ERROR_ARRAY_SIZE = 'The number of elements in the source is greater than the number of elements that the destination array can contain.';
     var ERROR_NO_ELEMENTS = 'Sequence contains no elements.';
+    var ERROR_NO_MATCH = 'Sequence contains no matching element.';
     var ERROR_NON_NUMERIC_TYPE = 'Value is not a number.';
 
     function isType(obj, type) {
@@ -1338,6 +1339,51 @@
         error(ERROR_ARGUMENT_OUT_OF_RANGE);
     }
 
+    function firstOrDefaultIterator(source, predicate, defaultValue) {
+        assertNotNull(source);
+        predicate = predicate || trueFunction;
+        assertType(predicate, Function);
+
+        var arr = asArray(source);
+
+        if (arr !== null) {
+            for (var i = 0, len = arr.length; i < len; i++) {
+                if (predicate(arr[i])) {
+                    return arr[i];
+                }
+            }
+        }
+        else {
+            var result,
+                found = false;
+
+            forOf(source, function (element) {
+                if (predicate(element)) {
+                    result = element;
+                    found = true;
+                    return found;
+                }
+            });
+
+            if (found) {
+                return result;
+            }
+        }
+
+        return defaultValue;
+    }
+
+    function firstIterator(source, predicate) {
+        var value = {},
+            result = firstOrDefaultIterator(source, predicate, value);
+
+        if (result === value) {
+            error(predicate ? ERROR_NO_MATCH : ERROR_NO_ELEMENTS);
+        }
+
+        return result;
+    }
+
     function forEachIterator(source, action) {
         assertNotNull(source);
         assertType(action, Function);
@@ -1699,6 +1745,25 @@
             */
             elementAt: function (index) {
                 return elementAtIterator(this, index);
+            },
+
+            /**
+            * Returns the first element in a sequence that satisfies a specified condition. this method throws an exception if there is no element in the sequence.
+            * @param {Function=} predicate A function to test each source element for a condition. eg. function(item)
+            * @returns {Object}
+            */
+            first: function (predicate) {
+                return firstIterator(this, predicate);
+            },
+
+            /**
+            * Returns the first element of the sequence that satisfies a condition or a default value if no such element is found.
+            * @param {Function=} predicate A function to test each source element for a condition. eg. function(item)
+            * @param {Object=} defaultValue The value to return if no element exists with specified condition.
+            * @returns {Object}
+            */
+            firstOrDefault: function (predicate, defaultValue) {
+                return firstOrDefaultIterator(this, predicate, defaultValue);
             },
 
             /**
