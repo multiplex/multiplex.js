@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (July 31, 2016)
+* Version 2.0.0 (August 01, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -1180,9 +1180,8 @@
         error(ERROR_ARGUMENT_OUT_OF_RANGE);
     }
 
-    function firstOrDefaultIterator(source, predicate = null, defaultValue = null) {
+    function firstOrDefaultIterator(source, predicate = () => true, defaultValue = null) {
         assertNotNull(source);
-        predicate = predicate || (() => true);
         assertType(predicate, Function);
 
         let arr = asArray(source);
@@ -1225,6 +1224,46 @@
         for (let element of source) {
             action(element, index++);
         }
+    }
+
+    function lastOrDefaultIterator(source, predicate = () => true, defaultValue = null) {
+        assertNotNull(source);
+        assertType(predicate, Function);
+
+        let arr = asArray(source),
+            result = defaultValue;
+
+        // fast iteration for array-like iterables
+        if (arr !== null) {
+            let len = arr.length;
+
+            while (len-- > 0) {
+                if (predicate(arr[len])) {
+                    return arr[len];
+                }
+            }
+        }
+        else {
+            for (let element in source) {
+                if (predicate(element)) {
+                    result = element;
+                }
+            }
+        }
+
+
+        return result;
+    }
+
+    function firstIterator$1(source, predicate = null) {
+        let value = {},
+            result = lastOrDefaultIterator(source, predicate, value);
+
+        if (result === value) {
+            error(predicate ? ERROR_NO_MATCH : ERROR_NO_ELEMENTS);
+        }
+
+        return result;
     }
 
     function ofTypeIterator(source, type) {
@@ -1552,6 +1591,25 @@
             */
             forEach(action) {
                 return forEachIterator(this, action);
+            },
+
+            /**
+            * Returns the last element of a sequence that satisfies a specified condition.
+            * @param {Function=} predicate A function to test each source element for a condition. eg. function(item)
+            * @returns {Object}
+            */
+            last(predicate) {
+                return firstIterator$1(this, predicate);
+            },
+
+            /**
+            * Returns the last element of a sequence that satisfies a condition or a default value if no such element is found.
+            * @param {Function=} predicate A function to test each source element for a condition. eg. function(item)
+            * @param {Object=} defaultValue The value to return if no element exists with specified condition.
+            * @returns {Object}
+            */
+            lastOrDefault(predicate, defaultValue) {
+                return lastOrDefaultIterator(this, predicate, defaultValue);
             },
 
             /**

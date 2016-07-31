@@ -14,6 +14,8 @@ import elementAt from './element-at';
 import first from './first';
 import firstOrDefault from './first-or-default';
 import forEach from './for-each';
+import last from './last';
+import lastOrDefault from './last-or-default';
 import ofType from './of-type';
 import select from './select';
 import sequenceEqual from './sequence-equal';
@@ -172,6 +174,25 @@ export default function linq(iterable) {
         },
 
         /**
+        * Returns the last element of a sequence that satisfies a specified condition.
+        * @param {Function=} predicate A function to test each source element for a condition. eg. function(item)
+        * @returns {Object}
+        */
+        last(predicate) {
+            return last(this, predicate);
+        },
+
+        /**
+        * Returns the last element of a sequence that satisfies a condition or a default value if no such element is found.
+        * @param {Function=} predicate A function to test each source element for a condition. eg. function(item)
+        * @param {Object=} defaultValue The value to return if no element exists with specified condition.
+        * @returns {Object}
+        */
+        lastOrDefault(predicate, defaultValue) {
+            return lastOrDefault(this, predicate, defaultValue);
+        },
+
+        /**
         * Filters the elements of an Iterable based on a specified type.
         * @param {Function} type The type to filter the elements of the sequence on.
         * @returns {Iterable}
@@ -244,7 +265,7 @@ export default function linq(iterable) {
         },
 
         /**
-        * Creates a List from an Enumerable.
+        * Creates a List from an Iterable.
         * @returns {List}
         */
         toList() {
@@ -253,7 +274,7 @@ export default function linq(iterable) {
 
         /**
         * Produces the set union of two sequences by using a specified EqualityComparer.
-        * @param {Iterable} second An Enumerable whose distinct elements form the second set for the union.
+        * @param {Iterable} second An Iterable whose distinct elements form the second set for the union.
         * @param {EqualityComparer=} comparer The EqualityComparer to compare values.
         * @returns {Iterable}
         */

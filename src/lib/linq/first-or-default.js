@@ -2,9 +2,8 @@ import asArray from '../utils/as-array';
 import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
 
-export default function firstOrDefaultIterator(source, predicate = null, defaultValue = null) {
+export default function firstOrDefaultIterator(source, predicate = () => true, defaultValue = null) {
     assertNotNull(source);
-    predicate = predicate || (() => true);
     assertType(predicate, Function);
 
     let arr = asArray(source);
