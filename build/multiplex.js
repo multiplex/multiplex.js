@@ -1417,7 +1417,7 @@
         return result;
     }
 
-    function firstIterator$1(source, predicate) {
+    function lastIterator(source, predicate) {
         var value = {},
             result = lastOrDefaultIterator(source, predicate, value);
 
@@ -1813,7 +1813,7 @@
             * @returns {Object}
             */
             last: function (predicate) {
-                return firstIterator$1(this, predicate);
+                return lastIterator(this, predicate);
             },
 
             /**
