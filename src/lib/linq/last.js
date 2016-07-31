@@ -1,7 +1,7 @@
 import lastOrDefault from './last-or-default';
 import error, {ERROR_NO_ELEMENTS, ERROR_NO_MATCH} from '../utils/error';
 
-export default function firstIterator(source, predicate = null) {
+export default function lastIterator(source, predicate = null) {
     let value = {},
         result = lastOrDefault(source, predicate, value);
 

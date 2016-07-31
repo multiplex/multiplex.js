@@ -1255,7 +1255,7 @@
         return result;
     }
 
-    function firstIterator$1(source, predicate = null) {
+    function lastIterator(source, predicate = null) {
         let value = {},
             result = lastOrDefaultIterator(source, predicate, value);
 
@@ -1599,7 +1599,7 @@
             * @returns {Object}
             */
             last(predicate) {
-                return firstIterator$1(this, predicate);
+                return lastIterator(this, predicate);
             },
 
             /**
@@ -1685,7 +1685,7 @@
             },
 
             /**
-            * Creates a List from an Enumerable.
+            * Creates a List from an Iterable.
             * @returns {List}
             */
             toList() {
@@ -1694,7 +1694,7 @@
 
             /**
             * Produces the set union of two sequences by using a specified EqualityComparer.
-            * @param {Iterable} second An Enumerable whose distinct elements form the second set for the union.
+            * @param {Iterable} second An Iterable whose distinct elements form the second set for the union.
             * @param {EqualityComparer=} comparer The EqualityComparer to compare values.
             * @returns {Iterable}
             */
