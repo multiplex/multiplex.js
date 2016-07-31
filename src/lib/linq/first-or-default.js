@@ -9,7 +9,8 @@ export default function firstOrDefaultIterator(source, predicate, defaultValue) 
     predicate = predicate || trueFunction;
     assertType(predicate, Function);
 
-    var arr = asArray(source);
+    var arr = asArray(source),
+        result = defaultValue === undefined ? null : defaultValue;
 
     if (arr !== null) {
         for (var i = 0, len = arr.length; i < len; i++) {
@@ -19,21 +20,13 @@ export default function firstOrDefaultIterator(source, predicate, defaultValue) 
         }
     }
     else {
-        var result,
-            found = false;
-
         forOf(source, function (element) {
             if (predicate(element)) {
                 result = element;
-                found = true;
-                return found;
+                return true;
             }
         });
-
-        if (found) {
-            return result;
-        }
     }
 
-    return defaultValue;
+    return result;
 }
