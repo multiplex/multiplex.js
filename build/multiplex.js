@@ -76,6 +76,7 @@
     const ERROR_NO_ELEMENTS = 'Sequence contains no elements.';
     const ERROR_NO_MATCH = 'Sequence contains no matching element.';
     const ERROR_NON_NUMERIC_TYPE = 'Value is not a number.';
+    const ERROR_MORE_THAN_ONE_ELEMENT = 'Sequence contains more than one element.';
 
     function isType(obj, type) {
         // use 'typeof' operator in an if clause yields in better performance than switch-case
@@ -1217,8 +1218,9 @@
         error(ERROR_ARGUMENT_OUT_OF_RANGE);
     }
 
-    function firstOrDefaultIterator(source, predicate = () => true, defaultValue = null) {
+    function firstOrDefaultIterator(source, predicate = null, defaultValue = null) {
         assertNotNull(source);
+        predicate = predicate || (() => true);
         assertType(predicate, Function);
 
         let arr = asArray(source);
@@ -1263,8 +1265,9 @@
         }
     }
 
-    function lastOrDefaultIterator(source, predicate = () => true, defaultValue = null) {
+    function lastOrDefaultIterator(source, predicate = null, defaultValue = null) {
         assertNotNull(source);
+        predicate = predicate || (() => true);
         assertType(predicate, Function);
 
         let arr = asArray(source),
@@ -1337,6 +1340,58 @@
         }
 
         return true;
+    }
+
+    function singleIterator(source, predicate = null) {
+        let value = {},
+            result = firstOrDefaultIterator(source, predicate, value);
+
+        if (result === value) {
+            error(predicate ? ERROR_NO_MATCH : ERROR_NO_ELEMENTS);
+        }
+
+        return result;
+    }
+
+    function singleOrDefaultIterator(source, predicate = null, defaultValue = null) {
+        assertNotNull(source);
+        predicate = predicate || (() => true);
+        assertType(predicate, Function);
+
+        let arr = asArray(source),
+            result = defaultValue,
+            count = 0;
+
+        if (arr !== null) {
+            for (let i = 0, len = arr.length; i < len; i++) {
+                if (predicate(arr[i])) {
+                    if (count > 1) {
+                        break;
+                    }
+
+                    result = arr[i];
+                    count++;
+                }
+            }
+        }
+        else {
+            for (let element in source) {
+                if (predicate(element)) {
+                    if (count > 1) {
+                        break;
+                    }
+
+                    result = element;
+                    count++;
+                }
+            }
+        }
+
+        if (count < 2) {
+            return result;
+        }
+
+        error(ERROR_MORE_THAN_ONE_ELEMENT);
     }
 
     function skipIterator(source, count) {
@@ -1635,7 +1690,7 @@
             * @param {Function=} predicate A function to test each source element for a condition. eg. function(item)
             * @returns {Object}
             */
-            last(predicate) {
+            last(predicate = null) {
                 return lastIterator(this, predicate);
             },
 
@@ -1645,7 +1700,7 @@
             * @param {Object=} defaultValue The value to return if no element exists with specified condition.
             * @returns {Object}
             */
-            lastOrDefault(predicate, defaultValue) {
+            lastOrDefault(predicate = null, defaultValue = null) {
                 return lastOrDefaultIterator(this, predicate, defaultValue);
             },
 
@@ -1675,6 +1730,25 @@
             */
             sequenceEqual(second, comparer = null) {
                 return sequenceEqualIterator(this, second, comparer);
+            },
+
+            /**
+            * Returns the only element of a sequence that satisfies a specified condition, and throws an exception if more than one such element exists.
+            * @param {Function=} predicate A function to test each source element for a condition. eg. function(item)
+            * @returns {Object}
+            */
+            single(predicate = null) {
+                return singleIterator(this, predicate);
+            },
+
+            /**
+            * Returns the only element of a sequence that satisfies a specified condition or a default value if no such element exists; this method throws an exception if more than one element satisfies the condition.
+            * @param {Function=} predicate A function to test each source element for a condition. eg. function(item)
+            * @param {Object=} defaultValue The value to return if no element exists with specified condition.
+            * @returns {Object}
+            */
+            singleOrDefault(predicate = null, defaultValue = null) {
+                return singleOrDefaultIterator(this, predicate, defaultValue);
             },
 
             /**
