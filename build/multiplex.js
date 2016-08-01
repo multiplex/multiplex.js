@@ -1523,7 +1523,7 @@
         return result;
     }
 
-    function lastOrDefaultIterator$1(source, predicate, defaultValue) {
+    function singleOrDefaultIterator(source, predicate, defaultValue) {
         assertNotNull(source);
         predicate = predicate || trueFunction;
         assertType(predicate, Function);
@@ -1960,7 +1960,7 @@
             * @returns {Object}
             */
             singleOrDefault: function (predicate, defaultValue) {
-                return lastOrDefaultIterator$1(this, predicate, defaultValue);
+                return singleOrDefaultIterator(this, predicate, defaultValue);
             },
 
             /**

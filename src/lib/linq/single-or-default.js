@@ -5,7 +5,7 @@ import assertNotNull from '../utils/assert-not-null';
 import {trueFunction} from './helper-functions';
 import error, {ERROR_MORE_THAN_ONE_ELEMENT} from '../utils/error';
 
-export default function lastOrDefaultIterator(source, predicate, defaultValue) {
+export default function singleOrDefaultIterator(source, predicate, defaultValue) {
     assertNotNull(source);
     predicate = predicate || trueFunction;
     assertType(predicate, Function);
