@@ -216,6 +216,37 @@
     }
 
     /**
+    * Supports an iteration over an .Net Enumerable.
+    * @param {Object} obj An Enumerable instance.
+    */
+    class EnumerableIterator extends Iterator {
+        constructor(enumerable) {
+            let enumerator = enumerable.getEnumerator();
+
+            super(() => {
+                if (enumerator.next()) {
+                    return {
+                        value: enumerator.current,
+                        done: false
+                    };
+                }
+
+                return {
+                    done: true
+                };
+            });
+        }
+
+        get [Symbol.toStringTag]() {
+            return 'Enumerable Iterator';
+        }
+
+        toString() {
+            return '[Enumerable Iterator]';
+        }
+    }
+
+    /**
     * Creates an iterator object
     * @param {Object} obj An object to create iterator from.
     */
@@ -224,7 +255,6 @@
         if (obj === null || obj === undefined) {
             return new EmptyIterator();
         }
-
 
         // iterable/generator function
         else if (isFunction(obj)) {
@@ -236,12 +266,15 @@
             return obj[Symbol.iterator]();
         }
 
-
         // array-like objects
         else if (isArrayLike(obj)) {
             return new ArrayIterator(obj);
         }
 
+        // .Net Enumerable
+        else if (isFunction(obj.getEnumerator)) {
+            return new EnumerableIterator(obj);
+        }
 
         // Object.entries iterator
         else if (isObject(obj)) {
@@ -366,6 +399,10 @@
         }
 
         else if (isFunction(value[Symbol.iterator])) {
+            return new Iterable(value);
+        }
+
+        else if (isFunction(value.getEnumerator)) {
             return new Iterable(value);
         }
 

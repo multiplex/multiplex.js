@@ -28,6 +28,10 @@ export default function iterable(value) {
         return new Iterable(value);
     }
 
+    else if (isFunction(value.getEnumerator)) {
+        return new Iterable(value);
+    }
+
     else if (isObject(value)) {
         return new ObjectIterable(value);
     }

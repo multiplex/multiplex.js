@@ -4,6 +4,7 @@ import isArrayLike from '../utils/is-array-like';
 import ArrayIterator from './iterator-array';
 import ObjectIterator from './iterator-object';
 import EmptyIterator from './iterator-empty';
+import EnumerableIterator from './iterator-enumerable';
 
 /**
 * Creates an iterator object
@@ -15,7 +16,6 @@ export default function iterator(obj) {
         return new EmptyIterator();
     }
 
-
     // iterable/generator function
     else if (isFunction(obj)) {
         return obj();
@@ -26,12 +26,15 @@ export default function iterator(obj) {
         return obj[Symbol.iterator]();
     }
 
-
     // array-like objects
     else if (isArrayLike(obj)) {
         return new ArrayIterator(obj);
     }
 
+    // .Net Enumerable
+    else if (isFunction(obj.getEnumerator)) {
+        return new EnumerableIterator(obj);
+    }
 
     // Object.entries iterator
     else if (isObject(obj)) {
