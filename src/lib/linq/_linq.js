@@ -18,6 +18,7 @@ import last from './last';
 import lastOrDefault from './last-or-default';
 import ofType from './of-type';
 import select from './select';
+import selectMany from './select-many';
 import sequenceEqual from './sequence-equal';
 import single from './single';
 import singleOrDefault from './single-or-default';
@@ -209,6 +210,16 @@ export default function linq(iterable) {
         */
         select: function (selector) {
             return select(this, selector);
+        },
+
+        /**
+        * Projects each element of a sequence to an Iterable and flattens the resulting sequences into one sequence.
+        * @param {Function} collectionSelector A transform function to apply to each source element; the second parameter of the function represents the index of the source element. eg. function(item, index)
+        * @param {Function=} resultSelector A transform function to apply to each element of the intermediate sequence. eg. function(item, collection)
+        * @returns {Iterable}
+        */
+        selectMany: function (collectionSelector, resultSelector) {
+            return selectMany(this, collectionSelector, resultSelector);
         },
 
         /**

@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (August 01, 2016)
+* Version 2.0.0 (August 02, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -1489,6 +1489,44 @@
         });
     }
 
+    function selectManyIterator(source, collectionSelector, resultSelector) {
+        assertNotNull(source);
+        assertType(collectionSelector, Function);
+        if (resultSelector) {
+            assertType(resultSelector, Function);
+        }
+
+        return new Iterable(function () {
+            var it = iterator(source),
+                next = it.next(),
+                itcol,
+                nextcol,
+                index = 0;
+
+            return new Iterator(function () {
+                if (!next.done) {
+                    do {
+                        itcol = itcol || iterator(collectionSelector(next.value, index++));
+
+                        while (!(nextcol = itcol.next()).done) {
+                            return {
+                                value: resultSelector ? resultSelector(next.value, nextcol.value) : nextcol.value,
+                                done: false
+                            };
+                        }
+
+                        itcol = null;
+                    }
+                    while (!(next = it.next()).done);
+                }
+
+                return {
+                    done: true
+                };
+            });
+        });
+    }
+
     function sequenceEqualIterator(first, second, comparer) {
         assertNotNull(first);
         assertNotNull(second);
@@ -1523,7 +1561,7 @@
         return result;
     }
 
-    function lastOrDefaultIterator$1(source, predicate, defaultValue) {
+    function singleOrDefaultIterator(source, predicate, defaultValue) {
         assertNotNull(source);
         predicate = predicate || trueFunction;
         assertType(predicate, Function);
@@ -1935,6 +1973,16 @@
             },
 
             /**
+            * Projects each element of a sequence to an Iterable and flattens the resulting sequences into one sequence.
+            * @param {Function} collectionSelector A transform function to apply to each source element; the second parameter of the function represents the index of the source element. eg. function(item, index)
+            * @param {Function=} resultSelector A transform function to apply to each element of the intermediate sequence. eg. function(item, collection)
+            * @returns {Iterable}
+            */
+            selectMany: function (collectionSelector, resultSelector) {
+                return selectManyIterator(this, collectionSelector, resultSelector);
+            },
+
+            /**
             * Determines whether two sequences are equal by comparing their elements by using an EqualityComparer.
             * @param {Iterable} second An Iterable to compare to the first sequence.
             * @param {EqualityComparer=} comparer The EqualityComparer to compare values.
@@ -1960,7 +2008,7 @@
             * @returns {Object}
             */
             singleOrDefault: function (predicate, defaultValue) {
-                return lastOrDefaultIterator$1(this, predicate, defaultValue);
+                return singleOrDefaultIterator(this, predicate, defaultValue);
             },
 
             /**
