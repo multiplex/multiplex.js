@@ -8,3 +8,4 @@ export const ERROR_NOT_IMPLEMENTED = 'Method not implemented.';
 export const ERROR_NO_ELEMENTS = 'Sequence contains no elements.';
 export const ERROR_NO_MATCH = 'Sequence contains no matching element.';
 export const ERROR_NON_NUMERIC_TYPE = 'Value is not a number.';
+export const ERROR_MORE_THAN_ONE_ELEMENT = 'Sequence contains more than one element.';
