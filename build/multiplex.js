@@ -52,6 +52,7 @@
     var ERROR_NO_ELEMENTS = 'Sequence contains no elements.';
     var ERROR_NO_MATCH = 'Sequence contains no matching element.';
     var ERROR_NON_NUMERIC_TYPE = 'Value is not a number.';
+    var ERROR_MORE_THAN_ONE_ELEMENT = 'Sequence contains more than one element.';
 
     function isType(obj, type) {
         // use 'typeof' operator in an if clause yields in better performance than switch-case
@@ -1511,6 +1512,59 @@
         return true;
     }
 
+    function singleIterator(source, predicate) {
+        var value = {},
+            result = firstOrDefaultIterator(source, predicate, value);
+
+        if (result === value) {
+            error(predicate ? ERROR_NO_MATCH : ERROR_NO_ELEMENTS);
+        }
+
+        return result;
+    }
+
+    function lastOrDefaultIterator$1(source, predicate, defaultValue) {
+        assertNotNull(source);
+        predicate = predicate || trueFunction;
+        assertType(predicate, Function);
+
+        var arr = asArray(source),
+            result = defaultValue === undefined ? null : defaultValue,
+            count = 0;
+
+        // fast iteration for array-like iterables
+        if (arr !== null) {
+            for (var i = 0, len = arr.length; i < len; i++) {
+                if (predicate(arr[i])) {
+                    if (count > 1) {
+                        break;
+                    }
+
+                    result = arr[i];
+                    count++;
+                }
+            }
+        }
+        else {
+            forOf(source, function (element) {
+                if (predicate(element)) {
+                    if (count > 1) {
+                        return false;
+                    }
+
+                    result = element;
+                    count++;
+                }
+            });
+        }
+
+        if (count < 2) {
+            return result;
+        }
+
+        error(ERROR_MORE_THAN_ONE_ELEMENT);
+    }
+
     function skipIterator(source, count) {
         assertNotNull(source);
         assertType(count, Number);
@@ -1888,6 +1942,25 @@
             */
             sequenceEqual: function (second, comparer) {
                 return sequenceEqualIterator(this, second, comparer);
+            },
+
+            /**
+            * Returns the only element of a sequence that satisfies a specified condition, and throws an exception if more than one such element exists.
+            * @param {Function=} predicate A function to test each source element for a condition. eg. function(item)
+            * @returns {Object}
+            */
+            single: function (predicate) {
+                return singleIterator(this, predicate);
+            },
+
+            /**
+            * Returns the only element of a sequence that satisfies a specified condition or a default value if no such element exists; this method throws an exception if more than one element satisfies the condition.
+            * @param {Function=} predicate A function to test each source element for a condition. eg. function(item)
+            * @param {Object=} defaultValue The value to return if no element exists with specified condition.
+            * @returns {Object}
+            */
+            singleOrDefault: function (predicate, defaultValue) {
+                return lastOrDefaultIterator$1(this, predicate, defaultValue);
             },
 
             /**
