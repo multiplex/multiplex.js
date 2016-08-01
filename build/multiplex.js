@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (August 01, 2016)
+* Version 2.0.0 (August 02, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -1319,6 +1319,23 @@
         });
     }
 
+    function selectManyIterator(source, collectionSelector, resultSelector = null) {
+        assertNotNull(source);
+        assertType(collectionSelector, Function);
+        if (resultSelector) {
+            assertType(resultSelector, Function);
+        }
+
+        return new Iterable(function* () {
+            let index = 0;
+            for (let element in source) {
+                for (let subElement in collectionSelector(element, index++)) {
+                    yield resultSelector ? resultSelector(element, subElement) : subElement;
+                }
+            }
+        });
+    }
+
     function sequenceEqualIterator(first, second, comparer = null) {
         assertNotNull(first);
         assertNotNull(second);
@@ -1720,6 +1737,16 @@
             */
             select(selector) {
                 return selectIterator(this, selector);
+            },
+
+            /**
+            * Projects each element of a sequence to an Iterable and flattens the resulting sequences into one sequence.
+            * @param {Function} collectionSelector A transform function to apply to each source element; the second parameter of the function represents the index of the source element. eg. function(item, index)
+            * @param {Function=} resultSelector A transform function to apply to each element of the intermediate sequence. eg. function(item, collection)
+            * @returns {Iterable}
+            */
+            selectMany(collectionSelector, resultSelector = null) {
+                return selectManyIterator(this, collectionSelector, resultSelector);
             },
 
             /**
