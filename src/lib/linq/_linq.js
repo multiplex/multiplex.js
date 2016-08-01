@@ -19,6 +19,8 @@ import lastOrDefault from './last-or-default';
 import ofType from './of-type';
 import select from './select';
 import sequenceEqual from './sequence-equal';
+import single from './single';
+import singleOrDefault from './single-or-default';
 import skip from './skip';
 import skipWhile from './skip-while';
 import take from './take';
@@ -217,6 +219,25 @@ export default function linq(iterable) {
         */
         sequenceEqual: function (second, comparer) {
             return sequenceEqual(this, second, comparer);
+        },
+
+        /**
+        * Returns the only element of a sequence that satisfies a specified condition, and throws an exception if more than one such element exists.
+        * @param {Function=} predicate A function to test each source element for a condition. eg. function(item)
+        * @returns {Object}
+        */
+        single: function (predicate) {
+            return single(this, predicate);
+        },
+
+        /**
+        * Returns the only element of a sequence that satisfies a specified condition or a default value if no such element exists; this method throws an exception if more than one element satisfies the condition.
+        * @param {Function=} predicate A function to test each source element for a condition. eg. function(item)
+        * @param {Object=} defaultValue The value to return if no element exists with specified condition.
+        * @returns {Object}
+        */
+        singleOrDefault: function (predicate, defaultValue) {
+            return singleOrDefault(this, predicate, defaultValue);
         },
 
         /**
