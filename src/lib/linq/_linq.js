@@ -18,6 +18,7 @@ import last from './last';
 import lastOrDefault from './last-or-default';
 import minMax from './min-max';
 import ofType from './of-type';
+import reverse from './reverse';
 import select from './select';
 import selectMany from './select-many';
 import sequenceEqual from './sequence-equal';
@@ -222,6 +223,14 @@ export default function linq(iterable) {
         */
         ofType(type) {
             return ofType(this, type);
+        },
+
+        /**
+        * Inverts the order of the elements in a sequence.
+        * @returns {Iterable}
+        */
+        reverse() {
+            return reverse(this);
         },
 
         /**

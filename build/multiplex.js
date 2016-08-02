@@ -1363,6 +1363,19 @@
         });
     }
 
+    function reverseIterable(source) {
+        assertNotNull(source);
+
+        return new Iterable(function* () {
+            let arr = asArray(source) || buffer(source),
+                len = arr.length;
+
+            while (len-- > 0) {
+                yield arr[len];
+            }
+        });
+    }
+
     function selectManyIterator(source, collectionSelector, resultSelector = null) {
         assertNotNull(source);
         assertType(collectionSelector, Function);
@@ -1820,6 +1833,14 @@
             */
             ofType(type) {
                 return ofTypeIterator(this, type);
+            },
+
+            /**
+            * Inverts the order of the elements in a sequence.
+            * @returns {Iterable}
+            */
+            reverse() {
+                return reverseIterable(this);
             },
 
             /**
