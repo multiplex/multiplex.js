@@ -16,6 +16,7 @@ import firstOrDefault from './first-or-default';
 import forEach from './for-each';
 import last from './last';
 import lastOrDefault from './last-or-default';
+import minMax from './min-max';
 import ofType from './of-type';
 import select from './select';
 import selectMany from './select-many';
@@ -194,6 +195,24 @@ export default function linq(iterable) {
         */
         lastOrDefault(predicate = null, defaultValue = null) {
             return lastOrDefault(this, predicate, defaultValue);
+        },
+
+        /**
+        * Invokes a transform function on each element of a sequence and returns the maximum value.
+        * @param {Function=} selector A transform function to apply to each element. eg. function(item)
+        * @returns {Object}
+        */
+        max(selector = null) {
+            return minMax(this, true, selector);
+        },
+
+        /**
+        * Invokes a transform function on each element of a sequence and returns the minimum value.
+        * @param {Function=} selector A transform function to apply to each element. eg. function(item)
+        * @returns {Object}
+        */
+        min(selector = null) {
+            return minMax(this, false, selector);
         },
 
         /**

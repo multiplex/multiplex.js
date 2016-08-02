@@ -1306,6 +1306,50 @@
         return result;
     }
 
+    function minMaxIterable(source, max, selector = null) {
+        assertNotNull(source);
+
+        if (selector) {
+            assertType(selector, Function);
+            return minMaxIterable(selectIterator(source, selector), max);
+        }
+
+        let arr = asArray(source),
+            result = max ? 1 : -1,
+            hasValue = false,
+            value;
+
+        // fast iteration for array-like iterables
+        if (arr !== null) {
+            hasValue = arr.length > 0;
+
+            for (let i = 0, len = arr.length; i < len; i++) {
+                if (compare(arr[i], value) === result) {
+                    value = arr[i];
+                }
+            }
+        }
+        else {
+            for (let element of source) {
+                if (hasValue) {
+                    if (compare(element, value) === result) {
+                        value = element;
+                    }
+                }
+                else {
+                    value = element;
+                    hasValue = true;
+                }
+            }
+        }
+
+        if (!hasValue) {
+            error(ERROR_NO_ELEMENTS);
+        }
+
+        return value;
+    }
+
     function ofTypeIterator(source, type) {
         assertNotNull(source);
         assertType(type, Function);
@@ -1749,6 +1793,24 @@
             */
             lastOrDefault(predicate = null, defaultValue = null) {
                 return lastOrDefaultIterator(this, predicate, defaultValue);
+            },
+
+            /**
+            * Invokes a transform function on each element of a sequence and returns the maximum value.
+            * @param {Function=} selector A transform function to apply to each element. eg. function(item)
+            * @returns {Object}
+            */
+            max(selector = null) {
+                return minMaxIterable(this, true, selector);
+            },
+
+            /**
+            * Invokes a transform function on each element of a sequence and returns the minimum value.
+            * @param {Function=} selector A transform function to apply to each element. eg. function(item)
+            * @returns {Object}
+            */
+            min(selector = null) {
+                return minMaxIterable(this, false, selector);
             },
 
             /**
