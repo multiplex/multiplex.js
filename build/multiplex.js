@@ -1533,6 +1533,27 @@
         });
     }
 
+    function reverseIterable(source) {
+        assertNotNull(source);
+
+        return new Iterable(function () {
+            var arr = asArray(source) || buffer(source),
+                len = arr.length;
+
+            return new Iterator(function () {
+                if (len-- > 0) {
+                    return {
+                        value: arr[len],
+                        done: false
+                    };
+                }
+                return {
+                    done: true
+                };
+            });
+        });
+    }
+
     function selectManyIterator(source, collectionSelector, resultSelector) {
         assertNotNull(source);
         assertType(collectionSelector, Function);
@@ -2053,6 +2074,14 @@
             */
             ofType: function (type) {
                 return ofTypeIterator(this, type);
+            },
+
+            /**
+            * Inverts the order of the elements in a sequence.
+            * @returns {Iterable}
+            */
+            reverse: function () {
+                return reverseIterable(this);
             },
 
             /**
