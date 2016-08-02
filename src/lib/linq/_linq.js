@@ -16,7 +16,9 @@ import firstOrDefault from './first-or-default';
 import forEach from './for-each';
 import last from './last';
 import lastOrDefault from './last-or-default';
+import minMax from './min-max';
 import ofType from './of-type';
+import reverse from './reverse';
 import select from './select';
 import selectMany from './select-many';
 import sequenceEqual from './sequence-equal';
@@ -24,6 +26,7 @@ import single from './single';
 import singleOrDefault from './single-or-default';
 import skip from './skip';
 import skipWhile from './skip-while';
+import sum from './sum';
 import take from './take';
 import takeWhile from './take-while';
 import toArray from './to-array';
@@ -195,12 +198,38 @@ export default function linq(iterable) {
         },
 
         /**
+        * Invokes a transform function on each element of a sequence and returns the maximum value.
+        * @param {Function=} selector A transform function to apply to each element. eg. function(item)
+        * @returns {Object}
+        */
+        max: function (selector) {
+            return minMax(this, true, selector);
+        },
+
+        /**
+        * Invokes a transform function on each element of a sequence and returns the minimum value.
+        * @param {Function=} selector A transform function to apply to each element. eg. function(item)
+        * @returns {Object}
+        */
+        min: function (selector) {
+            return minMax(this, false, selector);
+        },
+
+        /**
         * Filters the elements of an Iterable based on a specified type.
         * @param {Function} type The type to filter the elements of the sequence on.
         * @returns {Iterable}
         */
         ofType: function (type) {
             return ofType(this, type);
+        },
+
+        /**
+        * Inverts the order of the elements in a sequence.
+        * @returns {Iterable}
+        */
+        reverse: function () {
+            return reverse(this);
         },
 
         /**
@@ -267,6 +296,15 @@ export default function linq(iterable) {
         */
         skipWhile: function (predicate) {
             return skipWhile(this, predicate);
+        },
+
+        /**
+        * Computes the sum of the sequence of values that are obtained by invoking a transform function on each element of the input sequence.
+        * @param {Function=} selector A transform function to apply to each element. eg. function(item)
+        * @returns {Number}
+        */
+        sum: function (selector) {
+            return sum(this, selector);
         },
 
         /**

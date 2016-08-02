@@ -1465,6 +1465,50 @@
         return result;
     }
 
+    function minMaxIterable(source, max, selector) {
+        assertNotNull(source);
+
+        if (selector) {
+            assertType(selector, Function);
+            return minMaxIterable(selectIterator(source, selector), max);
+        }
+
+        var arr = asArray(source),
+            result = max ? 1 : -1,
+            hasValue = false,
+            value;
+
+        // fast iteration for array-like iterables
+        if (arr !== null) {
+            hasValue = arr.length > 0;
+
+            for (var i = 0, len = arr.length; i < len; i++) {
+                if (compare(arr[i], value) === result) {
+                    value = arr[i];
+                }
+            }
+        }
+        else {
+            forOf(source, function (element) {
+                if (hasValue) {
+                    if (compare(element, value) === result) {
+                        value = element;
+                    }
+                }
+                else {
+                    value = element;
+                    hasValue = true;
+                }
+            });
+        }
+
+        if (!hasValue) {
+            error(ERROR_NO_ELEMENTS);
+        }
+
+        return value;
+    }
+
     function ofTypeIterator(source, type) {
         assertNotNull(source);
         assertType(type, Function);
@@ -1481,6 +1525,27 @@
                             done: false
                         };
                     }
+                }
+                return {
+                    done: true
+                };
+            });
+        });
+    }
+
+    function reverseIterable(source) {
+        assertNotNull(source);
+
+        return new Iterable(function () {
+            var arr = asArray(source) || buffer(source),
+                len = arr.length;
+
+            return new Iterator(function () {
+                if (len-- > 0) {
+                    return {
+                        value: arr[len],
+                        done: false
+                    };
                 }
                 return {
                     done: true
@@ -1664,6 +1729,36 @@
                 };
             });
         });
+    }
+
+    function sumIterable(source, selector) {
+        assertNotNull(source);
+
+        if (selector) {
+            assertType(selector, Function);
+            return sumIterable(selectIterator(source, selector));
+        }
+
+        var arr = asArray(source),
+            sum = 0;
+
+        // fast iteration for array-like iterables
+        if (arr !== null) {
+            for (var i = 0, len = arr.length; i < len; i++) {
+                sum += arr[i];
+            }
+        }
+        else {
+            forOf(source, function (element) {
+                sum += element;
+            });
+        }
+
+        if (isNaN(sum)) {
+            error(ERROR_NON_NUMERIC_TYPE);
+        }
+
+        return sum;
     }
 
     function takeIterator(source, count) {
@@ -1955,12 +2050,38 @@
             },
 
             /**
+            * Invokes a transform function on each element of a sequence and returns the maximum value.
+            * @param {Function=} selector A transform function to apply to each element. eg. function(item)
+            * @returns {Object}
+            */
+            max: function (selector) {
+                return minMaxIterable(this, true, selector);
+            },
+
+            /**
+            * Invokes a transform function on each element of a sequence and returns the minimum value.
+            * @param {Function=} selector A transform function to apply to each element. eg. function(item)
+            * @returns {Object}
+            */
+            min: function (selector) {
+                return minMaxIterable(this, false, selector);
+            },
+
+            /**
             * Filters the elements of an Iterable based on a specified type.
             * @param {Function} type The type to filter the elements of the sequence on.
             * @returns {Iterable}
             */
             ofType: function (type) {
                 return ofTypeIterator(this, type);
+            },
+
+            /**
+            * Inverts the order of the elements in a sequence.
+            * @returns {Iterable}
+            */
+            reverse: function () {
+                return reverseIterable(this);
             },
 
             /**
@@ -2027,6 +2148,15 @@
             */
             skipWhile: function (predicate) {
                 return skipWhileIterator(this, predicate);
+            },
+
+            /**
+            * Computes the sum of the sequence of values that are obtained by invoking a transform function on each element of the input sequence.
+            * @param {Function=} selector A transform function to apply to each element. eg. function(item)
+            * @returns {Number}
+            */
+            sum: function (selector) {
+                return sumIterable(this, selector);
             },
 
             /**
