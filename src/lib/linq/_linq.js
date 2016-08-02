@@ -24,6 +24,7 @@ import single from './single';
 import singleOrDefault from './single-or-default';
 import skip from './skip';
 import skipWhile from './skip-while';
+import sum from './sum';
 import take from './take';
 import takeWhile from './take-while';
 import toArray from './to-array';
@@ -268,6 +269,15 @@ export default function linq(iterable) {
         */
         skipWhile(predicate) {
             return skipWhile(this, predicate);
+        },
+
+        /**
+        * Computes the sum of the sequence of values that are obtained by invoking a transform function on each element of the input sequence.
+        * @param {Function=} selector A transform function to apply to each element. eg. function(item)
+        * @returns {Number}
+        */
+        sum(selector = null) {
+            return sum(this, selector);
         },
 
         /**
