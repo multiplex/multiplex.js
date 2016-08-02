@@ -1666,6 +1666,36 @@
         });
     }
 
+    function sumIterable(source, selector) {
+        assertNotNull(source);
+
+        if (selector) {
+            assertType(selector, Function);
+            return sumIterable(selectIterator(source, selector));
+        }
+
+        var arr = asArray(source),
+            sum = 0;
+
+        // fast iteration for array-like iterables
+        if (arr !== null) {
+            for (var i = 0, len = arr.length; i < len; i++) {
+                sum += arr[i];
+            }
+        }
+        else {
+            forOf(source, function (element) {
+                sum += element;
+            });
+        }
+
+        if (isNaN(sum)) {
+            error(ERROR_NON_NUMERIC_TYPE);
+        }
+
+        return sum;
+    }
+
     function takeIterator(source, count) {
         assertNotNull(source);
         assertType(count, Number);
@@ -2027,6 +2057,15 @@
             */
             skipWhile: function (predicate) {
                 return skipWhileIterator(this, predicate);
+            },
+
+            /**
+            * Computes the sum of the sequence of values that are obtained by invoking a transform function on each element of the input sequence.
+            * @param {Function=} selector A transform function to apply to each element. eg. function(item)
+            * @returns {Number}
+            */
+            sum: function (selector) {
+                return sumIterable(this, selector);
             },
 
             /**
