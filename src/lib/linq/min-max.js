@@ -20,11 +20,15 @@ export default function minMaxIterable(source, max, selector = null) {
 
     // fast iteration for array-like iterables
     if (arr !== null) {
-        hasValue = arr.length > 0;
-
         for (let i = 0, len = arr.length; i < len; i++) {
-            if (compare(arr[i], value) === result) {
+            if (hasValue) {
+                if (compare(arr[i], value) === result) {
+                    value = arr[i];
+                }
+            }
+            else {
                 value = arr[i];
+                hasValue = true;
             }
         }
     }
