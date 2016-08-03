@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (August 02, 2016)
+* Version 2.0.0 (August 03, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -1480,11 +1480,15 @@
 
         // fast iteration for array-like iterables
         if (arr !== null) {
-            hasValue = arr.length > 0;
-
             for (var i = 0, len = arr.length; i < len; i++) {
-                if (compare(arr[i], value) === result) {
+                if (hasValue) {
+                    if (compare(arr[i], value) === result) {
+                        value = arr[i];
+                    }
+                }
+                else {
                     value = arr[i];
+                    hasValue = true;
                 }
             }
         }
@@ -1637,12 +1641,8 @@
 
         // fast iteration for array-like iterables
         if (arr !== null) {
-            for (var i = 0, len = arr.length; i < len; i++) {
+            for (var i = 0, len = arr.length; i < len && count <= 1; i++) {
                 if (predicate(arr[i])) {
-                    if (count > 1) {
-                        break;
-                    }
-
                     result = arr[i];
                     count++;
                 }
