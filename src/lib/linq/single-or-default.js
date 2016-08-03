@@ -13,12 +13,8 @@ export default function singleOrDefaultIterator(source, predicate = null, defaul
         count = 0;
 
     if (arr !== null) {
-        for (let i = 0, len = arr.length; i < len; i++) {
+        for (let i = 0, len = arr.length; i < len && count <= 1; i++) {
             if (predicate(arr[i])) {
-                if (count > 1) {
-                    break;
-                }
-
                 result = arr[i];
                 count++;
             }
@@ -26,11 +22,7 @@ export default function singleOrDefaultIterator(source, predicate = null, defaul
     }
     else {
         for (let element in source) {
-            if (predicate(element)) {
-                if (count > 1) {
-                    break;
-                }
-
+            if (predicate(element) && count <= 1) {
                 result = element;
                 count++;
             }
