@@ -16,12 +16,8 @@ export default function singleOrDefaultIterator(source, predicate, defaultValue)
 
     // fast iteration for array-like iterables
     if (arr !== null) {
-        for (var i = 0, len = arr.length; i < len; i++) {
+        for (var i = 0, len = arr.length; i < len && count <= 1; i++) {
             if (predicate(arr[i])) {
-                if (count > 1) {
-                    break;
-                }
-
                 result = arr[i];
                 count++;
             }
