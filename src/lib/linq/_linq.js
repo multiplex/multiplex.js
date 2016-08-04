@@ -10,6 +10,7 @@ import concat from './concat';
 import contains from './contains';
 import count from './count';
 import defaultIfEmpty from './default-if-empty';
+import distinct from './distinct';
 import elementAt from './element-at';
 import first from './first';
 import firstOrDefault from './first-or-default';
@@ -140,6 +141,15 @@ export default function linq(iterable) {
         */
         defaultIfEmpty: function (defaultValue) {
             return defaultIfEmpty(this, defaultValue);
+        },
+
+        /**
+        * Produces the set difference of two sequences by using the EqualityComparer to compare values.
+        * @param {EqualityComparer=} comparer An EqualityComparer to compare values.
+        * @returns {Iterable}
+        */
+        distinct: function (comparer) {
+            return distinct(this, comparer);
         },
 
         /**
