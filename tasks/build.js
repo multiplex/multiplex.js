@@ -76,21 +76,25 @@ module.exports = function (grunt) {
             });
     });
 
-    grunt.task.registerTask('build-testrunner', 'creates testrunner html file to run unit-tests', function () {
-        var testrunner = 'testrunner',
+    grunt.task.registerTask('build-testrunner', 'creates testrunner html/js file to run unit-tests', function () {
+        var testrunner = grunt.file.read(path.join(dirs.test, files.testrunner + '.js')),
             units = grunt.file.expand({ cwd: dirs.unit }, '**/*.js').map(function (file) {
-                return '\n    \'' + file + '\'';
+                return '\n    \'./' + file + '\'';
             }),
-            script = 'require([' + units.join(',') + '\n]);\n';
+            modules = 'var modules = [' + units.join(',') + '\n];\n';
 
+        // create js testrunner to run tests in Node
+        // read the address location for js testrunner
+        // add modules to the first line of the template
         grunt.file.write(
-            path.join(dirs.build, dirs.test, testrunner + '.js'),
-            script
+            path.join(dirs.build, dirs.test, files.testrunner + '.js'),
+            modules + testrunner.split('\n').slice(1).join('\n')
         );
 
+        // copy html testrunner to run tests from browser
         grunt.file.copy(
-            path.join(dirs.unit, testrunner),
-            path.join(dirs.build, dirs.test, testrunner + '.html')
+            path.join(dirs.test, files.testrunner + '.html'),
+            path.join(dirs.build, dirs.test, files.testrunner + '.html')
         );
     });
 
