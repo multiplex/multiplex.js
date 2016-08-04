@@ -188,7 +188,7 @@ export default class HashTable extends Collection {
                 entry = null,
                 index = 0;
 
-            for (var i = 0; i < this.totalCount; i++) {
+            for (let i = 0; i < this.totalCount; i++) {
                 entry = this.entries[i];
 
                 if (entry.hash !== undefined) {
