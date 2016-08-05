@@ -1,4 +1,4 @@
-import ArrayIterable from '../iteration/iterable';
+import ArrayIterable from '../iteration/iterable-array';
 import mixin from '../utils/mixin';
 import extend from '../utils/extend';
 import buffer from '../utils/buffer';
