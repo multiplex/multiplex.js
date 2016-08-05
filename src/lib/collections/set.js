@@ -5,7 +5,7 @@ import mixin from '../utils/mixin';
 import extend from '../utils/extend';
 
 
-export default function Set(capacity, comparer) {
+export default function Set(comparer) {
     Collection.call(this);
     this.totalCount = 0;
     this.slots = new Array(7);
@@ -65,7 +65,7 @@ mixin(Set.prototype, {
     },
 
     resize: function () {
-        let count = this.totalCount,
+        var count = this.totalCount,
             newSize = resize(count),
             slot = null,
             bucket = 0;
@@ -75,7 +75,7 @@ mixin(Set.prototype, {
 
 
         // rehash values & update buckets and slots
-        for (let index = 0; index < count; index++) {
+        for (var index = 0; index < count; index++) {
             slot = this.slots[index];
             bucket = slot.hash % newSize;
             slot.next = this.buckets[bucket];
@@ -88,7 +88,7 @@ mixin(Set.prototype, {
             slot = null,
             index = 0;
 
-        for (let i = 0, count = this.slots.length; i < count; i++) {
+        for (var i = 0, count = this.slots.length; i < count; i++) {
             slot = this.slots[i];
 
             if (slot.hash !== undefined) {
