@@ -1175,22 +1175,41 @@
         });
     }
 
-    /**
-    * Initializes a new instance of the KeyValuePair with the specified key and value.
-    * @param {Object} key The object defined in each key/value pair.
-    * @param {Object} value The definition associated with key.
-    */
-    class KeyValuePair {
-        constructor(key, value) {
-            this.key = key;
-            this.value = value;
-
-            Object.freeze(this);
+    class HashTableEntry {
+        constructor(hash, next, key, value = null) {
+            this.hash = hash;       // item's key hash-code
+            this.next = next;       // index of the next bucket in the chained bucket list
+            this.key = key;         // item's key
+            this.value = value;     // item's value
         }
     }
 
-    /// Array of primes larger than: 2 ^ (4 x n)
-    const primes = [17, 67, 257, 1031, 4099, 16411, 65537, 262147, 1048583, 4194319, 16777259];
+    class HashTableIterator extends Iterator {
+        constructor(table) {
+            let index = 0,
+                entry = null,
+                count = table.totalCount,
+                entries = table.entries;
+
+            super(() => {
+                while (index < count) {
+                    entry = entries[index++];
+
+                    // freed entries have undefined as hashCode value and do not enumerate
+                    if (entry.hash !== undefined) {
+                        return {
+                            value: [entry.key, entry.value],
+                            done: false
+                        };
+                    }
+                }
+
+                return {
+                    done: true
+                };
+            });
+        }
+    }
 
     class HashTable extends Collection {
         constructor(capacity = 0, comparer = EqualityComparer.defaultComparer) {
@@ -1200,7 +1219,7 @@
         }
 
         initialize(size) {
-            size = getPrime(size);
+            size = getSize(size);
             this.totalCount = 0;                // total number of entries, including release entries (freeCount)
             this.freeIndex = undefined;         // next free index in the bucket list
             this.freeCount = 0;                 // total number of release entries
@@ -1211,9 +1230,9 @@
         add(key, value, overwrite) {
             let entries = this.entries,
                 buckets = this.buckets,
-                hash = this.comparer.hash(key) & 0x7FFFFFFF,       // hash code of the key
+                hash = this.comparer.hash(key) & 0x7FFFFFFF,
                 equals = this.comparer.equals,
-                bucket = hash % buckets.length,              // bucket index
+                bucket = hash % buckets.length,
                 entry = null;
 
 
@@ -1255,7 +1274,7 @@
                 this.totalCount++;
             }
 
-            entries[index] = new Entry(hash, buckets[bucket], key, value);
+            entries[index] = new HashTableEntry(hash, buckets[bucket], key, value);
             buckets[bucket] = index;
 
             return true;
@@ -1266,23 +1285,31 @@
         }
 
         contains(key) {
-            return this.findEntry(key) !== -1;
+            return this.indexOf(key) !== -1;
         }
 
         count() {
             return this.totalCount - this.freeCount;
         }
 
-        get(key) {
-            let index = this.findEntry(key);
-            return index === -1 ? undefined : this.entries[index].value;
+        entries() {
+            let arr = new Array(this.count()),
+                entries = this.entries,
+                entry = null,
+                index = 0;
+
+            for (let i = 0, count = this.totalCount; i < count; i++) {
+                entry = entries[i];
+
+                if (entry.hash !== undefined) {
+                    arr[index++] = entry;
+                }
+            }
+
+            return arr;
         }
 
-        set(key, value) {
-            this.add(key, value, true);
-        }
-
-        findEntry(key) {
+        indexOf(key) {
             let hash = this.comparer.hash(key) & 0x7FFFFFFF,
                 equals = this.comparer.equals,
                 index = this.buckets[hash % this.buckets.length],
@@ -1304,7 +1331,7 @@
         }
 
         resize() {
-            let newSize = getPrime(this.totalCount),
+            let newSize = getSize(this.totalCount),
                 entry = null,
                 bucket = 0;
 
@@ -1367,85 +1394,27 @@
             return false;
         }
 
-        keys() {
-            if (this._keys === undefined) {
-                let arr = new Array(this.count()),
-                    entry = null,
-                    index = 0;
-
-                for (let i = 0; i < this.totalCount; i++) {
-                    entry = this.entries[i];
-
-                    if (entry.hash !== undefined) {
-                        arr[index++] = entry.key;
-                    }
-                }
-
-                this._keys = new Collection(arr);
-            }
-
-            return this._keys;
+        get(key) {
+            let index = this.indexOf(key);
+            return index === -1 ? undefined : this.entries[index].value;
         }
 
-        values() {
-            if (this._values === undefined) {
-                let arr = new Array(this.count()),
-                    entry = null,
-                    index = 0;
-
-                for (let i = 0; i < this.totalCount; i++) {
-                    entry = this.entries[i];
-
-                    if (entry.hash !== undefined) {
-                        arr[index++] = entry.value;
-                    }
-                }
-
-                this._values = new Collection(arr);
-            }
-
-            return this._values;
+        set(key, value) {
+            this.add(key, value, true);
         }
 
         [Symbol.iterator]() {
-            let index = 0,
-                entry = null,
-                count = this.totalCount,
-                entries = this.entries;
-
-            return new Iterator(function () {
-                while (index < count) {
-                    entry = entries[index++];
-
-                    // freed entries have undefined as hashCode value and do not enumerate
-                    if (entry.hash !== undefined) {
-                        return {
-                            value: new KeyValuePair(entry.key, entry.value),
-                            done: false
-                        };
-                    }
-                }
-
-                return {
-                    done: true
-                };
-            });
-        }
-    }
-
-    class Entry {
-        constructor(hash, next, key, value = null) {
-            this.hash = hash;       // item's key hash-code
-            this.next = next;       // index of the next bucket in the chained bucket list
-            this.key = key;         // item's key
-            this.value = value;     // item's value
+            return new HashTableIterator(this);
         }
     }
 
 
-    function getPrime(min) {
+    /// Array of primes larger than: 2 ^ (4 x n)
+    const primes = [17, 67, 257, 1031, 4099, 16411, 65537, 262147, 1048583, 4194319, 16777259];
+
+    function getSize(size) {
         for (let i = 0, len = primes.length; i < len; i++) {
-            if (primes[i] > min) {
+            if (primes[i] > size) {
                 return primes[i];
             }
         }
