@@ -1479,6 +1479,27 @@
         error(ERROR_ARGUMENT_OUT_OF_RANGE);
     }
 
+    function exceptIntersectIterator(first, second, intersect = true, comparer = null) {
+        assertNotNull(first);
+        assertNotNull(second);
+
+        let result = intersect ? true : false;
+
+        return new Iterable(function* () {
+            let table = new HashTable(0, comparer);
+
+            for (let element in second) {
+                table.add(element);
+            }
+
+            for (let element in first) {
+                if (table.contains(element) === result) {
+                    yield element;
+                }
+            }
+        });
+    }
+
     function firstOrDefaultIterator(source, predicate = null, defaultValue = null) {
         assertNotNull(source);
         predicate = predicate || (() => true);
@@ -1857,29 +1878,21 @@
         return new List(source);
     }
 
-    class HashSet extends Collection {
-        constructor(comparer) {
-            super();
-            this._comparer = comparer;
-        }
-    }
-
     function unionIterator(first, second, comparer = null) {
         assertNotNull(first);
         assertNotNull(second);
-        comparer = EqualityComparer.from(comparer);
 
         return new Iterable(function* () {
-            let set = new HashSet(comparer);
+            let table = new HashTable(0, comparer);
 
             for (let element of first) {
-                if (set.add(element)) {
+                if (table.add(element)) {
                     yield element;
                 }
             }
 
             for (let element of second) {
-                if (set.add(element)) {
+                if (table.add(element)) {
                     yield element;
                 }
             }
@@ -2029,6 +2042,16 @@
             },
 
             /**
+            * Produces the set difference of two sequences by using the specified EqualityComparer to compare values.
+            * @param {Iterable} second An Iterable whose elements that also occur in the first sequence will cause those elements to be removed from the returned sequence.
+            * @param {EqualityComparer=} comparer An EqualityComparer to compare values.
+            * @returns {Iterable}
+            */
+            except(second, comparer = null) {
+                return exceptIntersectIterator(this, second, false, comparer);
+            },
+
+            /**
             * Returns the first element in a sequence that satisfies a specified condition. this method throws an exception if there is no element in the sequence.
             * @param {Function=} predicate A function to test each source element for a condition. eg. function(item)
             * @returns {Object}
@@ -2053,6 +2076,16 @@
             */
             forEach(action) {
                 return forEachIterator(this, action);
+            },
+
+            /**
+            * Produces the set intersection of two sequences by using the default equality comparer to compare values.
+            * @param {Iterable} second An Iterable whose distinct elements that also appear in the first sequence will be returned.
+            * @param {EqualityComparer=} comparer An EqualityComparer to compare values.
+            * @returns {Iterable}
+            */
+            intersect(second, comparer = null) {
+                return exceptIntersectIterator(this, second, true, comparer);
             },
 
             /**

@@ -12,6 +12,7 @@ import count from './count';
 import defaultIfEmpty from './default-if-empty';
 import distinct from './distinct';
 import elementAt from './element-at';
+import exceptIntersect from './except-intersect';
 import first from './first';
 import firstOrDefault from './first-or-default';
 import forEach from './for-each';
@@ -163,6 +164,16 @@ export default function linq(iterable) {
         },
 
         /**
+        * Produces the set difference of two sequences by using the specified EqualityComparer to compare values.
+        * @param {Iterable} second An Iterable whose elements that also occur in the first sequence will cause those elements to be removed from the returned sequence.
+        * @param {EqualityComparer=} comparer An EqualityComparer to compare values.
+        * @returns {Iterable}
+        */
+        except(second, comparer = null) {
+            return exceptIntersect(this, second, false, comparer);
+        },
+
+        /**
         * Returns the first element in a sequence that satisfies a specified condition. this method throws an exception if there is no element in the sequence.
         * @param {Function=} predicate A function to test each source element for a condition. eg. function(item)
         * @returns {Object}
@@ -187,6 +198,16 @@ export default function linq(iterable) {
         */
         forEach(action) {
             return forEach(this, action);
+        },
+
+        /**
+        * Produces the set intersection of two sequences by using the default equality comparer to compare values.
+        * @param {Iterable} second An Iterable whose distinct elements that also appear in the first sequence will be returned.
+        * @param {EqualityComparer=} comparer An EqualityComparer to compare values.
+        * @returns {Iterable}
+        */
+        intersect(second, comparer = null) {
+            return exceptIntersect(this, second, true, comparer);
         },
 
         /**
