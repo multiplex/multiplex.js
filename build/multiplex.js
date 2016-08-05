@@ -1650,6 +1650,37 @@
         error(ERROR_ARGUMENT_OUT_OF_RANGE);
     }
 
+    function exceptIntersectIterator(first, second, intersect, comparer) {
+        assertNotNull(first);
+        assertNotNull(second);
+
+        var result = intersect ? true : false;
+
+        return new Iterable(function () {
+            var it = iterator(first),
+                table = new HashTable(0, comparer),
+                next;
+
+            return new Iterator(function () {
+                forOf(second, function (element) {
+                    table.add(element);
+                });
+
+                if (!(next = it.next()).done) {
+                    if (table.contains(next.value) === result) {
+                        return {
+                            value: next.value,
+                            done: false
+                        };
+                    }
+                }
+                return {
+                    done: true
+                };
+            });
+        });
+    }
+
     function firstOrDefaultIterator(source, predicate, defaultValue) {
         assertNotNull(source);
         predicate = predicate || trueFunction;
@@ -2102,26 +2133,19 @@
         return new List(source);
     }
 
-    function HashSet(comparer) {
-        this._comparer = comparer;
-    }
-
-    extend(HashSet, Collection);
-
     function unionIterator(first, second, comparer) {
         assertNotNull(first);
         assertNotNull(second);
-        comparer = EqualityComparer.from(comparer);
 
         return new Iterable(function () {
-            var set = new HashSet(comparer),
+            var table = new HashTable(0, comparer),
                 it1 = iterator(first),
                 it2 = iterator(second),
                 next;
 
             return new Iterator(function () {
                 while (!(next = it1.next()).done || !(next = it2.next()).done) {
-                    if (set.add(next.value)) {
+                    if (table.add(next.value)) {
                         return {
                             value: next.value,
                             done: false
@@ -2287,6 +2311,16 @@
             },
 
             /**
+            * Produces the set difference of two sequences by using the specified EqualityComparer to compare values.
+            * @param {Iterable} second An Iterable whose elements that also occur in the first sequence will cause those elements to be removed from the returned sequence.
+            * @param {EqualityComparer=} comparer An EqualityComparer to compare values.
+            * @returns {Iterable}
+            */
+            except: function (second, comparer) {
+                return exceptIntersectIterator(this, second, false, comparer);
+            },
+
+            /**
             * Returns the first element in a sequence that satisfies a specified condition. this method throws an exception if there is no element in the sequence.
             * @param {Function=} predicate A function to test each source element for a condition. eg. function(item)
             * @returns {Object}
@@ -2311,6 +2345,16 @@
             */
             forEach: function (action) {
                 return forEachIterator(this, action);
+            },
+
+            /**
+            * Produces the set intersection of two sequences by using the default equality comparer to compare values.
+            * @param {Iterable} second An Iterable whose distinct elements that also appear in the first sequence will be returned.
+            * @param {EqualityComparer=} comparer An EqualityComparer to compare values.
+            * @returns {Iterable}
+            */
+            intersect: function (second, comparer) {
+                return exceptIntersectIterator(this, second, true, comparer);
             },
 
             /**
