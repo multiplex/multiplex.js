@@ -1346,7 +1346,7 @@
     }
 
     /// Array of primes larger than: 2 ^ (4 x n)
-    const primes = [17, 67, 257, 1031, 4099, 16411, 65537, 262147, 1048583, 4194319, 16777259];
+    var primes = [17, 67, 257, 1031, 4099, 16411, 65537, 262147, 1048583, 4194319, 16777259];
 
     function resize(size) {
         for (var i = 0, len = primes.length; i < len; i++) {
