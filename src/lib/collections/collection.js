@@ -1,4 +1,4 @@
-import ArrayIterable from '../iteration/iterable';
+import ArrayIterable from '../iteration/iterable-array';
 import buffer from '../utils/buffer';
 import bufferTo from '../utils/buffer-to';
 
