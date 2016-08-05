@@ -1,8 +1,8 @@
 import Collection from './collection';
-import HashTableEntry from './hash-table-entry';
 import HashTableIterator from './hash-table-iterator';
 import EqualityComparer from './equality-comparer';
 import iteratorSymbol from '../iteration/iterator-symbol';
+import resize from '../utils/resize';
 import mixin from '../utils/mixin';
 import extend from '../utils/extend';
 
@@ -18,7 +18,7 @@ extend(HashTable, Collection);
 
 mixin(HashTable.prototype, {
     initialize: function (size) {
-        size = getSize(size);
+        size = resize(size);
         this.totalCount = 0;                // total number of entries, including release entries (freeCount)
         this.freeIndex = undefined;         // next free index in the bucket list
         this.freeCount = 0;                 // total number of release entries
@@ -27,18 +27,16 @@ mixin(HashTable.prototype, {
     },
 
     add: function (key, value, overwrite) {
-        var entries = this.entries,
-            buckets = this.buckets,
-            hash = this.comparer.hash(key) & 0x7FFFFFFF,       // hash code of the key
+        var hash = this.comparer.hash(key) & 0x7FFFFFFF,       // hash code of the key
             equals = this.comparer.equals,
-            bucket = hash % buckets.length,              // bucket index
+            bucket = hash % this.buckets.length,              // bucket index
             entry = null,
             index = 0;
 
 
         // check for item existance, freed entries have undefined hash-code value and do not need enumeration
-        for (var index = buckets[bucket]; index !== undefined;) {
-            entry = entries[index];
+        for (var index = this.buckets[bucket]; index !== undefined;) {
+            entry = this.entries[index];
 
             if (entry.hash === hash && equals(entry.key, key)) {
                 if (overwrite) {
@@ -60,13 +58,14 @@ mixin(HashTable.prototype, {
 
         // there's already a free index
         if (this.freeCount > 0) {
-            index = this.freeIndex;                     // consume free index
-            this.freeIndex = entries[index].next;       // save new free index
-            this.freeCount--;                           // update number of free entries
+            index = this.freeIndex;                         // consume free index
+            this.freeIndex = this.entries[index].next;      // save new free index
+            this.freeCount--;                               // update number of free entries
         }
         else {
-            if (this.totalCount === entries.length) {
-                bucket = hash % this.resize();         // resize HashTable
+            if (this.totalCount === this.buckets.length) {
+                this.resize();
+                bucket = hash % this.buckets.length;
             }
 
             // find a new free index
@@ -74,8 +73,8 @@ mixin(HashTable.prototype, {
             this.totalCount++;
         }
 
-        entries[index] = new HashTableEntry(hash, buckets[bucket], key, value);
-        buckets[bucket] = index;
+        this.entries[index] = new Entry(hash, this.buckets[bucket], key, value);
+        this.buckets[bucket] = index;
 
         return true;
     },
@@ -92,7 +91,7 @@ mixin(HashTable.prototype, {
         return this.totalCount - this.freeCount;
     },
 
-    entries: function () {
+    keys: function () {
         var arr = new Array(this.count()),
             entries = this.entries,
             entry = null,
@@ -102,7 +101,7 @@ mixin(HashTable.prototype, {
             entry = entries[i];
 
             if (entry.hash !== undefined) {
-                arr[index++] = entry;
+                arr[index++] = entry.key;
             }
         }
 
@@ -131,7 +130,7 @@ mixin(HashTable.prototype, {
     },
 
     resize: function () {
-        var newSize = getSize(this.totalCount),
+        var newSize = resize(this.totalCount),
             entry = null,
             bucket = 0;
 
@@ -150,30 +149,26 @@ mixin(HashTable.prototype, {
                 this.buckets[bucket] = index;           // update bucket index
             }
         }
-
-        return newSize;
     },
 
     remove: function (key) {
-        var buckets = this.buckets,
-            entries = this.entries,
-            equals = this.comparer.equals,
+        var equals = this.comparer.equals,
             hash = this.comparer.hash(key) & 0x7FFFFFFF,    // hash-code of the key
-            bucket = hash % buckets.length,                 // bucket index
+            bucket = hash % this.buckets.length,                 // bucket index
             last,
             entry;
 
         // freed entries have undefined hash-code value and do not need enumeration
-        for (var index = buckets[bucket]; index !== undefined;) {
-            entry = entries[index];
+        for (var index = this.buckets[bucket]; index !== undefined;) {
+            entry = this.entries[index];
 
             if (entry.hash === hash && equals(entry.key, key)) {
                 // last item in the chained bucket list
                 if (last === undefined) {
-                    buckets[bucket] = entry.next;
+                    this.buckets[bucket] = entry.next;
                 }
                 else {
-                    entries[last].next = entry.next;
+                    this.entries[last].next = entry.next;
                 }
 
                 entry.hash = undefined;         // release the entry
@@ -201,6 +196,10 @@ mixin(HashTable.prototype, {
 
     set: function (key, value) {
         this.add(key, value, true);
+    },
+
+    valueOf: function () {
+        this.keys();
     }
 });
 
@@ -210,15 +209,10 @@ HashTable.prototype[iteratorSymbol] = function () {
 };
 
 
-/// Array of primes larger than: 2 ^ (4 x n)
-var primes = [17, 67, 257, 1031, 4099, 16411, 65537, 262147, 1048583, 4194319, 16777259];
-
-function getSize(size) {
-    for (var i = 0, len = primes.length; i < len; i++) {
-        if (primes[i] > size) {
-            return primes[i];
-        }
-    }
-
-    return primes[primes.length - 1];
+function Entry(hash, next, key, value) {
+    this.hash = hash;       // item's key hash-code
+    this.next = next;       // index of the next bucket in the chained bucket list
+    this.key = key;         // item's key
+    this.value = value;     // item's value
 }
+
