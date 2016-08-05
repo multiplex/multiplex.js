@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (August 05, 2016)
+* Version 2.0.0 (August 06, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -829,7 +829,7 @@
     * Initializes a new instance of the abstract Collection class.
     * @param {Iterable=} value Iterable whose elements are copied to the new collection.
     */
-    class Collection extends Iterable {
+    class Collection extends ArrayIterable {
         constructor(value = null) {
             if (value !== null && value !== undefined) {
                 value = buffer(value);
@@ -1175,15 +1175,6 @@
         });
     }
 
-    class HashTableEntry {
-        constructor(hash, next, key, value = null) {
-            this.hash = hash;       // item's key hash-code
-            this.next = next;       // index of the next bucket in the chained bucket list
-            this.key = key;         // item's key
-            this.value = value;     // item's value
-        }
-    }
-
     class HashTableIterator extends Iterator {
         constructor(table) {
             let index = 0,
@@ -1211,6 +1202,19 @@
         }
     }
 
+    /// Array of primes larger than: 2 ^ (4 x n)
+    const primes = [17, 67, 257, 1031, 4099, 16411, 65537, 262147, 1048583, 4194319, 16777259];
+
+    function resize(size) {
+        for (let i = 0, len = primes.length; i < len; i++) {
+            if (primes[i] > size) {
+                return primes[i];
+            }
+        }
+
+        return primes[primes.length - 1];
+    }
+
     class HashTable extends Collection {
         constructor(capacity = 0, comparer = EqualityComparer.defaultComparer) {
             super();
@@ -1219,7 +1223,7 @@
         }
 
         initialize(size) {
-            size = getSize(size);
+            size = resize(size);
             this.totalCount = 0;                // total number of entries, including release entries (freeCount)
             this.freeIndex = undefined;         // next free index in the bucket list
             this.freeCount = 0;                 // total number of release entries
@@ -1228,17 +1232,15 @@
         }
 
         add(key, value, overwrite) {
-            let entries = this.entries,
-                buckets = this.buckets,
-                hash = this.comparer.hash(key) & 0x7FFFFFFF,
+            let hash = this.comparer.hash(key) & 0x7FFFFFFF,
                 equals = this.comparer.equals,
-                bucket = hash % buckets.length,
+                bucket = hash % this.buckets.length,
                 entry = null;
 
 
             // check for item existance, freed entries have undefined hash-code value and do not need enumeration
-            for (let index = buckets[bucket]; index !== undefined;) {
-                entry = entries[index];
+            for (let index = this.buckets[bucket]; index !== undefined;) {
+                entry = this.entries[index];
 
                 if (entry.hash === hash && equals(entry.key, key)) {
                     if (overwrite) {
@@ -1260,13 +1262,14 @@
 
             // there's already a free index
             if (this.freeCount > 0) {
-                index = this.freeIndex;                     // consume free index
-                this.freeIndex = entries[index].next;       // save new free index
-                this.freeCount--;                           // update number of free entries
+                index = this.freeIndex;                         // consume free index
+                this.freeIndex = this.entries[index].next;      // save new free index
+                this.freeCount--;                               // update number of free entries
             }
             else {
-                if (this.totalCount === entries.length) {
-                    bucket = hash % this.resize();         // resize HashTable
+                if (this.totalCount === this.buckets.length) {
+                    this.resize();
+                    bucket = hash % this.buckets.length;
                 }
 
                 // find a new free index
@@ -1274,8 +1277,8 @@
                 this.totalCount++;
             }
 
-            entries[index] = new HashTableEntry(hash, buckets[bucket], key, value);
-            buckets[bucket] = index;
+            this.entries[index] = new Entry(hash, this.buckets[bucket], key, value);
+            this.buckets[bucket] = index;
 
             return true;
         }
@@ -1292,17 +1295,16 @@
             return this.totalCount - this.freeCount;
         }
 
-        entries() {
+        keys() {
             let arr = new Array(this.count()),
-                entries = this.entries,
                 entry = null,
                 index = 0;
 
             for (let i = 0, count = this.totalCount; i < count; i++) {
-                entry = entries[i];
+                entry = this.entries[i];
 
                 if (entry.hash !== undefined) {
-                    arr[index++] = entry;
+                    arr[index++] = entry.key;
                 }
             }
 
@@ -1331,7 +1333,7 @@
         }
 
         resize() {
-            let newSize = getSize(this.totalCount),
+            let newSize = resize(this.totalCount),
                 entry = null,
                 bucket = 0;
 
@@ -1350,30 +1352,26 @@
                     this.buckets[bucket] = index;           // update bucket index
                 }
             }
-
-            return newSize;
         }
 
         remove(key) {
-            let buckets = this.buckets,
-                entries = this.entries,
-                equals = this.comparer.equals,
+            let equals = this.comparer.equals,
                 hash = this.comparer.hash(key) & 0x7FFFFFFF,    // hash-code of the key
-                bucket = hash % buckets.length,                 // bucket index
+                bucket = hash % this.buckets.length,            // bucket index
                 last,
                 entry;
 
             // freed entries have undefined hash-code value and do not need enumeration
-            for (let index = buckets[bucket]; index !== undefined;) {
-                entry = entries[index];
+            for (let index = this.buckets[bucket]; index !== undefined;) {
+                entry = this.entries[index];
 
                 if (entry.hash === hash && equals(entry.key, key)) {
                     // last item in the chained bucket list
                     if (last === undefined) {
-                        buckets[bucket] = entry.next;
+                        this.buckets[bucket] = entry.next;
                     }
                     else {
-                        entries[last].next = entry.next;
+                        this.entries[last].next = entry.next;
                     }
 
                     entry.hash = undefined;         // release the entry
@@ -1403,23 +1401,23 @@
             this.add(key, value, true);
         }
 
+        valueOf() {
+            this.keys();
+        }
+
         [Symbol.iterator]() {
             return new HashTableIterator(this);
         }
     }
 
 
-    /// Array of primes larger than: 2 ^ (4 x n)
-    const primes = [17, 67, 257, 1031, 4099, 16411, 65537, 262147, 1048583, 4194319, 16777259];
-
-    function getSize(size) {
-        for (let i = 0, len = primes.length; i < len; i++) {
-            if (primes[i] > size) {
-                return primes[i];
-            }
+    class Entry {
+        constructor(hash, next, key, value = null) {
+            this.hash = hash;       // item's key hash-code
+            this.next = next;       // index of the next bucket in the chained bucket list
+            this.key = key;         // item's key
+            this.value = value;     // item's value
         }
-
-        return primes[primes.length - 1];
     }
 
     function distinctIterator(source, comparer = null) {
