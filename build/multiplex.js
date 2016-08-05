@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (August 03, 2016)
+* Version 2.0.0 (August 06, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -24,7 +24,7 @@
             if (properties.hasOwnProperty(_prop)) {
                 define(obj, _prop, {
                     value: properties[_prop],
-                    writable: attributes.writable || false,
+                    writable: attributes.writable || true,
                     enumerable: attributes.enumerable || false,
                     configurable: attributes.configurable || false
                 });
@@ -910,10 +910,10 @@
             value = buffer(value);
         }
 
-        Iterable.call(this, value);
+        ArrayIterable.call(this, value);
     }
 
-    extend(Collection, Iterable);
+    extend(Collection, ArrayIterable);
 
     mixin(Collection.prototype, {
         /**
@@ -1345,6 +1345,145 @@
         });
     }
 
+    /// Array of primes larger than: 2 ^ (4 x n)
+    var primes = [17, 67, 257, 1031, 4099, 16411, 65537, 262147, 1048583, 4194319, 16777259];
+
+    function resize(size) {
+        for (var i = 0, len = primes.length; i < len; i++) {
+            if (primes[i] > size) {
+                return primes[i];
+            }
+        }
+
+        return primes[primes.length - 1];
+    }
+
+    function Set(comparer) {
+        Collection.call(this);
+        this.totalCount = 0;
+        this.slots = new Array(7);
+        this.buckets = new Array(7);
+        this.comparer = EqualityComparer.from(comparer);
+    }
+
+    extend(Set, Collection);
+
+
+    mixin(Set.prototype, {
+        add: function (value) {
+            return !this.find(value, true);
+        },
+
+        contains: function (value) {
+            return this.find(value, false);
+        },
+
+        count: function () {
+            return this.totalCount;
+        },
+
+        find: function (value, add) {
+            var hash = this.comparer.hash(value) & 0x7FFFFFFF,
+                equals = this.comparer.equals,
+                bucket = hash % this.buckets.length,
+                index = this.buckets[bucket],
+                slot = null;
+
+
+            while (index !== undefined) {
+                slot = this.slots[index];
+
+                if (slot.hash === hash && equals(slot.value, value)) {
+                    return true;
+                }
+
+                index = slot.next;
+            }
+
+
+            if (add) {
+                if (this.totalCount === this.slots.length) {
+                    this.resize();
+                    bucket = hash % this.buckets.length;
+                }
+
+                index = this.totalCount;
+                this.totalCount++;
+
+                this.slots[index] = new Slot(hash, value, this.buckets[bucket]);
+                this.buckets[bucket] = index;
+            }
+
+            return false;
+        },
+
+        resize: function () {
+            var count = this.totalCount,
+                newSize = resize(count),
+                slot = null,
+                bucket = 0;
+
+            this.slots.length = newSize;
+            this.buckets.length = newSize;
+
+
+            // rehash values & update buckets and slots
+            for (var index = 0; index < count; index++) {
+                slot = this.slots[index];
+                bucket = slot.hash % newSize;
+                slot.next = this.buckets[bucket];
+                this.buckets[bucket] = index;
+            }
+        },
+
+        valueOf: function () {
+            var arr = new Array(this.totalCount),
+                slot = null,
+                index = 0;
+
+            for (var i = 0, count = this.slots.length; i < count; i++) {
+                slot = this.slots[i];
+
+                if (slot.hash !== undefined) {
+                    arr[index++] = slot.value;
+                }
+            }
+
+            return arr;
+        }
+    });
+
+
+    function Slot(hash, value, next) {
+        this.hash = hash;
+        this.next = next;
+        this.value = value;
+    }
+
+    function distinctIterator(source, comparer) {
+        assertNotNull(source);
+
+        return new Iterable(function () {
+            var it = iterator(source),
+                set = new Set(comparer),
+                next;
+
+            return new Iterator(function () {
+                if (!(next = it.next()).done) {
+                    if (set.add(next.value)) {
+                        return {
+                            value: next.value,
+                            done: false
+                        };
+                    }
+                }
+                return {
+                    done: true
+                };
+            });
+        });
+    }
+
     function elementAtIterator(source, index) {
         assertNotNull(source);
         assertType(index, Number);
@@ -1374,6 +1513,37 @@
         }
 
         error(ERROR_ARGUMENT_OUT_OF_RANGE);
+    }
+
+    function exceptIntersectIterator(first, second, intersect, comparer) {
+        assertNotNull(first);
+        assertNotNull(second);
+
+        var result = intersect ? true : false;
+
+        return new Iterable(function () {
+            var it = iterator(first),
+                set = new Set(comparer),
+                next;
+
+            return new Iterator(function () {
+                forOf(second, function (element) {
+                    set.add(element);
+                });
+
+                if (!(next = it.next()).done) {
+                    if (set.contains(next.value) === result) {
+                        return {
+                            value: next.value,
+                            done: false
+                        };
+                    }
+                }
+                return {
+                    done: true
+                };
+            });
+        });
     }
 
     function firstOrDefaultIterator(source, predicate, defaultValue) {
@@ -1828,19 +1998,12 @@
         return new List(source);
     }
 
-    function HashSet(comparer) {
-        this._comparer = comparer;
-    }
-
-    extend(HashSet, Collection);
-
     function unionIterator(first, second, comparer) {
         assertNotNull(first);
         assertNotNull(second);
-        comparer = EqualityComparer.from(comparer);
 
         return new Iterable(function () {
-            var set = new HashSet(comparer),
+            var set = new Set(comparer),
                 it1 = iterator(first),
                 it2 = iterator(second),
                 next;
@@ -1995,12 +2158,31 @@
             },
 
             /**
+            * Produces the set difference of two sequences by using the EqualityComparer to compare values.
+            * @param {EqualityComparer=} comparer An EqualityComparer to compare values.
+            * @returns {Iterable}
+            */
+            distinct: function (comparer) {
+                return distinctIterator(this, comparer);
+            },
+
+            /**
             * Returns the element at a specified index in a sequence. Throws an error if the index is less than 0 or greater than or equal to the number of elements in source.
             * @param {Number} index The zero-based index of the element to retrieve.
             * @returns {Object}
             */
             elementAt: function (index) {
                 return elementAtIterator(this, index);
+            },
+
+            /**
+            * Produces the set difference of two sequences by using the specified EqualityComparer to compare values.
+            * @param {Iterable} second An Iterable whose elements that also occur in the first sequence will cause those elements to be removed from the returned sequence.
+            * @param {EqualityComparer=} comparer An EqualityComparer to compare values.
+            * @returns {Iterable}
+            */
+            except: function (second, comparer) {
+                return exceptIntersectIterator(this, second, false, comparer);
             },
 
             /**
@@ -2028,6 +2210,16 @@
             */
             forEach: function (action) {
                 return forEachIterator(this, action);
+            },
+
+            /**
+            * Produces the set intersection of two sequences by using the default equality comparer to compare values.
+            * @param {Iterable} second An Iterable whose distinct elements that also appear in the first sequence will be returned.
+            * @param {EqualityComparer=} comparer An EqualityComparer to compare values.
+            * @returns {Iterable}
+            */
+            intersect: function (second, comparer) {
+                return exceptIntersectIterator(this, second, true, comparer);
             },
 
             /**

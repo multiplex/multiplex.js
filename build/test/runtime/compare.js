@@ -6,8 +6,9 @@
 
     mx = 'default' in mx ? mx['default'] : mx;
 
-    var qmodule = QUnit.module;
-    var qtest = QUnit.test;
+    var qunit = typeof QUnit === 'undefined' ? require('qunitjs') : QUnit;
+    var qmodule = qunit.module;
+    var qtest = qunit.test;
 
     qmodule('compare');
 

@@ -42,7 +42,6 @@ module.exports = function (grunt) {
                         'KeyValuePair',
                         'HashSet',
                         'HashTable',
-                        'HashTableEntry',
                         'LinkedList',
                         'LinkedListNode',
                         'Queue',

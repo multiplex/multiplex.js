@@ -15,7 +15,8 @@ module.exports = function (grunt) {
         files = {
             main: 'multiplex.js',
             minified: 'multiplex.min.js',
-            typings: 'multiplex.d.ts'
+            typings: 'multiplex.d.ts',
+            testrunner: 'testrunner'
         },
         lint = [
             'Gruntfile.js',

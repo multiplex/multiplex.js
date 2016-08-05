@@ -7,7 +7,7 @@ export default function mixin(obj, properties, attributes) {
         if (properties.hasOwnProperty(_prop)) {
             define(obj, _prop, {
                 value: properties[_prop],
-                writable: attributes.writable || false,
+                writable: attributes.writable || true,
                 enumerable: attributes.enumerable || false,
                 configurable: attributes.configurable || false
             });

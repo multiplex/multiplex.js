@@ -18,7 +18,7 @@ module.exports = function (grunt) {
 
         qrunner.run({
             code: path.join(dirs.build, files.main),
-            tests: grunt.file.expand(path.join(dirs.build, dirs.test) + '/*/*.js')
+            tests: [path.join(dirs.build, dirs.test, files.testrunner)]
         }, function (err, report) {
             if (err) {
                 console.log('Oops', err, report);

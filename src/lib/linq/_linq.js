@@ -10,7 +10,9 @@ import concat from './concat';
 import contains from './contains';
 import count from './count';
 import defaultIfEmpty from './default-if-empty';
+import distinct from './distinct';
 import elementAt from './element-at';
+import exceptIntersect from './except-intersect';
 import first from './first';
 import firstOrDefault from './first-or-default';
 import forEach from './for-each';
@@ -143,12 +145,31 @@ export default function linq(iterable) {
         },
 
         /**
+        * Produces the set difference of two sequences by using the EqualityComparer to compare values.
+        * @param {EqualityComparer=} comparer An EqualityComparer to compare values.
+        * @returns {Iterable}
+        */
+        distinct: function (comparer) {
+            return distinct(this, comparer);
+        },
+
+        /**
         * Returns the element at a specified index in a sequence. Throws an error if the index is less than 0 or greater than or equal to the number of elements in source.
         * @param {Number} index The zero-based index of the element to retrieve.
         * @returns {Object}
         */
         elementAt: function (index) {
             return elementAt(this, index);
+        },
+
+        /**
+        * Produces the set difference of two sequences by using the specified EqualityComparer to compare values.
+        * @param {Iterable} second An Iterable whose elements that also occur in the first sequence will cause those elements to be removed from the returned sequence.
+        * @param {EqualityComparer=} comparer An EqualityComparer to compare values.
+        * @returns {Iterable}
+        */
+        except: function (second, comparer) {
+            return exceptIntersect(this, second, false, comparer);
         },
 
         /**
@@ -176,6 +197,16 @@ export default function linq(iterable) {
         */
         forEach: function (action) {
             return forEach(this, action);
+        },
+
+        /**
+        * Produces the set intersection of two sequences by using the default equality comparer to compare values.
+        * @param {Iterable} second An Iterable whose distinct elements that also appear in the first sequence will be returned.
+        * @param {EqualityComparer=} comparer An EqualityComparer to compare values.
+        * @returns {Iterable}
+        */
+        intersect: function (second, comparer) {
+            return exceptIntersect(this, second, true, comparer);
         },
 
         /**
