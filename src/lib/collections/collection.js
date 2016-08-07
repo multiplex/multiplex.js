@@ -3,13 +3,14 @@ import mixin from '../utils/mixin';
 import extend from '../utils/extend';
 import buffer from '../utils/buffer';
 import bufferTo from '../utils/buffer-to';
+import isArrayLike from'../utils/is-array-like';
 
 /**
 * Initializes a new instance of the abstract Collection class.
 */
 export default function Collection(value) {
     if (value !== null && value !== undefined) {
-        value = buffer(value);
+        value = isArrayLike(value) ? value : buffer(value);
     }
 
     ArrayIterable.call(this, value);
@@ -33,14 +34,6 @@ mixin(Collection.prototype, {
     */
     copyTo: function (array, arrayIndex) {
         bufferTo(this.valueOf(), array, arrayIndex);
-    },
-
-    /**
-    * Creates an array of the elements from Collection.
-    * @returns {Array}
-    */
-    toArray: function () {
-        return (this.valueOf() || []).concat();
     },
 
     toString: function () {
