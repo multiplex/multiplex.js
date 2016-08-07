@@ -3,7 +3,6 @@ import mixin from '../utils/mixin';
 import extend from '../utils/extend';
 
 export default function Grouping(key, elements) {
-    Collection.call(this, elements);
     this.key = key;
     this.elements = elements;
 }
@@ -11,6 +10,10 @@ export default function Grouping(key, elements) {
 extend(Grouping, Collection);
 
 mixin(Grouping.prototype, {
+    valueOf: function () {
+        return this.elements;
+    },
+
     toString: function () {
         return '[Grouping]';
     }
