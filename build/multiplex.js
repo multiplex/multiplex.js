@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (August 06, 2016)
+* Version 2.0.0 (August 07, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -907,7 +907,7 @@
     */
     function Collection(value) {
         if (value !== null && value !== undefined) {
-            value = buffer(value);
+            value = isArrayLike(value) ? value : buffer(value);
         }
 
         ArrayIterable.call(this, value);
@@ -931,14 +931,6 @@
         */
         copyTo: function (array, arrayIndex) {
             bufferTo(this.valueOf(), array, arrayIndex);
-        },
-
-        /**
-        * Creates an array of the elements from Collection.
-        * @returns {Array}
-        */
-        toArray: function () {
-            return (this.valueOf() || []).concat();
         },
 
         toString: function () {
