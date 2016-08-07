@@ -1,6 +1,7 @@
 import ArrayIterable from '../iteration/iterable-array';
 import buffer from '../utils/buffer';
 import bufferTo from '../utils/buffer-to';
+import isArrayLike from'../utils/is-array-like';
 
 /**
 * Initializes a new instance of the abstract Collection class.
@@ -9,7 +10,7 @@ import bufferTo from '../utils/buffer-to';
 export default class Collection extends ArrayIterable {
     constructor(value = null) {
         if (value !== null && value !== undefined) {
-            value = buffer(value);
+            value = isArrayLike(value) ? value : buffer(value);
         }
 
         super(value);
@@ -30,14 +31,6 @@ export default class Collection extends ArrayIterable {
     */
     copyTo(array, arrayIndex) {
         bufferTo(this.valueOf(), array, arrayIndex);
-    }
-
-    /**
-    * Creates an array of the elements from Collection.
-    * @returns {Array}
-    */
-    toArray() {
-        return (this.valueOf() || []).concat();
     }
 
     get [Symbol.toStringTag]() {
