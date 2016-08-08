@@ -12,6 +12,7 @@ import {
 } from './lib/runtime/runtime';
 
 import Collection from './lib/collections/collection';
+import Lookup from './lib/collections/lookup';
 import linq from './lib/linq/_linq';
 
 linq(Iterable);
@@ -43,5 +44,6 @@ mx.repeat = Iterable.repeat;
 mx.Iterable = Iterable;
 mx.Iterator = Iterator;
 mx.Collection = Collection;
+mx.Lookup = Lookup;
 
 export default mx;
