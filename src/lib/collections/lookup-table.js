@@ -46,7 +46,7 @@ export default class LookupTable {
         }
 
 
-        if (create) {
+        if (create === true) {
             if (grouping === null) {
                 if (this.size === this.slots.length) {
                     this.resize();
@@ -69,8 +69,8 @@ export default class LookupTable {
     }
 
     resize() {
-        let count = this.size,
-            newSize = resize(count),
+        let size = this.size,
+            newSize = resize(size),
             slot = null,
             bucket = 0;
 
@@ -79,7 +79,7 @@ export default class LookupTable {
 
 
         // rehash values & update buckets and slots
-        for (let index = 0; index < count; index++) {
+        for (let index = 0; index < size; index++) {
             slot = this.slots[index];
             bucket = slot.hash % newSize;
             slot.next = this.buckets[bucket];
@@ -113,7 +113,7 @@ export default class LookupTable {
             length = slots.length,
             index = 0;
 
-        return new Iterator(function () {
+        return new Iterator(() => {
             if (++index < length) {
                 return {
                     value: slots[index],
