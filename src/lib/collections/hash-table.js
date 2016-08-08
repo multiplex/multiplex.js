@@ -1,25 +1,56 @@
-import Collection from './collection';
-import HashTableIterator from './hash-table-iterator';
+import Iterator from '../iteration/Iterator';
 import EqualityComparer from './equality-comparer';
 import resize from '../utils/resize';
 
-export default class HashTable extends Collection {
-    constructor(capacity = 0, comparer = EqualityComparer.defaultComparer) {
-        super();
-        this.initialize(capacity);
+export default class HashTable {
+    constructor(comparer = EqualityComparer.defaultComparer) {
+        this.initialize();
         this.comparer = EqualityComparer.from(comparer);
     }
 
-    initialize(size) {
-        size = resize(size);
-        this.totalCount = 0;                // total number of entries, including release entries (freeCount)
+    initialize() {
+        this.size = 0;                      // total number of entries, including release entries (freeCount)
         this.freeIndex = undefined;         // next free index in the bucket list
         this.freeCount = 0;                 // total number of release entries
-        this.buckets = new Array(size);     // bucket list. index: hash, value: entry index;
-        this.entries = new Array(size);     // entry list. next: index of the next bucket;
+        this.buckets = new Array(7);        // bucket list. index: hash, value: entry index;
+        this.entries = new Array(7);        // entry list. next: index of the next bucket;
     }
 
-    add(key, value, overwrite) {
+    add(key, value = null) {
+        return this.insert(key, value, true);
+    }
+
+    clear() {
+        this.initialize();
+    }
+
+    contains(key) {
+        return this.find(key) !== -1;
+    }
+
+    count() {
+        return this.size - this.freeCount;
+    }
+
+    find(key) {
+        let hash = this.comparer.hash(key) & 0x7FFFFFFF,
+            equals = this.comparer.equals,
+            entry = null;
+
+        for (let index = this.buckets[hash % this.buckets.length]; index !== undefined;) {
+            entry = this.entries[index];
+
+            if (entry.hash === hash && equals(entry.key, key)) {
+                return index;
+            }
+
+            index = entry.next;
+        }
+
+        return -1;
+    }
+
+    insert(key, value, add) {
         let hash = this.comparer.hash(key) & 0x7FFFFFFF,
             equals = this.comparer.equals,
             bucket = hash % this.buckets.length,
@@ -31,12 +62,12 @@ export default class HashTable extends Collection {
             entry = this.entries[index];
 
             if (entry.hash === hash && equals(entry.key, key)) {
-                if (overwrite) {
-                    entry.value = value;
-                    return true;
+                if (add) {
+                    return false;
                 }
 
-                return false;
+                entry.value = value;
+                return true;
             }
 
             index = entry.next;
@@ -55,14 +86,14 @@ export default class HashTable extends Collection {
             this.freeCount--;                               // update number of free entries
         }
         else {
-            if (this.totalCount === this.buckets.length) {
+            if (this.size === this.buckets.length) {
                 this.resize();
                 bucket = hash % this.buckets.length;
             }
 
             // find a new free index
-            index = this.totalCount;
-            this.totalCount++;
+            index = this.size;
+            this.size++;
         }
 
         this.entries[index] = new Entry(hash, this.buckets[bucket], key, value);
@@ -71,24 +102,12 @@ export default class HashTable extends Collection {
         return true;
     }
 
-    clear() {
-        this.initialize(0);
-    }
-
-    contains(key) {
-        return this.indexOf(key) !== -1;
-    }
-
-    count() {
-        return this.totalCount - this.freeCount;
-    }
-
     keys() {
         let arr = new Array(this.count()),
             entry = null,
             index = 0;
 
-        for (let i = 0, count = this.totalCount; i < count; i++) {
+        for (let i = 0, count = this.size; i < count; i++) {
             entry = this.entries[i];
 
             if (entry.hash !== undefined) {
@@ -99,29 +118,9 @@ export default class HashTable extends Collection {
         return arr;
     }
 
-    indexOf(key) {
-        let hash = this.comparer.hash(key) & 0x7FFFFFFF,
-            equals = this.comparer.equals,
-            index = this.buckets[hash % this.buckets.length],
-            entry = null;
-
-        // freed entries are undefined and do not need enumeration
-        while (index !== undefined) {
-            entry = this.entries[index];
-
-            if (entry.hash === hash && equals(entry.key, key)) {
-                return index;
-            }
-
-            index = entry.next;
-        }
-
-        // key not found
-        return -1;
-    }
-
     resize() {
-        let newSize = resize(this.totalCount),
+        let size = this.size,
+            newSize = resize(size),
             entry = null,
             bucket = 0;
 
@@ -130,7 +129,7 @@ export default class HashTable extends Collection {
 
 
         // rehash values & update buckets and entries
-        for (let index = 0; index < this.totalCount; index++) {
+        for (let index = 0; index < size; index++) {
             entry = this.entries[index];
 
             // freed entries have undefined hashCode value and do not need rehash
@@ -181,20 +180,37 @@ export default class HashTable extends Collection {
     }
 
     get(key) {
-        let index = this.indexOf(key);
+        let index = this.find(key);
         return index === -1 ? undefined : this.entries[index].value;
     }
 
     set(key, value) {
-        this.add(key, value, true);
-    }
-
-    valueOf() {
-        this.keys();
+        this.insert(key, value, false);
     }
 
     [Symbol.iterator]() {
-        return new HashTableIterator(this);
+        let index = 0,
+            entry = null,
+            size = this.size,
+            entries = this.entries;
+
+        return new Iterator(() => {
+            while (index < size) {
+                entry = entries[index++];
+
+                // freed entries have undefined as hashCode value and do not enumerate
+                if (entry.hash !== undefined) {
+                    return {
+                        value: [entry.key, entry.value],
+                        done: false
+                    };
+                }
+            }
+
+            return {
+                done: true
+            };
+        });
     }
 }
 
