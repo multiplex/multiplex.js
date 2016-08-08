@@ -1,5 +1,8 @@
 import mixin from '../utils/mixin';
 import EmptyIterable from '../iteration/iterable-empty';
+import List from '../collections/list';
+import Lookup from '../collections/lookup';
+import buffer from '../utils/buffer';
 import range from './range';
 import repeat from './repeat';
 import aggregate from './aggregate';
@@ -31,8 +34,6 @@ import skipWhile from './skip-while';
 import sum from './sum';
 import take from './take';
 import takeWhile from './take-while';
-import toArray from './to-array';
-import toList from './to-list';
 import union from './union';
 import where from './where';
 import zip from './zip';
@@ -361,7 +362,7 @@ export default function linq(iterable) {
         * @returns {Array}
         */
         toArray: function () {
-            return toArray(this);
+            return buffer(this);
         },
 
         /**
@@ -369,7 +370,18 @@ export default function linq(iterable) {
         * @returns {List}
         */
         toList: function () {
-            return toList(this);
+            return new List(this);
+        },
+
+        /**
+        * Creates a Lookup from an Iterable according to a specified key selector function, a comparer and an element selector function.
+        * @param {Function} keySelector A function to extract a key from each element. eg. function(item)
+        * @param {Function=} valueSelector A transform function to produce a result element value from each element. eg. function(item)
+        * @param {EqualityComparer=} comparer An equality comparer to compare values.
+        * @returns {Lookup}
+        */
+        toLookup: function (keySelector, valueSelector, comparer) {
+            return new Lookup(this, keySelector, valueSelector, comparer);
         },
 
         /**
