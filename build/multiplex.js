@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (August 08, 2016)
+* Version 2.0.0 (August 09, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -885,25 +885,6 @@
     }
 
     /**
-    * Supports an iteration over an object using specified factory method.
-    * @param {Function} factory A function to yield the next item in the sequence.
-    */
-    class Iterator$1 {
-        constructor(factory) {
-            assertType(factory, Function);
-            this.next = factory;
-        }
-
-        get [Symbol.toStringTag]() {
-            return 'Iterator';
-        }
-
-        toString() {
-            return '[Iterator]';
-        }
-    }
-
-    /**
     * Provides a base class for implementations of the EqualityComparer.
     */
     class EqualityComparer {
@@ -1095,7 +1076,7 @@
                 length = slots.length,
                 index = 0;
 
-            return new Iterator$1(() => {
+            return new Iterator(() => {
                 if (++index < length) {
                     return {
                         value: slots[index],
@@ -1439,10 +1420,9 @@
         find(key) {
             let hash = this.comparer.hash(key) & 0x7FFFFFFF,
                 equals = this.comparer.equals,
-                bucket = hash % this.buckets.length,
                 entry = null;
 
-            for (let index = this.buckets[bucket]; index !== undefined;) {
+            for (let index = this.buckets[hash % this.buckets.length]; index !== undefined;) {
                 entry = this.entries[index];
 
                 if (entry.hash === hash && equals(entry.key, key)) {
@@ -1471,7 +1451,7 @@
                         return false;
                     }
 
-                    this.entries[index].value = value;
+                    entry.value = value;
                     return true;
                 }
 
@@ -1599,7 +1579,7 @@
                 size = this.size,
                 entries = this.entries;
 
-            return new Iterator$1(() => {
+            return new Iterator(() => {
                 while (index < size) {
                     entry = entries[index++];
 

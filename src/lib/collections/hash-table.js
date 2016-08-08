@@ -1,4 +1,4 @@
-import Iterator from '../iteration/Iterator';
+import Iterator from '../iteration/iterator';
 import EqualityComparer from './equality-comparer';
 import resize from '../utils/resize';
 
