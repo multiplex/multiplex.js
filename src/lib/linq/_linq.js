@@ -1,5 +1,9 @@
 import mixin from '../utils/mixin';
 import EmptyIterable from '../iteration/iterable-empty';
+import EqualityComparer from '../collections/equality-comparer';
+import List from '../collections/list';
+import Lookup from '../collections/lookup';
+import buffer from '../utils/buffer';
 import range from './range';
 import repeat from './repeat';
 import aggregate from './aggregate';
@@ -31,8 +35,6 @@ import skipWhile from './skip-while';
 import sum from './sum';
 import take from './take';
 import takeWhile from './take-while';
-import toArray from './to-array';
-import toList from './to-list';
 import union from './union';
 import where from './where';
 import zip from './zip';
@@ -123,7 +125,7 @@ export default function linq(iterable) {
         * @param {EqualityComparer=} comparer An equality comparer to compare values.
         * @returns {Boolean}
         */
-        contains(value, comparer = null) {
+        contains(value, comparer = EqualityComparer.defaultComparer) {
             return contains(this, value, comparer);
         },
 
@@ -150,7 +152,7 @@ export default function linq(iterable) {
         * @param {EqualityComparer=} comparer An EqualityComparer to compare values.
         * @returns {Iterable}
         */
-        distinct(comparer = null) {
+        distinct(comparer = EqualityComparer.defaultComparer) {
             return distinct(this, comparer);
         },
 
@@ -169,7 +171,7 @@ export default function linq(iterable) {
         * @param {EqualityComparer=} comparer An EqualityComparer to compare values.
         * @returns {Iterable}
         */
-        except(second, comparer = null) {
+        except(second, comparer = EqualityComparer.defaultComparer) {
             return exceptIntersect(this, second, false, comparer);
         },
 
@@ -206,7 +208,7 @@ export default function linq(iterable) {
         * @param {EqualityComparer=} comparer An EqualityComparer to compare values.
         * @returns {Iterable}
         */
-        intersect(second, comparer = null) {
+        intersect(second, comparer = EqualityComparer.defaultComparer) {
             return exceptIntersect(this, second, true, comparer);
         },
 
@@ -289,7 +291,7 @@ export default function linq(iterable) {
         * @param {EqualityComparer=} comparer The EqualityComparer to compare values.
         * @returns {Boolean}
         */
-        sequenceEqual(second, comparer = null) {
+        sequenceEqual(second, comparer = EqualityComparer.defaultComparer) {
             return sequenceEqual(this, second, comparer);
         },
 
@@ -362,7 +364,7 @@ export default function linq(iterable) {
         * @returns {Array}
         */
         toArray() {
-            return toArray(this);
+            return buffer(this);
         },
 
         /**
@@ -370,7 +372,18 @@ export default function linq(iterable) {
         * @returns {List}
         */
         toList() {
-            return toList(this);
+            return new List(this);
+        },
+
+        /**
+        * Creates a Lookup from an Iterable according to a specified key selector function, a comparer and an element selector function.
+        * @param {Function} keySelector A function to extract a key from each element. eg. function(item)
+        * @param {Function=} valueSelector A transform function to produce a result element value from each element. eg. function(item)
+        * @param {EqualityComparer=} comparer An equality comparer to compare values.
+        * @returns {Lookup}
+        */
+        toLookup(keySelector, valueSelector = null, comparer = EqualityComparer.defaultComparer) {
+            return new Lookup(this, keySelector, valueSelector, comparer);
         },
 
         /**
@@ -379,7 +392,7 @@ export default function linq(iterable) {
         * @param {EqualityComparer=} comparer The EqualityComparer to compare values.
         * @returns {Iterable}
         */
-        union(second, comparer = null) {
+        union(second, comparer = EqualityComparer.defaultComparer) {
             return union(this, second, comparer);
         },
 

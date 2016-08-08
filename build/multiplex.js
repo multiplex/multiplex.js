@@ -864,6 +864,313 @@
         }
     }
 
+    class Grouping extends Collection {
+        constructor(key, elements) {
+            super();
+            this.key = key;
+            this.elements = elements;
+        }
+
+        valueOf() {
+            return this.elements;
+        }
+
+        get [Symbol.toStringTag]() {
+            return 'Grouping';
+        }
+
+        toString() {
+            return '[Grouping]';
+        }
+    }
+
+    /**
+    * Supports an iteration over an object using specified factory method.
+    * @param {Function} factory A function to yield the next item in the sequence.
+    */
+    class Iterator$1 {
+        constructor(factory) {
+            assertType(factory, Function);
+            this.next = factory;
+        }
+
+        get [Symbol.toStringTag]() {
+            return 'Iterator';
+        }
+
+        toString() {
+            return '[Iterator]';
+        }
+    }
+
+    /**
+    * Provides a base class for implementations of the EqualityComparer.
+    */
+    class EqualityComparer {
+        constructor(hashCodeProvider, equality) {
+            assertType(hashCodeProvider, Function);
+            assertType(equality, Function);
+
+            this._hash = hashCodeProvider;
+            this._equals = equality;
+        }
+
+        /**
+        * Determines whether the specified objects are equal.
+        * @param {Object} x The first object of type Object to compare.
+        * @param {Object} y The second object of type Object to compare.
+        * @returns true if the specified objects are equal; otherwise, false.
+        */
+        equals(x, y) {
+            return this._equals(x, y);
+        }
+
+        /**
+        * Returns a hash code for the specified object.
+        * @param {Object} obj The Object for which a hash code is to be returned.
+        * @returns A hash code for the specified object.
+        */
+        hash(obj) {
+            return this._hash(obj);
+        }
+
+        /**
+        * Gets a default sort order comparer for the type specified by the generic argument.
+        */
+        static get defaultComparer() {
+            return defaultEqualityComparer;
+        }
+
+        /**
+        * Gets or creates a new EqualityComparer object.
+        * @param {EqualityComparer|Object} value An EqualityComparer object.
+        * @returns {EqualityComparer}
+        */
+        static from(value) {
+            if (value instanceof EqualityComparer) {
+                return value;
+            }
+
+            else if (value && isFunction(value.hash) && isFunction(value.equals)) {
+                return new EqualityComparer(value.hash, value.equals);
+            }
+
+            else {
+                return defaultEqualityComparer;
+            }
+        }
+
+        get [Symbol.toStringTag]() {
+            return 'EqualityComparer';
+        }
+
+        toString() {
+            return '[EqualityComparer]';
+        }
+    }
+
+
+    const defaultEqualityComparer = new EqualityComparer(hash, equals);
+
+    /// Array of primes larger than: 2 ^ (4 x n)
+    const primes = [17, 67, 257, 1031, 4099, 16411, 65537, 262147, 1048583, 4194319, 16777259];
+
+    function resize(size) {
+        for (let i = 0, len = primes.length; i < len; i++) {
+            if (primes[i] > size) {
+                return primes[i];
+            }
+        }
+
+        return primes[primes.length - 1];
+    }
+
+    const emptyGrouping = new Grouping(null, []);
+
+    class LookupTable {
+        constructor(comparer = EqualityComparer.defaultComparer) {
+            this.size = 0;
+            this.slots = new Array(7);
+            this.buckets = new Array(7);
+            this.comparer = EqualityComparer.from(comparer);
+        }
+
+        add(key, value) {
+            this.getGrouping(key, value, true);
+        }
+
+        get(key) {
+            return this.getGrouping(key, null, false) || emptyGrouping;
+        }
+
+        contains(key) {
+            return this.getGrouping(key, null, false) !== null;
+        }
+
+        getGrouping(key, value, create) {
+            let hash = this.comparer.hash(key) & 0x7FFFFFFF,
+                equals = this.comparer.equals,
+                bucket = hash % this.buckets.length,
+                index = this.buckets[bucket],
+                grouping = null,
+                slot = null;
+
+
+            while (index !== undefined) {
+                slot = this.slots[index];
+
+                if (slot.hash === hash && equals(slot.grouping.key, key)) {
+                    grouping = slot.grouping;
+                    break;
+                }
+
+                index = slot.next;
+            }
+
+
+            if (create === true) {
+                if (grouping === null) {
+                    if (this.size === this.slots.length) {
+                        this.resize();
+                        bucket = hash % this.buckets.length;
+                    }
+
+                    index = this.size;
+                    this.size++;
+
+                    grouping = new Grouping(key, [value]);
+                    this.slots[index] = new Slot(hash, grouping, this.buckets[bucket]);
+                    this.buckets[bucket] = index;
+                }
+                else {
+                    grouping.elements.push(value);
+                }
+            }
+
+            return grouping;
+        }
+
+        resize() {
+            let size = this.size,
+                newSize = resize(size),
+                slot = null,
+                bucket = 0;
+
+            this.slots.length = newSize;
+            this.buckets.length = newSize;
+
+
+            // rehash values & update buckets and slots
+            for (let index = 0; index < size; index++) {
+                slot = this.slots[index];
+                bucket = slot.hash % newSize;
+                slot.next = this.buckets[bucket];
+                this.buckets[bucket] = index;
+            }
+        }
+
+        keys() {
+            var arr = new Array(this.size),
+                index = 0;
+
+            for (let i = 0, count = this.slots.length; i < count; i++) {
+                arr[index++] = this.slots[i].grouping.key;
+            }
+
+            return arr;
+        }
+
+        static create(source, keySelector, comparer = EqualityComparer.defaultComparer) {
+            let lookup = new LookupTable(comparer);
+
+            for (let element of source) {
+                lookup.add(keySelector(element), element);
+            }
+
+            return lookup;
+        }
+
+        [Symbol.iterator]() {
+            let slots = this.slots,
+                length = slots.length,
+                index = 0;
+
+            return new Iterator$1(() => {
+                if (++index < length) {
+                    return {
+                        value: slots[index],
+                        done: false
+                    };
+                }
+
+                return {
+                    done: true
+                };
+            });
+        }
+    }
+
+
+    class Slot {
+        constructor(hash, grouping, next) {
+            this.hash = hash;
+            this.next = next;
+            this.grouping = grouping;
+        }
+    }
+
+    function assertNotNull(obj) {
+        if (obj === null || obj === undefined) {
+            error('Value cannot be null.');
+        }
+    }
+
+    class Lookup extends Collection {
+        constructor(source, keySelector, elementSelector = null, comparer = EqualityComparer.defaultComparer) {
+            assertNotNull(source);
+            assertType(keySelector, Function);
+
+            if (elementSelector) {
+                assertType(elementSelector, Function);
+            }
+
+            super();
+            this.table = new LookupTable(comparer);
+
+            for (let element of source) {
+                this.table.add(keySelector(element), elementSelector ? elementSelector(element) : element);
+            }
+        }
+
+        get(key) {
+            return this.table.get(key);
+        }
+
+        contains(key) {
+            return this.table.contains(key);
+        }
+
+        count() {
+            return this.table.size;
+        }
+
+        valueOf() {
+            this.table.keys();
+        }
+
+        [Symbol.iterator]() {
+            return this.table[Symbol.iterator]();
+        }
+
+        get [Symbol.toStringTag]() {
+            return 'Lookup';
+        }
+
+        toString() {
+            return '[Lookup]';
+        }
+    }
+
     function mixin(obj, properties, attributes) {
         attributes = attributes || {};
 
@@ -879,6 +1186,13 @@
         }
 
         return obj;
+    }
+
+    class List extends Collection {
+        constructor(value) {
+            super();
+            this._value = value;
+        }
     }
 
     function rangeIterator(start, count) {
@@ -914,12 +1228,6 @@
                 yield element;
             }
         });
-    }
-
-    function assertNotNull(obj) {
-        if (obj === null || obj === undefined) {
-            error('Value cannot be null.');
-        }
     }
 
     function aggregateIterator(source, seed, func, resultSelector = item => item) {
@@ -1016,75 +1324,6 @@
         });
     }
 
-    /**
-    * Provides a base class for implementations of the EqualityComparer.
-    */
-    class EqualityComparer {
-        constructor(hashCodeProvider, equality) {
-            assertType(hashCodeProvider, Function);
-            assertType(equality, Function);
-
-            this._hash = hashCodeProvider;
-            this._equals = equality;
-        }
-
-        /**
-        * Determines whether the specified objects are equal.
-        * @param {Object} x The first object of type Object to compare.
-        * @param {Object} y The second object of type Object to compare.
-        * @returns true if the specified objects are equal; otherwise, false.
-        */
-        equals(x, y) {
-            return this._equals(x, y);
-        }
-
-        /**
-        * Returns a hash code for the specified object.
-        * @param {Object} obj The Object for which a hash code is to be returned.
-        * @returns A hash code for the specified object.
-        */
-        hash(obj) {
-            return this._hash(obj);
-        }
-
-        /**
-        * Gets a default sort order comparer for the type specified by the generic argument.
-        */
-        static get defaultComparer() {
-            return defaultEqualityComparer;
-        }
-
-        /**
-        * Gets or creates a new EqualityComparer object.
-        * @param {EqualityComparer|Object} value An EqualityComparer object.
-        * @returns {EqualityComparer}
-        */
-        static from(value) {
-            if (value instanceof EqualityComparer) {
-                return value;
-            }
-
-            else if (value && isFunction(value.hash) && isFunction(value.equals)) {
-                return new EqualityComparer(value.hash, value.equals);
-            }
-
-            else {
-                return defaultEqualityComparer;
-            }
-        }
-
-        get [Symbol.toStringTag]() {
-            return 'EqualityComparer';
-        }
-
-        toString() {
-            return '[EqualityComparer]';
-        }
-    }
-
-
-    const defaultEqualityComparer = new EqualityComparer(hash, equals);
-
     function containsIterator(source, value, comparer = null) {
         assertNotNull(source);
         comparer = EqualityComparer.from(comparer);
@@ -1167,117 +1406,226 @@
         });
     }
 
-    /// Array of primes larger than: 2 ^ (4 x n)
-    const primes = [17, 67, 257, 1031, 4099, 16411, 65537, 262147, 1048583, 4194319, 16777259];
-
-    function resize(size) {
-        for (let i = 0, len = primes.length; i < len; i++) {
-            if (primes[i] > size) {
-                return primes[i];
-            }
-        }
-
-        return primes[primes.length - 1];
-    }
-
-    class Set extends Collection {
+    class HashTable {
         constructor(comparer = EqualityComparer.defaultComparer) {
-            super();
-            this.totalCount = 0;
-            this.slots = new Array(7);
-            this.buckets = new Array(7);
+            this.initialize();
             this.comparer = EqualityComparer.from(comparer);
         }
 
-        add(value) {
-            return !this.find(value, true);
+        initialize() {
+            this.size = 0;                      // total number of entries, including release entries (freeCount)
+            this.freeIndex = undefined;         // next free index in the bucket list
+            this.freeCount = 0;                 // total number of release entries
+            this.buckets = new Array(7);        // bucket list. index: hash, value: entry index;
+            this.entries = new Array(7);        // entry list. next: index of the next bucket;
         }
 
-        contains(value) {
-            return this.find(value, false);
+        add(key, value = null) {
+            return this.insert(key, value, true);
+        }
+
+        clear() {
+            this.initialize();
+        }
+
+        contains(key) {
+            return this.find(key) !== -1;
         }
 
         count() {
-            return this.totalCount;
+            return this.size - this.freeCount;
         }
 
-        find(value, add) {
-            let hash = this.comparer.hash(value) & 0x7FFFFFFF,
+        find(key) {
+            let hash = this.comparer.hash(key) & 0x7FFFFFFF,
                 equals = this.comparer.equals,
                 bucket = hash % this.buckets.length,
-                index = this.buckets[bucket],
-                slot = null;
+                entry = null;
+
+            for (let index = this.buckets[bucket]; index !== undefined;) {
+                entry = this.entries[index];
+
+                if (entry.hash === hash && equals(entry.key, key)) {
+                    return index;
+                }
+
+                index = entry.next;
+            }
+
+            return -1;
+        }
+
+        insert(key, value, add) {
+            let hash = this.comparer.hash(key) & 0x7FFFFFFF,
+                equals = this.comparer.equals,
+                bucket = hash % this.buckets.length,
+                entry = null;
 
 
-            while (index !== undefined) {
-                slot = this.slots[index];
+            // check for item existance, freed entries have undefined hash-code value and do not need enumeration
+            for (let index = this.buckets[bucket]; index !== undefined;) {
+                entry = this.entries[index];
 
-                if (slot.hash === hash && equals(slot.value, value)) {
+                if (entry.hash === hash && equals(entry.key, key)) {
+                    if (add) {
+                        return false;
+                    }
+
+                    this.entries[index].value = value;
                     return true;
                 }
 
-                index = slot.next;
+                index = entry.next;
             }
 
 
-            if (add) {
-                if (this.totalCount === this.slots.length) {
+
+            // item with the same key does not exists, add item
+
+            let index = 0;
+
+            // there's already a free index
+            if (this.freeCount > 0) {
+                index = this.freeIndex;                         // consume free index
+                this.freeIndex = this.entries[index].next;      // save new free index
+                this.freeCount--;                               // update number of free entries
+            }
+            else {
+                if (this.size === this.buckets.length) {
                     this.resize();
                     bucket = hash % this.buckets.length;
                 }
 
-                index = this.totalCount;
-                this.totalCount++;
-
-                this.slots[index] = new Slot(hash, value, this.buckets[bucket]);
-                this.buckets[bucket] = index;
+                // find a new free index
+                index = this.size;
+                this.size++;
             }
 
-            return false;
+            this.entries[index] = new Entry(hash, this.buckets[bucket], key, value);
+            this.buckets[bucket] = index;
+
+            return true;
         }
 
-        resize() {
-            let count = this.totalCount,
-                newSize = resize(count),
-                slot = null,
-                bucket = 0;
-
-            this.slots.length = newSize;
-            this.buckets.length = newSize;
-
-
-            // rehash values & update buckets and slots
-            for (let index = 0; index < count; index++) {
-                slot = this.slots[index];
-                bucket = slot.hash % newSize;
-                slot.next = this.buckets[bucket];
-                this.buckets[bucket] = index;
-            }
-        }
-
-        valueOf() {
-            var arr = new Array(this.totalCount),
-                slot = null,
+        keys() {
+            let arr = new Array(this.count()),
+                entry = null,
                 index = 0;
 
-            for (let i = 0, count = this.slots.length; i < count; i++) {
-                slot = this.slots[i];
+            for (let i = 0, count = this.size; i < count; i++) {
+                entry = this.entries[i];
 
-                if (slot.hash !== undefined) {
-                    arr[index++] = slot.value;
+                if (entry.hash !== undefined) {
+                    arr[index++] = entry.key;
                 }
             }
 
             return arr;
         }
+
+        resize() {
+            let size = this.size,
+                newSize = resize(size),
+                entry = null,
+                bucket = 0;
+
+            this.buckets.length = newSize;          // expand buckets
+            this.entries.length = newSize;          // expand entries
+
+
+            // rehash values & update buckets and entries
+            for (let index = 0; index < size; index++) {
+                entry = this.entries[index];
+
+                // freed entries have undefined hashCode value and do not need rehash
+                if (entry.hash !== undefined) {
+                    bucket = entry.hash % newSize;          // rehash
+                    entry.next = this.buckets[bucket];      // update entry's next index in the bucket chain
+                    this.buckets[bucket] = index;           // update bucket index
+                }
+            }
+        }
+
+        remove(key) {
+            let equals = this.comparer.equals,
+                hash = this.comparer.hash(key) & 0x7FFFFFFF,    // hash-code of the key
+                bucket = hash % this.buckets.length,            // bucket index
+                last,
+                entry;
+
+            // freed entries have undefined hash-code value and do not need enumeration
+            for (let index = this.buckets[bucket]; index !== undefined;) {
+                entry = this.entries[index];
+
+                if (entry.hash === hash && equals(entry.key, key)) {
+                    // last item in the chained bucket list
+                    if (last === undefined) {
+                        this.buckets[bucket] = entry.next;
+                    }
+                    else {
+                        this.entries[last].next = entry.next;
+                    }
+
+                    entry.hash = undefined;         // release the entry
+                    entry.next = this.freeIndex;    // save previous free index
+                    entry.key = null;
+                    entry.value = null;
+
+                    this.freeIndex = index;         // save new free index
+                    this.freeCount++;               // update number of free entries
+                    return true;
+                }
+
+                last = index;
+                index = entry.next;
+            }
+
+            // item does not exist
+            return false;
+        }
+
+        get(key) {
+            let index = this.find(key);
+            return index === -1 ? undefined : this.entries[index].value;
+        }
+
+        set(key, value) {
+            this.insert(key, value, false);
+        }
+
+        [Symbol.iterator]() {
+            let index = 0,
+                entry = null,
+                size = this.size,
+                entries = this.entries;
+
+            return new Iterator$1(() => {
+                while (index < size) {
+                    entry = entries[index++];
+
+                    // freed entries have undefined as hashCode value and do not enumerate
+                    if (entry.hash !== undefined) {
+                        return {
+                            value: [entry.key, entry.value],
+                            done: false
+                        };
+                    }
+                }
+
+                return {
+                    done: true
+                };
+            });
+        }
     }
 
 
-    class Slot {
-        constructor(hash, value, next) {
-            this.hash = hash;
-            this.next = next;
-            this.value = value;
+    class Entry {
+        constructor(hash, next, key, value = null) {
+            this.hash = hash;       // item's key hash-code
+            this.next = next;       // index of the next bucket in the chained bucket list
+            this.key = key;         // item's key
+            this.value = value;     // item's value
         }
     }
 
@@ -1285,10 +1633,10 @@
         assertNotNull(source);
 
         return new Iterable(function* () {
-            let set = new Set(comparer);
+            let table = new HashTable(comparer);
 
             for (let element in source) {
-                if (set.add(element)) {
+                if (table.add(element)) {
                     yield element;
                 }
             }
@@ -1345,14 +1693,14 @@
         let result = intersect ? true : false;
 
         return new Iterable(function* () {
-            let set = new Set(comparer);
+            let table = new HashTable(comparer);
 
             for (let element in second) {
-                set.add(element);
+                table.add(element);
             }
 
             for (let element in first) {
-                if (set.contains(element) === result) {
+                if (table.contains(element) === result) {
                     yield element;
                 }
             }
@@ -1538,7 +1886,7 @@
         });
     }
 
-    function sequenceEqualIterator(first, second, comparer = null) {
+    function sequenceEqualIterator(first, second, comparer = EqualityComparer.defaultComparer) {
         assertNotNull(first);
         assertNotNull(second);
         comparer = EqualityComparer.from(comparer);
@@ -1720,38 +2068,21 @@
         });
     }
 
-    function toArray(source) {
-        assertNotNull(source);
-        return buffer(source);
-    }
-
-    class List extends Collection {
-        constructor(value) {
-            super();
-            this._value = value;
-        }
-    }
-
-    function toList(source) {
-        assertNotNull(source);
-        return new List(source);
-    }
-
     function unionIterator(first, second, comparer = null) {
         assertNotNull(first);
         assertNotNull(second);
 
         return new Iterable(function* () {
-            let set = new Set(comparer);
+            let table = new HashTable(comparer);
 
             for (let element of first) {
-                if (set.add(element)) {
+                if (table.add(element)) {
                     yield element;
                 }
             }
 
             for (let element of second) {
-                if (set.add(element)) {
+                if (table.add(element)) {
                     yield element;
                 }
             }
@@ -1860,7 +2191,7 @@
             * @param {EqualityComparer=} comparer An equality comparer to compare values.
             * @returns {Boolean}
             */
-            contains(value, comparer = null) {
+            contains(value, comparer = EqualityComparer.defaultComparer) {
                 return containsIterator(this, value, comparer);
             },
 
@@ -1887,7 +2218,7 @@
             * @param {EqualityComparer=} comparer An EqualityComparer to compare values.
             * @returns {Iterable}
             */
-            distinct(comparer = null) {
+            distinct(comparer = EqualityComparer.defaultComparer) {
                 return distinctIterator(this, comparer);
             },
 
@@ -1906,7 +2237,7 @@
             * @param {EqualityComparer=} comparer An EqualityComparer to compare values.
             * @returns {Iterable}
             */
-            except(second, comparer = null) {
+            except(second, comparer = EqualityComparer.defaultComparer) {
                 return exceptIntersectIterator(this, second, false, comparer);
             },
 
@@ -1943,7 +2274,7 @@
             * @param {EqualityComparer=} comparer An EqualityComparer to compare values.
             * @returns {Iterable}
             */
-            intersect(second, comparer = null) {
+            intersect(second, comparer = EqualityComparer.defaultComparer) {
                 return exceptIntersectIterator(this, second, true, comparer);
             },
 
@@ -2026,7 +2357,7 @@
             * @param {EqualityComparer=} comparer The EqualityComparer to compare values.
             * @returns {Boolean}
             */
-            sequenceEqual(second, comparer = null) {
+            sequenceEqual(second, comparer = EqualityComparer.defaultComparer) {
                 return sequenceEqualIterator(this, second, comparer);
             },
 
@@ -2099,7 +2430,7 @@
             * @returns {Array}
             */
             toArray() {
-                return toArray(this);
+                return buffer(this);
             },
 
             /**
@@ -2107,7 +2438,18 @@
             * @returns {List}
             */
             toList() {
-                return toList(this);
+                return new List(this);
+            },
+
+            /**
+            * Creates a Lookup from an Iterable according to a specified key selector function, a comparer and an element selector function.
+            * @param {Function} keySelector A function to extract a key from each element. eg. function(item)
+            * @param {Function=} valueSelector A transform function to produce a result element value from each element. eg. function(item)
+            * @param {EqualityComparer=} comparer An equality comparer to compare values.
+            * @returns {Lookup}
+            */
+            toLookup(keySelector, valueSelector = null, comparer = EqualityComparer.defaultComparer) {
+                return new Lookup(this, keySelector, valueSelector, comparer);
             },
 
             /**
@@ -2116,7 +2458,7 @@
             * @param {EqualityComparer=} comparer The EqualityComparer to compare values.
             * @returns {Iterable}
             */
-            union(second, comparer = null) {
+            union(second, comparer = EqualityComparer.defaultComparer) {
                 return unionIterator(this, second, comparer);
             },
 
@@ -2170,6 +2512,7 @@
     mx.Iterable = Iterable;
     mx.Iterator = Iterator;
     mx.Collection = Collection;
+    mx.Lookup = Lookup;
     mx.version = '2.0.0';
 
     return mx;
