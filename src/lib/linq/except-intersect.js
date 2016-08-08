@@ -1,5 +1,5 @@
 import Iterable from '../iteration/iterable';
-import Set from '../collections/set';
+import HashTable from '../collections/hash-table';
 import assertNotNull from '../utils/assert-not-null';
 
 export default function exceptIntersectIterator(first, second, intersect = true, comparer = null) {
@@ -9,14 +9,14 @@ export default function exceptIntersectIterator(first, second, intersect = true,
     let result = intersect ? true : false;
 
     return new Iterable(function* () {
-        let set = new Set(comparer);
+        let table = new HashTable(comparer);
 
         for (let element in second) {
-            set.add(element);
+            table.add(element);
         }
 
         for (let element in first) {
-            if (set.contains(element) === result) {
+            if (table.contains(element) === result) {
                 yield element;
             }
         }

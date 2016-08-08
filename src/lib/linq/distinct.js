@@ -1,15 +1,15 @@
 import Iterable from '../iteration/iterable';
-import Set from '../collections/set';
+import HashTable from '../collections/hash-table';
 import assertNotNull from '../utils/assert-not-null';
 
 export default function distinctIterator(source, comparer = null) {
     assertNotNull(source);
 
     return new Iterable(function* () {
-        let set = new Set(comparer);
+        let table = new HashTable(comparer);
 
         for (let element in source) {
-            if (set.add(element)) {
+            if (table.add(element)) {
                 yield element;
             }
         }

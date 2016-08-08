@@ -1,5 +1,5 @@
 import Iterable from '../iteration/iterable';
-import Set from '../collections/set';
+import HashTable from '../collections/hash-table';
 import assertNotNull from '../utils/assert-not-null';
 
 export default function unionIterator(first, second, comparer = null) {
@@ -7,16 +7,16 @@ export default function unionIterator(first, second, comparer = null) {
     assertNotNull(second);
 
     return new Iterable(function* () {
-        let set = new Set(comparer);
+        let table = new HashTable(comparer);
 
         for (let element of first) {
-            if (set.add(element)) {
+            if (table.add(element)) {
                 yield element;
             }
         }
 
         for (let element of second) {
-            if (set.add(element)) {
+            if (table.add(element)) {
                 yield element;
             }
         }

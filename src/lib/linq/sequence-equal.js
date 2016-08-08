@@ -2,7 +2,7 @@ import iterator from '../iteration/iterator-factory';
 import assertNotNull from '../utils/assert-not-null';
 import EqualityComparer from '../collections/equality-comparer';
 
-export default function sequenceEqualIterator(first, second, comparer = null) {
+export default function sequenceEqualIterator(first, second, comparer = EqualityComparer.defaultComparer) {
     assertNotNull(first);
     assertNotNull(second);
     comparer = EqualityComparer.from(comparer);
