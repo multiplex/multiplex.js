@@ -1,5 +1,5 @@
 import Grouping from './grouping';
-import Iterator from '../iteration/Iterator';
+import Iterator from '../iteration/iterator';
 import EqualityComparer from './equality-comparer';
 import iteratorSymbol from '../iteration/iterator-symbol';
 import resize from '../utils/resize';

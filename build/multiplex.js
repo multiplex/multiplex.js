@@ -956,21 +956,6 @@
     });
 
     /**
-    * Supports an iteration over an object using specified factory method.
-    * @param {Function} factory A function to yield the next item in the sequence.
-    */
-    function Iterator$1(factory) {
-        assertType(factory, Function);
-        this.next = factory;
-    }
-
-    mixin(Iterator$1.prototype, {
-        toString: function () {
-            return '[Iterator]';
-        }
-    });
-
-    /**
     * Provides a base class for implementations of the EqualityComparer.
     */
     function EqualityComparer(hashCodeProvider, equality) {
@@ -1205,7 +1190,7 @@
             length = slots.length,
             index = 0;
 
-        return new Iterator$1(function () {
+        return new Iterator(function () {
             if (++index < length) {
                 return {
                     value: slots[index],
@@ -1768,7 +1753,7 @@
             size = this.size,
             entries = this.entries;
 
-        return new Iterator$1(function () {
+        return new Iterator(function () {
             while (index < size) {
                 entry = entries[index++];
 
