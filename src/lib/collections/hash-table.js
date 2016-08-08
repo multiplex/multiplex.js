@@ -1,50 +1,77 @@
-import Collection from './collection';
-import HashTableIterator from './hash-table-iterator';
+import Iterator from '../iteration/Iterator';
 import EqualityComparer from './equality-comparer';
 import iteratorSymbol from '../iteration/iterator-symbol';
 import resize from '../utils/resize';
 import mixin from '../utils/mixin';
-import extend from '../utils/extend';
 
-
-export default function HashTable(capacity, comparer) {
-    Collection.call(this);
-    this.initialize(capacity || 0);
+export default function HashTable(comparer) {
+    this.initialize();
     this.comparer = EqualityComparer.from(comparer);
 }
 
-extend(HashTable, Collection);
-
 
 mixin(HashTable.prototype, {
-    initialize: function (size) {
-        size = resize(size);
-        this.totalCount = 0;                // total number of entries, including release entries (freeCount)
+    initialize: function () {
+        this.size = 0;                      // total number of entries, including release entries (freeCount)
         this.freeIndex = undefined;         // next free index in the bucket list
         this.freeCount = 0;                 // total number of release entries
-        this.buckets = new Array(size);     // bucket list. index: hash, value: entry index;
-        this.entries = new Array(size);     // entry list. next: index of the next bucket;
+        this.buckets = new Array(7);        // bucket list. index: hash, value: entry index;
+        this.entries = new Array(7);        // entry list. next: index of the next bucket;
     },
 
-    add: function (key, value, overwrite) {
-        var hash = this.comparer.hash(key) & 0x7FFFFFFF,       // hash code of the key
+    add: function (key, value) {
+        return this.insert(key, value, true);
+    },
+
+    clear: function () {
+        this.initialize();
+    },
+
+    contains: function (key) {
+        return this.find(key) !== -1;
+    },
+
+    count: function () {
+        return this.size - this.freeCount;
+    },
+
+    find: function (key) {
+        var hash = this.comparer.hash(key) & 0x7FFFFFFF,
             equals = this.comparer.equals,
-            bucket = hash % this.buckets.length,              // bucket index
+            entry = null;
+
+        for (var index = this.buckets[hash % this.buckets.length]; index !== undefined;) {
+            entry = this.entries[index];
+
+            if (entry.hash === hash && equals(entry.key, key)) {
+                return index;
+            }
+
+            index = entry.next;
+        }
+
+        return -1;
+    },
+
+    insert: function (key, value, add) {
+        var hash = this.comparer.hash(key) & 0x7FFFFFFF,
+            equals = this.comparer.equals,
+            bucket = hash % this.buckets.length,
             entry = null,
             index = 0;
 
 
         // check for item existance, freed entries have undefined hash-code value and do not need enumeration
-        for (var index = this.buckets[bucket]; index !== undefined;) {
+        for (index = this.buckets[bucket]; index !== undefined;) {
             entry = this.entries[index];
 
             if (entry.hash === hash && equals(entry.key, key)) {
-                if (overwrite) {
-                    entry.value = value;
-                    return true;
+                if (add) {
+                    return false;
                 }
 
-                return false;
+                entry.value = value;
+                return true;
             }
 
             index = entry.next;
@@ -63,14 +90,14 @@ mixin(HashTable.prototype, {
             this.freeCount--;                               // update number of free entries
         }
         else {
-            if (this.totalCount === this.buckets.length) {
+            if (this.size === this.buckets.length) {
                 this.resize();
                 bucket = hash % this.buckets.length;
             }
 
             // find a new free index
-            index = this.totalCount;
-            this.totalCount++;
+            index = this.size;
+            this.size++;
         }
 
         this.entries[index] = new Entry(hash, this.buckets[bucket], key, value);
@@ -79,25 +106,13 @@ mixin(HashTable.prototype, {
         return true;
     },
 
-    clear: function () {
-        this.initialize(0);
-    },
-
-    contains: function (key) {
-        return this.indexOf(key) !== -1;
-    },
-
-    count: function () {
-        return this.totalCount - this.freeCount;
-    },
-
     keys: function () {
         var arr = new Array(this.count()),
             entries = this.entries,
             entry = null,
             index = 0;
 
-        for (var i = 0, count = this.totalCount; i < count; i++) {
+        for (var i = 0, count = this.size; i < count; i++) {
             entry = entries[i];
 
             if (entry.hash !== undefined) {
@@ -108,29 +123,9 @@ mixin(HashTable.prototype, {
         return arr;
     },
 
-    indexOf: function (key) {
-        var hash = this.comparer.hash(key) & 0x7FFFFFFF,
-            equals = this.comparer.equals,
-            index = this.buckets[hash % this.buckets.length],
-            entry = null;
-
-        // freed entries are undefined and do not need enumeration
-        while (index !== undefined) {
-            entry = this.entries[index];
-
-            if (entry.hash === hash && equals(entry.key, key)) {
-                return index;
-            }
-
-            index = entry.next;
-        }
-
-        // key not found
-        return -1;
-    },
-
     resize: function () {
-        var newSize = resize(this.totalCount),
+        var size = this.size,
+            newSize = resize(size),
             entry = null,
             bucket = 0;
 
@@ -139,7 +134,7 @@ mixin(HashTable.prototype, {
 
 
         // rehash values & update buckets and entries
-        for (var index = 0; index < this.totalCount; index++) {
+        for (var index = 0; index < size; index++) {
             entry = this.entries[index];
 
             // freed entries have undefined hashCode value and do not need rehash
@@ -190,22 +185,39 @@ mixin(HashTable.prototype, {
     },
 
     get: function (key) {
-        var index = this.indexOf(key);
+        var index = this.find(key);
         return index === -1 ? undefined : this.entries[index].value;
     },
 
     set: function (key, value) {
-        this.add(key, value, true);
-    },
-
-    valueOf: function () {
-        this.keys();
+        this.insert(key, value, false);
     }
 });
 
 
 HashTable.prototype[iteratorSymbol] = function () {
-    return new HashTableIterator(this);
+    var index = 0,
+        entry = null,
+        size = this.size,
+        entries = this.entries;
+
+    return new Iterator(function () {
+        while (index < size) {
+            entry = entries[index++];
+
+            // freed entries have undefined as hashCode value and do not enumerate
+            if (entry.hash !== undefined) {
+                return {
+                    value: [entry.key, entry.value],
+                    done: false
+                };
+            }
+        }
+
+        return {
+            done: true
+        };
+    });
 };
 
 

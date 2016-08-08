@@ -1,7 +1,7 @@
 import Iterable from '../iteration/iterable';
 import Iterator from '../iteration/iterator';
 import iterator from '../iteration/iterator-factory';
-import Set from '../collections/set';
+import HashTable from '../collections/hash-table';
 import assertNotNull from '../utils/assert-not-null';
 
 export default function distinctIterator(source, comparer) {
@@ -9,12 +9,12 @@ export default function distinctIterator(source, comparer) {
 
     return new Iterable(function () {
         var it = iterator(source),
-            set = new Set(comparer),
+            table = new HashTable(comparer),
             next;
 
         return new Iterator(function () {
             if (!(next = it.next()).done) {
-                if (set.add(next.value)) {
+                if (table.add(next.value)) {
                     return {
                         value: next.value,
                         done: false
