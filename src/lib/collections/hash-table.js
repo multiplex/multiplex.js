@@ -50,6 +50,17 @@ export default class HashTable {
         return -1;
     }
 
+    forEach(callback, target, thisArg = null) {
+        for (let element in this) {
+            if (thisArg) {
+                callback.call(thisArg, element[0], element[1], target);
+            }
+            else {
+                callback(element[0], element[1], target);
+            }
+        }
+    }
+
     insert(key, value, add) {
         let hash = this.comparer.hash(key) & 0x7FFFFFFF,
             equals = this.comparer.equals,
@@ -189,19 +200,27 @@ export default class HashTable {
     }
 
     [Symbol.iterator]() {
+        return new HashTableIterator(this);
+    }
+}
+
+
+export class HashTableIterator extends Iterator {
+    // type 0: key, 1: value, -1: [key, value]
+    constructor(table, type = -1) {
         let index = 0,
             entry = null,
-            size = this.size,
-            entries = this.entries;
+            size = table.size,
+            entries = table.entries;
 
-        return new Iterator(() => {
+        super(() => {
             while (index < size) {
                 entry = entries[index++];
 
                 // freed entries have undefined as hashCode value and do not enumerate
                 if (entry.hash !== undefined) {
                     return {
-                        value: [entry.key, entry.value],
+                        value: type === -1 ? [entry.key, entry.value] : (type === 1 ? entry.key : entry.value),
                         done: false
                     };
                 }
