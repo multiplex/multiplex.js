@@ -1734,22 +1734,35 @@
         }
     }
 
-    function groupIterator(source, keySelector, elementSelectorOrComparer = null, resultSelectorOrComparer = null, comparer = null) {
+    function groupIterator(source, keySelector, elementSelector = null, resultSelector = null, comparer = null) {
         assertNotNull(source);
         assertType(keySelector, Function);
 
-        let args = arguments.length,
-            elementSelector = isFunction(elementSelectorOrComparer) ? elementSelectorOrComparer : null,
-            resultSelector = isFunction(resultSelectorOrComparer) ? resultSelectorOrComparer : null;
-
-        comparer = args === 3 && elementSelector === null ? elementSelectorOrComparer :
-            (args === 4 && resultSelector === null ? resultSelectorOrComparer : comparer);
-
         return new Iterable(function* () {
-            let lookup = new Lookup(source, keySelector, elementSelector);
+            let lookup = new Lookup(source, keySelector, elementSelector, comparer);
 
             for (let element of lookup) {
                 yield resultSelector ? resultSelector(element.key, element) : element;
+            }
+        });
+    }
+
+    function joinIterator(outer, inner, outerKeySelector, innerKeySelector, resultSelector, comparer = null) {
+        assertNotNull(inner);
+        assertType(outerKeySelector, Function);
+        assertType(innerKeySelector, Function);
+        assertType(resultSelector, Function);
+
+        return new Iterable(function* () {
+            let lookup = new Lookup(inner, innerKeySelector, null, comparer),
+                elements = null;
+
+            for (let element in outer) {
+                elements = lookup.get(outerKeySelector(element)).elements;
+
+                for (let i = 0, len = elements.length; i < len; i++) {
+                    yield resultSelector(element, elements[i]);
+                }
             }
         });
     }
@@ -2277,7 +2290,14 @@
             * @returns {Iterable}
             */
             groupBy: function (keySelector, elementSelectorOrComparer = null, resultSelectorOrComparer = null, comparer = EqualityComparer.defaultComparer) {
-                return groupIterator(this, keySelector, elementSelectorOrComparer, resultSelectorOrComparer, comparer);
+                let args = arguments.length,
+                    elementSelector = isFunction(elementSelectorOrComparer) ? elementSelectorOrComparer : undefined,
+                    resultSelector = isFunction(resultSelectorOrComparer) ? resultSelectorOrComparer : undefined;
+
+                comparer = args === 3 && elementSelector === undefined ? elementSelectorOrComparer :
+                    (args === 4 && resultSelector === undefined ? resultSelectorOrComparer : comparer);
+
+                return groupIterator(this, keySelector, elementSelector, resultSelector, comparer);
             },
 
             /**
@@ -2288,6 +2308,19 @@
             */
             intersect(second, comparer = EqualityComparer.defaultComparer) {
                 return exceptIntersectIterator(this, second, true, comparer);
+            },
+
+            /**
+            * Correlates the elements of two sequences based on matching keys. A specified EqualityComparer is used to compare keys.
+            * @param {Iterable} inner The sequence to join to the current sequence.
+            * @param {Function} outerKeySelector A function to extract the join key from each element of the first sequence. eg. function(outer)
+            * @param {Function} innerKeySelector A function to extract the join key from each element of the second sequence. function(inner)
+            * @param {Function} resultSelector A function to create a result element from an element from the first sequence and a collection of matching elements from the second sequence. eg. function(outer, inner)
+            * @param {EqualityComparer=} comparer An equality comparer to compare values.
+            * @returns {Iterable}
+            */
+            join: function (inner, outerKeySelector, innerKeySelector, resultSelector, comparer) {
+                return joinIterator(this, inner, outerKeySelector, innerKeySelector, comparer);
             },
 
             /**
