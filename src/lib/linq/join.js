@@ -5,7 +5,7 @@ import Lookup from '../collections/lookup';
 import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
 
-export default function groupIterator(outer, inner, outerKeySelector, innerKeySelector, resultSelector, comparer) {
+export default function joinIterator(outer, inner, outerKeySelector, innerKeySelector, resultSelector, comparer) {
     assertNotNull(inner);
     assertType(outerKeySelector, Function);
     assertType(innerKeySelector, Function);
