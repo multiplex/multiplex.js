@@ -1747,6 +1747,21 @@
         });
     }
 
+    function groupJoinIterator(outer, inner, outerKeySelector, innerKeySelector, resultSelector, comparer = null) {
+        assertNotNull(inner);
+        assertType(outerKeySelector, Function);
+        assertType(innerKeySelector, Function);
+        assertType(resultSelector, Function);
+
+        return new Iterable(function* () {
+            let lookup = new Lookup(inner, innerKeySelector, null, comparer);
+
+            for (let element in outer) {
+                yield resultSelector(element, lookup.get(outerKeySelector(element)));
+            }
+        });
+    }
+
     function joinIterator(outer, inner, outerKeySelector, innerKeySelector, resultSelector, comparer = null) {
         assertNotNull(inner);
         assertType(outerKeySelector, Function);
@@ -2289,7 +2304,7 @@
             * @param {EqualityComparer=} comparer An equality comparer to compare values.
             * @returns {Iterable}
             */
-            groupBy: function (keySelector, elementSelectorOrComparer = null, resultSelectorOrComparer = null, comparer = EqualityComparer.defaultComparer) {
+            groupBy(keySelector, elementSelectorOrComparer = null, resultSelectorOrComparer = null, comparer = EqualityComparer.defaultComparer) {
                 let args = arguments.length,
                     elementSelector = isFunction(elementSelectorOrComparer) ? elementSelectorOrComparer : undefined,
                     resultSelector = isFunction(resultSelectorOrComparer) ? resultSelectorOrComparer : undefined;
@@ -2298,6 +2313,19 @@
                     (args === 4 && resultSelector === undefined ? resultSelectorOrComparer : comparer);
 
                 return groupIterator(this, keySelector, elementSelector, resultSelector, comparer);
+            },
+
+            /**
+            * Correlates the elements of two sequences based on key equality and groups the results. A specified EqualityComparer is used to compare keys.
+            * @param {Iterable} inner The sequence to join to the current sequence.
+            * @param {Function} outerKeySelector A function to extract the join key from each element of the first sequence. eg. function(outer)
+            * @param {Function} innerKeySelector A function to extract the join key from each element of the second sequence. function(inner)
+            * @param {Function} resultSelector A function to create a result element from an element from the first sequence and a collection of matching elements from the second sequence. eg. function(outer, inner)
+            * @param {EqualityComparer=} comparer An equality comparer to compare values.
+            * @returns {Iterable}
+            */
+            groupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, comparer = EqualityComparer.defaultComparer) {
+                return groupJoinIterator(this, inner, outerKeySelector, innerKeySelector, resultSelector, comparer);
             },
 
             /**
@@ -2319,7 +2347,7 @@
             * @param {EqualityComparer=} comparer An equality comparer to compare values.
             * @returns {Iterable}
             */
-            join: function (inner, outerKeySelector, innerKeySelector, resultSelector, comparer) {
+            join(inner, outerKeySelector, innerKeySelector, resultSelector, comparer = EqualityComparer.defaultComparer) {
                 return joinIterator(this, inner, outerKeySelector, innerKeySelector, comparer);
             },
 

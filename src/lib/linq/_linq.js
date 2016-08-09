@@ -23,6 +23,7 @@ import first from './first';
 import firstOrDefault from './first-or-default';
 import forEach from './for-each';
 import groupBy from './group-by';
+import groupJoin from './group-join';
 import join from './join';
 import last from './last';
 import lastOrDefault from './last-or-default';
@@ -214,7 +215,7 @@ export default function linq(iterable) {
         * @param {EqualityComparer=} comparer An equality comparer to compare values.
         * @returns {Iterable}
         */
-        groupBy: function (keySelector, elementSelectorOrComparer = null, resultSelectorOrComparer = null, comparer = EqualityComparer.defaultComparer) {
+        groupBy(keySelector, elementSelectorOrComparer = null, resultSelectorOrComparer = null, comparer = EqualityComparer.defaultComparer) {
             let args = arguments.length,
                 elementSelector = isFunction(elementSelectorOrComparer) ? elementSelectorOrComparer : undefined,
                 resultSelector = isFunction(resultSelectorOrComparer) ? resultSelectorOrComparer : undefined;
@@ -223,6 +224,19 @@ export default function linq(iterable) {
                 (args === 4 && resultSelector === undefined ? resultSelectorOrComparer : comparer);
 
             return groupBy(this, keySelector, elementSelector, resultSelector, comparer);
+        },
+
+        /**
+        * Correlates the elements of two sequences based on key equality and groups the results. A specified EqualityComparer is used to compare keys.
+        * @param {Iterable} inner The sequence to join to the current sequence.
+        * @param {Function} outerKeySelector A function to extract the join key from each element of the first sequence. eg. function(outer)
+        * @param {Function} innerKeySelector A function to extract the join key from each element of the second sequence. function(inner)
+        * @param {Function} resultSelector A function to create a result element from an element from the first sequence and a collection of matching elements from the second sequence. eg. function(outer, inner)
+        * @param {EqualityComparer=} comparer An equality comparer to compare values.
+        * @returns {Iterable}
+        */
+        groupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, comparer = EqualityComparer.defaultComparer) {
+            return groupJoin(this, inner, outerKeySelector, innerKeySelector, resultSelector, comparer);
         },
 
         /**
@@ -244,7 +258,7 @@ export default function linq(iterable) {
         * @param {EqualityComparer=} comparer An equality comparer to compare values.
         * @returns {Iterable}
         */
-        join: function (inner, outerKeySelector, innerKeySelector, resultSelector, comparer) {
+        join(inner, outerKeySelector, innerKeySelector, resultSelector, comparer = EqualityComparer.defaultComparer) {
             return join(this, inner, outerKeySelector, innerKeySelector, comparer);
         },
 
