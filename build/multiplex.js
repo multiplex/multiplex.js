@@ -1633,19 +1633,27 @@
         }
 
         [Symbol.iterator]() {
+            return new HashTableIterator(this);
+        }
+    }
+
+
+    class HashTableIterator extends Iterator {
+        // type 0: key, 1: value, -1: [key, value]
+        constructor(table, type = -1) {
             let index = 0,
                 entry = null,
-                size = this.size,
-                entries = this.entries;
+                size = table.size,
+                entries = table.entries;
 
-            return new Iterator(() => {
+            super(() => {
                 while (index < size) {
                     entry = entries[index++];
 
                     // freed entries have undefined as hashCode value and do not enumerate
                     if (entry.hash !== undefined) {
                         return {
-                            value: [entry.key, entry.value],
+                            value: type === -1 ? [entry.key, entry.value] : (type === 1 ? entry.key : entry.value),
                             done: false
                         };
                     }
@@ -1782,14 +1790,19 @@
         return result;
     }
 
-    function forEachIterator(source, action) {
+    function forEachIterator(source, action, thisArg = null) {
         assertNotNull(source);
         assertType(action, Function);
 
         let index = 0;
 
         for (let element of source) {
-            action(element, index++);
+            if (thisArg) {
+                action.call(thisArg, element, index++);
+            }
+            else {
+                action(element, index++);
+            }
         }
     }
 
@@ -1882,12 +1895,12 @@
         return result;
     }
 
-    function minMaxIterable(source, max, selector = null) {
+    function minMaxIterator(source, max, selector = null) {
         assertNotNull(source);
 
         if (selector) {
             assertType(selector, Function);
-            return minMaxIterable(selectIterator(source, selector), max);
+            return minMaxIterator(selectIterator(source, selector), max);
         }
 
         let arr = asArray(source),
@@ -1943,7 +1956,7 @@
         });
     }
 
-    function reverseIterable(source) {
+    function reverseIterator(source) {
         assertNotNull(source);
 
         return new Iterable(function* () {
@@ -2086,12 +2099,12 @@
         });
     }
 
-    function sumIterable(source, selector = null) {
+    function sumIterator(source, selector = null) {
         assertNotNull(source);
 
         if (selector) {
             assertType(selector, Function);
-            return sumIterable(selectIterator(source, selector));
+            return sumIterator(selectIterator(source, selector));
         }
 
         let arr = asArray(source),
@@ -2350,9 +2363,10 @@
             /**
             * Performs the specified action on each element of an Iterable.
             * @param {Function} action The action function to perform on each element of an Iterable. eg. function(item, index)
+            * @param {Object} thisArg Value to use as this when executing callback.
             */
-            forEach(action) {
-                return forEachIterator(this, action);
+            forEach(action, thisArg = null) {
+                return forEachIterator(this, action, thisArg);
             },
 
             /**
@@ -2435,7 +2449,7 @@
             * @returns {Object}
             */
             max(selector = null) {
-                return minMaxIterable(this, true, selector);
+                return minMaxIterator(this, true, selector);
             },
 
             /**
@@ -2444,7 +2458,7 @@
             * @returns {Object}
             */
             min(selector = null) {
-                return minMaxIterable(this, false, selector);
+                return minMaxIterator(this, false, selector);
             },
 
             /**
@@ -2461,7 +2475,7 @@
             * @returns {Iterable}
             */
             reverse() {
-                return reverseIterable(this);
+                return reverseIterator(this);
             },
 
             /**
@@ -2536,7 +2550,7 @@
             * @returns {Number}
             */
             sum(selector = null) {
-                return sumIterable(this, selector);
+                return sumIterator(this, selector);
             },
 
             /**
