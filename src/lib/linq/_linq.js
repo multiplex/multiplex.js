@@ -20,6 +20,7 @@ import exceptIntersect from './except-intersect';
 import first from './first';
 import firstOrDefault from './first-or-default';
 import forEach from './for-each';
+import groupBy from './group-by';
 import last from './last';
 import lastOrDefault from './last-or-default';
 import minMax from './min-max';
@@ -200,6 +201,18 @@ export default function linq(iterable) {
         */
         forEach(action) {
             return forEach(this, action);
+        },
+
+        /**
+        * Groups the elements of a sequence according to a key selector function.
+        * @param {Function} keySelector A function to extract the key for each element. eg. function(item)
+        * @param {Function|EqualityComparer=} elementSelectorOrComparer A function to map each source element to an element in the Grouping. eg. function(item) or an equality comparer
+        * @param {Function|EqualityComparer=} resultSelectorOrComparer A function to extract the key for each element. eg. function(item) or an equality comparer
+        * @param {EqualityComparer=} comparer An equality comparer to compare values.
+        * @returns {Iterable}
+        */
+        groupBy: function (keySelector, elementSelectorOrComparer = null, resultSelectorOrComparer = null, comparer = EqualityComparer.defaultComparer) {
+            return groupBy(this, keySelector, elementSelectorOrComparer, resultSelectorOrComparer, comparer);
         },
 
         /**

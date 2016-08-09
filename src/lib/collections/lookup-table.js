@@ -116,7 +116,7 @@ export default class LookupTable {
         return new Iterator(() => {
             if (++index < length) {
                 return {
-                    value: slots[index],
+                    value: slots[index].grouping,
                     done: false
                 };
             }

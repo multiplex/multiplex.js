@@ -1079,7 +1079,7 @@
             return new Iterator(() => {
                 if (++index < length) {
                     return {
-                        value: slots[index],
+                        value: slots[index].grouping,
                         done: false
                     };
                 }
@@ -1734,6 +1734,26 @@
         }
     }
 
+    function groupIterator(source, keySelector, elementSelectorOrComparer = null, resultSelectorOrComparer = null, comparer = null) {
+        assertNotNull(source);
+        assertType(keySelector, Function);
+
+        let args = arguments.length,
+            elementSelector = isFunction(elementSelectorOrComparer) ? elementSelectorOrComparer : null,
+            resultSelector = isFunction(resultSelectorOrComparer) ? resultSelectorOrComparer : null;
+
+        comparer = args === 3 && elementSelector === null ? elementSelectorOrComparer :
+            (args === 4 && resultSelector === null ? resultSelectorOrComparer : comparer);
+
+        return new Iterable(function* () {
+            let lookup = new Lookup(source, keySelector, elementSelector);
+
+            for (let element of lookup) {
+                yield resultSelector ? resultSelector(element.key, element) : element;
+            }
+        });
+    }
+
     function lastOrDefaultIterator(source, predicate = null, defaultValue = null) {
         assertNotNull(source);
         predicate = predicate || (() => true);
@@ -2246,6 +2266,18 @@
             */
             forEach(action) {
                 return forEachIterator(this, action);
+            },
+
+            /**
+            * Groups the elements of a sequence according to a key selector function.
+            * @param {Function} keySelector A function to extract the key for each element. eg. function(item)
+            * @param {Function|EqualityComparer=} elementSelectorOrComparer A function to map each source element to an element in the Grouping. eg. function(item) or an equality comparer
+            * @param {Function|EqualityComparer=} resultSelectorOrComparer A function to extract the key for each element. eg. function(item) or an equality comparer
+            * @param {EqualityComparer=} comparer An equality comparer to compare values.
+            * @returns {Iterable}
+            */
+            groupBy: function (keySelector, elementSelectorOrComparer = null, resultSelectorOrComparer = null, comparer = EqualityComparer.defaultComparer) {
+                return groupIterator(this, keySelector, elementSelectorOrComparer, resultSelectorOrComparer, comparer);
             },
 
             /**
