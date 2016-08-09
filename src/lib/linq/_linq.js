@@ -1,4 +1,6 @@
 import mixin from '../utils/mixin';
+import isFunction from '../utils/is-function';
+
 import EmptyIterable from '../iteration/iterable-empty';
 import List from '../collections/list';
 import Lookup from '../collections/lookup';
@@ -20,6 +22,7 @@ import first from './first';
 import firstOrDefault from './first-or-default';
 import forEach from './for-each';
 import groupBy from './group-by';
+import join from './join';
 import last from './last';
 import lastOrDefault from './last-or-default';
 import minMax from './min-max';
@@ -210,7 +213,14 @@ export default function linq(iterable) {
         * @returns {Iterable}
         */
         groupBy: function (keySelector, elementSelectorOrComparer, resultSelectorOrComparer, comparer) {
-            return groupBy(this, keySelector, elementSelectorOrComparer, resultSelectorOrComparer, comparer);
+            var args = arguments.length,
+                elementSelector = isFunction(elementSelectorOrComparer) ? elementSelectorOrComparer : null,
+                resultSelector = isFunction(resultSelectorOrComparer) ? resultSelectorOrComparer : null;
+
+            comparer = args === 3 && elementSelector === null ? elementSelectorOrComparer :
+                (args === 4 && resultSelector === null ? resultSelectorOrComparer : comparer);
+
+            return groupBy(this, keySelector, elementSelector, resultSelector, comparer);
         },
 
         /**
@@ -221,6 +231,19 @@ export default function linq(iterable) {
         */
         intersect: function (second, comparer) {
             return exceptIntersect(this, second, true, comparer);
+        },
+
+        /**
+        * Correlates the elements of two sequences based on matching keys. A specified EqualityComparer is used to compare keys.
+        * @param {Iterable} inner The sequence to join to the current sequence.
+        * @param {Function} outerKeySelector A function to extract the join key from each element of the first sequence. eg. function(outer)
+        * @param {Function} innerKeySelector A function to extract the join key from each element of the second sequence. function(inner)
+        * @param {Function} resultSelector A function to create a result element from an element from the first sequence and a collection of matching elements from the second sequence. eg. function(outer, inner)
+        * @param {EqualityComparer=} comparer An equality comparer to compare values.
+        * @returns {Iterable}
+        */
+        join: function (inner, outerKeySelector, innerKeySelector, resultSelector, comparer) {
+            return join(this, inner, outerKeySelector, innerKeySelector, comparer);
         },
 
         /**

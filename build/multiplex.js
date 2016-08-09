@@ -1915,6 +1915,65 @@
         });
     }
 
+    function groupIterator(source, keySelector, elementSelector, resultSelector, comparer) {
+        assertNotNull(source);
+        assertType(keySelector, Function);
+
+        return new Iterable(function () {
+            var lookup = new Lookup(source, keySelector, elementSelector, comparer),
+                it = iterator(lookup),
+                next;
+
+            return new Iterator(function () {
+                if (!(next = it.next()).done) {
+                    return {
+                        value: resultSelector ? resultSelector(next.value.key, next.value) : next.value,
+                        done: false
+                    };
+                }
+                return {
+                    done: true
+                };
+            });
+        });
+    }
+
+    function groupIterator$1(outer, inner, outerKeySelector, innerKeySelector, resultSelector, comparer) {
+        assertNotNull(inner);
+        assertType(outerKeySelector, Function);
+        assertType(innerKeySelector, Function);
+        assertType(resultSelector, Function);
+
+        return new Iterable(function () {
+            var lookup = new Lookup(inner, innerKeySelector, null, comparer),
+                it = iterator(outer),
+                elements = null,
+                index = 0,
+                next;
+
+            return new Iterator(function () {
+                while (!(next = it.next()).done) {
+                    if (elements === null) {
+                        elements = lookup.get(outerKeySelector(next.value)).elements;
+                    }
+                    if (index < elements.length) {
+                        return {
+                            value: resultSelector(next.value, elements[index++]),
+                            done: false
+                        };
+                    }
+                    else {
+                        index = 0;
+                        elements = null;
+                    }
+                }
+                return {
+                    done: true
+                };
+            });
+        });
+    }
+
     function lastOrDefaultIterator(source, predicate, defaultValue) {
         assertNotNull(source);
         predicate = predicate || trueFunction;
@@ -2517,6 +2576,25 @@
             },
 
             /**
+            * Groups the elements of a sequence according to a key selector function.
+            * @param {Function} keySelector A function to extract the key for each element. eg. function(item)
+            * @param {Function|EqualityComparer=} elementSelectorOrComparer A function to map each source element to an element in the Grouping. eg. function(item) or an equality comparer
+            * @param {Function|EqualityComparer=} resultSelectorOrComparer A function to extract the key for each element. eg. function(item) or an equality comparer
+            * @param {EqualityComparer=} comparer An equality comparer to compare values.
+            * @returns {Iterable}
+            */
+            groupBy: function (keySelector, elementSelectorOrComparer, resultSelectorOrComparer, comparer) {
+                var args = arguments.length,
+                    elementSelector = isFunction(elementSelectorOrComparer) ? elementSelectorOrComparer : null,
+                    resultSelector = isFunction(resultSelectorOrComparer) ? resultSelectorOrComparer : null;
+
+                comparer = args === 3 && elementSelector === null ? elementSelectorOrComparer :
+                    (args === 4 && resultSelector === null ? resultSelectorOrComparer : comparer);
+
+                return groupIterator(this, keySelector, elementSelector, resultSelector, comparer);
+            },
+
+            /**
             * Produces the set intersection of two sequences by using the default equality comparer to compare values.
             * @param {Iterable} second An Iterable whose distinct elements that also appear in the first sequence will be returned.
             * @param {EqualityComparer=} comparer An EqualityComparer to compare values.
@@ -2524,6 +2602,19 @@
             */
             intersect: function (second, comparer) {
                 return exceptIntersectIterator(this, second, true, comparer);
+            },
+
+            /**
+            * Correlates the elements of two sequences based on matching keys. A specified EqualityComparer is used to compare keys.
+            * @param {Iterable} inner The sequence to join to the current sequence.
+            * @param {Function} outerKeySelector A function to extract the join key from each element of the first sequence. eg. function(outer)
+            * @param {Function} innerKeySelector A function to extract the join key from each element of the second sequence. function(inner)
+            * @param {Function} resultSelector A function to create a result element from an element from the first sequence and a collection of matching elements from the second sequence. eg. function(outer, inner)
+            * @param {EqualityComparer=} comparer An equality comparer to compare values.
+            * @returns {Iterable}
+            */
+            join: function (inner, outerKeySelector, innerKeySelector, resultSelector, comparer) {
+                return groupIterator$1(this, inner, outerKeySelector, innerKeySelector, comparer);
             },
 
             /**
