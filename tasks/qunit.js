@@ -17,7 +17,7 @@ module.exports = function (grunt) {
         qrunner.options.maxBlockDuration = 120000;
 
         qrunner.run({
-            code: path.join(dirs.build, files.main),
+            code: { path: path.join(dirs.build, files.main), namespace: 'mx' },
             tests: [path.join(dirs.build, dirs.test, files.testrunner)]
         }, function (err, report) {
             if (err) {
