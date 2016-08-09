@@ -4,7 +4,7 @@ import buffer from '../utils/buffer';
 import asArray from '../utils/as-array';
 import assertNotNull from '../utils/assert-not-null';
 
-export default function reverseIterable(source) {
+export default function reverseIterator(source) {
     assertNotNull(source);
 
     return new Iterable(function () {

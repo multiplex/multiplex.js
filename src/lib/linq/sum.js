@@ -5,12 +5,12 @@ import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
 import error, {ERROR_NON_NUMERIC_TYPE} from '../utils/error';
 
-export default function sumIterable(source, selector) {
+export default function sumIterator(source, selector) {
     assertNotNull(source);
 
     if (selector) {
         assertType(selector, Function);
-        return sumIterable(select(source, selector));
+        return sumIterator(select(source, selector));
     }
 
     var arr = asArray(source),

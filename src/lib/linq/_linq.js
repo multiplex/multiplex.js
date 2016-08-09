@@ -200,9 +200,10 @@ export default function linq(iterable) {
         /**
         * Performs the specified action on each element of an Iterable.
         * @param {Function} action The action function to perform on each element of an Iterable. eg. function(item, index)
+        * @param {Object=} thisArg Value to use as this when executing callback.
         */
-        forEach: function (action) {
-            return forEach(this, action);
+        forEach: function (action, thisArg) {
+            return forEach(this, action, thisArg);
         },
 
         /**

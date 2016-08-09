@@ -1963,14 +1963,19 @@
         return result;
     }
 
-    function forEachIterator(source, action) {
+    function forEachIterator(source, action, thisArg) {
         assertNotNull(source);
         assertType(action, Function);
 
         var index = 0;
 
         forOf(source, function (element) {
-            action(element, index++);
+            if (thisArg) {
+                action.call(thisArg, element, index++);
+            }
+            else {
+                action(element, index++);
+            }
         });
     }
 
@@ -2098,12 +2103,12 @@
         return result;
     }
 
-    function minMaxIterable(source, max, selector) {
+    function minMaxIterator(source, max, selector) {
         assertNotNull(source);
 
         if (selector) {
             assertType(selector, Function);
-            return minMaxIterable(selectIterator(source, selector), max);
+            return minMaxIterator(selectIterator(source, selector), max);
         }
 
         var arr = asArray(source),
@@ -2170,7 +2175,7 @@
         });
     }
 
-    function reverseIterable(source) {
+    function reverseIterator(source) {
         assertNotNull(source);
 
         return new Iterable(function () {
@@ -2364,12 +2369,12 @@
         });
     }
 
-    function sumIterable(source, selector) {
+    function sumIterator(source, selector) {
         assertNotNull(source);
 
         if (selector) {
             assertType(selector, Function);
-            return sumIterable(selectIterator(source, selector));
+            return sumIterator(selectIterator(source, selector));
         }
 
         var arr = asArray(source),
@@ -2654,9 +2659,10 @@
             /**
             * Performs the specified action on each element of an Iterable.
             * @param {Function} action The action function to perform on each element of an Iterable. eg. function(item, index)
+            * @param {Object=} thisArg Value to use as this when executing callback.
             */
-            forEach: function (action) {
-                return forEachIterator(this, action);
+            forEach: function (action, thisArg) {
+                return forEachIterator(this, action, thisArg);
             },
 
             /**
@@ -2739,7 +2745,7 @@
             * @returns {Object}
             */
             max: function (selector) {
-                return minMaxIterable(this, true, selector);
+                return minMaxIterator(this, true, selector);
             },
 
             /**
@@ -2748,7 +2754,7 @@
             * @returns {Object}
             */
             min: function (selector) {
-                return minMaxIterable(this, false, selector);
+                return minMaxIterator(this, false, selector);
             },
 
             /**
@@ -2765,7 +2771,7 @@
             * @returns {Iterable}
             */
             reverse: function () {
-                return reverseIterable(this);
+                return reverseIterator(this);
             },
 
             /**
@@ -2840,7 +2846,7 @@
             * @returns {Number}
             */
             sum: function (selector) {
-                return sumIterable(this, selector);
+                return sumIterator(this, selector);
             },
 
             /**
