@@ -748,6 +748,134 @@
         }
     }
 
+    /**
+    * Provides a base class for implementations of Comparer.
+    */
+    class Comparer {
+        constructor(comparison) {
+            assertType(comparison, Function);
+            this._comparison = comparison;
+        }
+
+        /**
+        * Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
+        * @param {Object} x The first object to compare.
+        * @param {Object} y The second object to compare.
+        * @returns An integer that indicates the relative values of x and y, as shown in the following table:
+        * Less than zero x is less than y.
+        * Zero x equals y.
+        * Greater than zero x is greater than y.
+        */
+        compare(objA, objB) {
+            this._comparison(objA, objB);
+        }
+
+        /**
+        * Gets a default sort order comparer for the type specified by the generic argument.
+        */
+        static get defaultComparer() {
+            return defaultComparer;
+        }
+
+        /**
+        * Gets or creates a new Comparer object.
+        * @param {Comparer|Object} value A Comparer object.
+        * @returns {Comparer}
+        */
+        static from(value) {
+            if (value instanceof Comparer) {
+                return value;
+            }
+
+            else if (value && isFunction(value.compare)) {
+                return new Comparer(value.compare);
+            }
+
+            else {
+                return defaultComparer;
+            }
+        }
+
+        get [Symbol.toStringTag]() {
+            return 'Comparer';
+        }
+
+        toString() {
+            return '[Comparer]';
+        }
+    }
+
+    const defaultComparer = new Comparer(compare);
+
+    /**
+    * Provides a base class for implementations of the EqualityComparer.
+    */
+    class EqualityComparer {
+        constructor(hashCodeProvider, equality) {
+            assertType(hashCodeProvider, Function);
+            assertType(equality, Function);
+
+            this._hash = hashCodeProvider;
+            this._equals = equality;
+        }
+
+        /**
+        * Determines whether the specified objects are equal.
+        * @param {Object} x The first object of type Object to compare.
+        * @param {Object} y The second object of type Object to compare.
+        * @returns true if the specified objects are equal; otherwise, false.
+        */
+        equals(x, y) {
+            return this._equals(x, y);
+        }
+
+        /**
+        * Returns a hash code for the specified object.
+        * @param {Object} obj The Object for which a hash code is to be returned.
+        * @returns A hash code for the specified object.
+        */
+        hash(obj) {
+            return this._hash(obj);
+        }
+
+        /**
+        * Gets a default sort order comparer for the type specified by the generic argument.
+        */
+        static get defaultComparer() {
+            return defaultEqualityComparer;
+        }
+
+        /**
+        * Gets or creates a new EqualityComparer object.
+        * @param {EqualityComparer|Object} value An EqualityComparer object.
+        * @returns {EqualityComparer}
+        */
+        static from(value) {
+            if (value instanceof EqualityComparer) {
+                return value;
+            }
+
+            else if (value && isFunction(value.hash) && isFunction(value.equals)) {
+                return new EqualityComparer(value.hash, value.equals);
+            }
+
+            else {
+                return defaultEqualityComparer;
+            }
+        }
+
+        get [Symbol.toStringTag]() {
+            return 'EqualityComparer';
+        }
+
+        toString() {
+            return '[EqualityComparer]';
+        }
+    }
+
+
+    const defaultEqualityComparer = new EqualityComparer(hash, equals);
+
     function isArray(val) {
         return val instanceof Array;
     }
@@ -883,75 +1011,6 @@
             return '[Grouping]';
         }
     }
-
-    /**
-    * Provides a base class for implementations of the EqualityComparer.
-    */
-    class EqualityComparer {
-        constructor(hashCodeProvider, equality) {
-            assertType(hashCodeProvider, Function);
-            assertType(equality, Function);
-
-            this._hash = hashCodeProvider;
-            this._equals = equality;
-        }
-
-        /**
-        * Determines whether the specified objects are equal.
-        * @param {Object} x The first object of type Object to compare.
-        * @param {Object} y The second object of type Object to compare.
-        * @returns true if the specified objects are equal; otherwise, false.
-        */
-        equals(x, y) {
-            return this._equals(x, y);
-        }
-
-        /**
-        * Returns a hash code for the specified object.
-        * @param {Object} obj The Object for which a hash code is to be returned.
-        * @returns A hash code for the specified object.
-        */
-        hash(obj) {
-            return this._hash(obj);
-        }
-
-        /**
-        * Gets a default sort order comparer for the type specified by the generic argument.
-        */
-        static get defaultComparer() {
-            return defaultEqualityComparer;
-        }
-
-        /**
-        * Gets or creates a new EqualityComparer object.
-        * @param {EqualityComparer|Object} value An EqualityComparer object.
-        * @returns {EqualityComparer}
-        */
-        static from(value) {
-            if (value instanceof EqualityComparer) {
-                return value;
-            }
-
-            else if (value && isFunction(value.hash) && isFunction(value.equals)) {
-                return new EqualityComparer(value.hash, value.equals);
-            }
-
-            else {
-                return defaultEqualityComparer;
-            }
-        }
-
-        get [Symbol.toStringTag]() {
-            return 'EqualityComparer';
-        }
-
-        toString() {
-            return '[EqualityComparer]';
-        }
-    }
-
-
-    const defaultEqualityComparer = new EqualityComparer(hash, equals);
 
     /// Array of primes larger than: 2 ^ (4 x n)
     const primes = [17, 67, 257, 1031, 4099, 16411, 65537, 262147, 1048583, 4194319, 16777259];
@@ -2584,6 +2643,8 @@
 
     mx.Iterable = Iterable;
     mx.Iterator = Iterator;
+    mx.Comparer = Comparer;
+    mx.EqualityComparer = EqualityComparer;
     mx.Collection = Collection;
     mx.Lookup = Lookup;
     mx.version = '2.0.0';

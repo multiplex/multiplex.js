@@ -11,6 +11,8 @@ import {
     compareSymbol
 } from './lib/runtime/runtime';
 
+import Comparer from './lib/collections/comparer';
+import EqualityComparer from './lib/collections/equality-comparer';
 import Collection from './lib/collections/collection';
 import Lookup from './lib/collections/lookup';
 import linq from './lib/linq/_linq';
@@ -43,6 +45,8 @@ mx.repeat = Iterable.repeat;
 
 mx.Iterable = Iterable;
 mx.Iterator = Iterator;
+mx.Comparer = Comparer;
+mx.EqualityComparer = EqualityComparer;
 mx.Collection = Collection;
 mx.Lookup = Lookup;
 
