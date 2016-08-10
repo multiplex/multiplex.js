@@ -21,6 +21,12 @@ export default class Set extends Collection {
         this.table.clear();
     }
 
+    delete(value) {
+        let result = this.table.remove(value);
+        this.size = this.table.count();
+        return result ? value : false;
+    }
+
     entries() {
         return new SetIterator(this, -1);
     }
