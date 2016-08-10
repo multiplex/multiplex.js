@@ -34,7 +34,7 @@ export default class Lookup extends Collection {
     }
 
     valueOf() {
-        this.table.keys();
+        this.table.entries();
     }
 
     [Symbol.iterator]() {

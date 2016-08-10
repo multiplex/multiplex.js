@@ -25,6 +25,17 @@ export default class LookupTable {
         return this.getGrouping(key, null, false) !== null;
     }
 
+    entries() {
+        var arr = new Array(this.size),
+            index = 0;
+
+        for (let i = 0, count = this.slots.length; i < count; i++) {
+            arr[index++] = this.slots[i].grouping;
+        }
+
+        return arr;
+    }
+
     getGrouping(key, value, create) {
         let comparer = this.comparer,
             hash = comparer.hash(key) & 0x7FFFFFFF,
@@ -85,17 +96,6 @@ export default class LookupTable {
             slot.next = this.buckets[bucket];
             this.buckets[bucket] = index;
         }
-    }
-
-    keys() {
-        var arr = new Array(this.size),
-            index = 0;
-
-        for (let i = 0, count = this.slots.length; i < count; i++) {
-            arr[index++] = this.slots[i].grouping.key;
-        }
-
-        return arr;
     }
 
     static create(source, keySelector, comparer = EqualityComparer.defaultComparer) {
