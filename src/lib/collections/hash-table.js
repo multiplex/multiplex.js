@@ -32,6 +32,22 @@ export default class HashTable {
         return this.size - this.freeCount;
     }
 
+    entries() {
+        let arr = new Array(this.count()),
+            entry = null,
+            index = 0;
+
+        for (let i = 0, count = this.size; i < count; i++) {
+            entry = this.entries[i];
+
+            if (entry.hash !== undefined) {
+                arr[index++] = entry;
+            }
+        }
+
+        return arr;
+    }
+
     find(key) {
         let comparer = this.comparer,
             hash = comparer.hash(key) & 0x7FFFFFFF,
@@ -111,22 +127,6 @@ export default class HashTable {
         this.buckets[bucket] = index;
 
         return true;
-    }
-
-    keys() {
-        let arr = new Array(this.count()),
-            entry = null,
-            index = 0;
-
-        for (let i = 0, count = this.size; i < count; i++) {
-            entry = this.entries[i];
-
-            if (entry.hash !== undefined) {
-                arr[index++] = entry.key;
-            }
-        }
-
-        return arr;
     }
 
     resize() {
@@ -219,7 +219,7 @@ export class HashTableIterator extends IterableIterator {
 
                 // freed entries have undefined as hashCode value and do not enumerate
                 if (entry.hash !== undefined) {
-                    yield type === -1 ? [entry.key, entry.value] : (type === 1 ? entry.key : entry.value);
+                    yield type === -1 ? [entry.key, entry.value] : (type === 0 ? entry.key : entry.value);
                 }
             }
         });
