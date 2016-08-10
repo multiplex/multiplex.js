@@ -1,6 +1,7 @@
 import Collection from './collection';
 import HashTable, {HashTableIterator} from './hash-table';
 import iteratorSymbol from '../iteration/iterator-symbol';
+import bufferTo from '../utils/buffer-to';
 import forOf from '../utils/for-of';
 import extend from '../utils/extend';
 import mixin from '../utils/mixin';
@@ -32,6 +33,14 @@ mixin(Set.prototype, {
         this.size = 0;
     },
 
+    copyTo: function (array, arrayIndex) {
+        bufferTo(this.keys(), array, arrayIndex);
+    },
+
+    count: function () {
+        return this.size;
+    },
+
     delete: function (value) {
         var result = this.table.remove(value);
         this.size = this.table.count();
@@ -59,7 +68,7 @@ mixin(Set.prototype, {
     },
 
     valueOf: function () {
-        return this.table.keys();
+        return this.table.entries();
     },
 
     toString: function () {

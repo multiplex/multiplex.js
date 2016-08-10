@@ -1,6 +1,7 @@
 import Collection from './collection';
 import HashTable, {HashTableIterator} from './hash-table';
 import iteratorSymbol from '../iteration/iterator-symbol';
+import bufferTo from '../utils/buffer-to';
 import isArray from '../utils/is-array';
 import error from '../utils/error';
 import forOf from '../utils/for-of';
@@ -31,6 +32,14 @@ mixin(Map.prototype, {
     clear: function () {
         this.table.clear();
         this.size = 0;
+    },
+
+    copyTo: function (array, arrayIndex) {
+        bufferTo(this.keys(), array, arrayIndex);
+    },
+
+    count: function () {
+        return this.size;
     },
 
     delete: function (key) {
@@ -72,7 +81,7 @@ mixin(Map.prototype, {
     },
 
     valueOf: function () {
-        return this.table.keys();
+        return this.table.entries();
     },
 
     toString: function () {
@@ -83,7 +92,7 @@ mixin(Map.prototype, {
 extend(Map, Collection);
 
 Map.prototype[iteratorSymbol] = function () {
-    return new MapIterator(this, 0);
+    return new MapIterator(this, -1);
 };
 
 

@@ -957,12 +957,12 @@
             return arrayBuffer(value);
         }
 
-        else if (value instanceof ArrayIterable) {          // ArrayIterable wrapper
+        else if (value instanceof Collection) {             // Collections have 'valueOf' method
             return arrayBuffer(value.valueOf());
         }
 
-        else if (value instanceof Collection) {             // Collections have 'toArray' method
-            return value.toArray();
+        else if (value instanceof ArrayIterable) {          // ArrayIterable wrapper
+            return arrayBuffer(value.valueOf());
         }
 
         // do it the hard way
@@ -1156,9 +1156,20 @@
             return this.getGrouping(key, null, false) !== null;
         },
 
+        entries: function () {
+            var arr = new Array(this.size),
+                index = 0;
+
+            for (var i = 0, count = this.slots.length; i < count; i++) {
+                arr[index++] = this.slots[i].grouping;
+            }
+
+            return arr;
+        },
+
         getGrouping: function (key, value, create) {
-            var hash = this.comparer.hash(key) & 0x7FFFFFFF,
-                equals = this.comparer.equals,
+            var comparer = this.comparer,
+                hash = comparer.hash(key) & 0x7FFFFFFF,
                 bucket = hash % this.buckets.length,
                 index = this.buckets[bucket],
                 grouping = null,
@@ -1168,7 +1179,7 @@
             while (index !== undefined) {
                 slot = this.slots[index];
 
-                if (slot.hash === hash && equals(slot.grouping.key, key)) {
+                if (slot.hash === hash && comparer.equals(slot.grouping.key, key)) {
                     grouping = slot.grouping;
                     break;
                 }
@@ -1216,17 +1227,6 @@
                 slot.next = this.buckets[bucket];
                 this.buckets[bucket] = index;
             }
-        },
-
-        keys: function () {
-            var arr = new Array(this.size),
-                index = 0;
-
-            for (var i = 0, count = this.slots.length; i < count; i++) {
-                arr[index++] = this.slots[i].grouping.key;
-            }
-
-            return arr;
         }
     });
 
@@ -1310,7 +1310,7 @@
         },
 
         valueOf: function () {
-            this.table.keys();
+            this.table.entries();
         },
 
         toString: function () {
@@ -1383,15 +1383,32 @@
             return this.size - this.freeCount;
         },
 
+        entries: function () {
+            var arr = new Array(this.count()),
+                entries = this.entries,
+                entry = null,
+                index = 0;
+
+            for (var i = 0, count = this.size; i < count; i++) {
+                entry = entries[i];
+
+                if (entry.hash !== undefined) {
+                    arr[index++] = entry;
+                }
+            }
+
+            return arr;
+        },
+
         find: function (key) {
-            var hash = this.comparer.hash(key) & 0x7FFFFFFF,
-                equals = this.comparer.equals,
+            var comparer = this.comparer,
+                hash = comparer.hash(key) & 0x7FFFFFFF,
                 entry = null;
 
             for (var index = this.buckets[hash % this.buckets.length]; index !== undefined;) {
                 entry = this.entries[index];
 
-                if (entry.hash === hash && equals(entry.key, key)) {
+                if (entry.hash === hash && comparer.equals(entry.key, key)) {
                     return index;
                 }
 
@@ -1413,8 +1430,8 @@
         },
 
         insert: function (key, value, add) {
-            var hash = this.comparer.hash(key) & 0x7FFFFFFF,
-                equals = this.comparer.equals,
+            var comparer = this.comparer,
+                hash = comparer.hash(key) & 0x7FFFFFFF,
                 bucket = hash % this.buckets.length,
                 entry = null,
                 index = 0;
@@ -1424,7 +1441,7 @@
             for (index = this.buckets[bucket]; index !== undefined;) {
                 entry = this.entries[index];
 
-                if (entry.hash === hash && equals(entry.key, key)) {
+                if (entry.hash === hash && comparer.equals(entry.key, key)) {
                     if (add) {
                         return false;
                     }
@@ -1465,23 +1482,6 @@
             return true;
         },
 
-        keys: function () {
-            var arr = new Array(this.count()),
-                entries = this.entries,
-                entry = null,
-                index = 0;
-
-            for (var i = 0, count = this.size; i < count; i++) {
-                entry = entries[i];
-
-                if (entry.hash !== undefined) {
-                    arr[index++] = entry.key;
-                }
-            }
-
-            return arr;
-        },
-
         resize: function () {
             var size = this.size,
                 newSize = resize(size),
@@ -1506,9 +1506,9 @@
         },
 
         remove: function (key) {
-            var equals = this.comparer.equals,
-                hash = this.comparer.hash(key) & 0x7FFFFFFF,    // hash-code of the key
-                bucket = hash % this.buckets.length,                 // bucket index
+            var comparer = this.comparer,
+                hash = comparer.hash(key) & 0x7FFFFFFF,     // hash-code of the key
+                bucket = hash % this.buckets.length,        // bucket index
                 last,
                 entry;
 
@@ -1516,7 +1516,7 @@
             for (var index = this.buckets[bucket]; index !== undefined;) {
                 entry = this.entries[index];
 
-                if (entry.hash === hash && equals(entry.key, key)) {
+                if (entry.hash === hash && comparer.equals(entry.key, key)) {
                     // last item in the chained bucket list
                     if (last === undefined) {
                         this.buckets[bucket] = entry.next;
@@ -1574,7 +1574,7 @@
                     // freed entries have undefined as hashCode value and do not enumerate
                     if (entry.hash !== undefined) {
                         return {
-                            value: type === -1 ? [entry.key, entry.value] : (type === 1 ? entry.key : entry.value),
+                            value: type === -1 ? [entry.key, entry.value] : (type === 0 ? entry.key : entry.value),
                             done: false
                         };
                     }
@@ -1623,6 +1623,14 @@
             this.size = 0;
         },
 
+        copyTo: function (array, arrayIndex) {
+            bufferTo(this.keys(), array, arrayIndex);
+        },
+
+        count: function () {
+            return this.size;
+        },
+
         delete: function (key) {
             var value = this.table.get(key),
                 result = this.table.remove(key);
@@ -1662,7 +1670,7 @@
         },
 
         valueOf: function () {
-            return this.table.keys();
+            return this.table.entries();
         },
 
         toString: function () {
@@ -1673,7 +1681,7 @@
     extend(Map, Collection);
 
     Map.prototype[iteratorSymbol] = function () {
-        return new MapIterator(this, 0);
+        return new MapIterator(this, -1);
     };
 
 
@@ -1718,6 +1726,14 @@
             this.size = 0;
         },
 
+        copyTo: function (array, arrayIndex) {
+            bufferTo(this.keys(), array, arrayIndex);
+        },
+
+        count: function () {
+            return this.size;
+        },
+
         delete: function (value) {
             var result = this.table.remove(value);
             this.size = this.table.count();
@@ -1745,7 +1761,7 @@
         },
 
         valueOf: function () {
-            return this.table.keys();
+            return this.table.entries();
         },
 
         toString: function () {
