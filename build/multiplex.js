@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (August 10, 2016)
+* Version 2.0.0 (August 11, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -1133,22 +1133,7 @@
         }
 
         [Symbol.iterator]() {
-            let slots = this.slots,
-                length = slots.length,
-                index = 0;
-
-            return new Iterator(() => {
-                if (++index < length) {
-                    return {
-                        value: slots[index].grouping,
-                        done: false
-                    };
-                }
-
-                return {
-                    done: true
-                };
-            });
+            return new ArrayIterator(this.slots);
         }
     }
 
