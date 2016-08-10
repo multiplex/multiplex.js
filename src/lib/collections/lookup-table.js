@@ -72,7 +72,7 @@ mixin(LookupTable.prototype, {
                 this.size++;
 
                 grouping = new Grouping(key, [value]);
-                this.slots[index] = new Slot(hash, grouping, this.buckets[bucket]);
+                this.slots[index] = new LookupTableSlot(hash, grouping, this.buckets[bucket]);
                 this.buckets[bucket] = index;
             }
             else {
@@ -137,7 +137,7 @@ LookupTable.prototype[iteratorSymbol] = function () {
 };
 
 
-function Slot(hash, grouping, next) {
+function LookupTableSlot(hash, grouping, next) {
     this.hash = hash;
     this.next = next;
     this.grouping = grouping;
