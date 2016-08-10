@@ -24,7 +24,6 @@ export default class Set extends Collection {
 
     delete(value) {
         let result = this.table.remove(value);
-        this.size = this.table.count();
         return result ? value : false;
     }
 
