@@ -38,6 +38,23 @@ mixin(HashTable.prototype, {
         return this.size - this.freeCount;
     },
 
+    entries: function () {
+        var arr = new Array(this.count()),
+            entries = this.entries,
+            entry = null,
+            index = 0;
+
+        for (var i = 0, count = this.size; i < count; i++) {
+            entry = entries[i];
+
+            if (entry.hash !== undefined) {
+                arr[index++] = entry;
+            }
+        }
+
+        return arr;
+    },
+
     find: function (key) {
         var comparer = this.comparer,
             hash = comparer.hash(key) & 0x7FFFFFFF,
@@ -118,23 +135,6 @@ mixin(HashTable.prototype, {
         this.buckets[bucket] = index;
 
         return true;
-    },
-
-    keys: function () {
-        var arr = new Array(this.count()),
-            entries = this.entries,
-            entry = null,
-            index = 0;
-
-        for (var i = 0, count = this.size; i < count; i++) {
-            entry = entries[i];
-
-            if (entry.hash !== undefined) {
-                arr[index++] = entry.key;
-            }
-        }
-
-        return arr;
     },
 
     resize: function () {
@@ -229,7 +229,7 @@ export function HashTableIterator(table, type) {
                 // freed entries have undefined as hashCode value and do not enumerate
                 if (entry.hash !== undefined) {
                     return {
-                        value: type === -1 ? [entry.key, entry.value] : (type === 1 ? entry.key : entry.value),
+                        value: type === -1 ? [entry.key, entry.value] : (type === 0 ? entry.key : entry.value),
                         done: false
                     };
                 }
