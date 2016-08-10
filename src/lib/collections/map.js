@@ -5,10 +5,11 @@ import error from '../utils/error';
 
 export default class Map extends Collection {
     constructor(iterable = null) {
+        super();
         this.table = new HashTable();
 
         if (iterable !== null) {
-            for (let element in iterable) {
+            for (let element of iterable) {
                 if (isArray(element)) {
                     this.table.add(element[0], element[1]);
                 }

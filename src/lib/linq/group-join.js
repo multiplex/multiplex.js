@@ -12,7 +12,7 @@ export default function groupJoinIterator(outer, inner, outerKeySelector, innerK
     return new Iterable(function* () {
         let lookup = new Lookup(inner, innerKeySelector, null, comparer);
 
-        for (let element in outer) {
+        for (let element of outer) {
             yield resultSelector(element, lookup.get(outerKeySelector(element)));
         }
     });

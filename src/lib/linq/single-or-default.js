@@ -21,7 +21,7 @@ export default function singleOrDefaultIterator(source, predicate = null, defaul
         }
     }
     else {
-        for (let element in source) {
+        for (let element of source) {
             if (predicate(element) && count <= 1) {
                 result = element;
                 count++;

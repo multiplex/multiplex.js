@@ -11,8 +11,8 @@ export default function selectManyIterator(source, collectionSelector, resultSel
 
     return new Iterable(function* () {
         let index = 0;
-        for (let element in source) {
-            for (let subElement in collectionSelector(element, index++)) {
+        for (let element of source) {
+            for (let subElement of collectionSelector(element, index++)) {
                 yield resultSelector ? resultSelector(element, subElement) : subElement;
             }
         }

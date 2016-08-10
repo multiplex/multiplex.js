@@ -13,7 +13,7 @@ export default function joinIterator(outer, inner, outerKeySelector, innerKeySel
         let lookup = new Lookup(inner, innerKeySelector, null, comparer),
             elements = null;
 
-        for (let element in outer) {
+        for (let element of outer) {
             elements = lookup.get(outerKeySelector(element)).elements;
 
             for (let i = 0, len = elements.length; i < len; i++) {

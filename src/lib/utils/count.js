@@ -20,7 +20,7 @@ export default function count(value) {
     else {
         let count = 0;
 
-        for (let element in iterable(value)) {
+        for (let element of iterable(value)) {
             count++;
         }
 

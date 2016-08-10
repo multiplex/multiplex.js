@@ -11,11 +11,11 @@ export default function exceptIntersectIterator(first, second, intersect = true,
     return new Iterable(function* () {
         let table = new HashTable(comparer);
 
-        for (let element in second) {
+        for (let element of second) {
             table.add(element);
         }
 
-        for (let element in first) {
+        for (let element of first) {
             if (table.contains(element) === result) {
                 yield element;
             }

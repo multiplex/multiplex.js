@@ -8,7 +8,7 @@ export default function distinctIterator(source, comparer = null) {
     return new Iterable(function* () {
         let table = new HashTable(comparer);
 
-        for (let element in source) {
+        for (let element of source) {
             if (table.add(element)) {
                 yield element;
             }

@@ -21,7 +21,7 @@ export default function lastOrDefaultIterator(source, predicate = null, defaultV
         }
     }
     else {
-        for (let element in source) {
+        for (let element of source) {
             if (predicate(element)) {
                 result = element;
             }

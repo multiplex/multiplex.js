@@ -17,7 +17,7 @@ export default function firstOrDefaultIterator(source, predicate = null, default
         }
     }
     else {
-        for (let element in source) {
+        for (let element of source) {
             if (predicate(element)) {
                 return element;
             }

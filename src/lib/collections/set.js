@@ -3,10 +3,11 @@ import HashTable, {HashTableIterator} from './hash-table';
 
 export default class Set extends Collection {
     constructor(iterable = null) {
+        super();
         this.table = new HashTable();
 
         if (iterable !== null) {
-            for (let element in iterable) {
+            for (let element of iterable) {
                 this.table.add(element, element);
             }
         }
