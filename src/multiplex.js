@@ -16,6 +16,8 @@ import Comparer from './lib/collections/comparer';
 import EqualityComparer from './lib/collections/equality-comparer';
 import Collection from './lib/collections/collection';
 import Lookup from './lib/collections/lookup';
+import Map from './lib/collections/map';
+import Set from './lib/collections/set';
 import linq from './lib/linq/_linq';
 
 linq(Iterable);
@@ -50,5 +52,7 @@ mx.Comparer = Comparer;
 mx.EqualityComparer = EqualityComparer;
 mx.Collection = Collection;
 mx.Lookup = Lookup;
+mx.Map = Map;
+mx.Set = Set;
 
 export default mx;

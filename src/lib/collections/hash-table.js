@@ -2,6 +2,8 @@ import Iterator from '../iteration/iterator';
 import EqualityComparer from './equality-comparer';
 import iteratorSymbol from '../iteration/iterator-symbol';
 import resize from '../utils/resize';
+import forOf from '../utils/for-of';
+import extend from '../utils/extend';
 import mixin from '../utils/mixin';
 
 export default function HashTable(comparer) {
@@ -51,6 +53,17 @@ mixin(HashTable.prototype, {
         }
 
         return -1;
+    },
+
+    forEach: function (callback, target, thisArg) {
+        forOf(this, function (element) {
+            if (thisArg) {
+                callback.call(thisArg, element[0], element[1], target);
+            }
+            else {
+                callback(element[0], element[1], target);
+            }
+        });
     },
 
     insert: function (key, value, add) {
@@ -196,19 +209,25 @@ mixin(HashTable.prototype, {
 
 
 HashTable.prototype[iteratorSymbol] = function () {
+    return new HashTableIterator(this, -1);
+};
+
+
+// type 0: key, 1: value, -1: [key, value]
+export function HashTableIterator(table, type) {
     var index = 0,
         entry = null,
-        size = this.size,
-        entries = this.entries;
+        size = table.size,
+        entries = table.entries;
 
-    return new Iterator(function () {
+    Iterator.call(this, function () {
         while (index < size) {
             entry = entries[index++];
 
             // freed entries have undefined as hashCode value and do not enumerate
             if (entry.hash !== undefined) {
                 return {
-                    value: [entry.key, entry.value],
+                    value: type === -1 ? [entry.key, entry.value] : (type === 1 ? entry.key : entry.value),
                     done: false
                 };
             }
@@ -218,7 +237,9 @@ HashTable.prototype[iteratorSymbol] = function () {
             done: true
         };
     });
-};
+}
+
+extend(HashTableIterator, Iterator);
 
 
 function Entry(hash, next, key, value) {
