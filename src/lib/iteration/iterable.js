@@ -1,5 +1,7 @@
 import iterator from './iterator-factory';
 
+const IterableSource = Symbol('iterable');
+
 /**
 * Defines abstract Iterable class.
 * @param {Iterable|Array|String|Function|Function*|Object} source An Iterable object.
@@ -7,12 +9,12 @@ import iterator from './iterator-factory';
 export default class Iterable {
     constructor(source = null) {
         if (source !== null && source !== undefined) {
-            this._source = source;
+            this[IterableSource] = source;
         }
     }
 
     [Symbol.iterator]() {
-        return iterator(this._source);
+        return iterator(this[IterableSource]);
     }
 
     get [Symbol.toStringTag]() {
@@ -24,7 +26,7 @@ export default class Iterable {
     }
 
     valueOf() {
-        return this._source;
+        return this[IterableSource];
     }
 }
 
