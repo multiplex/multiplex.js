@@ -288,6 +288,8 @@
         }
     }
 
+    const IterableSource = Symbol('iterable');
+
     /**
     * Defines abstract Iterable class.
     * @param {Iterable|Array|String|Function|Function*|Object} source An Iterable object.
@@ -295,12 +297,12 @@
     class Iterable {
         constructor(source = null) {
             if (source !== null && source !== undefined) {
-                this._source = source;
+                this[IterableSource] = source;
             }
         }
 
         [Symbol.iterator]() {
-            return iterator(this._source);
+            return iterator(this[IterableSource]);
         }
 
         get [Symbol.toStringTag]() {
@@ -312,7 +314,7 @@
         }
 
         valueOf() {
-            return this._source;
+            return this[IterableSource];
         }
     }
 
@@ -1048,8 +1050,8 @@
         }
 
         getGrouping(key, value, create) {
-            let hash = this.comparer.hash(key) & 0x7FFFFFFF,
-                equals = this.comparer.equals,
+            let comparer = this.comparer,
+                hash = comparer.hash(key) & 0x7FFFFFFF,
                 bucket = hash % this.buckets.length,
                 index = this.buckets[bucket],
                 grouping = null,
@@ -1059,7 +1061,7 @@
             while (index !== undefined) {
                 slot = this.slots[index];
 
-                if (slot.hash === hash && equals(slot.grouping.key, key)) {
+                if (slot.hash === hash && comparer.equals(slot.grouping.key, key)) {
                     grouping = slot.grouping;
                     break;
                 }
@@ -1211,6 +1213,38 @@
         }
     }
 
+    /**
+    * Supports both iterable and iterator protocols using specified factory method.
+    * @param {Function} factory A function to create iterator instance.
+    */
+    class IterableIterator extends Iterable {
+        constructor(factory) {
+            assertType(factory, Function);
+            super(factory);
+        }
+
+        next() {
+            let iterator = this.iterator;
+            if (iterator === undefined) {
+                iterator = this.valueOf()();
+                this.iterator = iterator;
+            }
+            return iterator.next();
+        }
+
+        [Symbol.iterator]() {
+            return new IterableIterator(this.valueOf());
+        }
+
+        get [Symbol.toStringTag]() {
+            return 'Iterable Iterator';
+        }
+
+        toString() {
+            return '[Iterable Iterator]';
+        }
+    }
+
     class HashTable {
         constructor(comparer = EqualityComparer.defaultComparer) {
             this.initialize();
@@ -1242,14 +1276,14 @@
         }
 
         find(key) {
-            let hash = this.comparer.hash(key) & 0x7FFFFFFF,
-                equals = this.comparer.equals,
+            let comparer = this.comparer,
+                hash = comparer.hash(key) & 0x7FFFFFFF,
                 entry = null;
 
             for (let index = this.buckets[hash % this.buckets.length]; index !== undefined;) {
                 entry = this.entries[index];
 
-                if (entry.hash === hash && equals(entry.key, key)) {
+                if (entry.hash === hash && comparer.equals(entry.key, key)) {
                     return index;
                 }
 
@@ -1260,7 +1294,7 @@
         }
 
         forEach(callback, target, thisArg = null) {
-            for (let element in this) {
+            for (let element of this) {
                 if (thisArg) {
                     callback.call(thisArg, element[0], element[1], target);
                 }
@@ -1271,8 +1305,8 @@
         }
 
         insert(key, value, add) {
-            let hash = this.comparer.hash(key) & 0x7FFFFFFF,
-                equals = this.comparer.equals,
+            let comparer = this.comparer,
+                hash = comparer.hash(key) & 0x7FFFFFFF,
                 bucket = hash % this.buckets.length,
                 entry = null;
 
@@ -1281,7 +1315,7 @@
             for (let index = this.buckets[bucket]; index !== undefined;) {
                 entry = this.entries[index];
 
-                if (entry.hash === hash && equals(entry.key, key)) {
+                if (entry.hash === hash && comparer.equals(entry.key, key)) {
                     if (add) {
                         return false;
                     }
@@ -1362,9 +1396,9 @@
         }
 
         remove(key) {
-            let equals = this.comparer.equals,
-                hash = this.comparer.hash(key) & 0x7FFFFFFF,    // hash-code of the key
-                bucket = hash % this.buckets.length,            // bucket index
+            let comparer = this.comparer,
+                hash = comparer.hash(key) & 0x7FFFFFFF,     // hash-code of the key
+                bucket = hash % this.buckets.length,        // bucket index
                 last,
                 entry;
 
@@ -1372,7 +1406,7 @@
             for (let index = this.buckets[bucket]; index !== undefined;) {
                 entry = this.entries[index];
 
-                if (entry.hash === hash && equals(entry.key, key)) {
+                if (entry.hash === hash && comparer.equals(entry.key, key)) {
                     // last item in the chained bucket list
                     if (last === undefined) {
                         this.buckets[bucket] = entry.next;
@@ -1414,30 +1448,23 @@
     }
 
 
-    class HashTableIterator extends Iterator {
+    class HashTableIterator extends IterableIterator {
         // type 0: key, 1: value, -1: [key, value]
         constructor(table, type = -1) {
-            let index = 0,
-                entry = null,
-                size = table.size,
-                entries = table.entries;
+            super(function* () {
+                let index = 0,
+                    entry = null,
+                    size = table.size,
+                    entries = table.entries;
 
-            super(() => {
                 while (index < size) {
                     entry = entries[index++];
 
                     // freed entries have undefined as hashCode value and do not enumerate
                     if (entry.hash !== undefined) {
-                        return {
-                            value: type === -1 ? [entry.key, entry.value] : (type === 1 ? entry.key : entry.value),
-                            done: false
-                        };
+                        yield type === -1 ? [entry.key, entry.value] : (type === 1 ? entry.key : entry.value);
                     }
                 }
-
-                return {
-                    done: true
-                };
             });
         }
     }
@@ -1454,10 +1481,11 @@
 
     class Map extends Collection {
         constructor(iterable = null) {
+            super();
             this.table = new HashTable();
 
             if (iterable !== null) {
-                for (let element in iterable) {
+                for (let element of iterable) {
                     if (isArray(element)) {
                         this.table.add(element[0], element[1]);
                     }
@@ -1547,10 +1575,11 @@
 
     class Set extends Collection {
         constructor(iterable = null) {
+            super();
             this.table = new HashTable();
 
             if (iterable !== null) {
-                for (let element in iterable) {
+                for (let element of iterable) {
                     this.table.add(element, element);
                 }
             }
@@ -1567,7 +1596,6 @@
 
         delete(value) {
             let result = this.table.remove(value);
-            this.size = this.table.count();
             return result ? value : false;
         }
 
@@ -1826,7 +1854,7 @@
         else {
             let count = 0;
 
-            for (let element in iterable(value)) {
+            for (let element of iterable(value)) {
                 count++;
             }
 
@@ -1869,7 +1897,7 @@
         return new Iterable(function* () {
             let table = new HashTable(comparer);
 
-            for (let element in source) {
+            for (let element of source) {
                 if (table.add(element)) {
                     yield element;
                 }
@@ -1929,11 +1957,11 @@
         return new Iterable(function* () {
             let table = new HashTable(comparer);
 
-            for (let element in second) {
+            for (let element of second) {
                 table.add(element);
             }
 
-            for (let element in first) {
+            for (let element of first) {
                 if (table.contains(element) === result) {
                     yield element;
                 }
@@ -1956,7 +1984,7 @@
             }
         }
         else {
-            for (let element in source) {
+            for (let element of source) {
                 if (predicate(element)) {
                     return element;
                 }
@@ -2015,7 +2043,7 @@
         return new Iterable(function* () {
             let lookup = new Lookup(inner, innerKeySelector, null, comparer);
 
-            for (let element in outer) {
+            for (let element of outer) {
                 yield resultSelector(element, lookup.get(outerKeySelector(element)));
             }
         });
@@ -2031,7 +2059,7 @@
             let lookup = new Lookup(inner, innerKeySelector, null, comparer),
                 elements = null;
 
-            for (let element in outer) {
+            for (let element of outer) {
                 elements = lookup.get(outerKeySelector(element)).elements;
 
                 for (let i = 0, len = elements.length; i < len; i++) {
@@ -2060,7 +2088,7 @@
             }
         }
         else {
-            for (let element in source) {
+            for (let element of source) {
                 if (predicate(element)) {
                     result = element;
                 }
@@ -2165,8 +2193,8 @@
 
         return new Iterable(function* () {
             let index = 0;
-            for (let element in source) {
-                for (let subElement in collectionSelector(element, index++)) {
+            for (let element of source) {
+                for (let subElement of collectionSelector(element, index++)) {
                     yield resultSelector ? resultSelector(element, subElement) : subElement;
                 }
             }
@@ -2225,7 +2253,7 @@
             }
         }
         else {
-            for (let element in source) {
+            for (let element of source) {
                 if (predicate(element) && count <= 1) {
                     result = element;
                     count++;

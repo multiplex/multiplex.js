@@ -1,4 +1,4 @@
-import Iterator from '../iteration/iterator';
+import IterableIterator from '../iteration/iterable-iterator';
 import EqualityComparer from './equality-comparer';
 import resize from '../utils/resize';
 
@@ -33,14 +33,14 @@ export default class HashTable {
     }
 
     find(key) {
-        let hash = this.comparer.hash(key) & 0x7FFFFFFF,
-            equals = this.comparer.equals,
+        let comparer = this.comparer,
+            hash = comparer.hash(key) & 0x7FFFFFFF,
             entry = null;
 
         for (let index = this.buckets[hash % this.buckets.length]; index !== undefined;) {
             entry = this.entries[index];
 
-            if (entry.hash === hash && equals(entry.key, key)) {
+            if (entry.hash === hash && comparer.equals(entry.key, key)) {
                 return index;
             }
 
@@ -51,7 +51,7 @@ export default class HashTable {
     }
 
     forEach(callback, target, thisArg = null) {
-        for (let element in this) {
+        for (let element of this) {
             if (thisArg) {
                 callback.call(thisArg, element[0], element[1], target);
             }
@@ -62,8 +62,8 @@ export default class HashTable {
     }
 
     insert(key, value, add) {
-        let hash = this.comparer.hash(key) & 0x7FFFFFFF,
-            equals = this.comparer.equals,
+        let comparer = this.comparer,
+            hash = comparer.hash(key) & 0x7FFFFFFF,
             bucket = hash % this.buckets.length,
             entry = null;
 
@@ -72,7 +72,7 @@ export default class HashTable {
         for (let index = this.buckets[bucket]; index !== undefined;) {
             entry = this.entries[index];
 
-            if (entry.hash === hash && equals(entry.key, key)) {
+            if (entry.hash === hash && comparer.equals(entry.key, key)) {
                 if (add) {
                     return false;
                 }
@@ -153,9 +153,9 @@ export default class HashTable {
     }
 
     remove(key) {
-        let equals = this.comparer.equals,
-            hash = this.comparer.hash(key) & 0x7FFFFFFF,    // hash-code of the key
-            bucket = hash % this.buckets.length,            // bucket index
+        let comparer = this.comparer,
+            hash = comparer.hash(key) & 0x7FFFFFFF,     // hash-code of the key
+            bucket = hash % this.buckets.length,        // bucket index
             last,
             entry;
 
@@ -163,7 +163,7 @@ export default class HashTable {
         for (let index = this.buckets[bucket]; index !== undefined;) {
             entry = this.entries[index];
 
-            if (entry.hash === hash && equals(entry.key, key)) {
+            if (entry.hash === hash && comparer.equals(entry.key, key)) {
                 // last item in the chained bucket list
                 if (last === undefined) {
                     this.buckets[bucket] = entry.next;
@@ -205,30 +205,23 @@ export default class HashTable {
 }
 
 
-export class HashTableIterator extends Iterator {
+export class HashTableIterator extends IterableIterator {
     // type 0: key, 1: value, -1: [key, value]
     constructor(table, type = -1) {
-        let index = 0,
-            entry = null,
-            size = table.size,
-            entries = table.entries;
+        super(function* () {
+            let index = 0,
+                entry = null,
+                size = table.size,
+                entries = table.entries;
 
-        super(() => {
             while (index < size) {
                 entry = entries[index++];
 
                 // freed entries have undefined as hashCode value and do not enumerate
                 if (entry.hash !== undefined) {
-                    return {
-                        value: type === -1 ? [entry.key, entry.value] : (type === 1 ? entry.key : entry.value),
-                        done: false
-                    };
+                    yield type === -1 ? [entry.key, entry.value] : (type === 1 ? entry.key : entry.value);
                 }
             }
-
-            return {
-                done: true
-            };
         });
     }
 }

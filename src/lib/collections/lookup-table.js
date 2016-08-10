@@ -26,8 +26,8 @@ export default class LookupTable {
     }
 
     getGrouping(key, value, create) {
-        let hash = this.comparer.hash(key) & 0x7FFFFFFF,
-            equals = this.comparer.equals,
+        let comparer = this.comparer,
+            hash = comparer.hash(key) & 0x7FFFFFFF,
             bucket = hash % this.buckets.length,
             index = this.buckets[bucket],
             grouping = null,
@@ -37,7 +37,7 @@ export default class LookupTable {
         while (index !== undefined) {
             slot = this.slots[index];
 
-            if (slot.hash === hash && equals(slot.grouping.key, key)) {
+            if (slot.hash === hash && comparer.equals(slot.grouping.key, key)) {
                 grouping = slot.grouping;
                 break;
             }
