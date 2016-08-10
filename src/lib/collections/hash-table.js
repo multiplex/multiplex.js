@@ -1,4 +1,5 @@
 import Iterator from '../iteration/iterator';
+import IterableIterator from '../iteration/iterable-iterator';
 import EqualityComparer from './equality-comparer';
 import iteratorSymbol from '../iteration/iterator-symbol';
 import resize from '../utils/resize';
@@ -38,14 +39,14 @@ mixin(HashTable.prototype, {
     },
 
     find: function (key) {
-        var hash = this.comparer.hash(key) & 0x7FFFFFFF,
-            equals = this.comparer.equals,
+        var comparer = this.comparer,
+            hash = comparer.hash(key) & 0x7FFFFFFF,
             entry = null;
 
         for (var index = this.buckets[hash % this.buckets.length]; index !== undefined;) {
             entry = this.entries[index];
 
-            if (entry.hash === hash && equals(entry.key, key)) {
+            if (entry.hash === hash && comparer.equals(entry.key, key)) {
                 return index;
             }
 
@@ -67,8 +68,8 @@ mixin(HashTable.prototype, {
     },
 
     insert: function (key, value, add) {
-        var hash = this.comparer.hash(key) & 0x7FFFFFFF,
-            equals = this.comparer.equals,
+        var comparer = this.comparer,
+            hash = comparer.hash(key) & 0x7FFFFFFF,
             bucket = hash % this.buckets.length,
             entry = null,
             index = 0;
@@ -78,7 +79,7 @@ mixin(HashTable.prototype, {
         for (index = this.buckets[bucket]; index !== undefined;) {
             entry = this.entries[index];
 
-            if (entry.hash === hash && equals(entry.key, key)) {
+            if (entry.hash === hash && comparer.equals(entry.key, key)) {
                 if (add) {
                     return false;
                 }
@@ -160,9 +161,9 @@ mixin(HashTable.prototype, {
     },
 
     remove: function (key) {
-        var equals = this.comparer.equals,
-            hash = this.comparer.hash(key) & 0x7FFFFFFF,    // hash-code of the key
-            bucket = hash % this.buckets.length,                 // bucket index
+        var comparer = this.comparer,
+            hash = comparer.hash(key) & 0x7FFFFFFF,     // hash-code of the key
+            bucket = hash % this.buckets.length,        // bucket index
             last,
             entry;
 
@@ -170,7 +171,7 @@ mixin(HashTable.prototype, {
         for (var index = this.buckets[bucket]; index !== undefined;) {
             entry = this.entries[index];
 
-            if (entry.hash === hash && equals(entry.key, key)) {
+            if (entry.hash === hash && comparer.equals(entry.key, key)) {
                 // last item in the chained bucket list
                 if (last === undefined) {
                     this.buckets[bucket] = entry.next;
@@ -215,31 +216,33 @@ HashTable.prototype[iteratorSymbol] = function () {
 
 // type 0: key, 1: value, -1: [key, value]
 export function HashTableIterator(table, type) {
-    var index = 0,
-        entry = null,
-        size = table.size,
-        entries = table.entries;
+    IterableIterator.call(this, function () {
+        var index = 0,
+            entry = null,
+            size = table.size,
+            entries = table.entries;
 
-    Iterator.call(this, function () {
-        while (index < size) {
-            entry = entries[index++];
+        return new Iterator(function () {
+            while (index < size) {
+                entry = entries[index++];
 
-            // freed entries have undefined as hashCode value and do not enumerate
-            if (entry.hash !== undefined) {
-                return {
-                    value: type === -1 ? [entry.key, entry.value] : (type === 1 ? entry.key : entry.value),
-                    done: false
-                };
+                // freed entries have undefined as hashCode value and do not enumerate
+                if (entry.hash !== undefined) {
+                    return {
+                        value: type === -1 ? [entry.key, entry.value] : (type === 1 ? entry.key : entry.value),
+                        done: false
+                    };
+                }
             }
-        }
 
-        return {
-            done: true
-        };
+            return {
+                done: true
+            };
+        });
     });
 }
 
-extend(HashTableIterator, Iterator);
+extend(HashTableIterator, IterableIterator);
 
 
 function Entry(hash, next, key, value) {

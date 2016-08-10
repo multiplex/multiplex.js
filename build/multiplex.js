@@ -1322,6 +1322,36 @@
         return this.table[Symbol.iterator]();
     };
 
+    /**
+    * Supports both iterable and iterator protocols using specified factory method.
+    * @param {Function} factory A function to create iterator instance.
+    */
+    function IterableIterator(factory) {
+        assertType(factory, Function);
+        Iterable.call(this, factory);
+    }
+
+    extend(IterableIterator, Iterable);
+
+    IterableIterator.prototype[iteratorSymbol] = function () {
+        return new IterableIterator(this.valueOf());
+    };
+
+    mixin(IterableIterator.prototype, {
+        next: function () {
+            var iterator = this.iterator;
+            if (iterator === undefined) {
+                iterator = this.valueOf()();
+                this.iterator = iterator;
+            }
+            return iterator.next();
+        },
+
+        toString: function () {
+            return '[Iterable Iterator]';
+        }
+    });
+
     function HashTable(comparer) {
         this.initialize();
         this.comparer = EqualityComparer.from(comparer);
@@ -1531,31 +1561,33 @@
 
     // type 0: key, 1: value, -1: [key, value]
     function HashTableIterator(table, type) {
-        var index = 0,
-            entry = null,
-            size = table.size,
-            entries = table.entries;
+        IterableIterator.call(this, function () {
+            var index = 0,
+                entry = null,
+                size = table.size,
+                entries = table.entries;
 
-        Iterator.call(this, function () {
-            while (index < size) {
-                entry = entries[index++];
+            return new Iterator(function () {
+                while (index < size) {
+                    entry = entries[index++];
 
-                // freed entries have undefined as hashCode value and do not enumerate
-                if (entry.hash !== undefined) {
-                    return {
-                        value: type === -1 ? [entry.key, entry.value] : (type === 1 ? entry.key : entry.value),
-                        done: false
-                    };
+                    // freed entries have undefined as hashCode value and do not enumerate
+                    if (entry.hash !== undefined) {
+                        return {
+                            value: type === -1 ? [entry.key, entry.value] : (type === 1 ? entry.key : entry.value),
+                            done: false
+                        };
+                    }
                 }
-            }
 
-            return {
-                done: true
-            };
+                return {
+                    done: true
+                };
+            });
         });
     }
 
-    extend(HashTableIterator, Iterator);
+    extend(HashTableIterator, IterableIterator);
 
 
     function Entry(hash, next, key, value) {
