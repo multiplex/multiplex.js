@@ -41,7 +41,7 @@ mixin(Lookup.prototype, {
     },
 
     valueOf: function () {
-        this.table.keys();
+        this.table.entries();
     },
 
     toString: function () {

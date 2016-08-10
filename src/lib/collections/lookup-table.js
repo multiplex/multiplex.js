@@ -29,6 +29,17 @@ mixin(LookupTable.prototype, {
         return this.getGrouping(key, null, false) !== null;
     },
 
+    entries: function () {
+        var arr = new Array(this.size),
+            index = 0;
+
+        for (var i = 0, count = this.slots.length; i < count; i++) {
+            arr[index++] = this.slots[i].grouping;
+        }
+
+        return arr;
+    },
+
     getGrouping: function (key, value, create) {
         var comparer = this.comparer,
             hash = comparer.hash(key) & 0x7FFFFFFF,
@@ -89,17 +100,6 @@ mixin(LookupTable.prototype, {
             slot.next = this.buckets[bucket];
             this.buckets[bucket] = index;
         }
-    },
-
-    keys: function () {
-        var arr = new Array(this.size),
-            index = 0;
-
-        for (var i = 0, count = this.slots.length; i < count; i++) {
-            arr[index++] = this.slots[i].grouping.key;
-        }
-
-        return arr;
     }
 });
 
