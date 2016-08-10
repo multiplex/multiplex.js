@@ -68,7 +68,7 @@ export default class LookupTable {
                 this.size++;
 
                 grouping = new Grouping(key, [value]);
-                this.slots[index] = new Slot(hash, grouping, this.buckets[bucket]);
+                this.slots[index] = new LookupTableSlot(hash, grouping, this.buckets[bucket]);
                 this.buckets[bucket] = index;
             }
             else {
@@ -129,7 +129,7 @@ export default class LookupTable {
 }
 
 
-class Slot {
+class LookupTableSlot {
     constructor(hash, grouping, next) {
         this.hash = hash;
         this.next = next;
