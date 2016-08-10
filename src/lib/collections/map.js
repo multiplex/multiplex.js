@@ -1,5 +1,6 @@
 import Collection from './collection';
 import HashTable, {HashTableIterator} from './hash-table';
+import bufferTo from '../utils/buffer-to';
 import isArray from '../utils/is-array';
 import error from '../utils/error';
 
@@ -22,6 +23,14 @@ export default class Map extends Collection {
 
     clear() {
         this.table.clear();
+    }
+
+    copyTo(array, arrayIndex) {
+        bufferTo(this.keys(), array, arrayIndex);
+    }
+
+    count() {
+        return this.size;
     }
 
     delete(key) {
@@ -61,7 +70,7 @@ export default class Map extends Collection {
     }
 
     valueOf() {
-        return this.table.keys();
+        return this.table.entries();
     }
 
     get size() {
@@ -77,7 +86,7 @@ export default class Map extends Collection {
     }
 
     [Symbol.iterator]() {
-        return new MapIterator(this, 0);
+        return new MapIterator(this, -1);
     }
 }
 

@@ -900,12 +900,12 @@
             return arrayBuffer(value);
         }
 
-        else if (value instanceof ArrayIterable) {          // ArrayIterable wrapper
+        else if (value instanceof Collection) {             // Collections have 'valueOf' method
             return arrayBuffer(value.valueOf());
         }
 
-        else if (value instanceof Collection) {             // Collections have 'toArray' method
-            return value.toArray();
+        else if (value instanceof ArrayIterable) {          // ArrayIterable wrapper
+            return arrayBuffer(value.valueOf());
         }
 
         // do it the hard way
@@ -1049,6 +1049,17 @@
             return this.getGrouping(key, null, false) !== null;
         }
 
+        entries() {
+            var arr = new Array(this.size),
+                index = 0;
+
+            for (let i = 0, count = this.slots.length; i < count; i++) {
+                arr[index++] = this.slots[i].grouping;
+            }
+
+            return arr;
+        }
+
         getGrouping(key, value, create) {
             let comparer = this.comparer,
                 hash = comparer.hash(key) & 0x7FFFFFFF,
@@ -1109,17 +1120,6 @@
                 slot.next = this.buckets[bucket];
                 this.buckets[bucket] = index;
             }
-        }
-
-        keys() {
-            var arr = new Array(this.size),
-                index = 0;
-
-            for (let i = 0, count = this.slots.length; i < count; i++) {
-                arr[index++] = this.slots[i].grouping.key;
-            }
-
-            return arr;
         }
 
         static create(source, keySelector, comparer = EqualityComparer.defaultComparer) {
@@ -1197,7 +1197,7 @@
         }
 
         valueOf() {
-            this.table.keys();
+            this.table.entries();
         }
 
         [Symbol.iterator]() {
@@ -1273,6 +1273,22 @@
 
         count() {
             return this.size - this.freeCount;
+        }
+
+        entries() {
+            let arr = new Array(this.count()),
+                entry = null,
+                index = 0;
+
+            for (let i = 0, count = this.size; i < count; i++) {
+                entry = this.entries[i];
+
+                if (entry.hash !== undefined) {
+                    arr[index++] = entry;
+                }
+            }
+
+            return arr;
         }
 
         find(key) {
@@ -1354,22 +1370,6 @@
             this.buckets[bucket] = index;
 
             return true;
-        }
-
-        keys() {
-            let arr = new Array(this.count()),
-                entry = null,
-                index = 0;
-
-            for (let i = 0, count = this.size; i < count; i++) {
-                entry = this.entries[i];
-
-                if (entry.hash !== undefined) {
-                    arr[index++] = entry.key;
-                }
-            }
-
-            return arr;
         }
 
         resize() {
@@ -1462,7 +1462,7 @@
 
                     // freed entries have undefined as hashCode value and do not enumerate
                     if (entry.hash !== undefined) {
-                        yield type === -1 ? [entry.key, entry.value] : (type === 1 ? entry.key : entry.value);
+                        yield type === -1 ? [entry.key, entry.value] : (type === 0 ? entry.key : entry.value);
                     }
                 }
             });
@@ -1498,6 +1498,14 @@
 
         clear() {
             this.table.clear();
+        }
+
+        copyTo(array, arrayIndex) {
+            bufferTo(this.keys(), array, arrayIndex);
+        }
+
+        count() {
+            return this.size;
         }
 
         delete(key) {
@@ -1537,7 +1545,7 @@
         }
 
         valueOf() {
-            return this.table.keys();
+            return this.table.entries();
         }
 
         get size() {
@@ -1553,7 +1561,7 @@
         }
 
         [Symbol.iterator]() {
-            return new MapIterator(this, 0);
+            return new MapIterator(this, -1);
         }
     }
 
@@ -1594,6 +1602,14 @@
             this.table.clear();
         }
 
+        copyTo(array, arrayIndex) {
+            bufferTo(this.keys(), array, arrayIndex);
+        }
+
+        count() {
+            return this.size;
+        }
+
         delete(value) {
             let result = this.table.remove(value);
             return result ? value : false;
@@ -1620,7 +1636,7 @@
         }
 
         valueOf() {
-            return this.table.keys();
+            return this.table.entries();
         }
 
         get size() {

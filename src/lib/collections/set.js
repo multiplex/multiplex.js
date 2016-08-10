@@ -1,5 +1,6 @@
 import Collection from './collection';
 import HashTable, {HashTableIterator} from './hash-table';
+import bufferTo from '../utils/buffer-to';
 
 export default class Set extends Collection {
     constructor(iterable = null) {
@@ -20,6 +21,14 @@ export default class Set extends Collection {
 
     clear() {
         this.table.clear();
+    }
+
+    copyTo(array, arrayIndex) {
+        bufferTo(this.keys(), array, arrayIndex);
+    }
+
+    count() {
+        return this.size;
     }
 
     delete(value) {
@@ -48,7 +57,7 @@ export default class Set extends Collection {
     }
 
     valueOf() {
-        return this.table.keys();
+        return this.table.entries();
     }
 
     get size() {
