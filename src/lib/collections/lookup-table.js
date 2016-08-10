@@ -1,5 +1,5 @@
 import Grouping from './grouping';
-import Iterator from '../iteration/iterator';
+import ArrayIterator from '../iteration/iterator-array';
 import EqualityComparer from './equality-comparer';
 import iteratorSymbol from '../iteration/iterator-symbol';
 import resize from '../utils/resize';
@@ -118,22 +118,7 @@ mixin(LookupTable, {
 
 
 LookupTable.prototype[iteratorSymbol] = function () {
-    var slots = this.slots,
-        length = slots.length,
-        index = 0;
-
-    return new Iterator(function () {
-        if (++index < length) {
-            return {
-                value: slots[index],
-                done: false
-            };
-        }
-
-        return {
-            done: true
-        };
-    });
+    return new ArrayIterator(this.slots);
 };
 
 
