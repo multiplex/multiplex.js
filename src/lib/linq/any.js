@@ -1,7 +1,7 @@
 import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
 
-export default function anyIterator(source, predicate = () => true) {
+export default function anyIterator(source, predicate) {
     assertNotNull(source);
     assertType(predicate, Function);
 

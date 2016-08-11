@@ -2,7 +2,7 @@ import Iterable from '../iteration/iterable';
 import HashTable from '../collections/hash-table';
 import assertNotNull from '../utils/assert-not-null';
 
-export default function distinctIterator(source, comparer = null) {
+export default function distinctIterator(source, comparer) {
     assertNotNull(source);
 
     return new Iterable(function* () {

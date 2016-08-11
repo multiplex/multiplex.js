@@ -1,7 +1,7 @@
 import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
 
-export default function aggregateIterator(source, seed, func, resultSelector = item => item) {
+export default function aggregateIterator(source, seed, func, resultSelector) {
     assertNotNull(source);
     assertType(func, Function);
     assertType(resultSelector, Function);

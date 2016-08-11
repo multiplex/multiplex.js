@@ -425,8 +425,6 @@
         }
     }
 
-    const hashSymbol =  '__hash__';
-
     function combineHash(h1, h2) {
         return ((h1 << 7) | (h1 >> 25)) ^ h2;
     }
@@ -584,8 +582,8 @@
             }
 
             // Compute overridden 'hash' method
-            else if (typeof obj[hashSymbol] === 'function') {
-                _hash = obj[hashSymbol]() >> 32;
+            else if (typeof obj.__hash__ === 'function') {
+                _hash = obj.__hash__() >> 32;
             }
 
             // Compute 'Object' type hash for all other types
@@ -608,7 +606,7 @@
         return _hash;
     }
 
-    const equalsSymbol =  '__eq__';
+    const hashSymbol =  '__hash__';
 
     function computeObjectEquals(objA, objB) {
         // Objects having different hash code are not equal
@@ -684,8 +682,8 @@
             }
 
             // Compute overridden 'equals' method for Object types
-            else if (typeof objA[equalsSymbol] === 'function') {
-                return objA[equalsSymbol](objB);
+            else if (typeof objA.__eq__ === 'function') {
+                return objA.__eq__(objB);
             }
 
             return computeObjectEquals(objA, objB);
@@ -696,7 +694,7 @@
         return false;
     }
 
-    const compareSymbol = '__cmp__';
+    const equalsSymbol =  '__eq__';
 
     /**
     * Performs a comparison of two objects of the same type and returns a value indicating whether one object is less than, equal to, or greater than the other.
@@ -737,8 +735,8 @@
         }
 
         // Compute overridden 'compare' method for Object types
-        else if (typeof objA[compareSymbol] === 'function') {
-            return objA[compareSymbol](objB);
+        else if (typeof objA.__cmp__ === 'function') {
+            return objA.__cmp__(objB);
         }
 
         // All other objects are compared using 'valudOf' method
@@ -749,6 +747,8 @@
             return v1 > v2 ? 1 : (v1 < v2 ? -1 : 0);
         }
     }
+
+    const compareSymbol = '__cmp__';
 
     /**
     * Provides a base class for implementations of Comparer.
@@ -1465,9 +1465,9 @@
     }
 
     class Map extends Collection {
-        constructor(iterable = null) {
+        constructor(iterable = null, comparer = EqualityComparer.defaultComparer) {
             super();
-            this.table = new HashTable();
+            this.table = new HashTable(comparer);
 
             if (iterable !== null) {
                 for (let element of iterable) {
@@ -1567,9 +1567,9 @@
     }
 
     class Set extends Collection {
-        constructor(iterable = null) {
+        constructor(iterable = null, comparer = EqualityComparer.defaultComparer) {
             super();
-            this.table = new HashTable();
+            this.table = new HashTable(comparer);
 
             if (iterable !== null) {
                 for (let element of iterable) {
@@ -1716,7 +1716,7 @@
         });
     }
 
-    function aggregateIterator(source, seed, func, resultSelector = item => item) {
+    function aggregateIterator(source, seed, func, resultSelector) {
         assertNotNull(source);
         assertType(func, Function);
         assertType(resultSelector, Function);
@@ -1743,7 +1743,7 @@
         return true;
     }
 
-    function anyIterator(source, predicate = () => true) {
+    function anyIterator(source, predicate) {
         assertNotNull(source);
         assertType(predicate, Function);
 
@@ -1769,7 +1769,7 @@
         });
     }
 
-    function averageIterator(source, selector = null) {
+    function averageIterator(source, selector) {
         assertNotNull(source);
 
         if (selector) {
@@ -1810,7 +1810,7 @@
         });
     }
 
-    function containsIterator(source, value, comparer = null) {
+    function containsIterator(source, value, comparer) {
         assertNotNull(source);
         comparer = EqualityComparer.from(comparer);
 
@@ -1863,7 +1863,7 @@
         }
     }
 
-    function countIterator(source, predicate = null) {
+    function countIterator(source, predicate) {
         assertNotNull(source);
 
         if (predicate) {
@@ -1892,7 +1892,7 @@
         });
     }
 
-    function distinctIterator(source, comparer = null) {
+    function distinctIterator(source, comparer) {
         assertNotNull(source);
 
         return new Iterable(function* () {
@@ -1949,7 +1949,7 @@
         error(ERROR_ARGUMENT_OUT_OF_RANGE);
     }
 
-    function exceptIntersectIterator(first, second, intersect = true, comparer = null) {
+    function exceptIntersectIterator(first, second, comparer, intersect = true) {
         assertNotNull(first);
         assertNotNull(second);
 
@@ -1970,7 +1970,7 @@
         });
     }
 
-    function firstOrDefaultIterator(source, predicate = null, defaultValue = null) {
+    function firstOrDefaultIterator(source, predicate, defaultValue) {
         assertNotNull(source);
         predicate = predicate || (() => true);
         assertType(predicate, Function);
@@ -1995,7 +1995,7 @@
         return defaultValue;
     }
 
-    function firstIterator(source, predicate = null) {
+    function firstIterator(source, predicate) {
         let value = {},
             result = firstOrDefaultIterator(source, predicate, value);
 
@@ -2006,7 +2006,7 @@
         return result;
     }
 
-    function forEachIterator(source, action, thisArg = null) {
+    function forEachIterator(source, action, thisArg) {
         assertNotNull(source);
         assertType(action, Function);
 
@@ -2022,7 +2022,7 @@
         }
     }
 
-    function groupIterator(source, keySelector, elementSelector = null, resultSelector = null, comparer = null) {
+    function groupIterator(source, keySelector, elementSelector, resultSelector, comparer) {
         assertNotNull(source);
         assertType(keySelector, Function);
 
@@ -2035,7 +2035,7 @@
         });
     }
 
-    function groupJoinIterator(outer, inner, outerKeySelector, innerKeySelector, resultSelector, comparer = null) {
+    function groupJoinIterator(outer, inner, outerKeySelector, innerKeySelector, resultSelector, comparer) {
         assertNotNull(inner);
         assertType(outerKeySelector, Function);
         assertType(innerKeySelector, Function);
@@ -2050,7 +2050,7 @@
         });
     }
 
-    function joinIterator(outer, inner, outerKeySelector, innerKeySelector, resultSelector, comparer = null) {
+    function joinIterator(outer, inner, outerKeySelector, innerKeySelector, resultSelector, comparer) {
         assertNotNull(inner);
         assertType(outerKeySelector, Function);
         assertType(innerKeySelector, Function);
@@ -2070,7 +2070,7 @@
         });
     }
 
-    function lastOrDefaultIterator(source, predicate = null, defaultValue = null) {
+    function lastOrDefaultIterator(source, predicate, defaultValue) {
         assertNotNull(source);
         predicate = predicate || (() => true);
         assertType(predicate, Function);
@@ -2100,7 +2100,7 @@
         return result;
     }
 
-    function lastIterator(source, predicate = null) {
+    function lastIterator(source, predicate) {
         let value = {},
             result = lastOrDefaultIterator(source, predicate, value);
 
@@ -2111,7 +2111,7 @@
         return result;
     }
 
-    function minMaxIterator(source, max, selector = null) {
+    function minMaxIterator(source, max, selector) {
         assertNotNull(source);
 
         if (selector) {
@@ -2185,7 +2185,7 @@
         });
     }
 
-    function selectManyIterator(source, collectionSelector, resultSelector = null) {
+    function selectManyIterator(source, collectionSelector, resultSelector) {
         assertNotNull(source);
         assertType(collectionSelector, Function);
         if (resultSelector) {
@@ -2202,7 +2202,7 @@
         });
     }
 
-    function sequenceEqualIterator(first, second, comparer = EqualityComparer.defaultComparer) {
+    function sequenceEqualIterator(first, second, comparer) {
         assertNotNull(first);
         assertNotNull(second);
         comparer = EqualityComparer.from(comparer);
@@ -2225,7 +2225,7 @@
         return true;
     }
 
-    function singleIterator(source, predicate = null) {
+    function singleIterator(source, predicate) {
         let value = {},
             result = firstOrDefaultIterator(source, predicate, value);
 
@@ -2236,7 +2236,7 @@
         return result;
     }
 
-    function singleOrDefaultIterator(source, predicate = null, defaultValue = null) {
+    function singleOrDefaultIterator(source, predicate, defaultValue) {
         assertNotNull(source);
         predicate = predicate || (() => true);
         assertType(predicate, Function);
@@ -2315,7 +2315,7 @@
         });
     }
 
-    function sumIterator(source, selector = null) {
+    function sumIterator(source, selector) {
         assertNotNull(source);
 
         if (selector) {
@@ -2384,7 +2384,7 @@
         });
     }
 
-    function unionIterator(first, second, comparer = null) {
+    function unionIterator(first, second, comparer) {
         assertNotNull(first);
         assertNotNull(second);
 
@@ -2516,7 +2516,7 @@
             * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
             * @returns {Number}
             */
-            count(predicate) {
+            count(predicate = null) {
                 return countIterator(this, predicate);
             },
 
@@ -2554,7 +2554,7 @@
             * @returns {Iterable}
             */
             except(second, comparer = EqualityComparer.defaultComparer) {
-                return exceptIntersectIterator(this, second, false, comparer);
+                return exceptIntersectIterator(this, second, comparer, false);
             },
 
             /**
@@ -2624,7 +2624,7 @@
             * @returns {Iterable}
             */
             intersect(second, comparer = EqualityComparer.defaultComparer) {
-                return exceptIntersectIterator(this, second, true, comparer);
+                return exceptIntersectIterator(this, second, comparer, true);
             },
 
             /**

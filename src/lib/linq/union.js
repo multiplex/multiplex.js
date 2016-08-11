@@ -2,7 +2,7 @@ import Iterable from '../iteration/iterable';
 import HashTable from '../collections/hash-table';
 import assertNotNull from '../utils/assert-not-null';
 
-export default function unionIterator(first, second, comparer = null) {
+export default function unionIterator(first, second, comparer) {
     assertNotNull(first);
     assertNotNull(second);
 

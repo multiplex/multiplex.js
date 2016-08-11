@@ -5,7 +5,7 @@ import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
 import error, {ERROR_NO_ELEMENTS} from '../utils/error';
 
-export default function minMaxIterator(source, max, selector = null) {
+export default function minMaxIterator(source, max, selector) {
     assertNotNull(source);
 
     if (selector) {

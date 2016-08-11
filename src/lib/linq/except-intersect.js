@@ -2,7 +2,7 @@ import Iterable from '../iteration/iterable';
 import HashTable from '../collections/hash-table';
 import assertNotNull from '../utils/assert-not-null';
 
-export default function exceptIntersectIterator(first, second, intersect = true, comparer = null) {
+export default function exceptIntersectIterator(first, second, comparer, intersect = true) {
     assertNotNull(first);
     assertNotNull(second);
 

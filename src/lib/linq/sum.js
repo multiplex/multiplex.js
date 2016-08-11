@@ -4,7 +4,7 @@ import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
 import error, {ERROR_NON_NUMERIC_TYPE} from '../utils/error';
 
-export default function sumIterator(source, selector = null) {
+export default function sumIterator(source, selector) {
     assertNotNull(source);
 
     if (selector) {

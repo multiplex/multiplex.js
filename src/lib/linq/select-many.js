@@ -2,7 +2,7 @@ import Iterable from '../iteration/iterable';
 import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
 
-export default function selectManyIterator(source, collectionSelector, resultSelector = null) {
+export default function selectManyIterator(source, collectionSelector, resultSelector) {
     assertNotNull(source);
     assertType(collectionSelector, Function);
     if (resultSelector) {

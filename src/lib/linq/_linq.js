@@ -139,7 +139,7 @@ export default function linq(iterable) {
         * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
         * @returns {Number}
         */
-        count(predicate) {
+        count(predicate = null) {
             return count(this, predicate);
         },
 
@@ -177,7 +177,7 @@ export default function linq(iterable) {
         * @returns {Iterable}
         */
         except(second, comparer = EqualityComparer.defaultComparer) {
-            return exceptIntersect(this, second, false, comparer);
+            return exceptIntersect(this, second, comparer, false);
         },
 
         /**
@@ -247,7 +247,7 @@ export default function linq(iterable) {
         * @returns {Iterable}
         */
         intersect(second, comparer = EqualityComparer.defaultComparer) {
-            return exceptIntersect(this, second, true, comparer);
+            return exceptIntersect(this, second, comparer, true);
         },
 
         /**

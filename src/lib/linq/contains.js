@@ -1,7 +1,7 @@
 import assertNotNull from '../utils/assert-not-null';
 import EqualityComparer from '../collections/equality-comparer';
 
-export default function containsIterator(source, value, comparer = null) {
+export default function containsIterator(source, value, comparer) {
     assertNotNull(source);
     comparer = EqualityComparer.from(comparer);
 

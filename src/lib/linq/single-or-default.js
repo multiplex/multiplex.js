@@ -3,7 +3,7 @@ import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
 import error, {ERROR_MORE_THAN_ONE_ELEMENT} from '../utils/error';
 
-export default function singleOrDefaultIterator(source, predicate = null, defaultValue = null) {
+export default function singleOrDefaultIterator(source, predicate, defaultValue) {
     assertNotNull(source);
     predicate = predicate || (() => true);
     assertType(predicate, Function);

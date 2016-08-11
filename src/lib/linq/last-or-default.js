@@ -2,7 +2,7 @@ import asArray from '../utils/as-array';
 import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
 
-export default function lastOrDefaultIterator(source, predicate = null, defaultValue = null) {
+export default function lastOrDefaultIterator(source, predicate, defaultValue) {
     assertNotNull(source);
     predicate = predicate || (() => true);
     assertType(predicate, Function);

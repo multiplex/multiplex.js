@@ -1,7 +1,7 @@
 import singleOrDefault from './first-or-default';
 import error, {ERROR_NO_ELEMENTS, ERROR_NO_MATCH} from '../utils/error';
 
-export default function singleIterator(source, predicate = null) {
+export default function singleIterator(source, predicate) {
     let value = {},
         result = singleOrDefault(source, predicate, value);
 
