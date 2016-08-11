@@ -1,5 +1,4 @@
 import valueOf from '../utils/value-of';
-import equalsSymbol from './equals-symbol';
 import computeObjectEquals from './equals-object';
 
 
@@ -42,8 +41,8 @@ export default function equals(objA, objB) {
         }
 
         // Compute overridden 'equals' method for Object types
-        else if (typeof objA[equalsSymbol] === 'function') {
-            return objA[equalsSymbol](objB);
+        else if (typeof objA.__eq__ === 'function') {
+            return objA.__eq__(objB);
         }
 
         return computeObjectEquals(objA, objB);
