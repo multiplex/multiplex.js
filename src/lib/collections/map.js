@@ -8,8 +8,8 @@ import forOf from '../utils/for-of';
 import extend from '../utils/extend';
 import mixin from '../utils/mixin';
 
-export default function Map(iterable) {
-    var table = new HashTable();
+export default function Map(iterable, comparer) {
+    var table = new HashTable(comparer);
 
     if (iterable !== null) {
         forOf(iterable, function (element) {
