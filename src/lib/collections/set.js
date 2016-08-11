@@ -1,11 +1,12 @@
 import Collection from './collection';
+import EqualityComparer from './equality-comparer';
 import HashTable, {HashTableIterator} from './hash-table';
 import bufferTo from '../utils/buffer-to';
 
 export default class Set extends Collection {
-    constructor(iterable = null) {
+    constructor(iterable = null, comparer = EqualityComparer.defaultComparer) {
         super();
-        this.table = new HashTable();
+        this.table = new HashTable(comparer);
 
         if (iterable !== null) {
             for (let element of iterable) {
