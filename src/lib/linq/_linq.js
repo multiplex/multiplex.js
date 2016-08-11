@@ -175,7 +175,7 @@ export default function linq(iterable) {
         * @returns {Iterable}
         */
         except: function (second, comparer) {
-            return exceptIntersect(this, second, false, comparer);
+            return exceptIntersect(this, second, comparer, false);
         },
 
         /**
@@ -245,7 +245,7 @@ export default function linq(iterable) {
         * @returns {Iterable}
         */
         intersect: function (second, comparer) {
-            return exceptIntersect(this, second, true, comparer);
+            return exceptIntersect(this, second, comparer, true);
         },
 
         /**

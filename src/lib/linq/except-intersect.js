@@ -5,7 +5,7 @@ import HashTable from '../collections/hash-table';
 import forOf from '../utils/for-of';
 import assertNotNull from '../utils/assert-not-null';
 
-export default function exceptIntersectIterator(first, second, intersect, comparer) {
+export default function exceptIntersectIterator(first, second, comparer, intersect) {
     assertNotNull(first);
     assertNotNull(second);
 

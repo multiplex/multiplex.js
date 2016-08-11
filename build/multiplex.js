@@ -445,8 +445,6 @@
         }
     }
 
-    var hashSymbol = '__hash__';
-
     function combineHash(h1, h2) {
         return ((h1 << 7) | (h1 >> 25)) ^ h2;
     }
@@ -517,6 +515,8 @@
         var _time = valueOf(date);
         return _time ^ (_time >> 5);
     }
+
+    var hashSymbol = '__hash__';
 
     function isObjectLiteral(obj) {
         return Object.getPrototypeOf(obj) === Object.prototype;
@@ -642,8 +642,8 @@
             }
 
             // Compute overridden 'hash' method
-            else if (typeof obj[hashSymbol] === 'function') {
-                _hash = obj[hashSymbol]() >> 32;
+            else if (typeof obj.__hash__ === 'function') {
+                _hash = obj.__hash__() >> 32;
             }
 
             // Compute 'Object' type hash for all other types
@@ -665,8 +665,6 @@
 
         return _hash;
     }
-
-    var equalsSymbol = '__eq__';
 
     function computeObjectEquals(objA, objB) {
         // Objects having different hash code are not equal
@@ -742,8 +740,8 @@
             }
 
             // Compute overridden 'equals' method for Object types
-            else if (typeof objA[equalsSymbol] === 'function') {
-                return objA[equalsSymbol](objB);
+            else if (typeof objA.__eq__ === 'function') {
+                return objA.__eq__(objB);
             }
 
             // Object types
@@ -755,7 +753,7 @@
         return false;
     }
 
-    var compareSymbol = '__cmp__';
+    var equalsSymbol = '__eq__';
 
     /**
     * Performs a comparison of two objects of the same type and returns a value indicating whether one object is less than, equal to, or greater than the other.
@@ -796,8 +794,8 @@
         }
 
         // Compute overridden 'compare' method for Object types
-        else if (typeof objA[compareSymbol] === 'function') {
-            return objA[compareSymbol](objB);
+        else if (typeof objA.__cmp__ === 'function') {
+            return objA.__cmp__(objB);
         }
 
         // All other objects are compared using 'valudOf' method
@@ -808,6 +806,8 @@
             return v1 > v2 ? 1 : (v1 < v2 ? -1 : 0);
         }
     }
+
+    var compareSymbol = '__cmp__';
 
     /**
     * Provides a base class for implementations of Comparer.
@@ -1582,8 +1582,8 @@
         this.value = value;     // item's value
     }
 
-    function Map(iterable) {
-        var table = new HashTable();
+    function Map(iterable, comparer) {
+        var table = new HashTable(comparer);
 
         if (iterable !== null) {
             forOf(iterable, function (element) {
@@ -1684,8 +1684,8 @@
         }
     });
 
-    function Set(iterable) {
-        var table = new HashTable();
+    function Set(iterable, comparer) {
+        var table = new HashTable(comparer);
 
         if (iterable !== null) {
             forOf(iterable, function (element) {
@@ -2122,7 +2122,7 @@
         error(ERROR_ARGUMENT_OUT_OF_RANGE);
     }
 
-    function exceptIntersectIterator(first, second, intersect, comparer) {
+    function exceptIntersectIterator(first, second, comparer, intersect) {
         assertNotNull(first);
         assertNotNull(second);
 
@@ -2862,7 +2862,7 @@
             * @returns {Iterable}
             */
             except: function (second, comparer) {
-                return exceptIntersectIterator(this, second, false, comparer);
+                return exceptIntersectIterator(this, second, comparer, false);
             },
 
             /**
@@ -2932,7 +2932,7 @@
             * @returns {Iterable}
             */
             intersect: function (second, comparer) {
-                return exceptIntersectIterator(this, second, true, comparer);
+                return exceptIntersectIterator(this, second, comparer, true);
             },
 
             /**
