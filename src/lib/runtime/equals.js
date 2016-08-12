@@ -24,8 +24,8 @@ export default function equals(objA, objB) {
 
 
     // objA: NaN & objB: NaN
-    else if (objA !== objA && objB !== objB) {
-        return true;
+    else if (typeof objA === 'number' && typeof objB === 'number') {
+        return isNaN(objA) && isNaN(objB);
     }
 
 
