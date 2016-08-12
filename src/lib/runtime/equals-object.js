@@ -14,17 +14,17 @@ export default function computeObjectEquals(objA, objB) {
     /// regular 'class' instances have different hash code, hence do not fall into following code.
     /// object objA is direct descendant of Object hence no need to check 'hasOwnProperty'
 
-    let _val, _prop;
+    let val, prop;
 
-    for (_prop in objA) {
-        _val = objA[_prop];
+    for (prop in objA) {
+        val = objA[prop];
 
         /// Object methods are not considered for equality
-        if (typeof _val === 'function') {
+        if (typeof val === 'function') {
             continue;
         }
 
-        if (!equals(_val, objB[_prop])) {
+        if (!equals(val, objB[prop])) {
             return false;
         }
     }

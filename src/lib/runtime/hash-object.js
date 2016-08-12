@@ -3,35 +3,36 @@ import combineHash from './hash-combine';
 import compute31BitStringHash from './hash-string';
 import isObjectLiteral from '../utils/is-object-literal';
 
-const __objectHashSeed = Math.floor(Math.random() * 0XFFFF) + 0XFFFF;
-const __objectHashMap = new WeakMap();
-let __objectHashIndex = __objectHashSeed;
+const OBJECT_HASH_SEED = Math.floor(Math.random() * 0XFFFF) + 0XFFFF;
+const OBJECT_HASH_MAP = new WeakMap();
+let OBJECT_HASH_INDEX = OBJECT_HASH_SEED;
 
 
-export default function compute31BitObjecHash(obj) {
-    let _hash = __objectHashMap.get(obj);
+export default function compute31BitObjecHash(obj, strict) {
+    let h = OBJECT_HASH_MAP.get(obj);
 
     // hash not found in the repositoty
-    if (_hash === undefined) {
-        // create object-literals hash based on their visible properties
-        if (isObjectLiteral(obj)) {
-            _hash = __objectHashSeed;
+    if (h === undefined) {
+        // create object-literals hash based on their visible properties in non-strict mode
+        if (strict !== true && isObjectLiteral(obj)) {
+            h = OBJECT_HASH_SEED;
 
             // early seed prevents mutually recursive structures to stack overflow
-            __objectHashMap.set(obj, 0);
+            OBJECT_HASH_MAP.set(obj, 0);
 
             // only object literals fall into following code, no need to check for hasOwnProperty
-            for (let _p in obj) {
-                _hash = combineHash(_hash, compute31BitStringHash(_p) + hash(obj[_p]));
+            let prop;
+            for (prop in obj) {
+                h = combineHash(h, compute31BitStringHash(prop) + hash(obj[prop]));
             }
         }
         else {
-            _hash = __objectHashIndex++ >> 32;
+            h = OBJECT_HASH_INDEX++ >> 32;
         }
 
         // assign the hash value until the lifetime of the object
-        __objectHashMap.set(obj, _hash);
+        OBJECT_HASH_MAP.set(obj, h);
     }
 
-    return _hash;
+    return h;
 }

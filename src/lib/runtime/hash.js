@@ -1,5 +1,4 @@
 import valueOf from '../utils/value-of';
-import combineHash from './hash-combine';
 import compute31BitNumberHash from './hash-number';
 import compute31BitStringHash from './hash-string';
 import compute31BitDateHash from './hash-date';
@@ -9,72 +8,58 @@ import compute31BitObjecHash from './hash-object';
 /**
 * Serves as a hash function for a particular type, suitable for use in hashing algorithms and data structures such as a hash table.
 * @param {Object} obj An object to retrieve the hash code for.
-* @param {...Objects} rest Optional number of objects to combine their hash codes.
+* @param {Boolean} strict If true computes strict hash-code for object types.
 * @returns {Number}
 */
-export default function hash(obj, ...rest) {
-    let _hash;
-
+export default function hash(obj, strict = false) {
     // null/undefined hash is 0
     if (obj === null || obj === undefined) {
-        _hash = 0;
+        return 0;
     }
 
 
     // Compute 'Number' primitive type hash (does not incluede 'new Number(value)')
     else if (typeof obj === 'number') {
-        _hash = compute31BitNumberHash(obj);
+        return compute31BitNumberHash(obj);
     }
 
 
     // Compute 'String' primitive type hash (does not incluede 'new String(value)')
     else if (typeof obj === 'string') {
-        _hash = compute31BitStringHash(obj);
+        return compute31BitStringHash(obj);
     }
 
 
     // Compute 'Boolean' primitive type hash (does not incluede 'new Boolean(value)')
     else if (typeof obj === 'boolean') {
-        _hash = obj ? 1 : 0;
+        return obj ? 1 : 0;
     }
 
 
     // Compute 'Objects' hash
     else {
-        // Compute 'Date' object type hash
-        if (obj instanceof Date) {
-            _hash = compute31BitDateHash(obj);
-        }
-
-        // Compute built-in types hash
-        else if (
-            obj instanceof Number ||
-            obj instanceof String ||
-            obj instanceof Boolean) {
-            _hash = hash(valueOf(obj));
-        }
-
         // Compute overridden 'hash' method
-        else if (typeof obj.__hash__ === 'function') {
-            _hash = obj.__hash__() >> 32;
+        if (typeof obj.__hash__ === 'function') {
+            return obj.__hash__() >> 32;
+        }
+
+        // Compute primitive object types hash only in non-strict mode
+        else if (strict !== true) {
+            // Compute 'Date' object type hash
+            if (obj instanceof Date) {
+                return compute31BitDateHash(obj);
+            }
+
+            // Compute built-in types hash
+            else if (
+                obj instanceof Number ||
+                obj instanceof String ||
+                obj instanceof Boolean) {
+                return hash(valueOf(obj), false);
+            }
         }
 
         // Compute 'Object' type hash for all other types
-        else {
-            _hash = compute31BitObjecHash(obj);
-        }
+        return compute31BitObjecHash(obj, strict);
     }
-
-
-    // Combine hash codes for given inputs
-    if (rest.length) {
-        let _len = rest.length,
-            _i = 0;
-
-        while (_i < _len) {
-            _hash = combineHash(_hash, hash(rest[_i++]));
-        }
-    }
-
-    return _hash;
 }
