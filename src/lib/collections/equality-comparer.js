@@ -1,4 +1,4 @@
-import {hash, equals} from '../runtime/runtime';
+import {computeHash, computeEquals} from '../runtime/runtime';
 import mixin from '../utils/mixin';
 import isFunction from '../utils/is-function';
 import assertType from '../utils/assert-type';
@@ -15,7 +15,7 @@ export default function EqualityComparer(hashCodeProvider, equality) {
 }
 
 
-var defaultEqualityComparer = new EqualityComparer(hash, equals);
+var defaultEqualityComparer = new EqualityComparer(computeHash, computeEquals);
 
 
 mixin(EqualityComparer.prototype, {

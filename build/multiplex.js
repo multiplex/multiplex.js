@@ -544,7 +544,7 @@
                     // only object literals fall into following code, no need to check for hasOwnProperty
                     var prop;
                     for (prop in obj) {
-                        h = combineHash(h, compute31BitStringHash(prop) + hash$1(obj[prop]));
+                        h = combineHash(h, compute31BitStringHash(prop) + hash(obj[prop]));
                     }
                 }
                 else {
@@ -583,7 +583,7 @@
                         continue;
                     }
 
-                    h = combineHash(h, compute31BitStringHash(prop) + hash$1(obj[prop]));
+                    h = combineHash(h, compute31BitStringHash(prop) + hash(obj[prop]));
                 }
             }
             else {
@@ -600,7 +600,7 @@
     * @param {Object} obj An object to retrieve the hash code for.
     * @returns {Number}
     */
-    function hash$1(obj, strict) {
+    function hash(obj, strict) {
         // null/undefined hash is 0
         if (obj === null || obj === undefined) {
             return 0;
@@ -644,7 +644,7 @@
                     obj instanceof Number ||
                     obj instanceof String ||
                     obj instanceof Boolean) {
-                    return hash$1(valueOf(obj), false);
+                    return hash(valueOf(obj), false);
                 }
             }
 
@@ -656,7 +656,7 @@
     function computeObjectEquals(objA, objB) {
         // Objects having different hash code are not equal
         // also prevents mutually recursive structures to stack overflow
-        if (hash$1(objA) !== hash$1(objB)) {
+        if (hash(objA) !== hash(objB)) {
             return false;
         }
 
@@ -676,7 +676,7 @@
                 continue;
             }
 
-            if (!equals$1(val, objB[prop])) {
+            if (!equals(val, objB[prop])) {
                 return false;
             }
         }
@@ -695,7 +695,7 @@
     * @param {Boolean} strict If true computes strict equality for object types.
     * @returns {Boolean} if the objA parameter is the same instance as the objB parameter, or if both are null, or if objA.equals(objB) returns true; otherwise, false.
     */
-    function equals$1(objA, objB, strict) {
+    function equals(objA, objB, strict) {
         // Objects are identical
         if (objA === objB) {
             return true;
@@ -804,9 +804,9 @@
 
     var runtime = {
         strictMode: false,
-        hash: hash$1,
+        hash: hash,
         hashSymbol: hashSymbol,
-        equals: equals$1,
+        equals: equals,
         equalsSymbol: equalsSymbol,
         compare: compare,
         compareSymbol: compareSymbol,
@@ -820,8 +820,8 @@
     * @param {...Objects} rest Optional number of objects to combine their hash codes.
     * @returns {Number}
     */
-    function hash(obj) {
-        var h = hash$1(obj, false);
+    function computeHash(obj) {
+        var h = hash(obj, false);
 
         // Combine hash codes for given inputs
         if (arguments.length > 1) {
@@ -829,7 +829,7 @@
                 i = 0;
 
             while (i < len) {
-                h = combineHash(h, hash$1(arguments[i++], false));
+                h = combineHash(h, hash(arguments[i++], false));
             }
         }
 
@@ -843,8 +843,8 @@
     * @param {Object} objB The second object to compare.
     * @returns {Boolean} if the objA parameter is the same instance as the objB parameter, or if both are null, or if objA.equals(objB) returns true; otherwise, false.
     */
-    function equals(objA, objB) {
-        return equals$1(objA, objB, false);
+    function computeEquals(objA, objB) {
+        return equals(objA, objB, false);
     }
 
     /**
@@ -922,7 +922,7 @@
     }
 
 
-    var defaultEqualityComparer = new EqualityComparer(hash, equals);
+    var defaultEqualityComparer = new EqualityComparer(computeHash, computeEquals);
 
 
     mixin(EqualityComparer.prototype, {
@@ -3212,8 +3212,8 @@
 
 
     mx.runtime = runtime;
-    mx.hash = hash;
-    mx.equals = equals;
+    mx.hash = computeHash;
+    mx.equals = computeEquals;
     mx.compare = compare;
 
     mx.empty = Iterable.empty;

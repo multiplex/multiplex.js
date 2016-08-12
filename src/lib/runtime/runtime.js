@@ -54,7 +54,7 @@ function computeEquals(objA, objB) {
 }
 
 
-export {computeHash as hash};
-export {computeEquals as equals};
-export {compare as compare};
+export {computeHash};
+export {computeEquals};
+export {compare as computeCompare};
 export default runtime;
