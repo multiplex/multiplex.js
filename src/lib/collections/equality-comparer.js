@@ -1,5 +1,4 @@
-import hash from '../runtime/hash';
-import equals from '../runtime/equals';
+import {hash, equals} from '../runtime/runtime';
 import mixin from '../utils/mixin';
 import isFunction from '../utils/is-function';
 import assertType from '../utils/assert-type';
@@ -49,7 +48,7 @@ mixin(EqualityComparer, {
     /**
     * Gets a default sort order comparer for the type specified by the generic argument.
     */
-    defaultComparer: defaultEqualityComparer,
+    instance: defaultEqualityComparer,
 
     /**
     * Gets or creates a new EqualityComparer object.
@@ -57,16 +56,18 @@ mixin(EqualityComparer, {
     * @returns {EqualityComparer}
     */
     from: function (value) {
-        if (value instanceof EqualityComparer) {
+        if (value === null || value === undefined || value === defaultEqualityComparer) {
+            return defaultEqualityComparer;
+        }
+
+        else if (value instanceof EqualityComparer) {
             return value;
         }
 
-        else if (value && isFunction(value.hash) && isFunction(value.equals)) {
+        else if (isFunction(value.hash) && isFunction(value.equals)) {
             return new EqualityComparer(value.hash, value.equals);
         }
 
-        else {
-            return defaultEqualityComparer;
-        }
+        return defaultEqualityComparer;
     }
 });

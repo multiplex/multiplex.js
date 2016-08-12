@@ -40,7 +40,7 @@ mixin(Comparer, {
     /**
     * Gets a default sort order comparer for the type specified by the generic argument.
     */
-    defaultComparer: defaultComparer,
+    instance: defaultComparer,
 
     /**
     * Gets or creates a new Comparer object.
@@ -48,11 +48,15 @@ mixin(Comparer, {
     * @returns {Comparer}
     */
     from: function (value) {
-        if (value instanceof Comparer) {
+        if (value === null || value === undefined || value === defaultComparer) {
+            return defaultComparer;
+        }
+
+        else if (value instanceof Comparer) {
             return value;
         }
 
-        else if (value && isFunction(value.compare)) {
+        else if (isFunction(value.compare)) {
             return new Comparer(value.compare);
         }
 

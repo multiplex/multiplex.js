@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (August 12, 2016)
+* Version 2.0.0 (August 13, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -544,7 +544,7 @@
                     // only object literals fall into following code, no need to check for hasOwnProperty
                     var prop;
                     for (prop in obj) {
-                        h = combineHash(h, compute31BitStringHash(prop) + hash(obj[prop]));
+                        h = combineHash(h, compute31BitStringHash(prop) + hash$1(obj[prop]));
                     }
                 }
                 else {
@@ -583,7 +583,7 @@
                         continue;
                     }
 
-                    h = combineHash(h, compute31BitStringHash(prop) + hash(obj[prop]));
+                    h = combineHash(h, compute31BitStringHash(prop) + hash$1(obj[prop]));
                 }
             }
             else {
@@ -600,7 +600,7 @@
     * @param {Object} obj An object to retrieve the hash code for.
     * @returns {Number}
     */
-    function hash(obj, strict) {
+    function hash$1(obj, strict) {
         // null/undefined hash is 0
         if (obj === null || obj === undefined) {
             return 0;
@@ -644,7 +644,7 @@
                     obj instanceof Number ||
                     obj instanceof String ||
                     obj instanceof Boolean) {
-                    return hash(valueOf(obj), false);
+                    return hash$1(valueOf(obj), false);
                 }
             }
 
@@ -656,7 +656,7 @@
     function computeObjectEquals(objA, objB) {
         // Objects having different hash code are not equal
         // also prevents mutually recursive structures to stack overflow
-        if (hash(objA) !== hash(objB)) {
+        if (hash$1(objA) !== hash$1(objB)) {
             return false;
         }
 
@@ -676,7 +676,7 @@
                 continue;
             }
 
-            if (!equals(val, objB[prop])) {
+            if (!equals$1(val, objB[prop])) {
                 return false;
             }
         }
@@ -695,7 +695,7 @@
     * @param {Boolean} strict If true computes strict equality for object types.
     * @returns {Boolean} if the objA parameter is the same instance as the objB parameter, or if both are null, or if objA.equals(objB) returns true; otherwise, false.
     */
-    function equals(objA, objB, strict) {
+    function equals$1(objA, objB, strict) {
         // Objects are identical
         if (objA === objB) {
             return true;
@@ -804,9 +804,9 @@
 
     var runtime = {
         strictMode: false,
-        hash: hash,
+        hash: hash$1,
         hashSymbol: hashSymbol,
-        equals: equals,
+        equals: equals$1,
         equalsSymbol: equalsSymbol,
         compare: compare,
         compareSymbol: compareSymbol,
@@ -820,8 +820,8 @@
     * @param {...Objects} rest Optional number of objects to combine their hash codes.
     * @returns {Number}
     */
-    function computeHash(obj) {
-        var h = hash(obj, false);
+    function hash(obj) {
+        var h = hash$1(obj, false);
 
         // Combine hash codes for given inputs
         if (arguments.length > 1) {
@@ -829,7 +829,7 @@
                 i = 0;
 
             while (i < len) {
-                h = combineHash(h, hash(arguments[i++], false));
+                h = combineHash(h, hash$1(arguments[i++], false));
             }
         }
 
@@ -843,8 +843,8 @@
     * @param {Object} objB The second object to compare.
     * @returns {Boolean} if the objA parameter is the same instance as the objB parameter, or if both are null, or if objA.equals(objB) returns true; otherwise, false.
     */
-    function computeEquals(objA, objB) {
-        return equals(objA, objB, false);
+    function equals(objA, objB) {
+        return equals$1(objA, objB, false);
     }
 
     /**
@@ -884,7 +884,7 @@
         /**
         * Gets a default sort order comparer for the type specified by the generic argument.
         */
-        defaultComparer: defaultComparer,
+        instance: defaultComparer,
 
         /**
         * Gets or creates a new Comparer object.
@@ -892,11 +892,15 @@
         * @returns {Comparer}
         */
         from: function (value) {
-            if (value instanceof Comparer) {
+            if (value === null || value === undefined || value === defaultComparer) {
+                return defaultComparer;
+            }
+
+            else if (value instanceof Comparer) {
                 return value;
             }
 
-            else if (value && isFunction(value.compare)) {
+            else if (isFunction(value.compare)) {
                 return new Comparer(value.compare);
             }
 
@@ -951,7 +955,7 @@
         /**
         * Gets a default sort order comparer for the type specified by the generic argument.
         */
-        defaultComparer: defaultEqualityComparer,
+        instance: defaultEqualityComparer,
 
         /**
         * Gets or creates a new EqualityComparer object.
@@ -959,17 +963,19 @@
         * @returns {EqualityComparer}
         */
         from: function (value) {
-            if (value instanceof EqualityComparer) {
+            if (value === null || value === undefined || value === defaultEqualityComparer) {
+                return defaultEqualityComparer;
+            }
+
+            else if (value instanceof EqualityComparer) {
                 return value;
             }
 
-            else if (value && isFunction(value.hash) && isFunction(value.equals)) {
+            else if (isFunction(value.hash) && isFunction(value.equals)) {
                 return new EqualityComparer(value.hash, value.equals);
             }
 
-            else {
-                return defaultEqualityComparer;
-            }
+            return defaultEqualityComparer;
         }
     });
 
@@ -3206,8 +3212,8 @@
 
 
     mx.runtime = runtime;
-    mx.hash = computeHash;
-    mx.equals = computeEquals;
+    mx.hash = hash;
+    mx.equals = equals;
     mx.compare = compare;
 
     mx.empty = Iterable.empty;
