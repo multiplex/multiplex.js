@@ -1,5 +1,4 @@
-import hash from '../runtime/hash';
-import equals from '../runtime/equals';
+import {hash, equals} from '../runtime/runtime';
 import isFunction from '../utils/is-function';
 import assertType from '../utils/assert-type';
 
@@ -37,7 +36,7 @@ export default class EqualityComparer {
     /**
     * Gets a default sort order comparer for the type specified by the generic argument.
     */
-    static get defaultComparer() {
+    static get instance() {
         return defaultEqualityComparer;
     }
 
@@ -47,17 +46,19 @@ export default class EqualityComparer {
     * @returns {EqualityComparer}
     */
     static from(value) {
-        if (value instanceof EqualityComparer) {
+        if (value === null || value === undefined || value === defaultEqualityComparer) {
+            return defaultEqualityComparer;
+        }
+
+        else if (value instanceof EqualityComparer) {
             return value;
         }
 
-        else if (value && isFunction(value.hash) && isFunction(value.equals)) {
+        else if (isFunction(value.hash) && isFunction(value.equals)) {
             return new EqualityComparer(value.hash, value.equals);
         }
 
-        else {
-            return defaultEqualityComparer;
-        }
+        return defaultEqualityComparer;
     }
 
     get [Symbol.toStringTag]() {

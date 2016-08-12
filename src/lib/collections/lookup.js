@@ -5,7 +5,7 @@ import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
 
 export default class Lookup extends Collection {
-    constructor(source, keySelector, elementSelector = null, comparer = EqualityComparer.defaultComparer) {
+    constructor(source, keySelector, elementSelector = null, comparer = EqualityComparer.instance) {
         assertNotNull(source);
         assertType(keySelector, Function);
 

@@ -27,7 +27,7 @@ export default class Comparer {
     /**
     * Gets a default sort order comparer for the type specified by the generic argument.
     */
-    static get defaultComparer() {
+    static get instance() {
         return defaultComparer;
     }
 
@@ -37,17 +37,19 @@ export default class Comparer {
     * @returns {Comparer}
     */
     static from(value) {
-        if (value instanceof Comparer) {
+        if (value === null || value === undefined || value === defaultComparer) {
+            return defaultComparer;
+        }
+
+        else if (value instanceof Comparer) {
             return value;
         }
 
-        else if (value && isFunction(value.compare)) {
+        else if (isFunction(value.compare)) {
             return new Comparer(value.compare);
         }
 
-        else {
-            return defaultComparer;
-        }
+        return defaultComparer;
     }
 
     get [Symbol.toStringTag]() {

@@ -6,7 +6,7 @@ import resize from '../utils/resize';
 const emptyGrouping = new Grouping(null, []);
 
 export default class LookupTable {
-    constructor(comparer = EqualityComparer.defaultComparer) {
+    constructor(comparer) {
         this.size = 0;
         this.slots = new Array(7);
         this.buckets = new Array(7);
@@ -98,7 +98,7 @@ export default class LookupTable {
         }
     }
 
-    static create(source, keySelector, comparer = EqualityComparer.defaultComparer) {
+    static create(source, keySelector, comparer = EqualityComparer.instance) {
         let lookup = new LookupTable(comparer);
 
         for (let element of source) {

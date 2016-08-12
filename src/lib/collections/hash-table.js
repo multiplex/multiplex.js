@@ -3,7 +3,7 @@ import EqualityComparer from './equality-comparer';
 import resize from '../utils/resize';
 
 export default class HashTable {
-    constructor(comparer = EqualityComparer.defaultComparer) {
+    constructor(comparer) {
         this.initialize();
         this.comparer = EqualityComparer.from(comparer);
     }

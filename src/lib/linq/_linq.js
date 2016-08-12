@@ -130,7 +130,7 @@ export default function linq(iterable) {
         * @param {EqualityComparer=} comparer An equality comparer to compare values.
         * @returns {Boolean}
         */
-        contains(value, comparer = EqualityComparer.defaultComparer) {
+        contains(value, comparer = EqualityComparer.instance) {
             return contains(this, value, comparer);
         },
 
@@ -157,7 +157,7 @@ export default function linq(iterable) {
         * @param {EqualityComparer=} comparer An EqualityComparer to compare values.
         * @returns {Iterable}
         */
-        distinct(comparer = EqualityComparer.defaultComparer) {
+        distinct(comparer = EqualityComparer.instance) {
             return distinct(this, comparer);
         },
 
@@ -176,7 +176,7 @@ export default function linq(iterable) {
         * @param {EqualityComparer=} comparer An EqualityComparer to compare values.
         * @returns {Iterable}
         */
-        except(second, comparer = EqualityComparer.defaultComparer) {
+        except(second, comparer = EqualityComparer.instance) {
             return exceptIntersect(this, second, comparer, false);
         },
 
@@ -216,7 +216,7 @@ export default function linq(iterable) {
         * @param {EqualityComparer=} comparer An equality comparer to compare values.
         * @returns {Iterable}
         */
-        groupBy(keySelector, elementSelectorOrComparer = null, resultSelectorOrComparer = null, comparer = EqualityComparer.defaultComparer) {
+        groupBy(keySelector, elementSelectorOrComparer = null, resultSelectorOrComparer = null, comparer = EqualityComparer.instance) {
             let args = arguments.length,
                 elementSelector = isFunction(elementSelectorOrComparer) ? elementSelectorOrComparer : undefined,
                 resultSelector = isFunction(resultSelectorOrComparer) ? resultSelectorOrComparer : undefined;
@@ -236,7 +236,7 @@ export default function linq(iterable) {
         * @param {EqualityComparer=} comparer An equality comparer to compare values.
         * @returns {Iterable}
         */
-        groupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, comparer = EqualityComparer.defaultComparer) {
+        groupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, comparer = EqualityComparer.instance) {
             return groupJoin(this, inner, outerKeySelector, innerKeySelector, resultSelector, comparer);
         },
 
@@ -246,7 +246,7 @@ export default function linq(iterable) {
         * @param {EqualityComparer=} comparer An EqualityComparer to compare values.
         * @returns {Iterable}
         */
-        intersect(second, comparer = EqualityComparer.defaultComparer) {
+        intersect(second, comparer = EqualityComparer.instance) {
             return exceptIntersect(this, second, comparer, true);
         },
 
@@ -259,7 +259,7 @@ export default function linq(iterable) {
         * @param {EqualityComparer=} comparer An equality comparer to compare values.
         * @returns {Iterable}
         */
-        join(inner, outerKeySelector, innerKeySelector, resultSelector, comparer = EqualityComparer.defaultComparer) {
+        join(inner, outerKeySelector, innerKeySelector, resultSelector, comparer = EqualityComparer.instance) {
             return join(this, inner, outerKeySelector, innerKeySelector, comparer);
         },
 
@@ -342,7 +342,7 @@ export default function linq(iterable) {
         * @param {EqualityComparer=} comparer The EqualityComparer to compare values.
         * @returns {Boolean}
         */
-        sequenceEqual(second, comparer = EqualityComparer.defaultComparer) {
+        sequenceEqual(second, comparer = EqualityComparer.instance) {
             return sequenceEqual(this, second, comparer);
         },
 
@@ -433,7 +433,7 @@ export default function linq(iterable) {
         * @param {EqualityComparer=} comparer An equality comparer to compare values.
         * @returns {Lookup}
         */
-        toLookup(keySelector, valueSelector = null, comparer = EqualityComparer.defaultComparer) {
+        toLookup(keySelector, valueSelector = null, comparer = EqualityComparer.instance) {
             return new Lookup(this, keySelector, valueSelector, comparer);
         },
 
@@ -443,7 +443,7 @@ export default function linq(iterable) {
         * @param {EqualityComparer=} comparer The EqualityComparer to compare values.
         * @returns {Iterable}
         */
-        union(second, comparer = EqualityComparer.defaultComparer) {
+        union(second, comparer = EqualityComparer.instance) {
             return union(this, second, comparer);
         },
 

@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (August 12, 2016)
+* Version 2.0.0 (August 13, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -520,7 +520,7 @@
                 // only object literals fall into following code, no need to check for hasOwnProperty
                 let prop;
                 for (prop in obj) {
-                    h = combineHash(h, compute31BitStringHash(prop) + hash(obj[prop]));
+                    h = combineHash(h, compute31BitStringHash(prop) + hash$1(obj[prop]));
                 }
             }
             else {
@@ -540,7 +540,7 @@
     * @param {Boolean} strict If true computes strict hash-code for object types.
     * @returns {Number}
     */
-    function hash(obj, strict = false) {
+    function hash$1(obj, strict = false) {
         // null/undefined hash is 0
         if (obj === null || obj === undefined) {
             return 0;
@@ -584,7 +584,7 @@
                     obj instanceof Number ||
                     obj instanceof String ||
                     obj instanceof Boolean) {
-                    return hash(valueOf(obj), false);
+                    return hash$1(valueOf(obj), false);
                 }
             }
 
@@ -598,7 +598,7 @@
     function computeObjectEquals(objA, objB) {
         // Objects having different hash code are not equal
         // also prevents mutually recursive structures to stack overflow
-        if (hash(objA) !== hash(objB)) {
+        if (hash$1(objA) !== hash$1(objB)) {
             return false;
         }
 
@@ -618,7 +618,7 @@
                 continue;
             }
 
-            if (!equals(val, objB[prop])) {
+            if (!equals$1(val, objB[prop])) {
                 return false;
             }
         }
@@ -637,7 +637,7 @@
     * @param {Boolean} strict If true computes strict equality for object types.
     * @returns {Boolean} if the objA parameter is the same instance as the objB parameter, or if both are null, or if objA.equals(objB) returns true; otherwise, false.
     */
-    function equals(objA, objB, strict = false) {
+    function equals$1(objA, objB, strict = false) {
         // Objects are identical
         if (objA === objB) {
             return true;
@@ -745,9 +745,9 @@
 
     const runtime = {
         strictMode: false,
-        hash: hash,
+        hash: hash$1,
         hashSymbol: hashSymbol,
-        equals: equals,
+        equals: equals$1,
         equalsSymbol: equalsSymbol,
         compare: compare,
         compareSymbol: compareSymbol,
@@ -761,8 +761,8 @@
     * @param {...Objects} rest Optional number of objects to combine their hash codes.
     * @returns {Number}
     */
-    function computeHash(obj, ...rest) {
-        let h = hash(obj, runtime.strictMode);
+    function hash(obj, ...rest) {
+        let h = hash$1(obj, runtime.strictMode);
 
         // Combine hash codes for given inputs
         if (rest.length > 0) {
@@ -770,7 +770,7 @@
                 i = 0;
 
             while (i < len) {
-                h = combineHash(h, hash(rest[i++], runtime.strictMode));
+                h = combineHash(h, hash$1(rest[i++], runtime.strictMode));
             }
         }
 
@@ -784,8 +784,8 @@
     * @param {Object} objB The second object to compare.
     * @returns {Boolean} if the objA parameter is the same instance as the objB parameter, or if both are null, or if objA.equals(objB) returns true; otherwise, false.
     */
-    function computeEquals(objA, objB) {
-        return equals(objA, objB, runtime.strictMode);
+    function equals(objA, objB) {
+        return equals$1(objA, objB, runtime.strictMode);
     }
 
     /**
@@ -813,7 +813,7 @@
         /**
         * Gets a default sort order comparer for the type specified by the generic argument.
         */
-        static get defaultComparer() {
+        static get instance() {
             return defaultComparer;
         }
 
@@ -823,17 +823,19 @@
         * @returns {Comparer}
         */
         static from(value) {
-            if (value instanceof Comparer) {
+            if (value === null || value === undefined || value === defaultComparer) {
+                return defaultComparer;
+            }
+
+            else if (value instanceof Comparer) {
                 return value;
             }
 
-            else if (value && isFunction(value.compare)) {
+            else if (isFunction(value.compare)) {
                 return new Comparer(value.compare);
             }
 
-            else {
-                return defaultComparer;
-            }
+            return defaultComparer;
         }
 
         get [Symbol.toStringTag]() {
@@ -881,7 +883,7 @@
         /**
         * Gets a default sort order comparer for the type specified by the generic argument.
         */
-        static get defaultComparer() {
+        static get instance() {
             return defaultEqualityComparer;
         }
 
@@ -891,17 +893,19 @@
         * @returns {EqualityComparer}
         */
         static from(value) {
-            if (value instanceof EqualityComparer) {
+            if (value === null || value === undefined || value === defaultEqualityComparer) {
+                return defaultEqualityComparer;
+            }
+
+            else if (value instanceof EqualityComparer) {
                 return value;
             }
 
-            else if (value && isFunction(value.hash) && isFunction(value.equals)) {
+            else if (isFunction(value.hash) && isFunction(value.equals)) {
                 return new EqualityComparer(value.hash, value.equals);
             }
 
-            else {
-                return defaultEqualityComparer;
-            }
+            return defaultEqualityComparer;
         }
 
         get [Symbol.toStringTag]() {
@@ -1068,7 +1072,7 @@
     const emptyGrouping = new Grouping(null, []);
 
     class LookupTable {
-        constructor(comparer = EqualityComparer.defaultComparer) {
+        constructor(comparer) {
             this.size = 0;
             this.slots = new Array(7);
             this.buckets = new Array(7);
@@ -1160,7 +1164,7 @@
             }
         }
 
-        static create(source, keySelector, comparer = EqualityComparer.defaultComparer) {
+        static create(source, keySelector, comparer = EqualityComparer.instance) {
             let lookup = new LookupTable(comparer);
 
             for (let element of source) {
@@ -1191,7 +1195,7 @@
     }
 
     class Lookup extends Collection {
-        constructor(source, keySelector, elementSelector = null, comparer = EqualityComparer.defaultComparer) {
+        constructor(source, keySelector, elementSelector = null, comparer = EqualityComparer.instance) {
             assertNotNull(source);
             assertType(keySelector, Function);
 
@@ -1269,7 +1273,7 @@
     }
 
     class HashTable {
-        constructor(comparer = EqualityComparer.defaultComparer) {
+        constructor(comparer) {
             this.initialize();
             this.comparer = EqualityComparer.from(comparer);
         }
@@ -1503,7 +1507,7 @@
     }
 
     class Map extends Collection {
-        constructor(iterable = null, comparer = EqualityComparer.defaultComparer) {
+        constructor(iterable = null, comparer = null) {
             super();
             this.table = new HashTable(comparer);
 
@@ -1605,7 +1609,7 @@
     }
 
     class Set extends Collection {
-        constructor(iterable = null, comparer = EqualityComparer.defaultComparer) {
+        constructor(iterable = null, comparer = null) {
             super();
             this.table = new HashTable(comparer);
 
@@ -2545,7 +2549,7 @@
             * @param {EqualityComparer=} comparer An equality comparer to compare values.
             * @returns {Boolean}
             */
-            contains(value, comparer = EqualityComparer.defaultComparer) {
+            contains(value, comparer = EqualityComparer.instance) {
                 return containsIterator(this, value, comparer);
             },
 
@@ -2572,7 +2576,7 @@
             * @param {EqualityComparer=} comparer An EqualityComparer to compare values.
             * @returns {Iterable}
             */
-            distinct(comparer = EqualityComparer.defaultComparer) {
+            distinct(comparer = EqualityComparer.instance) {
                 return distinctIterator(this, comparer);
             },
 
@@ -2591,7 +2595,7 @@
             * @param {EqualityComparer=} comparer An EqualityComparer to compare values.
             * @returns {Iterable}
             */
-            except(second, comparer = EqualityComparer.defaultComparer) {
+            except(second, comparer = EqualityComparer.instance) {
                 return exceptIntersectIterator(this, second, comparer, false);
             },
 
@@ -2631,7 +2635,7 @@
             * @param {EqualityComparer=} comparer An equality comparer to compare values.
             * @returns {Iterable}
             */
-            groupBy(keySelector, elementSelectorOrComparer = null, resultSelectorOrComparer = null, comparer = EqualityComparer.defaultComparer) {
+            groupBy(keySelector, elementSelectorOrComparer = null, resultSelectorOrComparer = null, comparer = EqualityComparer.instance) {
                 let args = arguments.length,
                     elementSelector = isFunction(elementSelectorOrComparer) ? elementSelectorOrComparer : undefined,
                     resultSelector = isFunction(resultSelectorOrComparer) ? resultSelectorOrComparer : undefined;
@@ -2651,7 +2655,7 @@
             * @param {EqualityComparer=} comparer An equality comparer to compare values.
             * @returns {Iterable}
             */
-            groupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, comparer = EqualityComparer.defaultComparer) {
+            groupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, comparer = EqualityComparer.instance) {
                 return groupJoinIterator(this, inner, outerKeySelector, innerKeySelector, resultSelector, comparer);
             },
 
@@ -2661,7 +2665,7 @@
             * @param {EqualityComparer=} comparer An EqualityComparer to compare values.
             * @returns {Iterable}
             */
-            intersect(second, comparer = EqualityComparer.defaultComparer) {
+            intersect(second, comparer = EqualityComparer.instance) {
                 return exceptIntersectIterator(this, second, comparer, true);
             },
 
@@ -2674,7 +2678,7 @@
             * @param {EqualityComparer=} comparer An equality comparer to compare values.
             * @returns {Iterable}
             */
-            join(inner, outerKeySelector, innerKeySelector, resultSelector, comparer = EqualityComparer.defaultComparer) {
+            join(inner, outerKeySelector, innerKeySelector, resultSelector, comparer = EqualityComparer.instance) {
                 return joinIterator(this, inner, outerKeySelector, innerKeySelector, comparer);
             },
 
@@ -2757,7 +2761,7 @@
             * @param {EqualityComparer=} comparer The EqualityComparer to compare values.
             * @returns {Boolean}
             */
-            sequenceEqual(second, comparer = EqualityComparer.defaultComparer) {
+            sequenceEqual(second, comparer = EqualityComparer.instance) {
                 return sequenceEqualIterator(this, second, comparer);
             },
 
@@ -2848,7 +2852,7 @@
             * @param {EqualityComparer=} comparer An equality comparer to compare values.
             * @returns {Lookup}
             */
-            toLookup(keySelector, valueSelector = null, comparer = EqualityComparer.defaultComparer) {
+            toLookup(keySelector, valueSelector = null, comparer = EqualityComparer.instance) {
                 return new Lookup(this, keySelector, valueSelector, comparer);
             },
 
@@ -2858,7 +2862,7 @@
             * @param {EqualityComparer=} comparer The EqualityComparer to compare values.
             * @returns {Iterable}
             */
-            union(second, comparer = EqualityComparer.defaultComparer) {
+            union(second, comparer = EqualityComparer.instance) {
                 return unionIterator(this, second, comparer);
             },
 
@@ -2898,8 +2902,8 @@
 
 
     mx.runtime = runtime;
-    mx.hash = computeHash;
-    mx.equals = computeEquals;
+    mx.hash = hash;
+    mx.equals = equals;
     mx.compare = compare;
 
     mx.empty = Iterable.empty;
