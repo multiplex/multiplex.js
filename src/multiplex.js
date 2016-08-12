@@ -3,9 +3,9 @@ import Iterator from './lib/iteration/iterator';
 import factory from './lib/iteration/iterable-factory';
 
 import runtime, {
-    hash,
-    equals,
-    compare
+    computeHash,
+    computeEquals,
+    computeCompare
 } from './lib/runtime/runtime';
 
 import Comparer from './lib/collections/comparer';
@@ -31,9 +31,9 @@ function mx(value) {
 
 
 mx.runtime = runtime;
-mx.hash = hash;
-mx.equals = equals;
-mx.compare = compare;
+mx.hash = computeHash;
+mx.equals = computeEquals;
+mx.compare = computeCompare;
 
 mx.empty = Iterable.empty;
 mx.range = Iterable.range;

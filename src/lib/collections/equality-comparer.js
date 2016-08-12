@@ -1,4 +1,4 @@
-import {hash, equals} from '../runtime/runtime';
+import {computeHash, computeEquals} from '../runtime/runtime';
 import isFunction from '../utils/is-function';
 import assertType from '../utils/assert-type';
 
@@ -71,4 +71,4 @@ export default class EqualityComparer {
 }
 
 
-const defaultEqualityComparer = new EqualityComparer(hash, equals);
+const defaultEqualityComparer = new EqualityComparer(computeHash, computeEquals);

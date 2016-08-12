@@ -520,7 +520,7 @@
                 // only object literals fall into following code, no need to check for hasOwnProperty
                 let prop;
                 for (prop in obj) {
-                    h = combineHash(h, compute31BitStringHash(prop) + hash$1(obj[prop]));
+                    h = combineHash(h, compute31BitStringHash(prop) + hash(obj[prop]));
                 }
             }
             else {
@@ -540,7 +540,7 @@
     * @param {Boolean} strict If true computes strict hash-code for object types.
     * @returns {Number}
     */
-    function hash$1(obj, strict = false) {
+    function hash(obj, strict = false) {
         // null/undefined hash is 0
         if (obj === null || obj === undefined) {
             return 0;
@@ -584,7 +584,7 @@
                     obj instanceof Number ||
                     obj instanceof String ||
                     obj instanceof Boolean) {
-                    return hash$1(valueOf(obj), false);
+                    return hash(valueOf(obj), false);
                 }
             }
 
@@ -598,7 +598,7 @@
     function computeObjectEquals(objA, objB) {
         // Objects having different hash code are not equal
         // also prevents mutually recursive structures to stack overflow
-        if (hash$1(objA) !== hash$1(objB)) {
+        if (hash(objA) !== hash(objB)) {
             return false;
         }
 
@@ -618,7 +618,7 @@
                 continue;
             }
 
-            if (!equals$1(val, objB[prop])) {
+            if (!equals(val, objB[prop])) {
                 return false;
             }
         }
@@ -637,7 +637,7 @@
     * @param {Boolean} strict If true computes strict equality for object types.
     * @returns {Boolean} if the objA parameter is the same instance as the objB parameter, or if both are null, or if objA.equals(objB) returns true; otherwise, false.
     */
-    function equals$1(objA, objB, strict = false) {
+    function equals(objA, objB, strict = false) {
         // Objects are identical
         if (objA === objB) {
             return true;
@@ -745,9 +745,9 @@
 
     const runtime = {
         strictMode: false,
-        hash: hash$1,
+        hash: hash,
         hashSymbol: hashSymbol,
-        equals: equals$1,
+        equals: equals,
         equalsSymbol: equalsSymbol,
         compare: compare,
         compareSymbol: compareSymbol,
@@ -761,8 +761,8 @@
     * @param {...Objects} rest Optional number of objects to combine their hash codes.
     * @returns {Number}
     */
-    function hash(obj, ...rest) {
-        let h = hash$1(obj, runtime.strictMode);
+    function computeHash(obj, ...rest) {
+        let h = hash(obj, runtime.strictMode);
 
         // Combine hash codes for given inputs
         if (rest.length > 0) {
@@ -770,7 +770,7 @@
                 i = 0;
 
             while (i < len) {
-                h = combineHash(h, hash$1(rest[i++], runtime.strictMode));
+                h = combineHash(h, hash(rest[i++], runtime.strictMode));
             }
         }
 
@@ -784,8 +784,8 @@
     * @param {Object} objB The second object to compare.
     * @returns {Boolean} if the objA parameter is the same instance as the objB parameter, or if both are null, or if objA.equals(objB) returns true; otherwise, false.
     */
-    function equals(objA, objB) {
-        return equals$1(objA, objB, runtime.strictMode);
+    function computeEquals(objA, objB) {
+        return equals(objA, objB, runtime.strictMode);
     }
 
     /**
@@ -918,7 +918,7 @@
     }
 
 
-    const defaultEqualityComparer = new EqualityComparer(hash, equals);
+    const defaultEqualityComparer = new EqualityComparer(computeHash, computeEquals);
 
     function isArray(val) {
         return val instanceof Array;
@@ -2902,8 +2902,8 @@
 
 
     mx.runtime = runtime;
-    mx.hash = hash;
-    mx.equals = equals;
+    mx.hash = computeHash;
+    mx.equals = computeEquals;
     mx.compare = compare;
 
     mx.empty = Iterable.empty;
