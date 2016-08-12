@@ -43,7 +43,7 @@ export default function compare(objA, objB) {
         return objA.__cmp__(objB);
     }
 
-    // All other objects are compared using 'valudOf' method
+    // All other objects are compared using 'valueOf' method
     else {
         let v1 = valueOf(objA),
             v2 = valueOf(objB);

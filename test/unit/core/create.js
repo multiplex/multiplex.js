@@ -128,8 +128,8 @@ qtest('from array-like object', function (assert) {
     assert.equal(it.toString(), '[Array Iterable]', 'array-like Iterable toString');
     assert.equal(Object.prototype.toString.apply(it), '[object Array Iterable]', 'array-like Iterable toStringTag');
 
-    assert.equal(it[mx.iteratorSymbol]().toString(), '[Array Iterator]', 'array-like Iterator toString');
-    assert.equal(Object.prototype.toString.apply(it[mx.iteratorSymbol]()), '[object Array Iterator]', 'array-like Iterator toString');
+    assert.equal(it[Symbol.iterator]().toString(), '[Array Iterator]', 'array-like Iterator toString');
+    assert.equal(Object.prototype.toString.apply(it[Symbol.iterator]()), '[object Array Iterator]', 'array-like Iterator toString');
 
     let arr = mx(new Int8Array([1]));
     assert.equal(count(arr), 1, 'Int8Array iterable count');
@@ -140,7 +140,7 @@ qtest('from array-like object', function (assert) {
 qtest('from iterable object', function (assert) {
     let val = {
         items: [1],
-        [mx.iteratorSymbol]() {
+        [Symbol.iterator]() {
             let index = 0;
             return {
                 next() {
@@ -177,8 +177,8 @@ qtest('from object', function (assert) {
     assert.equal(it.toString(), '[Object Iterable]', 'object Iterable toString');
     assert.equal(Object.prototype.toString.apply(it), '[object Object Iterable]', 'object Iterable toStringTag');
 
-    assert.equal(it[mx.iteratorSymbol]().toString(), '[Object Iterator]', 'object Iterator toStringTag');
-    assert.equal(Object.prototype.toString.apply(it[mx.iteratorSymbol]()), '[object Object Iterator]', 'object Iterator toStringTag');
+    assert.equal(it[Symbol.iterator]().toString(), '[Object Iterator]', 'object Iterator toStringTag');
+    assert.equal(Object.prototype.toString.apply(it[Symbol.iterator]()), '[object Object Iterator]', 'object Iterator toStringTag');
 });
 
 
@@ -200,8 +200,8 @@ qtest('from null value', function (assert) {
     assert.equal(it.toString(), '[Empty Iterable]', 'empty(null) Iterator toString');
     assert.equal(Object.prototype.toString.apply(it), '[object Empty Iterable]', 'empty(null) Iterable, toStringTag');
 
-    assert.equal(it[mx.iteratorSymbol]().toString(), '[Empty Iterator]', 'empty(undefined) Iterator toString');
-    assert.equal(Object.prototype.toString.apply(it[mx.iteratorSymbol]()), '[object Empty Iterator]', 'empty(undefined) Iterator toStringTag');
+    assert.equal(it[Symbol.iterator]().toString(), '[Empty Iterator]', 'empty(undefined) Iterator toString');
+    assert.equal(Object.prototype.toString.apply(it[Symbol.iterator]()), '[object Empty Iterator]', 'empty(undefined) Iterator toStringTag');
 });
 
 
@@ -213,6 +213,6 @@ qtest('from undefined value', function (assert) {
     assert.equal(it.toString(), '[Empty Iterable]', 'empty(undefined) Iterator toString');
     assert.equal(Object.prototype.toString.apply(it), '[object Empty Iterable]', 'empty(undefined) Iterable, toStringTag');
 
-    assert.equal(it[mx.iteratorSymbol]().toString(), '[Empty Iterator]', 'empty(undefined) Iterator toString');
-    assert.equal(Object.prototype.toString.apply(it[mx.iteratorSymbol]()), '[object Empty Iterator]', 'empty(undefined) Iterator toStringTag');
+    assert.equal(it[Symbol.iterator]().toString(), '[Empty Iterator]', 'empty(undefined) Iterator toString');
+    assert.equal(Object.prototype.toString.apply(it[Symbol.iterator]()), '[object Empty Iterator]', 'empty(undefined) Iterator toStringTag');
 });

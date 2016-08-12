@@ -7,6 +7,18 @@ import compare from './compare';
 import compareSymbol from './compare-symbol';
 
 
+const runtime = {
+    strictMode: false,
+    hash: hash,
+    hashSymbol: hashSymbol,
+    equals: equals,
+    equalsSymbol: equalsSymbol,
+    compare: compare,
+    compareSymbol: compareSymbol,
+    iteratorSymbol: Symbol.iterator
+};
+
+
 /**
 * Serves as a hash function for a particular type, suitable for use in hashing algorithms and data structures such as a hash table.
 * @param {Object} obj An object to retrieve the hash code for.
@@ -14,15 +26,15 @@ import compareSymbol from './compare-symbol';
 * @returns {Number}
 */
 function computeHash(obj, ...rest) {
-    let h = hash(obj, false);
+    let h = hash(obj, runtime.strictMode);
 
     // Combine hash codes for given inputs
-    if (rest.length) {
+    if (rest.length > 0) {
         let len = rest.length,
             i = 0;
 
         while (i < len) {
-            h = combineHash(h, hash(rest[i++], false));
+            h = combineHash(h, hash(rest[i++], runtime.strictMode));
         }
     }
 
@@ -37,13 +49,11 @@ function computeHash(obj, ...rest) {
 * @returns {Boolean} if the objA parameter is the same instance as the objB parameter, or if both are null, or if objA.equals(objB) returns true; otherwise, false.
 */
 function computeEquals(objA, objB) {
-    return equals(objA, objB, false);
+    return equals(objA, objB, runtime.strictMode);
 }
 
 
 export {computeHash as hash};
-export {hashSymbol};
 export {computeEquals as equals};
-export {equalsSymbol};
-export {compare};
-export {compareSymbol};
+export {compare as compare};
+export default runtime;

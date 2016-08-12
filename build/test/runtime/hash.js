@@ -168,7 +168,7 @@
         function SimpleClassWithHash(val) {
             this._val = val;
 
-            this[mx.hashSymbol] = function () {
+            this[mx.runtime.hashSymbol] = function () {
                 return mx.hash(this._val);
             };
         }

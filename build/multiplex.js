@@ -732,7 +732,7 @@
             return objA.__cmp__(objB);
         }
 
-        // All other objects are compared using 'valudOf' method
+        // All other objects are compared using 'valueOf' method
         else {
             let v1 = valueOf(objA),
                 v2 = valueOf(objB);
@@ -743,6 +743,18 @@
 
     const compareSymbol = '__cmp__';
 
+    const runtime = {
+        strictMode: false,
+        hash: hash,
+        hashSymbol: hashSymbol,
+        equals: equals,
+        equalsSymbol: equalsSymbol,
+        compare: compare,
+        compareSymbol: compareSymbol,
+        iteratorSymbol: Symbol.iterator
+    };
+
+
     /**
     * Serves as a hash function for a particular type, suitable for use in hashing algorithms and data structures such as a hash table.
     * @param {Object} obj An object to retrieve the hash code for.
@@ -750,15 +762,15 @@
     * @returns {Number}
     */
     function computeHash(obj, ...rest) {
-        let h = hash(obj, false);
+        let h = hash(obj, runtime.strictMode);
 
         // Combine hash codes for given inputs
-        if (rest.length) {
+        if (rest.length > 0) {
             let len = rest.length,
                 i = 0;
 
             while (i < len) {
-                h = combineHash(h, hash(rest[i++], false));
+                h = combineHash(h, hash(rest[i++], runtime.strictMode));
             }
         }
 
@@ -773,7 +785,7 @@
     * @returns {Boolean} if the objA parameter is the same instance as the objB parameter, or if both are null, or if objA.equals(objB) returns true; otherwise, false.
     */
     function computeEquals(objA, objB) {
-        return equals(objA, objB, false);
+        return equals(objA, objB, runtime.strictMode);
     }
 
     /**
@@ -2885,13 +2897,10 @@
 
 
 
+    mx.runtime = runtime;
     mx.hash = computeHash;
-    mx.hashSymbol = hashSymbol;
     mx.equals = computeEquals;
-    mx.equalsSymbol = equalsSymbol;
     mx.compare = compare;
-    mx.compareSymbol = compareSymbol;
-    mx.iteratorSymbol = Symbol.iterator;
 
     mx.empty = Iterable.empty;
     mx.range = Iterable.range;
