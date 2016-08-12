@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (August 11, 2016)
+* Version 2.0.0 (August 12, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -445,17 +445,13 @@
         }
     }
 
-    function combineHash(h1, h2) {
-        return ((h1 << 7) | (h1 >> 25)) ^ h2;
-    }
-
     var POSITIVE_INFINITY = Number.POSITIVE_INFINITY || Infinity;
     var NEGATIVE_INFINITY = Number.NEGATIVE_INFINITY || -Infinity;
     var MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER || 0x1FFFFFFFFFFFFF;
     var MIN_SAFE_INTEGER = Number.MIN_SAFE_INTEGER || -0x1FFFFFFFFFFFFF;
 
     function compute31BitNumberHash(val) {
-        var _hash = 0;
+        var h = 0;
 
         // integer number
         if (val <= MAX_SAFE_INTEGER && val >= MIN_SAFE_INTEGER && val % 1 === 0) {
@@ -464,206 +460,197 @@
 
         // non-integer numbers
         switch (val) {
-            case POSITIVE_INFINITY: _hash = 0x7F800000; break;
-            case NEGATIVE_INFINITY: _hash = 0xFF800000; break;
+            case POSITIVE_INFINITY: h = 0x7F800000; break;
+            case NEGATIVE_INFINITY: h = 0xFF800000; break;
             default:
                 // NaN
-                if (val !== val) {
-                    _hash = 0;
+                if (isNaN(val)) {
+                    h = 0;
                     break;
                 }
 
                 if (val <= -0.0) {
-                    _hash = 0x80000000;
+                    h = 0x80000000;
                     val = -val;
                 }
 
-                var _exponent = Math.floor(Math.log(val) / Math.log(2)),
-                    _significand = ((val / Math.pow(2, _exponent)) * 0x00800000) | 0;
+                var exponent = Math.floor(Math.log(val) / Math.log(2)),
+                    significand = ((val / Math.pow(2, exponent)) * 0x00800000) | 0;
 
-                _exponent += 127;
+                exponent += 127;
 
-                if (_exponent >= 0xFF) {
-                    _exponent = 0xFF;
-                    _significand = 0;
+                if (exponent >= 0xFF) {
+                    exponent = 0xFF;
+                    significand = 0;
                 }
-                else if (_exponent < 0) {
-                    _exponent = 0;
+                else if (exponent < 0) {
+                    exponent = 0;
                 }
 
-                _hash = _hash | (_exponent << 23);
-                _hash = _hash | (_significand & ~(-1 << 23));
+                h = h | (exponent << 23);
+                h = h | (significand & ~(-1 << 23));
                 break;
         }
 
-        return _hash >> 32;
+        return h >> 32;
     }
 
     function compute31BitStringHash(val) {
-        var _hash = 0X7FFF,         // string hash seed
-            _len = val.length,
-            _i = 0;
+        var h = 0X7FFF,         // string hash seed
+            len = val.length,
+            i = 0;
 
-        for (; _i < _len;) {
-            _hash = ((((_hash << 5) - _hash) | 0) + val.charCodeAt(_i++)) | 0;
+        for (; i < len;) {
+            h = ((((h << 5) - h) | 0) + val.charCodeAt(i++)) | 0;
         }
 
-        return _hash >> 32;
+        return h >> 32;
     }
 
     function compute31BitDateHash(date) {
-        var _time = valueOf(date);
-        return _time ^ (_time >> 5);
+        var time = valueOf(date);
+        return time ^ (time >> 5);
     }
 
     var hashSymbol = '__hash__';
+
+    function combineHash(h1, h2) {
+        return ((h1 << 7) | (h1 >> 25)) ^ h2;
+    }
 
     function isObjectLiteral(obj) {
         return Object.getPrototypeOf(obj) === Object.prototype;
     }
 
-    var __objectHashSeed = Math.floor(Math.random() * 0XFFFF) + 0XFFFF;
-    var __objectHashIndex = __objectHashSeed;
+    var OBJECT_HASH_SEED = Math.floor(Math.random() * 0XFFFF) + 0XFFFF;
+    var OBJECT_HASH_INDEX = OBJECT_HASH_SEED;
     var compute31BitObjecHash;
 
     if (typeof WeakMap === 'function') {
-        var __objectHashMap = new WeakMap();
+        var OBJECT_HASH_MAP = new WeakMap();
 
         // using Weakmap as 'hash' repository when possible
-        compute31BitObjecHash = function (obj) {
-            var _hash = __objectHashMap.get(obj);
+        compute31BitObjecHash = function (obj, strict) {
+            var h = OBJECT_HASH_MAP.get(obj);
 
-            if (_hash === undefined) {
-                // create object-literals hash based on their visible properties
-                if (isObjectLiteral(obj)) {
-                    _hash = __objectHashSeed;
+            if (h === undefined) {
+                // create object-literals hash based on their visible properties in non-strict mode
+                if (strict !== true && isObjectLiteral(obj)) {
+                    h = OBJECT_HASH_SEED;
 
                     // early seed prevents mutually recursive structures to stack overflow
-                    __objectHashMap.set(obj, 0);
+                    OBJECT_HASH_MAP.set(obj, 0);
 
                     // only object literals fall into following code, no need to check for hasOwnProperty
-                    for (var _p in obj) {
-                        _hash = combineHash(_hash, compute31BitStringHash(_p) + hash(obj[_p]));
+                    var prop;
+                    for (prop in obj) {
+                        h = combineHash(h, compute31BitStringHash(prop) + hash(obj[prop]));
                     }
                 }
                 else {
-                    _hash = __objectHashIndex++ >> 32;
+                    h = OBJECT_HASH_INDEX++ >> 32;
                 }
 
 
                 // assign the hash value until the lifetime of the object
-                __objectHashMap.set(obj, _hash);
+                OBJECT_HASH_MAP.set(obj, h);
             }
 
-            return _hash;
+            return h;
         };
     }
     else {
-        compute31BitObjecHash = function (obj) {
-            var _hash = 0;
-            var _extensible = Object.isExtensible && Object.isExtensible(obj);
+        compute31BitObjecHash = function (obj, strict) {
+            var h = 0;
+            var extensible = Object.isExtensible && Object.isExtensible(obj);
 
             // only override 'hash' method when object is extensible (not sealed or frozen)
-            if (_extensible) {
+            if (extensible) {
                 // create object-literals hash based on their visible properties
                 obj[hashSymbol] = function () {
-                    return _hash;
+                    return h;
                 };
             }
 
-
-            if (isObjectLiteral(obj)) {
-                _hash = __objectHashSeed;
+            // create object-literals hash based on their visible properties in non-strict mode
+            if (strict !== true && isObjectLiteral(obj)) {
+                h = OBJECT_HASH_SEED;
 
                 // only object literals fall into following code, no need to check for hasOwnProperty
-                for (var _p in obj) {
-                    if (_p === hashSymbol) {
+                var prop;
+                for (prop in obj) {
+                    if (prop === hashSymbol) {
                         continue;
                     }
 
-                    _hash = combineHash(_hash, compute31BitStringHash(_p) + hash(obj[_p]));
+                    h = combineHash(h, compute31BitStringHash(prop) + hash(obj[prop]));
                 }
             }
             else {
                 // return constant hash codes for non-extensible class instances
-                _hash = _extensible ? __objectHashIndex++ >> 32 : __objectHashSeed;
+                h = extensible ? OBJECT_HASH_INDEX++ >> 32 : OBJECT_HASH_SEED;
             }
 
-            return _hash;
+            return h;
         };
     }
 
     /**
     * Serves as a hash function for a particular type, suitable for use in hashing algorithms and data structures such as a hash table.
     * @param {Object} obj An object to retrieve the hash code for.
-    * @param {...Objects} rest Optional number of objects to combine their hash codes.
     * @returns {Number}
     */
-    function hash(obj) {
-        var _hash;
-
+    function hash(obj, strict) {
         // null/undefined hash is 0
         if (obj === null || obj === undefined) {
-            _hash = 0;
+            return 0;
         }
 
 
         // Compute 'Number' primitive type hash (does not incluede 'new Number(value)')
         else if (typeof obj === 'number') {
-            _hash = compute31BitNumberHash(obj);
+            return compute31BitNumberHash(obj);
         }
 
 
         // Compute 'String' primitive type hash (does not incluede 'new String(value)')
         else if (typeof obj === 'string') {
-            _hash = compute31BitStringHash(obj);
+            return compute31BitStringHash(obj);
         }
 
 
         // Compute 'Boolean' primitive type hash (does not incluede 'new Boolean(value)')
         else if (typeof obj === 'boolean') {
-            _hash = obj ? 1 : 0;
+            return obj ? 1 : 0;
         }
 
 
         // Compute 'Objects' hash
         else {
-            // Compute 'Date' object type hash
-            if (obj instanceof Date) {
-                _hash = compute31BitDateHash(obj);
-            }
-
-            // Compute built-in types hash
-            else if (
-                obj instanceof Number ||
-                obj instanceof String ||
-                obj instanceof Boolean) {
-                _hash = hash(valueOf(obj));
-            }
-
             // Compute overridden 'hash' method
-            else if (typeof obj.__hash__ === 'function') {
-                _hash = obj.__hash__() >> 32;
+            if (typeof obj.__hash__ === 'function') {
+                return obj.__hash__() >> 32;
+            }
+
+            // Compute primitive object types hash only in non-strict mode
+            else if (strict !== true) {
+                // Compute 'Date' object type hash
+                if (obj instanceof Date) {
+                    return compute31BitDateHash(obj);
+                }
+
+                // Compute built-in types hash
+                else if (
+                    obj instanceof Number ||
+                    obj instanceof String ||
+                    obj instanceof Boolean) {
+                    return hash(valueOf(obj), false);
+                }
             }
 
             // Compute 'Object' type hash for all other types
-            else {
-                _hash = compute31BitObjecHash(obj);
-            }
+            return compute31BitObjecHash(obj, strict);
         }
-
-
-        // Combine hash codes for given inputs
-        if (arguments.length > 1) {
-            var _len = arguments.length,
-                _i = 1;
-
-            while (_i < _len) {
-                _hash = combineHash(_hash, hash(arguments[_i++]));
-            }
-        }
-
-        return _hash;
     }
 
     function computeObjectEquals(objA, objB) {
@@ -679,17 +666,17 @@
         /// regular 'class' instances have different hash code, hence do not fall into following code.
         /// object objA is direct descendant of Object hence no need to check 'hasOwnProperty'
 
-        var _val, _prop;
+        var val, prop;
 
-        for (_prop in objA) {
-            _val = objA[_prop];
+        for (prop in objA) {
+            val = objA[prop];
 
             /// Object methods are not considered for equality
-            if (typeof _val === 'function') {
+            if (typeof val === 'function') {
                 continue;
             }
 
-            if (!equals(_val, objB[_prop])) {
+            if (!equals(val, objB[prop])) {
                 return false;
             }
         }
@@ -705,9 +692,10 @@
     * Determines whether the specified object instances are considered equal.
     * @param {Object} objA The first object to compare.
     * @param {Object} objB The second object to compare.
+    * @param {Boolean} strict If true computes strict equality for object types.
     * @returns {Boolean} if the objA parameter is the same instance as the objB parameter, or if both are null, or if objA.equals(objB) returns true; otherwise, false.
     */
-    function equals(objA, objB) {
+    function equals(objA, objB, strict) {
         // Objects are identical
         if (objA === objB) {
             return true;
@@ -723,13 +711,23 @@
 
 
         // objA: NaN & objB: NaN
-        else if (objA !== objA && objB !== objB) {
-            return true;
+        else if (typeof objA === 'number' && typeof objB === 'number') {
+            return isNaN(objA) && isNaN(objB);
         }
 
 
         // object types equality
         else if (typeof objA === 'object' && typeof objB === 'object') {
+            // Compute overridden 'equals' method for Object types
+            if (typeof objA.__eq__ === 'function') {
+                return objA.__eq__(objB);
+            }
+
+            // objects are not equal under strict mode
+            else if (strict === true) {
+                return false;
+            }
+
             // built-in object types
             if (
                 (objA instanceof Date && objB instanceof Date) ||
@@ -737,11 +735,6 @@
                 (objA instanceof String && objB instanceof String) ||
                 (objA instanceof Boolean && objB instanceof Boolean)) {
                 return valueOf(objA) === valueOf(objB);
-            }
-
-            // Compute overridden 'equals' method for Object types
-            else if (typeof objA.__eq__ === 'function') {
-                return objA.__eq__(objB);
             }
 
             // Object types
@@ -808,6 +801,39 @@
     }
 
     var compareSymbol = '__cmp__';
+
+    /**
+    * Serves as a hash function for a particular type, suitable for use in hashing algorithms and data structures such as a hash table.
+    * @param {Object} obj An object to retrieve the hash code for.
+    * @param {...Objects} rest Optional number of objects to combine their hash codes.
+    * @returns {Number}
+    */
+    function computeHash(obj) {
+        var h = hash(obj, false);
+
+        // Combine hash codes for given inputs
+        if (arguments.length > 1) {
+            var len = arguments.length,
+                i = 0;
+
+            while (i < len) {
+                h = combineHash(h, hash(arguments[i++], false));
+            }
+        }
+
+        return h;
+    }
+
+
+    /**
+    * Determines whether the specified object instances are considered equal.
+    * @param {Object} objA The first object to compare.
+    * @param {Object} objB The second object to compare.
+    * @returns {Boolean} if the objA parameter is the same instance as the objB parameter, or if both are null, or if objA.equals(objB) returns true; otherwise, false.
+    */
+    function computeEquals(objA, objB) {
+        return equals(objA, objB, false);
+    }
 
     /**
     * Provides a base class for implementations of Comparer.
@@ -3167,9 +3193,9 @@
 
 
 
-    mx.hash = hash;
+    mx.hash = computeHash;
     mx.hashSymbol = hashSymbol;
-    mx.equals = equals;
+    mx.equals = computeEquals;
     mx.equalsSymbol = equalsSymbol;
     mx.compare = compare;
     mx.compareSymbol = compareSymbol;
