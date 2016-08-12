@@ -5,6 +5,19 @@ import equals from './equals';
 import equalsSymbol from './equals-symbol';
 import compare from './compare';
 import compareSymbol from './compare-symbol';
+import iteratorSymbol from '../iteration/iterator-symbol';
+
+
+var runtime = {
+    strictMode: false,
+    hash: hash,
+    hashSymbol: hashSymbol,
+    equals: equals,
+    equalsSymbol: equalsSymbol,
+    compare: compare,
+    compareSymbol: compareSymbol,
+    iteratorSymbol: iteratorSymbol
+};
 
 
 /**
@@ -42,8 +55,6 @@ function computeEquals(objA, objB) {
 
 
 export {computeHash as hash};
-export {hashSymbol};
 export {computeEquals as equals};
-export {equalsSymbol};
-export {compare};
-export {compareSymbol};
+export {compare as compare};
+export default runtime;

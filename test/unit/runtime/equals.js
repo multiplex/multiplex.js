@@ -125,7 +125,7 @@ qtest('equals using __eq__ method', function (assert) {
     function SimpleEquals(val) {
         this._val = val;
 
-        this[mx.equalsSymbol] = function (obj) {
+        this[mx.runtime.equalsSymbol] = function (obj) {
             return this._val === obj._val;
         };
     }

@@ -791,7 +791,7 @@
             return objA.__cmp__(objB);
         }
 
-        // All other objects are compared using 'valudOf' method
+        // All other objects are compared using 'valueOf' method
         else {
             var v1 = valueOf(objA),
                 v2 = valueOf(objB);
@@ -801,6 +801,18 @@
     }
 
     var compareSymbol = '__cmp__';
+
+    var runtime = {
+        strictMode: false,
+        hash: hash,
+        hashSymbol: hashSymbol,
+        equals: equals,
+        equalsSymbol: equalsSymbol,
+        compare: compare,
+        compareSymbol: compareSymbol,
+        iteratorSymbol: iteratorSymbol
+    };
+
 
     /**
     * Serves as a hash function for a particular type, suitable for use in hashing algorithms and data structures such as a hash table.
@@ -3193,13 +3205,10 @@
 
 
 
+    mx.runtime = runtime;
     mx.hash = computeHash;
-    mx.hashSymbol = hashSymbol;
     mx.equals = computeEquals;
-    mx.equalsSymbol = equalsSymbol;
     mx.compare = compare;
-    mx.compareSymbol = compareSymbol;
-    mx.iteratorSymbol = iteratorSymbol;
 
     mx.empty = Iterable.empty;
     mx.range = Iterable.range;

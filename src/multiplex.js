@@ -1,15 +1,11 @@
 import Iterator from './lib/iteration/iterator';
 import Iterable from './lib/iteration/iterable';
 import factory from './lib/iteration/iterable-factory';
-import iteratorSymbol from './lib/iteration/iterator-symbol';
 
-import {
+import runtime, {
     hash,
-    hashSymbol,
     equals,
-    equalsSymbol,
-    compare,
-    compareSymbol
+    compare
 } from './lib/runtime/runtime';
 
 import Comparer from './lib/collections/comparer';
@@ -34,13 +30,10 @@ function mx(value) {
 
 
 
+mx.runtime = runtime;
 mx.hash = hash;
-mx.hashSymbol = hashSymbol;
 mx.equals = equals;
-mx.equalsSymbol = equalsSymbol;
 mx.compare = compare;
-mx.compareSymbol = compareSymbol;
-mx.iteratorSymbol = iteratorSymbol;
 
 mx.empty = Iterable.empty;
 mx.range = Iterable.range;
