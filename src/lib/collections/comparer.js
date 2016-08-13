@@ -1,6 +1,6 @@
-import compare from '../runtime/compare';
 import isFunction from '../utils/is-function';
 import assertType from '../utils/assert-type';
+import {runtimeCompare} from '../runtime/runtime';
 
 /**
 * Provides a base class for implementations of Comparer.
@@ -8,7 +8,7 @@ import assertType from '../utils/assert-type';
 export default class Comparer {
     constructor(comparison) {
         assertType(comparison, Function);
-        this._comparison = comparison;
+        this.compare = comparison;
     }
 
     /**
@@ -21,7 +21,7 @@ export default class Comparer {
     * Greater than zero x is greater than y.
     */
     compare(objA, objB) {
-        this._comparison(objA, objB);
+        runtimeCompare(objA, objB);
     }
 
     /**
@@ -61,4 +61,4 @@ export default class Comparer {
     }
 }
 
-const defaultComparer = new Comparer(compare);
+const defaultComparer = new Comparer(runtimeCompare);
