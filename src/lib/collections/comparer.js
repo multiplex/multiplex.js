@@ -1,18 +1,15 @@
-import compare from '../runtime/compare';
 import mixin from '../utils/mixin';
 import isFunction from '../utils/is-function';
 import assertType from '../utils/assert-type';
+import {runtimeCompare} from '../runtime/runtime';
 
 /**
 * Provides a base class for implementations of Comparer.
 */
 export default function Comparer(comparison) {
     assertType(comparison, Function);
-    this._comparison = comparison;
+    this.compare = comparison;
 }
-
-
-var defaultComparer = new Comparer(compare);
 
 
 mixin(Comparer.prototype, {
@@ -26,7 +23,7 @@ mixin(Comparer.prototype, {
     * Greater than zero x is greater than y.
     */
     compare: function (objA, objB) {
-        this._comparison(objA, objB);
+        runtimeCompare(objA, objB);
     },
 
     toString: function () {
@@ -65,3 +62,6 @@ mixin(Comparer, {
         }
     }
 });
+
+
+var defaultComparer = new Comparer(runtimeCompare);
