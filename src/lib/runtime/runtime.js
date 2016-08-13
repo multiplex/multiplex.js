@@ -10,6 +10,7 @@ import compareSymbol from './compare-symbol';
 const runtime = {
     strictMode: false,
     hash: hash,
+    hashMany: hashMany,
     hashSymbol: hashSymbol,
     equals: equals,
     equalsSymbol: equalsSymbol,
@@ -18,6 +19,8 @@ const runtime = {
     iteratorSymbol: Symbol.iterator
 };
 
+export default runtime;
+
 
 /**
 * Serves as a hash function for a particular type, suitable for use in hashing algorithms and data structures such as a hash table.
@@ -25,7 +28,7 @@ const runtime = {
 * @param {...Objects} rest Optional number of objects to combine their hash codes.
 * @returns {Number}
 */
-function computeHash(obj, ...rest) {
+export function hashMany(obj, ...rest) {
     let h = hash(obj, runtime.strictMode);
 
     // Combine hash codes for given inputs
@@ -43,17 +46,30 @@ function computeHash(obj, ...rest) {
 
 
 /**
+* Serves as a hash function for a particular type, suitable for use in hashing algorithms and data structures such as a hash table.
+* @param {Object} obj An object to retrieve the hash code for.
+* @returns {Number}
+*/
+export function runtimeHash(obj) {
+    return hash(obj, runtime.strictMode);
+}
+
+
+/**
 * Determines whether the specified object instances are considered equal.
 * @param {Object} objA The first object to compare.
 * @param {Object} objB The second object to compare.
 * @returns {Boolean} if the objA parameter is the same instance as the objB parameter, or if both are null, or if objA.equals(objB) returns true; otherwise, false.
 */
-function computeEquals(objA, objB) {
+export function runtimeEquals(objA, objB) {
     return equals(objA, objB, runtime.strictMode);
 }
 
 
-export {computeHash};
-export {computeEquals};
-export {compare as computeCompare};
-export default runtime;
+/**
+* Performs a comparison of two objects of the same type and returns a value indicating whether one object is less than, equal to, or greater than the other.
+* @param {Object} objA The first object to compare.
+* @param {Object} objB The second object to compare.
+* @returns {Number}
+*/
+export {compare as runtimeCompare};
