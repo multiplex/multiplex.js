@@ -1,6 +1,6 @@
-import {computeHash, computeEquals} from '../runtime/runtime';
 import isFunction from '../utils/is-function';
 import assertType from '../utils/assert-type';
+import {runtimeHash, runtimeEquals} from '../runtime/runtime';
 
 /**
 * Provides a base class for implementations of the EqualityComparer.
@@ -10,8 +10,8 @@ export default class EqualityComparer {
         assertType(hashCodeProvider, Function);
         assertType(equality, Function);
 
-        this._hash = hashCodeProvider;
-        this._equals = equality;
+        this.hash = hashCodeProvider;
+        this.equals = equality;
     }
 
     /**
@@ -21,7 +21,7 @@ export default class EqualityComparer {
     * @returns true if the specified objects are equal; otherwise, false.
     */
     equals(x, y) {
-        return this._equals(x, y);
+        return runtimeEquals(x, y);
     }
 
     /**
@@ -30,7 +30,7 @@ export default class EqualityComparer {
     * @returns A hash code for the specified object.
     */
     hash(obj) {
-        return this._hash(obj);
+        return runtimeHash(obj);
     }
 
     /**
@@ -71,4 +71,4 @@ export default class EqualityComparer {
 }
 
 
-const defaultEqualityComparer = new EqualityComparer(computeHash, computeEquals);
+const defaultEqualityComparer = new EqualityComparer(runtimeHash, runtimeEquals);
