@@ -1,7 +1,7 @@
-import {computeHash, computeEquals} from '../runtime/runtime';
 import mixin from '../utils/mixin';
 import isFunction from '../utils/is-function';
 import assertType from '../utils/assert-type';
+import {runtimeHash, runtimeEquals} from '../runtime/runtime';
 
 /**
 * Provides a base class for implementations of the EqualityComparer.
@@ -10,12 +10,9 @@ export default function EqualityComparer(hashCodeProvider, equality) {
     assertType(hashCodeProvider, Function);
     assertType(equality, Function);
 
-    this._hash = hashCodeProvider;
-    this._equals = equality;
+    this.hash = hashCodeProvider;
+    this.equals = equality;
 }
-
-
-var defaultEqualityComparer = new EqualityComparer(computeHash, computeEquals);
 
 
 mixin(EqualityComparer.prototype, {
@@ -26,7 +23,7 @@ mixin(EqualityComparer.prototype, {
     * @returns true if the specified objects are equal; otherwise, false.
     */
     equals: function (x, y) {
-        return this._equals(x, y);
+        return runtimeEquals(x, y);
     },
 
     /**
@@ -35,7 +32,7 @@ mixin(EqualityComparer.prototype, {
     * @returns A hash code for the specified object.
     */
     hash: function (obj) {
-        return this._hash(obj);
+        return runtimeHash(obj);
     },
 
     toString: function () {
@@ -71,3 +68,6 @@ mixin(EqualityComparer, {
         return defaultEqualityComparer;
     }
 });
+
+
+var defaultEqualityComparer = new EqualityComparer(runtimeHash, runtimeEquals);

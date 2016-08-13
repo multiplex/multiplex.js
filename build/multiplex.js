@@ -805,6 +805,7 @@
     var runtime = {
         strictMode: false,
         hash: hash,
+        hashMany: hashMany,
         hashSymbol: hashSymbol,
         equals: equals,
         equalsSymbol: equalsSymbol,
@@ -813,14 +814,13 @@
         iteratorSymbol: iteratorSymbol
     };
 
-
     /**
     * Serves as a hash function for a particular type, suitable for use in hashing algorithms and data structures such as a hash table.
     * @param {Object} obj An object to retrieve the hash code for.
     * @param {...Objects} rest Optional number of objects to combine their hash codes.
     * @returns {Number}
     */
-    function computeHash(obj) {
+    function hashMany(obj) {
         var h = hash(obj, false);
 
         // Combine hash codes for given inputs
@@ -838,13 +838,23 @@
 
 
     /**
+    * Serves as a hash function for a particular type, suitable for use in hashing algorithms and data structures such as a hash table.
+    * @param {Object} obj An object to retrieve the hash code for.
+    * @returns {Number}
+    */
+    function runtimeHash(obj) {
+        return hash(obj, runtime.strictMode);
+    }
+
+
+    /**
     * Determines whether the specified object instances are considered equal.
     * @param {Object} objA The first object to compare.
     * @param {Object} objB The second object to compare.
     * @returns {Boolean} if the objA parameter is the same instance as the objB parameter, or if both are null, or if objA.equals(objB) returns true; otherwise, false.
     */
-    function computeEquals(objA, objB) {
-        return equals(objA, objB, false);
+    function runtimeEquals(objA, objB) {
+        return equals(objA, objB, runtime.strictMode);
     }
 
     /**
@@ -852,11 +862,8 @@
     */
     function Comparer(comparison) {
         assertType(comparison, Function);
-        this._comparison = comparison;
+        this.compare = comparison;
     }
-
-
-    var defaultComparer = new Comparer(compare);
 
 
     mixin(Comparer.prototype, {
@@ -870,7 +877,7 @@
         * Greater than zero x is greater than y.
         */
         compare: function (objA, objB) {
-            this._comparison(objA, objB);
+            compare(objA, objB);
         },
 
         toString: function () {
@@ -910,6 +917,9 @@
         }
     });
 
+
+    var defaultComparer = new Comparer(compare);
+
     /**
     * Provides a base class for implementations of the EqualityComparer.
     */
@@ -917,12 +927,9 @@
         assertType(hashCodeProvider, Function);
         assertType(equality, Function);
 
-        this._hash = hashCodeProvider;
-        this._equals = equality;
+        this.hash = hashCodeProvider;
+        this.equals = equality;
     }
-
-
-    var defaultEqualityComparer = new EqualityComparer(computeHash, computeEquals);
 
 
     mixin(EqualityComparer.prototype, {
@@ -933,7 +940,7 @@
         * @returns true if the specified objects are equal; otherwise, false.
         */
         equals: function (x, y) {
-            return this._equals(x, y);
+            return runtimeEquals(x, y);
         },
 
         /**
@@ -942,7 +949,7 @@
         * @returns A hash code for the specified object.
         */
         hash: function (obj) {
-            return this._hash(obj);
+            return runtimeHash(obj);
         },
 
         toString: function () {
@@ -978,6 +985,9 @@
             return defaultEqualityComparer;
         }
     });
+
+
+    var defaultEqualityComparer = new EqualityComparer(runtimeHash, runtimeEquals);
 
     function isArray(val) {
         return val instanceof Array;
@@ -3212,8 +3222,8 @@
 
 
     mx.runtime = runtime;
-    mx.hash = computeHash;
-    mx.equals = computeEquals;
+    mx.hash = runtimeHash;
+    mx.equals = runtimeEquals;
     mx.compare = compare;
 
     mx.empty = Iterable.empty;
