@@ -6,12 +6,12 @@ import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
 import error, {ERROR_NO_ELEMENTS} from '../utils/error';
 
-export default function minMaxIterable(source, max, selector) {
+export default function minMaxIterator(source, max, selector) {
     assertNotNull(source);
 
     if (selector) {
         assertType(selector, Function);
-        return minMaxIterable(select(source, selector), max);
+        return minMaxIterator(select(source, selector), max);
     }
 
     var arr = asArray(source),

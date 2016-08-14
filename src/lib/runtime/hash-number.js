@@ -4,7 +4,7 @@ var MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER || 0x1FFFFFFFFFFFFF;
 var MIN_SAFE_INTEGER = Number.MIN_SAFE_INTEGER || -0x1FFFFFFFFFFFFF;
 
 export default function compute31BitNumberHash(val) {
-    var _hash = 0;
+    var h = 0;
 
     // integer number
     if (val <= MAX_SAFE_INTEGER && val >= MIN_SAFE_INTEGER && val % 1 === 0) {
@@ -13,37 +13,37 @@ export default function compute31BitNumberHash(val) {
 
     // non-integer numbers
     switch (val) {
-        case POSITIVE_INFINITY: _hash = 0x7F800000; break;
-        case NEGATIVE_INFINITY: _hash = 0xFF800000; break;
+        case POSITIVE_INFINITY: h = 0x7F800000; break;
+        case NEGATIVE_INFINITY: h = 0xFF800000; break;
         default:
             // NaN
-            if (val !== val) {
-                _hash = 0;
+            if (isNaN(val)) {
+                h = 0;
                 break;
             }
 
             if (val <= -0.0) {
-                _hash = 0x80000000;
+                h = 0x80000000;
                 val = -val;
             }
 
-            var _exponent = Math.floor(Math.log(val) / Math.log(2)),
-                _significand = ((val / Math.pow(2, _exponent)) * 0x00800000) | 0;
+            var exponent = Math.floor(Math.log(val) / Math.log(2)),
+                significand = ((val / Math.pow(2, exponent)) * 0x00800000) | 0;
 
-            _exponent += 127;
+            exponent += 127;
 
-            if (_exponent >= 0xFF) {
-                _exponent = 0xFF;
-                _significand = 0;
+            if (exponent >= 0xFF) {
+                exponent = 0xFF;
+                significand = 0;
             }
-            else if (_exponent < 0) {
-                _exponent = 0;
+            else if (exponent < 0) {
+                exponent = 0;
             }
 
-            _hash = _hash | (_exponent << 23);
-            _hash = _hash | (_significand & ~(-1 << 23));
+            h = h | (exponent << 23);
+            h = h | (significand & ~(-1 << 23));
             break;
     }
 
-    return _hash >> 32;
+    return h >> 32;
 }

@@ -97,10 +97,10 @@
         assert.ok(isValidHashValue(mx.hash(-0.00000000000000001)), 'hash -0.00000000000000001 is valid!');
         assert.ok(isValidHashValue(mx.hash(-0.0000000000000000001)), 'hash -0.0000000000000000001 is valid!');
 
-        assert.ok(isValidHashValue(mx.hash(1, 2, 3, 4, 5, 6, 7, 8, 9)), 'hash multiple int values!');
-        assert.ok(isValidHashValue(mx.hash(0X7FFFFF, 0X7FFFFF, 0X7FFFFF, 0X7FFFFF)), 'hash multiple big int values!');
-        assert.ok(isValidHashValue(mx.hash(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9)), 'hash multiple float values!');
-        assert.ok(isValidHashValue(mx.hash(0X7FFFFF + 0.1, 0X7FFFFF + 0.2, 0X7FFFFF + 0.3, 0X7FFFFF + 0.4)), 'hash multiple big float values!');
+        assert.ok(isValidHashValue(mx.runtime.hashMany(1, 2, 3, 4, 5, 6, 7, 8, 9)), 'hash multiple int values!');
+        assert.ok(isValidHashValue(mx.runtime.hashMany(0X7FFFFF, 0X7FFFFF, 0X7FFFFF, 0X7FFFFF)), 'hash multiple big int values!');
+        assert.ok(isValidHashValue(mx.runtime.hashMany(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9)), 'hash multiple float values!');
+        assert.ok(isValidHashValue(mx.runtime.hashMany(0X7FFFFF + 0.1, 0X7FFFFF + 0.2, 0X7FFFFF + 0.3, 0X7FFFFF + 0.4)), 'hash multiple big float values!');
 
         //assert.equal(mx.hash(0b10), 2, 'hash binary value 0b10!');
         //assert.equal(mx.hash(0o10), 8, 'hash octal value 0o10!');
@@ -167,7 +167,7 @@
         function SimpleClassWithHash(val) {
             this._val = val;
 
-            this[mx.hashSymbol] = function () {
+            this[mx.runtime.hashSymbol] = function () {
                 return mx.hash(this._val);
             };
         }

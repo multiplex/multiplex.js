@@ -1,5 +1,4 @@
 import valueOf from '../utils/value-of';
-import compareSymbol from './compare-symbol';
 
 /**
 * Performs a comparison of two objects of the same type and returns a value indicating whether one object is less than, equal to, or greater than the other.
@@ -40,11 +39,11 @@ export default function compare(objA, objB) {
     }
 
     // Compute overridden 'compare' method for Object types
-    else if (typeof objA[compareSymbol] === 'function') {
-        return objA[compareSymbol](objB);
+    else if (typeof objA.__cmp__ === 'function') {
+        return objA.__cmp__(objB);
     }
 
-    // All other objects are compared using 'valudOf' method
+    // All other objects are compared using 'valueOf' method
     else {
         var v1 = valueOf(objA),
             v2 = valueOf(objB);

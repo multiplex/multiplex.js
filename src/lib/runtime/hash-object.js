@@ -4,74 +4,76 @@ import combineHash from './hash-combine';
 import compute31BitStringHash from './hash-string';
 import isObjectLiteral from '../utils/is-object-literal';
 
-var __objectHashSeed = Math.floor(Math.random() * 0XFFFF) + 0XFFFF;
-var __objectHashIndex = __objectHashSeed;
+var OBJECT_HASH_SEED = Math.floor(Math.random() * 0XFFFF) + 0XFFFF;
+var OBJECT_HASH_INDEX = OBJECT_HASH_SEED;
 var compute31BitObjecHash;
 
 if (typeof WeakMap === 'function') {
-    var __objectHashMap = new WeakMap();
+    var OBJECT_HASH_MAP = new WeakMap();
 
     // using Weakmap as 'hash' repository when possible
-    compute31BitObjecHash = function (obj) {
-        var _hash = __objectHashMap.get(obj);
+    compute31BitObjecHash = function (obj, strict) {
+        var h = OBJECT_HASH_MAP.get(obj);
 
-        if (_hash === undefined) {
-            // create object-literals hash based on their visible properties
-            if (isObjectLiteral(obj)) {
-                _hash = __objectHashSeed;
+        if (h === undefined) {
+            // create object-literals hash based on their visible properties in non-strict mode
+            if (strict !== true && isObjectLiteral(obj)) {
+                h = OBJECT_HASH_SEED;
 
                 // early seed prevents mutually recursive structures to stack overflow
-                __objectHashMap.set(obj, 0);
+                OBJECT_HASH_MAP.set(obj, 0);
 
                 // only object literals fall into following code, no need to check for hasOwnProperty
-                for (var _p in obj) {
-                    _hash = combineHash(_hash, compute31BitStringHash(_p) + hash(obj[_p]));
+                var prop;
+                for (prop in obj) {
+                    h = combineHash(h, compute31BitStringHash(prop) + hash(obj[prop]));
                 }
             }
             else {
-                _hash = __objectHashIndex++ >> 32;
+                h = OBJECT_HASH_INDEX++ >> 32;
             }
 
 
             // assign the hash value until the lifetime of the object
-            __objectHashMap.set(obj, _hash);
+            OBJECT_HASH_MAP.set(obj, h);
         }
 
-        return _hash;
+        return h;
     };
 }
 else {
-    compute31BitObjecHash = function (obj) {
-        var _hash = 0;
-        var _extensible = Object.isExtensible && Object.isExtensible(obj);
+    compute31BitObjecHash = function (obj, strict) {
+        var h = 0;
+        var extensible = Object.isExtensible && Object.isExtensible(obj);
 
         // only override 'hash' method when object is extensible (not sealed or frozen)
-        if (_extensible) {
+        if (extensible) {
             // create object-literals hash based on their visible properties
             obj[hashSymbol] = function () {
-                return _hash;
+                return h;
             };
         }
 
-
-        if (isObjectLiteral(obj)) {
-            _hash = __objectHashSeed;
+        // create object-literals hash based on their visible properties in non-strict mode
+        if (strict !== true && isObjectLiteral(obj)) {
+            h = OBJECT_HASH_SEED;
 
             // only object literals fall into following code, no need to check for hasOwnProperty
-            for (var _p in obj) {
-                if (_p === hashSymbol) {
+            var prop;
+            for (prop in obj) {
+                if (prop === hashSymbol) {
                     continue;
                 }
 
-                _hash = combineHash(_hash, compute31BitStringHash(_p) + hash(obj[_p]));
+                h = combineHash(h, compute31BitStringHash(prop) + hash(obj[prop]));
             }
         }
         else {
             // return constant hash codes for non-extensible class instances
-            _hash = _extensible ? __objectHashIndex++ >> 32 : __objectHashSeed;
+            h = extensible ? OBJECT_HASH_INDEX++ >> 32 : OBJECT_HASH_SEED;
         }
 
-        return _hash;
+        return h;
     };
 }
 

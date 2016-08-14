@@ -2,16 +2,23 @@ import Collection from './collection';
 import HashTable, {HashTableIterator} from './hash-table';
 import iteratorSymbol from '../iteration/iterator-symbol';
 import bufferTo from '../utils/buffer-to';
+import isArray from '../utils/is-array';
+import error from '../utils/error';
 import forOf from '../utils/for-of';
 import extend from '../utils/extend';
 import mixin from '../utils/mixin';
 
-export default function Set(iterable, comparer) {
+export default function Map(iterable, comparer) {
     var table = new HashTable(comparer);
 
     if (iterable !== null) {
         forOf(iterable, function (element) {
-            table.add(element, element);
+            if (isArray(element)) {
+                table.add(element[0], element[1]);
+            }
+            else {
+                error('Iterator value ' + element + ' is not an entry object');
+            }
         });
     }
 
@@ -19,15 +26,9 @@ export default function Set(iterable, comparer) {
     this.size = this.table.count();
 }
 
-extend(Set, Collection);
+extend(Map, Collection);
 
-mixin(Set.prototype, {
-    add: function (value) {
-        this.table.add(value, value);
-        this.size = this.table.count();
-        return this;
-    },
-
+mixin(Map.prototype, {
     clear: function () {
         this.table.clear();
         this.size = 0;
@@ -41,18 +42,24 @@ mixin(Set.prototype, {
         return this.size;
     },
 
-    delete: function (value) {
-        var result = this.table.remove(value);
+    delete: function (key) {
+        var value = this.table.get(key),
+            result = this.table.remove(key);
+
         this.size = this.table.count();
         return result ? value : false;
     },
 
     entries: function () {
-        return new SetIterator(this, -1);
+        return new MapIterator(this, -1);
     },
 
     forEach: function (callback, thisArg) {
         this.table.forEach(callback, this, thisArg);
+    },
+
+    get: function (key) {
+        return this.table.get(key);
     },
 
     has: function (value) {
@@ -60,11 +67,17 @@ mixin(Set.prototype, {
     },
 
     keys: function () {
-        return new SetIterator(this, 0);
+        return new MapIterator(this, 0);
+    },
+
+    set: function (key, value) {
+        this.table.set(key, value);
+        this.size = this.table.count();
+        return this;
     },
 
     values: function () {
-        return new SetIterator(this, 1);
+        return new MapIterator(this, 1);
     },
 
     valueOf: function () {
@@ -72,26 +85,27 @@ mixin(Set.prototype, {
     },
 
     toString: function () {
-        return '[Set]';
+        return '[Map]';
     }
 });
 
-extend(Set, Collection);
+extend(Map, Collection);
 
-Set.prototype[iteratorSymbol] = function () {
-    return new SetIterator(this, 0);
+Map.prototype[iteratorSymbol] = function () {
+    return new MapIterator(this, -1);
 };
 
 
+
 // type 0: key, 1: value, -1: [key, value]
-function SetIterator(set, type) {
-    HashTableIterator.call(this, set, type);
+function MapIterator(map, type) {
+    HashTableIterator.call(this, map, type);
 }
 
-extend(SetIterator, HashTableIterator);
+extend(MapIterator, HashTableIterator);
 
-mixin(SetIterator.prototype, {
+mixin(MapIterator.prototype, {
     toString: function () {
-        return '[Set Iterator]';
+        return '[Map Iterator]';
     }
 });

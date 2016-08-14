@@ -1,5 +1,10 @@
 import mixin from '../utils/mixin';
+import isFunction from '../utils/is-function';
+
 import EmptyIterable from '../iteration/iterable-empty';
+import List from '../collections/list';
+import Lookup from '../collections/lookup';
+import buffer from '../utils/buffer';
 import range from './range';
 import repeat from './repeat';
 import aggregate from './aggregate';
@@ -16,6 +21,9 @@ import exceptIntersect from './except-intersect';
 import first from './first';
 import firstOrDefault from './first-or-default';
 import forEach from './for-each';
+import groupBy from './group-by';
+import groupJoin from './group-join';
+import join from './join';
 import last from './last';
 import lastOrDefault from './last-or-default';
 import minMax from './min-max';
@@ -31,8 +39,6 @@ import skipWhile from './skip-while';
 import sum from './sum';
 import take from './take';
 import takeWhile from './take-while';
-import toArray from './to-array';
-import toList from './to-list';
 import union from './union';
 import where from './where';
 import zip from './zip';
@@ -169,7 +175,7 @@ export default function linq(iterable) {
         * @returns {Iterable}
         */
         except: function (second, comparer) {
-            return exceptIntersect(this, second, false, comparer);
+            return exceptIntersect(this, second, comparer, false);
         },
 
         /**
@@ -194,9 +200,42 @@ export default function linq(iterable) {
         /**
         * Performs the specified action on each element of an Iterable.
         * @param {Function} action The action function to perform on each element of an Iterable. eg. function(item, index)
+        * @param {Object=} thisArg Value to use as this when executing callback.
         */
-        forEach: function (action) {
-            return forEach(this, action);
+        forEach: function (action, thisArg) {
+            return forEach(this, action, thisArg);
+        },
+
+        /**
+        * Groups the elements of a sequence according to a key selector function.
+        * @param {Function} keySelector A function to extract the key for each element. eg. function(item)
+        * @param {Function|EqualityComparer=} elementSelectorOrComparer A function to map each source element to an element in the Grouping. eg. function(item) or an equality comparer
+        * @param {Function|EqualityComparer=} resultSelectorOrComparer A function to extract the key for each element. eg. function(item) or an equality comparer
+        * @param {EqualityComparer=} comparer An equality comparer to compare values.
+        * @returns {Iterable}
+        */
+        groupBy: function (keySelector, elementSelectorOrComparer, resultSelectorOrComparer, comparer) {
+            var args = arguments.length,
+                elementSelector = isFunction(elementSelectorOrComparer) ? elementSelectorOrComparer : null,
+                resultSelector = isFunction(resultSelectorOrComparer) ? resultSelectorOrComparer : null;
+
+            comparer = args === 3 && elementSelector === null ? elementSelectorOrComparer :
+                (args === 4 && resultSelector === null ? resultSelectorOrComparer : comparer);
+
+            return groupBy(this, keySelector, elementSelector, resultSelector, comparer);
+        },
+
+        /**
+        * Correlates the elements of two sequences based on key equality and groups the results. A specified EqualityComparer is used to compare keys.
+        * @param {Iterable} inner The sequence to join to the current sequence.
+        * @param {Function} outerKeySelector A function to extract the join key from each element of the first sequence. eg. function(outer)
+        * @param {Function} innerKeySelector A function to extract the join key from each element of the second sequence. function(inner)
+        * @param {Function} resultSelector A function to create a result element from an element from the first sequence and a collection of matching elements from the second sequence. eg. function(outer, inner)
+        * @param {EqualityComparer=} comparer An equality comparer to compare values.
+        * @returns {Iterable}
+        */
+        groupJoin: function (inner, outerKeySelector, innerKeySelector, resultSelector, comparer) {
+            return groupJoin(this, inner, outerKeySelector, innerKeySelector, resultSelector, comparer);
         },
 
         /**
@@ -206,7 +245,20 @@ export default function linq(iterable) {
         * @returns {Iterable}
         */
         intersect: function (second, comparer) {
-            return exceptIntersect(this, second, true, comparer);
+            return exceptIntersect(this, second, comparer, true);
+        },
+
+        /**
+        * Correlates the elements of two sequences based on matching keys. A specified EqualityComparer is used to compare keys.
+        * @param {Iterable} inner The sequence to join to the current sequence.
+        * @param {Function} outerKeySelector A function to extract the join key from each element of the first sequence. eg. function(outer)
+        * @param {Function} innerKeySelector A function to extract the join key from each element of the second sequence. function(inner)
+        * @param {Function} resultSelector A function to create a result element from an element from the first sequence and a collection of matching elements from the second sequence. eg. function(outer, inner)
+        * @param {EqualityComparer=} comparer An equality comparer to compare values.
+        * @returns {Iterable}
+        */
+        join: function (inner, outerKeySelector, innerKeySelector, resultSelector, comparer) {
+            return join(this, inner, outerKeySelector, innerKeySelector, comparer);
         },
 
         /**
@@ -361,7 +413,7 @@ export default function linq(iterable) {
         * @returns {Array}
         */
         toArray: function () {
-            return toArray(this);
+            return buffer(this);
         },
 
         /**
@@ -369,7 +421,18 @@ export default function linq(iterable) {
         * @returns {List}
         */
         toList: function () {
-            return toList(this);
+            return new List(this);
+        },
+
+        /**
+        * Creates a Lookup from an Iterable according to a specified key selector function, a comparer and an element selector function.
+        * @param {Function} keySelector A function to extract a key from each element. eg. function(item)
+        * @param {Function=} valueSelector A transform function to produce a result element value from each element. eg. function(item)
+        * @param {EqualityComparer=} comparer An equality comparer to compare values.
+        * @returns {Lookup}
+        */
+        toLookup: function (keySelector, valueSelector, comparer) {
+            return new Lookup(this, keySelector, valueSelector, comparer);
         },
 
         /**

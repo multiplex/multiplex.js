@@ -1,8 +1,7 @@
-import hash from '../runtime/hash';
-import equals from '../runtime/equals';
 import mixin from '../utils/mixin';
 import isFunction from '../utils/is-function';
 import assertType from '../utils/assert-type';
+import {runtimeHash, runtimeEquals} from '../runtime/runtime';
 
 /**
 * Provides a base class for implementations of the EqualityComparer.
@@ -11,12 +10,9 @@ export default function EqualityComparer(hashCodeProvider, equality) {
     assertType(hashCodeProvider, Function);
     assertType(equality, Function);
 
-    this._hash = hashCodeProvider;
-    this._equals = equality;
+    this.hash = hashCodeProvider;
+    this.equals = equality;
 }
-
-
-var defaultEqualityComparer = new EqualityComparer(hash, equals);
 
 
 mixin(EqualityComparer.prototype, {
@@ -27,7 +23,7 @@ mixin(EqualityComparer.prototype, {
     * @returns true if the specified objects are equal; otherwise, false.
     */
     equals: function (x, y) {
-        return this._equals(x, y);
+        return runtimeEquals(x, y);
     },
 
     /**
@@ -36,7 +32,7 @@ mixin(EqualityComparer.prototype, {
     * @returns A hash code for the specified object.
     */
     hash: function (obj) {
-        return this._hash(obj);
+        return runtimeHash(obj);
     },
 
     toString: function () {
@@ -49,7 +45,7 @@ mixin(EqualityComparer, {
     /**
     * Gets a default sort order comparer for the type specified by the generic argument.
     */
-    defaultComparer: defaultEqualityComparer,
+    instance: defaultEqualityComparer,
 
     /**
     * Gets or creates a new EqualityComparer object.
@@ -57,16 +53,21 @@ mixin(EqualityComparer, {
     * @returns {EqualityComparer}
     */
     from: function (value) {
-        if (value instanceof EqualityComparer) {
+        if (value === null || value === undefined || value === defaultEqualityComparer) {
+            return defaultEqualityComparer;
+        }
+
+        else if (value instanceof EqualityComparer) {
             return value;
         }
 
-        else if (value && isFunction(value.hash) && isFunction(value.equals)) {
+        else if (isFunction(value.hash) && isFunction(value.equals)) {
             return new EqualityComparer(value.hash, value.equals);
         }
 
-        else {
-            return defaultEqualityComparer;
-        }
+        return defaultEqualityComparer;
     }
 });
+
+
+var defaultEqualityComparer = new EqualityComparer(runtimeHash, runtimeEquals);
