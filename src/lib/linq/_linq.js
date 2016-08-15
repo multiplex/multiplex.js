@@ -1,10 +1,13 @@
 import mixin from '../utils/mixin';
 import isFunction from '../utils/is-function';
 
-import EmptyIterable from '../iteration/iterable-empty';
-import EqualityComparer from '../collections/equality-comparer';
 import List from '../collections/list';
 import Lookup from '../collections/lookup';
+import EmptyIterable from '../iteration/iterable-empty';
+import OrderedIterable from '../collections/ordered-iterable';
+import Comparer from '../collections/comparer';
+import EqualityComparer from '../collections/equality-comparer';
+
 import buffer from '../utils/buffer';
 import range from './range';
 import repeat from './repeat';
@@ -307,6 +310,26 @@ export default function linq(iterable) {
         */
         ofType(type) {
             return ofType(this, type);
+        },
+
+        /**
+        * Sorts the elements of a sequence in ascending order by using a specified comparer.
+        * @param {Function} keySelector A function to extract a key from each element. eg. function(item)
+        * @param {Comparer=} comparer A Comparer to compare keys.
+        * @returns {OrderedIterable}
+        */
+        orderBy(keySelector, comparer = Comparer.instance) {
+            return new OrderedIterable(this, keySelector, comparer, false);
+        },
+
+        /**
+        * Sorts the elements of a sequence in descending order by using a specified comparer.
+        * @param {Function} keySelector A function to extract a key from each element. eg. function(item)
+        * @param {Comparer=} comparer A Comparer to compare keys.
+        * @returns {OrderedIterable}
+        */
+        orderByDescending(keySelector, comparer = Comparer.instance) {
+            return new OrderedIterable(this, keySelector, comparer, true);
         },
 
         /**
