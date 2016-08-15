@@ -49,6 +49,6 @@ mixin(Lookup.prototype, {
     }
 });
 
-Lookup[iteratorSymbol] = function () {
+Lookup.prototype[iteratorSymbol] = function () {
     return this.table[Symbol.iterator]();
 };
