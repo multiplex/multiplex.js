@@ -11,7 +11,7 @@ import runtime, {
 import Comparer from './lib/collections/comparer';
 import EqualityComparer from './lib/collections/equality-comparer';
 import Collection from './lib/collections/collection';
-import Dictionary from './lib/collections/Dictionary';
+import Dictionary from './lib/collections/dictionary';
 import KeyValuePair from './lib/collections/key-value-pair';
 import Lookup from './lib/collections/lookup';
 import Map from './lib/collections/map';

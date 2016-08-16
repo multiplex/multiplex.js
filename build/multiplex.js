@@ -2676,6 +2676,59 @@
         });
     }
 
+    /**
+    * Initializes a new instance of the Dictionary.
+    * @param {Dictionary|EqualityComparer|Number} value The Dictionary whose elements are copied to the new Dictionary or the EqualityComparer or Capacity
+    * @param {EqualityComparer=} comparer The EqualityComparer implementation to use when comparing keys.
+    */
+    class Dictionary$1 extends Collection {
+        constructor(value, comparer = EqualityComparer.instance) {
+            let dic = isType(value, Dictionary$1) ? value : null,
+                cmp = EqualityComparer.from(dic ? comparer : value),
+                table = new HashTable(cmp, dic ? dic.count() : (isNumber(value) ? value : 0));
+
+            if (dic) {
+                for (let element of dic) {
+                    table.add(element.key, element.value);
+                }
+            }
+
+            super();
+            this.table = table;
+        }
+
+        get [Symbol.toStringTag]() {
+            return 'Dictionary';
+        }
+
+        toString() {
+            return '[Dictionary]';
+        }
+
+        [Symbol.iterator]() {
+            return new DictionaryIterator$1(this);
+        }
+    }
+
+
+    class DictionaryIterator$1 extends IterableIterator {
+        constructor(dic) {
+            super(function* () {
+                for (let element in dic.table) {
+                    yield new KeyValuePair(element[0], element[1]);
+                }
+            });
+        }
+
+        get [Symbol.toStringTag]() {
+            return 'Dictionary Iterator';
+        }
+
+        toString() {
+            return '[Dictionary Iterator]';
+        }
+    }
+
     function toDictionary(source, keySelector, valueSelector, comparer) {
         assertNotNull(source);
         assertType(keySelector, Function);
@@ -2684,7 +2737,7 @@
             assertType(valueSelector, Function);
         }
 
-        let dic = new Dictionary(EqualityComparer.from(comparer));
+        let dic = new Dictionary$1(EqualityComparer.from(comparer));
 
         for (let element in source) {
             dic.add(keySelector(element), valueSelector ? valueSelector(element) : element);
