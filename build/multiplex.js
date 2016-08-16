@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (August 16, 2016)
+* Version 2.0.0 (August 17, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -1046,210 +1046,6 @@
         }
     }
 
-    class Grouping extends Collection {
-        constructor(key, elements) {
-            super();
-            this.key = key;
-            this.elements = elements;
-        }
-
-        valueOf() {
-            return this.elements;
-        }
-
-        get [Symbol.toStringTag]() {
-            return 'Grouping';
-        }
-
-        toString() {
-            return '[Grouping]';
-        }
-    }
-
-    /// Array of primes larger than: 2 ^ (4 x n)
-    const primes = [17, 67, 257, 1031, 4099, 16411, 65537, 262147, 1048583, 4194319, 16777259];
-
-    function resize(size) {
-        for (let i = 0, len = primes.length; i < len; i++) {
-            if (primes[i] > size) {
-                return primes[i];
-            }
-        }
-
-        return primes[primes.length - 1];
-    }
-
-    const emptyGrouping = new Grouping(null, []);
-
-    class LookupTable {
-        constructor(comparer) {
-            this.size = 0;
-            this.slots = new Array(7);
-            this.buckets = new Array(7);
-            this.comparer = EqualityComparer.from(comparer);
-        }
-
-        add(key, value) {
-            this.getGrouping(key, value, true);
-        }
-
-        get(key) {
-            return this.getGrouping(key, null, false) || emptyGrouping;
-        }
-
-        contains(key) {
-            return this.getGrouping(key, null, false) !== null;
-        }
-
-        entries() {
-            var arr = new Array(this.size),
-                index = 0;
-
-            for (let i = 0, count = this.slots.length; i < count; i++) {
-                arr[index++] = this.slots[i].grouping;
-            }
-
-            return arr;
-        }
-
-        getGrouping(key, value, create) {
-            let comparer = this.comparer,
-                hash = comparer.hash(key) & 0x7FFFFFFF,
-                bucket = hash % this.buckets.length,
-                index = this.buckets[bucket],
-                grouping = null,
-                slot = null;
-
-
-            while (index !== undefined) {
-                slot = this.slots[index];
-
-                if (slot.hash === hash && comparer.equals(slot.grouping.key, key)) {
-                    grouping = slot.grouping;
-                    break;
-                }
-
-                index = slot.next;
-            }
-
-
-            if (create === true) {
-                if (grouping === null) {
-                    if (this.size === this.slots.length) {
-                        this.resize();
-                        bucket = hash % this.buckets.length;
-                    }
-
-                    index = this.size;
-                    this.size++;
-
-                    grouping = new Grouping(key, [value]);
-                    this.slots[index] = new LookupTableSlot(hash, grouping, this.buckets[bucket]);
-                    this.buckets[bucket] = index;
-                }
-                else {
-                    grouping.elements.push(value);
-                }
-            }
-
-            return grouping;
-        }
-
-        resize() {
-            let size = this.size,
-                newSize = resize(size),
-                slot = null,
-                bucket = 0;
-
-            this.slots.length = newSize;
-            this.buckets.length = newSize;
-
-
-            // rehash values & update buckets and slots
-            for (let index = 0; index < size; index++) {
-                slot = this.slots[index];
-                bucket = slot.hash % newSize;
-                slot.next = this.buckets[bucket];
-                this.buckets[bucket] = index;
-            }
-        }
-
-        static create(source, keySelector, comparer = EqualityComparer.instance) {
-            let lookup = new LookupTable(comparer);
-
-            for (let element of source) {
-                lookup.add(keySelector(element), element);
-            }
-
-            return lookup;
-        }
-
-        [Symbol.iterator]() {
-            return new ArrayIterator(this.slots);
-        }
-    }
-
-
-    class LookupTableSlot {
-        constructor(hash, grouping, next) {
-            this.hash = hash;
-            this.next = next;
-            this.grouping = grouping;
-        }
-    }
-
-    function assertNotNull(obj) {
-        if (obj === null || obj === undefined) {
-            error('Value cannot be null.');
-        }
-    }
-
-    class Lookup extends Collection {
-        constructor(source, keySelector, elementSelector = null, comparer = EqualityComparer.instance) {
-            assertNotNull(source);
-            assertType(keySelector, Function);
-
-            if (elementSelector) {
-                assertType(elementSelector, Function);
-            }
-
-            super();
-            this.table = new LookupTable(comparer);
-
-            for (let element of source) {
-                this.table.add(keySelector(element), elementSelector ? elementSelector(element) : element);
-            }
-        }
-
-        get(key) {
-            return this.table.get(key);
-        }
-
-        contains(key) {
-            return this.table.contains(key);
-        }
-
-        count() {
-            return this.table.size;
-        }
-
-        valueOf() {
-            this.table.entries();
-        }
-
-        [Symbol.iterator]() {
-            return this.table[Symbol.iterator]();
-        }
-
-        get [Symbol.toStringTag]() {
-            return 'Lookup';
-        }
-
-        toString() {
-            return '[Lookup]';
-        }
-    }
-
     /**
     * Supports both iterable and iterator protocols using specified factory method.
     * @param {Function} factory A function to create iterator instance.
@@ -1282,18 +1078,31 @@
         }
     }
 
+    /// Array of primes larger than: 2 ^ (4 x n)
+    const primes = [17, 67, 257, 1031, 4099, 16411, 65537, 262147, 1048583, 4194319, 16777259];
+
+    function resize(size) {
+        for (let i = 0, len = primes.length; i < len; i++) {
+            if (primes[i] > size) {
+                return primes[i];
+            }
+        }
+
+        return primes[primes.length - 1];
+    }
+
     class HashTable {
-        constructor(comparer) {
-            this.initialize();
+        constructor(comparer, capacity = 0) {
+            this.initialize(capacity);
             this.comparer = EqualityComparer.from(comparer);
         }
 
-        initialize() {
-            this.size = 0;                      // total number of slots, including release slots (freeCount)
-            this.freeIndex = undefined;         // next free index in the bucket list
-            this.freeCount = 0;                 // total number of release slots
-            this.buckets = new Array(7);        // bucket list. index: hash, value: slot index;
-            this.slots = new Array(7);          // slot list. next: index of the next bucket;
+        initialize(capacity) {
+            this.size = 0;                              // total number of slots, including release slots (freeCount)
+            this.freeIndex = undefined;                 // next free index in the bucket list
+            this.freeCount = 0;                         // total number of release slots
+            this.buckets = new Array(capacity || 7);    // bucket list. index: hash, value: slot index;
+            this.slots = new Array(capacity || 7);      // slot list. next: index of the next bucket;
         }
 
         add(key, value = null) {
@@ -1301,7 +1110,7 @@
         }
 
         clear() {
-            this.initialize();
+            this.initialize(0);
         }
 
         contains(key) {
@@ -1513,6 +1322,268 @@
             this.next = next;       // index of the next bucket in the chained bucket list
             this.key = key;         // item's key
             this.value = value;     // item's value
+        }
+    }
+
+    /**
+    * Initializes a new instance of the KeyValuePair with the specified key and value.
+    * @param {Object} key The object defined in each key/value pair.
+    * @param {Object} value The definition associated with key.
+    */
+    class KeyValuePair {
+        constructor(key, value) {
+            this.key = key;
+            this.value = value;
+
+            Object.freeze(this);
+        }
+    }
+
+    function isNumber(val) {
+        return typeof val === 'number';
+    }
+
+    /**
+    * Initializes a new instance of the Dictionary.
+    * @param {Dictionary|EqualityComparer|Number} value The Dictionary whose elements are copied to the new Dictionary or the EqualityComparer or Capacity
+    * @param {EqualityComparer=} comparer The EqualityComparer implementation to use when comparing keys.
+    */
+    class Dictionary extends Collection {
+        constructor(value, comparer = EqualityComparer.instance) {
+            let dic = isType(value, Dictionary) ? value : null,
+                cmp = EqualityComparer.from(dic ? comparer : value),
+                table = new HashTable(cmp, dic ? dic.count() : (isNumber(value) ? value : 0));
+
+            if (dic) {
+                for (let element of dic) {
+                    table.add(element.key, element.value);
+                }
+            }
+
+            super();
+            this.table = table;
+        }
+
+        get [Symbol.toStringTag]() {
+            return 'Dictionary';
+        }
+
+        toString() {
+            return '[Dictionary]';
+        }
+
+        [Symbol.iterator]() {
+            return new DictionaryIterator(this);
+        }
+    }
+
+
+    class DictionaryIterator extends IterableIterator {
+        constructor(dic) {
+            super(function* () {
+                for (let element in dic.table) {
+                    yield new KeyValuePair(element[0], element[1]);
+                }
+            });
+        }
+
+        get [Symbol.toStringTag]() {
+            return 'Dictionary Iterator';
+        }
+
+        toString() {
+            return '[Dictionary Iterator]';
+        }
+    }
+
+    class Grouping extends Collection {
+        constructor(key, elements) {
+            super();
+            this.key = key;
+            this.elements = elements;
+        }
+
+        valueOf() {
+            return this.elements;
+        }
+
+        get [Symbol.toStringTag]() {
+            return 'Grouping';
+        }
+
+        toString() {
+            return '[Grouping]';
+        }
+    }
+
+    const emptyGrouping = new Grouping(null, []);
+
+    class LookupTable {
+        constructor(comparer) {
+            this.size = 0;
+            this.slots = new Array(7);
+            this.buckets = new Array(7);
+            this.comparer = EqualityComparer.from(comparer);
+        }
+
+        add(key, value) {
+            this.getGrouping(key, value, true);
+        }
+
+        get(key) {
+            return this.getGrouping(key, null, false) || emptyGrouping;
+        }
+
+        contains(key) {
+            return this.getGrouping(key, null, false) !== null;
+        }
+
+        entries() {
+            var arr = new Array(this.size),
+                index = 0;
+
+            for (let i = 0, count = this.slots.length; i < count; i++) {
+                arr[index++] = this.slots[i].grouping;
+            }
+
+            return arr;
+        }
+
+        getGrouping(key, value, create) {
+            let comparer = this.comparer,
+                hash = comparer.hash(key) & 0x7FFFFFFF,
+                bucket = hash % this.buckets.length,
+                index = this.buckets[bucket],
+                grouping = null,
+                slot = null;
+
+
+            while (index !== undefined) {
+                slot = this.slots[index];
+
+                if (slot.hash === hash && comparer.equals(slot.grouping.key, key)) {
+                    grouping = slot.grouping;
+                    break;
+                }
+
+                index = slot.next;
+            }
+
+
+            if (create === true) {
+                if (grouping === null) {
+                    if (this.size === this.slots.length) {
+                        this.resize();
+                        bucket = hash % this.buckets.length;
+                    }
+
+                    index = this.size;
+                    this.size++;
+
+                    grouping = new Grouping(key, [value]);
+                    this.slots[index] = new LookupTableSlot(hash, grouping, this.buckets[bucket]);
+                    this.buckets[bucket] = index;
+                }
+                else {
+                    grouping.elements.push(value);
+                }
+            }
+
+            return grouping;
+        }
+
+        resize() {
+            let size = this.size,
+                newSize = resize(size),
+                slot = null,
+                bucket = 0;
+
+            this.slots.length = newSize;
+            this.buckets.length = newSize;
+
+
+            // rehash values & update buckets and slots
+            for (let index = 0; index < size; index++) {
+                slot = this.slots[index];
+                bucket = slot.hash % newSize;
+                slot.next = this.buckets[bucket];
+                this.buckets[bucket] = index;
+            }
+        }
+
+        static create(source, keySelector, comparer = EqualityComparer.instance) {
+            let lookup = new LookupTable(comparer);
+
+            for (let element of source) {
+                lookup.add(keySelector(element), element);
+            }
+
+            return lookup;
+        }
+
+        [Symbol.iterator]() {
+            return new ArrayIterator(this.slots);
+        }
+    }
+
+
+    class LookupTableSlot {
+        constructor(hash, grouping, next) {
+            this.hash = hash;
+            this.next = next;
+            this.grouping = grouping;
+        }
+    }
+
+    function assertNotNull(obj) {
+        if (obj === null || obj === undefined) {
+            error('Value cannot be null.');
+        }
+    }
+
+    class Lookup extends Collection {
+        constructor(source, keySelector, elementSelector = null, comparer = EqualityComparer.instance) {
+            assertNotNull(source);
+            assertType(keySelector, Function);
+
+            if (elementSelector) {
+                assertType(elementSelector, Function);
+            }
+
+            super();
+            this.table = new LookupTable(comparer);
+
+            for (let element of source) {
+                this.table.add(keySelector(element), elementSelector ? elementSelector(element) : element);
+            }
+        }
+
+        get(key) {
+            return this.table.get(key);
+        }
+
+        contains(key) {
+            return this.table.contains(key);
+        }
+
+        count() {
+            return this.table.size;
+        }
+
+        valueOf() {
+            this.table.entries();
+        }
+
+        [Symbol.iterator]() {
+            return this.table[Symbol.iterator]();
+        }
+
+        get [Symbol.toStringTag]() {
+            return 'Lookup';
+        }
+
+        toString() {
+            return '[Lookup]';
         }
     }
 
@@ -1728,8 +1799,7 @@
 
     class List extends Collection {
         constructor(value) {
-            super();
-            this._value = value;
+            super(value);
         }
     }
 
@@ -2606,6 +2676,23 @@
         });
     }
 
+    function toDictionary(source, keySelector, valueSelector, comparer) {
+        assertNotNull(source);
+        assertType(keySelector, Function);
+
+        if (valueSelector) {
+            assertType(valueSelector, Function);
+        }
+
+        let dic = new Dictionary(EqualityComparer.from(comparer));
+
+        for (let element in source) {
+            dic.add(keySelector(element), valueSelector ? valueSelector(element) : element);
+        }
+
+        return dic;
+    }
+
     function unionIterator(first, second, comparer) {
         assertNotNull(first);
         assertNotNull(second);
@@ -3038,6 +3125,17 @@
             },
 
             /**
+            * Creates a Dictionary from an Iterable according to a specified key selector function, a comparer, and an element selector function.
+            * @param {Function} keySelector A function to extract a key from each element. eg. function(item)
+            * @param {Function=} valueSelector A transform function to produce a result element value from each element. eg. function(item)
+            * @param {EqualityComparer=} comparer An equality comparer to compare values.
+            * @returns {Dictionary}
+            */
+            toDictionary(keySelector, valueSelector = null, comparer = EqualityComparer.instance) {
+                return toDictionary(this, keySelector, valueSelector, comparer);
+            },
+
+            /**
             * Creates a List from an Iterable.
             * @returns {List}
             */
@@ -3113,6 +3211,8 @@
     mx.Iterable = Iterable;
     mx.Iterator = Iterator;
     mx.Comparer = Comparer;
+    mx.Dictionary = Dictionary;
+    mx.KeyValuePair = KeyValuePair;
     mx.EqualityComparer = EqualityComparer;
     mx.Collection = Collection;
     mx.Lookup = Lookup;
