@@ -1,4 +1,4 @@
-import Dictionary from '../collections/Dictionary';
+import Dictionary from '../collections/dictionary';
 import EqualityComparer from '../collections/equality-comparer';
 import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
