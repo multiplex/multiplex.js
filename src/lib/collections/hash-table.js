@@ -3,17 +3,17 @@ import EqualityComparer from './equality-comparer';
 import resize from '../utils/resize';
 
 export default class HashTable {
-    constructor(comparer) {
-        this.initialize();
+    constructor(comparer, capacity = 0) {
+        this.initialize(capacity);
         this.comparer = EqualityComparer.from(comparer);
     }
 
-    initialize() {
-        this.size = 0;                      // total number of slots, including release slots (freeCount)
-        this.freeIndex = undefined;         // next free index in the bucket list
-        this.freeCount = 0;                 // total number of release slots
-        this.buckets = new Array(7);        // bucket list. index: hash, value: slot index;
-        this.slots = new Array(7);          // slot list. next: index of the next bucket;
+    initialize(capacity) {
+        this.size = 0;                              // total number of slots, including release slots (freeCount)
+        this.freeIndex = undefined;                 // next free index in the bucket list
+        this.freeCount = 0;                         // total number of release slots
+        this.buckets = new Array(capacity || 7);    // bucket list. index: hash, value: slot index;
+        this.slots = new Array(capacity || 7);      // slot list. next: index of the next bucket;
     }
 
     add(key, value = null) {
@@ -21,7 +21,7 @@ export default class HashTable {
     }
 
     clear() {
-        this.initialize();
+        this.initialize(0);
     }
 
     contains(key) {
