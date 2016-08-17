@@ -1,5 +1,5 @@
-import IterableIterator from '../iteration/iterable-iterator';
 import Collection from './collection';
+import IterableIterator from '../iteration/iterable-iterator';
 import HashTable, {HashTableIterator} from './hash-table';
 import EqualityComparer from './equality-comparer';
 import KeyValuePair from './key-value-pair';
@@ -113,12 +113,12 @@ export default class Dictionary extends Collection {
     }
 
     /**
-        * Gets the value associated with the specified key.
-        * @param {Object} key The key whose value to get.
-        * @param {Function} callback When this method returns, callback method is called with the value
-        * associated with the specified key, if the key is found; otherwise, null for the type of the value parameter.
-        * @returns {Boolean}
-        */
+    * Gets the value associated with the specified key.
+    * @param {Object} key The key whose value to get.
+    * @param {Function} callback When this method returns, callback method is called with the value
+    * associated with the specified key, if the key is found; otherwise, null for the type of the value parameter.
+    * @returns {Boolean}
+    */
     tryGetValue(key, callback) {
         assertType(callback, Function);
 

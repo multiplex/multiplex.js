@@ -13,7 +13,7 @@ export default function toDictionary(source, keySelector, valueSelector, compare
 
     let dic = new Dictionary(EqualityComparer.from(comparer));
 
-    for (let element in source) {
+    for (let element of source) {
         dic.add(keySelector(element), valueSelector ? valueSelector(element) : element);
     }
 
