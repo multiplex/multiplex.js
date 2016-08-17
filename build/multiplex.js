@@ -53,6 +53,8 @@
     var ERROR_NO_MATCH = 'Sequence contains no matching element.';
     var ERROR_NON_NUMERIC_TYPE = 'Value is not a number.';
     var ERROR_MORE_THAN_ONE_ELEMENT = 'Sequence contains more than one element.';
+    var ERROR_KEY_NOT_FOUND = 'The given key was not present in the collection.';
+    var ERROR_DUPLICATE_KEY = 'An item with the same key has already been added.';
 
     function isType(obj, type) {
         // use 'typeof' operator in an if clause yields in better performance than switch-case
@@ -153,7 +155,7 @@
     }
 
     /*jshint newcap:false*/
-    function extend(type, superType) {
+    function extend(type, superType, properties) {
         if (isFunction(Object.create)) {
             type.prototype = Object.create(superType.prototype);
         }
@@ -164,6 +166,10 @@
         }
 
         type.prototype.constructor = type;
+
+        if (properties) {
+            mixin(type.prototype, properties);
+        }
     }
 
     /**
@@ -1118,20 +1124,33 @@
         }
     });
 
-    function Grouping(key, elements) {
-        this.key = key;
-        this.elements = elements;
+    /**
+    * Supports both iterable and iterator protocols using specified factory method.
+    * @param {Function} factory A function to create iterator instance.
+    */
+    function IterableIterator(factory) {
+        assertType(factory, Function);
+        Iterable.call(this, factory);
     }
 
-    extend(Grouping, Collection);
+    extend(IterableIterator, Iterable);
 
-    mixin(Grouping.prototype, {
-        valueOf: function () {
-            return this.elements;
+    IterableIterator.prototype[iteratorSymbol] = function () {
+        return new IterableIterator(this.valueOf());
+    };
+
+    mixin(IterableIterator.prototype, {
+        next: function () {
+            var iterator = this.iterator;
+            if (iterator === undefined) {
+                iterator = this.valueOf()();
+                this.iterator = iterator;
+            }
+            return iterator.next();
         },
 
         toString: function () {
-            return '[Grouping]';
+            return '[Iterable Iterator]';
         }
     });
 
@@ -1186,210 +1205,6 @@
             }
         }
     }
-
-    var emptyGrouping = new Grouping(null, []);
-
-    function LookupTable(comparer) {
-        this.size = 0;
-        this.slots = new Array(7);
-        this.buckets = new Array(7);
-        this.comparer = EqualityComparer.from(comparer);
-    }
-
-
-    mixin(LookupTable.prototype, {
-        add: function (key, value) {
-            this.getGrouping(key, value, true);
-        },
-
-        get: function (key) {
-            return this.getGrouping(key, null, false) || emptyGrouping;
-        },
-
-        contains: function (key) {
-            return this.getGrouping(key, null, false) !== null;
-        },
-
-        entries: function () {
-            var arr = new Array(this.size),
-                index = 0;
-
-            for (var i = 0, count = this.slots.length; i < count; i++) {
-                arr[index++] = this.slots[i].grouping;
-            }
-
-            return arr;
-        },
-
-        getGrouping: function (key, value, create) {
-            var comparer = this.comparer,
-                hash = comparer.hash(key) & 0x7FFFFFFF,
-                bucket = hash % this.buckets.length,
-                index = this.buckets[bucket],
-                grouping = null,
-                slot = null;
-
-
-            while (index !== undefined) {
-                slot = this.slots[index];
-
-                if (slot.hash === hash && comparer.equals(slot.grouping.key, key)) {
-                    grouping = slot.grouping;
-                    break;
-                }
-
-                index = slot.next;
-            }
-
-
-            if (create === true) {
-                if (grouping === null) {
-                    if (this.size === this.slots.length) {
-                        this.resize();
-                        bucket = hash % this.buckets.length;
-                    }
-
-                    index = this.size;
-                    this.size++;
-
-                    grouping = new Grouping(key, [value]);
-                    this.slots[index] = new LookupTableSlot(hash, grouping, this.buckets[bucket]);
-                    this.buckets[bucket] = index;
-                }
-                else {
-                    grouping.elements.push(value);
-                }
-            }
-
-            return grouping;
-        },
-
-        resize: function () {
-            var size = this.size,
-                newSize = resize(size),
-                slot = null,
-                bucket = 0;
-
-            this.slots.length = newSize;
-            this.buckets.length = newSize;
-
-
-            // rehash values & update buckets and slots
-            for (var index = 0; index < size; index++) {
-                slot = this.slots[index];
-                bucket = slot.hash % newSize;
-                slot.next = this.buckets[bucket];
-                this.buckets[bucket] = index;
-            }
-        }
-    });
-
-
-    mixin(LookupTable, {
-        create: function (source, keySelector, comparer) {
-            var lookup = new LookupTable(comparer);
-
-            forOf(source, function (element) {
-                lookup.add(keySelector(element), element);
-            });
-
-            return lookup;
-        }
-    });
-
-
-    LookupTable.prototype[iteratorSymbol] = function () {
-        return new ArrayIterator(this.slots);
-    };
-
-
-    function LookupTableSlot(hash, grouping, next) {
-        this.hash = hash;
-        this.next = next;
-        this.grouping = grouping;
-    }
-
-    function assertNotNull(obj) {
-        if (obj === null || obj === undefined) {
-            error('Value cannot be null.');
-        }
-    }
-
-    function Lookup(source, keySelector, elementSelector, comparer) {
-        assertNotNull(source);
-        assertType(keySelector, Function);
-
-        if (elementSelector) {
-            assertType(elementSelector, Function);
-        }
-
-        var table = new LookupTable(comparer);
-        this.table = table;
-
-        forOf(source, function (element) {
-            table.add(keySelector(element), elementSelector ? elementSelector(element) : element);
-        });
-    }
-
-
-    extend(Lookup, Collection);
-
-
-    mixin(Lookup.prototype, {
-        get: function (key) {
-            return this.table.get(key);
-        },
-
-        contains: function (key) {
-            return this.table.contains(key);
-        },
-
-        count: function () {
-            return this.table.size;
-        },
-
-        valueOf: function () {
-            this.table.entries();
-        },
-
-        toString: function () {
-            return '[Lookup]';
-        }
-    });
-
-    Lookup.prototype[iteratorSymbol] = function () {
-        return this.table[Symbol.iterator]();
-    };
-
-    /**
-    * Supports both iterable and iterator protocols using specified factory method.
-    * @param {Function} factory A function to create iterator instance.
-    */
-    function IterableIterator(factory) {
-        assertType(factory, Function);
-        Iterable.call(this, factory);
-    }
-
-    extend(IterableIterator, Iterable);
-
-    IterableIterator.prototype[iteratorSymbol] = function () {
-        return new IterableIterator(this.valueOf());
-    };
-
-    mixin(IterableIterator.prototype, {
-        next: function () {
-            var iterator = this.iterator;
-            if (iterator === undefined) {
-                iterator = this.valueOf()();
-                this.iterator = iterator;
-            }
-            return iterator.next();
-        },
-
-        toString: function () {
-            return '[Iterable Iterator]';
-        }
-    });
 
     function HashTable(comparer) {
         this.initialize();
@@ -1648,7 +1463,7 @@
 
     extend(HashTableIterator, IterableIterator);
 
-    mixin(HashTableIterator, {
+    mixin(HashTableIterator.prototype, {
         count: function () {
             return this.table.count();
         }
@@ -1661,6 +1476,418 @@
         this.key = key;         // item's key
         this.value = value;     // item's value
     }
+
+    /**
+    * Initializes a new instance of the KeyValuePair with the specified key and value.
+    * @param {Object} key The object defined in each key/value pair.
+    * @param {Object} value The definition associated with key.
+    */
+    function KeyValuePair (key, value) {
+        this.key = key;
+        this.value = value;
+    }
+
+    function isNumber(val) {
+        return typeof val === 'number';
+    }
+
+    /**
+    * Initializes a new instance of the Dictionary.
+    * @param {Dictionary|EqualityComparer|Number} value The Dictionary whose elements are copied to the new Dictionary or the EqualityComparer or Capacity
+    * @param {EqualityComparer=} comparer The EqualityComparer implementation to use when comparing keys.
+    */
+    function Dictionary(value, comparer) {
+        var dic = isType(value, Dictionary) ? value : null,
+            cmp = EqualityComparer.from(dic ? comparer : value),
+            table = new HashTable(cmp, dic ? dic.count() : (isNumber(value) ? value : 0));
+
+        if (dic) {
+            forOf(dic, function (element) {
+                table.add(element.key, element.value);
+            });
+        }
+
+        this.table = table;
+    }
+
+    extend(Dictionary, Collection);
+
+    mixin(Dictionary.prototype, {
+        /**
+        * Adds an element with the provided key and value to the Dictionary.
+        * @param {Object} key The object to use as the key of the element to add.
+        * @param {Object} value The object to use as the value of the element to add.
+        */
+        add: function (key, value) {
+            if (!this.table.add(key, value)) {
+                error(ERROR_DUPLICATE_KEY);
+            }
+        },
+
+        /**
+        * Removes all keys and values from the Dictionary.
+        */
+        clear: function () {
+            this.table.clear();
+        },
+
+        /**
+        * Gets the number of elements contained in the Dictionary.
+        * @returns {Number}
+        */
+        count: function () {
+            return this.table.count();
+        },
+
+        /**
+        * Determines whether the Dictionary contains the specified key.
+        * @param {Object} key The key to locate in the Dictionary.
+        * @returns {Boolean}
+        */
+        containsKey: function (key) {
+            return this.table.contains(key);
+        },
+
+        /**
+        * Determines whether the Dictionary contains a specific value.
+        * @param {Object} value The value to locate in the Dictionary.
+        * @returns {Boolean}
+        */
+        containsValue: function (value) {
+            return this.table.containsValue(value);
+        },
+
+        /**
+        * Gets a Collection containing the keys of the Dictionary.
+        * @returns {Collection}
+        */
+        keys: function () {
+            return new KeyCollection(this);
+        },
+
+        /**
+        * Gets a Collection containing the values in the Dictionary.
+        * @returns {Collection}
+        */
+        values: function () {
+            return new ValueCollection(this);
+        },
+
+        /**
+        * Gets element with the specified key.
+        * @param {Object} key The key of the element to get.
+        * @returns {Object}
+        */
+        get: function (key) {
+            var entry = this.table.entry(key);
+            if (entry !== undefined) {
+                return entry[1];
+            }
+
+            error(ERROR_KEY_NOT_FOUND);
+        },
+
+        /**
+        * Sets the element with the specified key.
+        * @param {Object} key The key of the element to set.
+        * @param {Object} value The object to use as the value of the element to set.
+        */
+        set: function (key, value) {
+            this.table.set(key, value);
+        },
+
+        /**
+        * Gets the value associated with the specified key.
+        * @param {Object} key The key whose value to get.
+        * @param {Function} callback When this method returns, callback method is called with the value
+        * associated with the specified key, if the key is found; otherwise, null for the type of the value parameter.
+        * @returns {Boolean}
+        */
+        tryGetValue: function (key, callback) {
+            assertType(callback, Function);
+
+            var entry = this.table.entry(key);
+
+            if (entry !== undefined) {
+                callback(entry.value);
+                return true;
+            }
+
+            return false;
+        },
+
+        /**
+        * Removes the element with the specified key from the Dictionary.
+        * @param {Object} key The key of the element to remove.
+        * @returns {Boolean}
+        */
+        remove: function (key) {
+            return this.table.remove(key);
+        },
+
+        valueOf: function () {
+            return this.keys();
+        },
+
+        toString: function () {
+            return '[Dictionary]';
+        }
+    });
+
+    Dictionary.prototype[iteratorSymbol] = function () {
+        return new DictionaryIterator(this);
+    };
+
+
+
+    function KeyCollection(dic) {
+        // type 0: key, 1: value, -1: [key, value]
+        HashTableIterator.call(this, dic, 0);
+    }
+
+    extend(KeyCollection, HashTableIterator);
+
+    mixin(KeyCollection.prototype, {
+        toString: function () {
+            return '[Key Collection]';
+        }
+    });
+
+
+
+    function ValueCollection(dic) {
+        // type 0: key, 1: value, -1: [key, value]
+        HashTableIterator.call(this, dic, 1);
+    }
+
+    extend(ValueCollection, HashTableIterator);
+
+    mixin(ValueCollection.prototype, {
+        toString: function () {
+            return '[Value Collection]';
+        }
+    });
+
+
+
+    function DictionaryIterator(dic) {
+        IterableIterator.call(this, function () {
+            var it = iterator(dic.table),
+                next;
+
+            return new Iterator(function () {
+                if (!(next = it.next()).done) {
+                    return {
+                        value: new KeyValuePair(next.value[0], next.value[1]),
+                        done: false
+                    };
+                }
+
+                return {
+                    done: true
+                };
+            });
+        });
+    }
+
+    extend(DictionaryIterator, IterableIterator);
+
+    mixin(DictionaryIterator.prototype, {
+        toString: function () {
+            return '[Dictionary Iterator]';
+        }
+    });
+
+    function Grouping(key, elements) {
+        this.key = key;
+        this.elements = elements;
+    }
+
+    extend(Grouping, Collection);
+
+    mixin(Grouping.prototype, {
+        valueOf: function () {
+            return this.elements;
+        },
+
+        toString: function () {
+            return '[Grouping]';
+        }
+    });
+
+    var emptyGrouping = new Grouping(null, []);
+
+    function LookupTable(comparer) {
+        this.size = 0;
+        this.slots = new Array(7);
+        this.buckets = new Array(7);
+        this.comparer = EqualityComparer.from(comparer);
+    }
+
+
+    mixin(LookupTable.prototype, {
+        add: function (key, value) {
+            this.getGrouping(key, value, true);
+        },
+
+        get: function (key) {
+            return this.getGrouping(key, null, false) || emptyGrouping;
+        },
+
+        contains: function (key) {
+            return this.getGrouping(key, null, false) !== null;
+        },
+
+        entries: function () {
+            var arr = new Array(this.size),
+                index = 0;
+
+            for (var i = 0, count = this.slots.length; i < count; i++) {
+                arr[index++] = this.slots[i].grouping;
+            }
+
+            return arr;
+        },
+
+        getGrouping: function (key, value, create) {
+            var comparer = this.comparer,
+                hash = comparer.hash(key) & 0x7FFFFFFF,
+                bucket = hash % this.buckets.length,
+                index = this.buckets[bucket],
+                grouping = null,
+                slot = null;
+
+
+            while (index !== undefined) {
+                slot = this.slots[index];
+
+                if (slot.hash === hash && comparer.equals(slot.grouping.key, key)) {
+                    grouping = slot.grouping;
+                    break;
+                }
+
+                index = slot.next;
+            }
+
+
+            if (create === true) {
+                if (grouping === null) {
+                    if (this.size === this.slots.length) {
+                        this.resize();
+                        bucket = hash % this.buckets.length;
+                    }
+
+                    index = this.size;
+                    this.size++;
+
+                    grouping = new Grouping(key, [value]);
+                    this.slots[index] = new LookupTableSlot(hash, grouping, this.buckets[bucket]);
+                    this.buckets[bucket] = index;
+                }
+                else {
+                    grouping.elements.push(value);
+                }
+            }
+
+            return grouping;
+        },
+
+        resize: function () {
+            var size = this.size,
+                newSize = resize(size),
+                slot = null,
+                bucket = 0;
+
+            this.slots.length = newSize;
+            this.buckets.length = newSize;
+
+
+            // rehash values & update buckets and slots
+            for (var index = 0; index < size; index++) {
+                slot = this.slots[index];
+                bucket = slot.hash % newSize;
+                slot.next = this.buckets[bucket];
+                this.buckets[bucket] = index;
+            }
+        }
+    });
+
+
+    mixin(LookupTable, {
+        create: function (source, keySelector, comparer) {
+            var lookup = new LookupTable(comparer);
+
+            forOf(source, function (element) {
+                lookup.add(keySelector(element), element);
+            });
+
+            return lookup;
+        }
+    });
+
+
+    LookupTable.prototype[iteratorSymbol] = function () {
+        return new ArrayIterator(this.slots);
+    };
+
+
+    function LookupTableSlot(hash, grouping, next) {
+        this.hash = hash;
+        this.next = next;
+        this.grouping = grouping;
+    }
+
+    function assertNotNull(obj) {
+        if (obj === null || obj === undefined) {
+            error('Value cannot be null.');
+        }
+    }
+
+    function Lookup(source, keySelector, elementSelector, comparer) {
+        assertNotNull(source);
+        assertType(keySelector, Function);
+
+        if (elementSelector) {
+            assertType(elementSelector, Function);
+        }
+
+        var table = new LookupTable(comparer);
+        this.table = table;
+
+        forOf(source, function (element) {
+            table.add(keySelector(element), elementSelector ? elementSelector(element) : element);
+        });
+    }
+
+
+    extend(Lookup, Collection);
+
+
+    mixin(Lookup.prototype, {
+        get: function (key) {
+            return this.table.get(key);
+        },
+
+        contains: function (key) {
+            return this.table.contains(key);
+        },
+
+        count: function () {
+            return this.table.size;
+        },
+
+        valueOf: function () {
+            this.table.entries();
+        },
+
+        toString: function () {
+            return '[Lookup]';
+        }
+    });
+
+    Lookup.prototype[iteratorSymbol] = function () {
+        return this.table[Symbol.iterator]();
+    };
 
     function Map(iterable, comparer) {
         var table = new HashTable(comparer);
@@ -2929,6 +3156,23 @@
         });
     }
 
+    function toDictionary(source, keySelector, valueSelector, comparer) {
+        assertNotNull(source);
+        assertType(keySelector, Function);
+
+        if (valueSelector) {
+            assertType(valueSelector, Function);
+        }
+
+        var dic = new Dictionary(EqualityComparer.from(comparer));
+
+        forOf(source, function (element) {
+            dic.add(keySelector(element), valueSelector ? valueSelector(element) : element);
+        });
+
+        return dic;
+    }
+
     function unionIterator(first, second, comparer) {
         assertNotNull(first);
         assertNotNull(second);
@@ -3367,6 +3611,17 @@
             },
 
             /**
+            * Creates a Dictionary from an Iterable according to a specified key selector function, a comparer, and an element selector function.
+            * @param {Function} keySelector A function to extract a key from each element. eg. function(item)
+            * @param {Function=} valueSelector A transform function to produce a result element value from each element. eg. function(item)
+            * @param {EqualityComparer=} comparer An equality comparer to compare values.
+            * @returns {Dictionary}
+            */
+            toDictionary: function (keySelector, valueSelector, comparer) {
+                return toDictionary(this, keySelector, valueSelector, comparer);
+            },
+
+            /**
             * Creates an array from an Iterable.
             * @returns {Array}
             */
@@ -3452,6 +3707,8 @@
     mx.Comparer = Comparer;
     mx.EqualityComparer = EqualityComparer;
     mx.Collection = Collection;
+    mx.Dictionary = Dictionary;
+    mx.KeyValuePair = KeyValuePair;
     mx.Lookup = Lookup;
     mx.Map = Map;
     mx.Set = Set;

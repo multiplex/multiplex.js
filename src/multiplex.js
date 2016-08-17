@@ -11,6 +11,8 @@ import runtime, {
 import Comparer from './lib/collections/comparer';
 import EqualityComparer from './lib/collections/equality-comparer';
 import Collection from './lib/collections/collection';
+import Dictionary from './lib/collections/dictionary';
+import KeyValuePair from './lib/collections/key-value-pair';
 import Lookup from './lib/collections/lookup';
 import Map from './lib/collections/map';
 import Set from './lib/collections/set';
@@ -44,6 +46,8 @@ mx.Iterator = Iterator;
 mx.Comparer = Comparer;
 mx.EqualityComparer = EqualityComparer;
 mx.Collection = Collection;
+mx.Dictionary = Dictionary;
+mx.KeyValuePair = KeyValuePair;
 mx.Lookup = Lookup;
 mx.Map = Map;
 mx.Set = Set;
