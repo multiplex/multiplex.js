@@ -1,5 +1,4 @@
 import iterator from './iterator-factory';
-import iteratorSymbol from './iterator-symbol';
 import mixin from '../utils/mixin';
 
 /**
@@ -12,10 +11,6 @@ export default function Iterable(source) {
     }
 }
 
-Iterable.prototype[iteratorSymbol] = function () {
-    return iterator(this._source);
-};
-
 mixin(Iterable.prototype, {
     toString: function () {
         return '[Iterable]';
@@ -23,5 +18,9 @@ mixin(Iterable.prototype, {
 
     valueOf: function () {
         return this._source;
+    },
+
+    '@@iterator': function () {
+        return iterator(this._source);
     }
 });

@@ -1,10 +1,8 @@
 import Collection from './collection';
 import HashTable, {HashTableIterator} from './hash-table';
-import iteratorSymbol from '../iteration/iterator-symbol';
 import bufferTo from '../utils/buffer-to';
 import forOf from '../utils/for-of';
 import extend from '../utils/extend';
-import mixin from '../utils/mixin';
 
 export default function Set(iterable, comparer) {
     var table = new HashTable(comparer);
@@ -19,9 +17,7 @@ export default function Set(iterable, comparer) {
     this.size = this.table.count();
 }
 
-extend(Set, Collection);
-
-mixin(Set.prototype, {
+extend(Set, Collection, {
     add: function (value) {
         this.table.add(value, value);
         this.size = this.table.count();
@@ -73,14 +69,13 @@ mixin(Set.prototype, {
 
     toString: function () {
         return '[Set]';
+    },
+
+    '@@iterator': function () {
+        return new SetIterator(this, 0);
     }
 });
 
-extend(Set, Collection);
-
-Set.prototype[iteratorSymbol] = function () {
-    return new SetIterator(this, 0);
-};
 
 
 // type 0: key, 1: value, -1: [key, value]
@@ -88,9 +83,7 @@ function SetIterator(set, type) {
     HashTableIterator.call(this, set, type);
 }
 
-extend(SetIterator, HashTableIterator);
-
-mixin(SetIterator.prototype, {
+extend(SetIterator, HashTableIterator, {
     toString: function () {
         return '[Set Iterator]';
     }

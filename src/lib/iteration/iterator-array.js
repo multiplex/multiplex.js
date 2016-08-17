@@ -1,5 +1,4 @@
 import Iterator from './iterator';
-import mixin from '../utils/mixin';
 import extend from '../utils/extend';
 
 /**
@@ -24,9 +23,7 @@ export default function ArrayIterator(arr) {
     });
 }
 
-extend(ArrayIterator, Iterator);
-
-mixin(ArrayIterator.prototype, {
+extend(ArrayIterator, Iterator, {
     toString: function () {
         return '[Array Iterator]';
     }

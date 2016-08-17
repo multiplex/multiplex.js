@@ -5,7 +5,7 @@ import Iterable from './iterable';
 import ArrayIterable from './iterable-array';
 import ObjectIterable from './iterable-object';
 import EmptyIterable from './iterable-empty';
-import iteratorSymbol from './iterator-symbol';
+import iteratorSymbol from '../utils/iterator-symbol';
 
 
 export default function iterable(value) {

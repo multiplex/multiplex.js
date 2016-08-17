@@ -1,7 +1,6 @@
 import Iterable from '../iteration/iterable';
 import Iterator from '../iteration/iterator';
 import Comparer from './comparer';
-import iteratorSymbol from '../iteration/iterator-symbol';
 import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
 import buffer from '../utils/buffer';
@@ -32,9 +31,7 @@ function OrderedIterableSorter(keySelector, comparer, descending, next) {
 }
 
 
-extend(OrderedIterable, Iterable);
-
-mixin(OrderedIterable.prototype, {
+extend(OrderedIterable, Iterable, {
     /**
     * Performs a subsequent ordering of the elements in a sequence in ascending order by using a comparer.
     * @param {Function} keySelector A function to extract a key from each element. eg. function(item)
@@ -57,27 +54,28 @@ mixin(OrderedIterable.prototype, {
 
     toString: function () {
         return '[Ordered Iterable]';
+    },
+
+    '@@iterator': function () {
+        var index = 0,
+            arr = buffer(this.valueOf()),
+            len = arr.length,
+            map = this.sorter.sort(arr);
+
+        return new Iterator(function () {
+            if (index < len) {
+                return {
+                    value: arr[map[index++]],
+                    done: false
+                };
+            }
+            return {
+                done: true
+            };
+        });
     }
 });
 
-OrderedIterable.prototype[iteratorSymbol] = function () {
-    var index = 0,
-        arr = buffer(this.valueOf()),
-        len = arr.length,
-        map = this.sorter.sort(arr);
-
-    return new Iterator(function () {
-        if (index < len) {
-            return {
-                value: arr[map[index++]],
-                done: false
-            };
-        }
-        return {
-            done: true
-        };
-    });
-};
 
 mixin(OrderedIterableSorter.prototype, {
     create: function (next) {

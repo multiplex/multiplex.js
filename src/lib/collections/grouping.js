@@ -1,5 +1,4 @@
 import Collection from './collection';
-import mixin from '../utils/mixin';
 import extend from '../utils/extend';
 
 export default function Grouping(key, elements) {
@@ -7,9 +6,7 @@ export default function Grouping(key, elements) {
     this.elements = elements;
 }
 
-extend(Grouping, Collection);
-
-mixin(Grouping.prototype, {
+extend(Grouping, Collection, {
     valueOf: function () {
         return this.elements;
     },

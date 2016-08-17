@@ -1,7 +1,6 @@
 import Iterator from '../iteration/iterator';
 import IterableIterator from '../iteration/iterable-iterator';
 import iterator from '../iteration/iterator-factory';
-import iteratorSymbol from '../iteration/iterator-symbol';
 
 import Collection from './collection';
 import HashTable, {HashTableIterator} from './hash-table';
@@ -13,7 +12,6 @@ import isNumber from '../utils/is-number';
 import assertType from '../utils/assert-type';
 import forOf from '../utils/for-of';
 import extend from '../utils/extend';
-import mixin from '../utils/mixin';
 import error, {ERROR_DUPLICATE_KEY, ERROR_KEY_NOT_FOUND} from '../utils/error';
 
 /**
@@ -35,9 +33,7 @@ export default function Dictionary(value, comparer) {
     this.table = table;
 }
 
-extend(Dictionary, Collection);
-
-mixin(Dictionary.prototype, {
+extend(Dictionary, Collection, {
     /**
     * Adds an element with the provided key and value to the Dictionary.
     * @param {Object} key The object to use as the key of the element to add.
@@ -156,12 +152,12 @@ mixin(Dictionary.prototype, {
 
     toString: function () {
         return '[Dictionary]';
+    },
+
+    '@@iterator': function () {
+        return new DictionaryIterator(this);
     }
 });
-
-Dictionary.prototype[iteratorSymbol] = function () {
-    return new DictionaryIterator(this);
-};
 
 
 
@@ -170,9 +166,7 @@ function KeyCollection(dic) {
     HashTableIterator.call(this, dic, 0);
 }
 
-extend(KeyCollection, HashTableIterator);
-
-mixin(KeyCollection.prototype, {
+extend(KeyCollection, HashTableIterator, {
     toString: function () {
         return '[Key Collection]';
     }
@@ -185,9 +179,7 @@ function ValueCollection(dic) {
     HashTableIterator.call(this, dic, 1);
 }
 
-extend(ValueCollection, HashTableIterator);
-
-mixin(ValueCollection.prototype, {
+extend(ValueCollection, HashTableIterator, {
     toString: function () {
         return '[Value Collection]';
     }
@@ -215,9 +207,7 @@ function DictionaryIterator(dic) {
     });
 }
 
-extend(DictionaryIterator, IterableIterator);
-
-mixin(DictionaryIterator.prototype, {
+extend(DictionaryIterator, IterableIterator, {
     toString: function () {
         return '[Dictionary Iterator]';
     }

@@ -1,7 +1,6 @@
 import Iterator from '../iteration/iterator';
 import IterableIterator from '../iteration/iterable-iterator';
 import EqualityComparer from './equality-comparer';
-import iteratorSymbol from '../iteration/iterator-symbol';
 import resize from '../utils/resize';
 import forOf from '../utils/for-of';
 import extend from '../utils/extend';
@@ -224,13 +223,14 @@ mixin(HashTable.prototype, {
 
     set: function (key, value) {
         this.insert(key, value, false);
+    },
+
+    '@@iterator': function () {
+        return new HashTableIterator(this, -1);
     }
 });
 
 
-HashTable.prototype[iteratorSymbol] = function () {
-    return new HashTableIterator(this, -1);
-};
 
 
 // type 0: key, 1: value, -1: [key, value]
@@ -262,9 +262,7 @@ export function HashTableIterator(table, type) {
     });
 }
 
-extend(HashTableIterator, IterableIterator);
-
-mixin(HashTableIterator.prototype, {
+extend(HashTableIterator, IterableIterator, {
     count: function () {
         return this.table.count();
     }

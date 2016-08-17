@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (August 17, 2016)
+* Version 2.0.0 (August 18, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -16,6 +16,9 @@
     function isFunction(fn) {
         return typeof fn === 'function';
     }
+
+    var iteratorSymbol = (typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol') ?
+        Symbol.iterator : '@@iterator';
 
     function mixin(obj, properties, attributes) {
         attributes = attributes || {};
@@ -35,6 +38,10 @@
     }
 
     function define(obj, prop, attributes) {
+        if (prop === '@@iterator') {
+            prop = iteratorSymbol;
+        }
+
         if (isFunction(Object.defineProperty)) {
             Object.defineProperty(obj, prop, attributes);
         }
@@ -194,9 +201,7 @@
         });
     }
 
-    extend(ArrayIterator, Iterator);
-
-    mixin(ArrayIterator.prototype, {
+    extend(ArrayIterator, Iterator, {
         toString: function () {
             return '[Array Iterator]';
         }
@@ -228,9 +233,7 @@
         });
     }
 
-    extend(ObjectIterator, Iterator);
-
-    mixin(ObjectIterator.prototype, {
+    extend(ObjectIterator, Iterator, {
         toString: function () {
             return '[Object Iterator]';
         }
@@ -245,16 +248,11 @@
         });
     }
 
-    extend(EmptyIterator, Iterator);
-
-    mixin(EmptyIterator.prototype, {
+    extend(EmptyIterator, Iterator, {
         toString: function () {
             return '[Empty Iterator]';
         }
     });
-
-    var iteratorSymbol = (typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol') ?
-        Symbol.iterator : '@@iterator';
 
     /**
     * Supports an iteration over an .Net Enumerable.
@@ -278,9 +276,7 @@
     }
 
 
-    extend(EnumerableIterator, Iterator);
-
-    mixin(EnumerableIterator.prototype, {
+    extend(EnumerableIterator, Iterator, {
         toString: function () {
             return '[Enumerable Iterator]';
         }
@@ -337,10 +333,6 @@
         }
     }
 
-    Iterable.prototype[iteratorSymbol] = function () {
-        return iterator(this._source);
-    };
-
     mixin(Iterable.prototype, {
         toString: function () {
             return '[Iterable]';
@@ -348,6 +340,10 @@
 
         valueOf: function () {
             return this._source;
+        },
+
+        '@@iterator': function () {
+            return iterator(this._source);
         }
     });
 
@@ -359,16 +355,14 @@
         Iterable.call(this, value);
     }
 
-    extend(ArrayIterable, Iterable);
-
-    ArrayIterable.prototype[iteratorSymbol] = function () {
-        var arr = this.valueOf();
-        return isFunction(arr[iteratorSymbol]) ? arr[iteratorSymbol]() : new ArrayIterator(arr);
-    };
-
-    mixin(ArrayIterable.prototype, {
+    extend(ArrayIterable, Iterable, {
         toString: function () {
             return '[Array Iterable]';
+        },
+
+        '@@iterator': function () {
+            var arr = this.valueOf();
+            return isFunction(arr[iteratorSymbol]) ? arr[iteratorSymbol]() : new ArrayIterator(arr);
         }
     });
 
@@ -380,15 +374,13 @@
         Iterable.call(this, value);
     }
 
-    extend(ObjectIterable, Iterable);
-
-    ObjectIterable.prototype[iteratorSymbol] = function () {
-        return new ObjectIterator(this.valueOf());
-    };
-
-    mixin(ObjectIterable.prototype, {
+    extend(ObjectIterable, Iterable, {
         toString: function () {
             return '[Object Iterable]';
+        },
+
+        '@@iterator': function () {
+            return new ObjectIterator(this.valueOf());
         }
     });
 
@@ -398,15 +390,13 @@
     function EmptyIterable() {
     }
 
-    extend(EmptyIterable, Iterable);
-
-    EmptyIterable.prototype[iteratorSymbol] = function () {
-        return new EmptyIterator();
-    };
-
-    mixin(EmptyIterable.prototype, {
+    extend(EmptyIterable, Iterable, {
         toString: function () {
             return '[Empty Iterable]';
+        },
+
+        '@@iterator': function () {
+            return new EmptyIterator();
         }
     });
 
@@ -1099,9 +1089,7 @@
         ArrayIterable.call(this, value);
     }
 
-    extend(Collection, ArrayIterable);
-
-    mixin(Collection.prototype, {
+    extend(Collection, ArrayIterable, {
         /**
         * Gets the number of elements contained in the Collection.
         * @returns {Number}
@@ -1133,13 +1121,7 @@
         Iterable.call(this, factory);
     }
 
-    extend(IterableIterator, Iterable);
-
-    IterableIterator.prototype[iteratorSymbol] = function () {
-        return new IterableIterator(this.valueOf());
-    };
-
-    mixin(IterableIterator.prototype, {
+    extend(IterableIterator, Iterable, {
         next: function () {
             var iterator = this.iterator;
             if (iterator === undefined) {
@@ -1151,6 +1133,10 @@
 
         toString: function () {
             return '[Iterable Iterator]';
+        },
+
+        '@@iterator': function () {
+            return new IterableIterator(this.valueOf());
         }
     });
 
@@ -1423,13 +1409,14 @@
 
         set: function (key, value) {
             this.insert(key, value, false);
+        },
+
+        '@@iterator': function () {
+            return new HashTableIterator(this, -1);
         }
     });
 
 
-    HashTable.prototype[iteratorSymbol] = function () {
-        return new HashTableIterator(this, -1);
-    };
 
 
     // type 0: key, 1: value, -1: [key, value]
@@ -1461,9 +1448,7 @@
         });
     }
 
-    extend(HashTableIterator, IterableIterator);
-
-    mixin(HashTableIterator.prototype, {
+    extend(HashTableIterator, IterableIterator, {
         count: function () {
             return this.table.count();
         }
@@ -1482,7 +1467,7 @@
     * @param {Object} key The object defined in each key/value pair.
     * @param {Object} value The definition associated with key.
     */
-    function KeyValuePair (key, value) {
+    function KeyValuePair(key, value) {
         this.key = key;
         this.value = value;
     }
@@ -1510,9 +1495,7 @@
         this.table = table;
     }
 
-    extend(Dictionary, Collection);
-
-    mixin(Dictionary.prototype, {
+    extend(Dictionary, Collection, {
         /**
         * Adds an element with the provided key and value to the Dictionary.
         * @param {Object} key The object to use as the key of the element to add.
@@ -1631,12 +1614,12 @@
 
         toString: function () {
             return '[Dictionary]';
+        },
+
+        '@@iterator': function () {
+            return new DictionaryIterator(this);
         }
     });
-
-    Dictionary.prototype[iteratorSymbol] = function () {
-        return new DictionaryIterator(this);
-    };
 
 
 
@@ -1645,9 +1628,7 @@
         HashTableIterator.call(this, dic, 0);
     }
 
-    extend(KeyCollection, HashTableIterator);
-
-    mixin(KeyCollection.prototype, {
+    extend(KeyCollection, HashTableIterator, {
         toString: function () {
             return '[Key Collection]';
         }
@@ -1660,9 +1641,7 @@
         HashTableIterator.call(this, dic, 1);
     }
 
-    extend(ValueCollection, HashTableIterator);
-
-    mixin(ValueCollection.prototype, {
+    extend(ValueCollection, HashTableIterator, {
         toString: function () {
             return '[Value Collection]';
         }
@@ -1690,9 +1669,7 @@
         });
     }
 
-    extend(DictionaryIterator, IterableIterator);
-
-    mixin(DictionaryIterator.prototype, {
+    extend(DictionaryIterator, IterableIterator, {
         toString: function () {
             return '[Dictionary Iterator]';
         }
@@ -1703,9 +1680,7 @@
         this.elements = elements;
     }
 
-    extend(Grouping, Collection);
-
-    mixin(Grouping.prototype, {
+    extend(Grouping, Collection, {
         valueOf: function () {
             return this.elements;
         },
@@ -1809,6 +1784,10 @@
                 slot.next = this.buckets[bucket];
                 this.buckets[bucket] = index;
             }
+        },
+
+        '@@iterator': function () {
+            return new ArrayIterator(this.slots);
         }
     });
 
@@ -1825,10 +1804,6 @@
         }
     });
 
-
-    LookupTable.prototype[iteratorSymbol] = function () {
-        return new ArrayIterator(this.slots);
-    };
 
 
     function LookupTableSlot(hash, grouping, next) {
@@ -1860,10 +1835,7 @@
     }
 
 
-    extend(Lookup, Collection);
-
-
-    mixin(Lookup.prototype, {
+    extend(Lookup, Collection, {
         get: function (key) {
             return this.table.get(key);
         },
@@ -1882,12 +1854,12 @@
 
         toString: function () {
             return '[Lookup]';
+        },
+
+        '@@iterator': function () {
+            return this.table[iteratorSymbol]();
         }
     });
-
-    Lookup.prototype[iteratorSymbol] = function () {
-        return this.table[Symbol.iterator]();
-    };
 
     function Map(iterable, comparer) {
         var table = new HashTable(comparer);
@@ -1907,9 +1879,7 @@
         this.size = this.table.count();
     }
 
-    extend(Map, Collection);
-
-    mixin(Map.prototype, {
+    extend(Map, Collection, {
         clear: function () {
             this.table.clear();
             this.size = 0;
@@ -1967,14 +1937,13 @@
 
         toString: function () {
             return '[Map]';
+        },
+
+        '@@iterator': function () {
+            return new MapIterator(this, -1);
         }
     });
 
-    extend(Map, Collection);
-
-    Map.prototype[iteratorSymbol] = function () {
-        return new MapIterator(this, -1);
-    };
 
 
 
@@ -1983,9 +1952,7 @@
         HashTableIterator.call(this, map, type);
     }
 
-    extend(MapIterator, HashTableIterator);
-
-    mixin(MapIterator.prototype, {
+    extend(MapIterator, HashTableIterator, {
         toString: function () {
             return '[Map Iterator]';
         }
@@ -2004,9 +1971,7 @@
         this.size = this.table.count();
     }
 
-    extend(Set, Collection);
-
-    mixin(Set.prototype, {
+    extend(Set, Collection, {
         add: function (value) {
             this.table.add(value, value);
             this.size = this.table.count();
@@ -2058,14 +2023,13 @@
 
         toString: function () {
             return '[Set]';
+        },
+
+        '@@iterator': function () {
+            return new SetIterator(this, 0);
         }
     });
 
-    extend(Set, Collection);
-
-    Set.prototype[iteratorSymbol] = function () {
-        return new SetIterator(this, 0);
-    };
 
 
     // type 0: key, 1: value, -1: [key, value]
@@ -2073,9 +2037,7 @@
         HashTableIterator.call(this, set, type);
     }
 
-    extend(SetIterator, HashTableIterator);
-
-    mixin(SetIterator.prototype, {
+    extend(SetIterator, HashTableIterator, {
         toString: function () {
             return '[Set Iterator]';
         }
@@ -2111,9 +2073,7 @@
     }
 
 
-    extend(OrderedIterable, Iterable);
-
-    mixin(OrderedIterable.prototype, {
+    extend(OrderedIterable, Iterable, {
         /**
         * Performs a subsequent ordering of the elements in a sequence in ascending order by using a comparer.
         * @param {Function} keySelector A function to extract a key from each element. eg. function(item)
@@ -2136,27 +2096,28 @@
 
         toString: function () {
             return '[Ordered Iterable]';
+        },
+
+        '@@iterator': function () {
+            var index = 0,
+                arr = buffer(this.valueOf()),
+                len = arr.length,
+                map = this.sorter.sort(arr);
+
+            return new Iterator(function () {
+                if (index < len) {
+                    return {
+                        value: arr[map[index++]],
+                        done: false
+                    };
+                }
+                return {
+                    done: true
+                };
+            });
         }
     });
 
-    OrderedIterable.prototype[iteratorSymbol] = function () {
-        var index = 0,
-            arr = buffer(this.valueOf()),
-            len = arr.length,
-            map = this.sorter.sort(arr);
-
-        return new Iterator(function () {
-            if (index < len) {
-                return {
-                    value: arr[map[index++]],
-                    done: false
-                };
-            }
-            return {
-                done: true
-            };
-        });
-    };
 
     mixin(OrderedIterableSorter.prototype, {
         create: function (next) {

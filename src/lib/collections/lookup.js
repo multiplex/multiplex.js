@@ -1,11 +1,10 @@
 import Collection from './collection';
 import LookupTable from './lookup-table';
-import iteratorSymbol from '../iteration/iterator-symbol';
+import iterator from '../iteration/iterator-factory';
 import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
 import forOf from '../utils/for-of';
 import extend from '../utils/extend';
-import mixin from '../utils/mixin';
 
 export default function Lookup(source, keySelector, elementSelector, comparer) {
     assertNotNull(source);
@@ -24,10 +23,7 @@ export default function Lookup(source, keySelector, elementSelector, comparer) {
 }
 
 
-extend(Lookup, Collection);
-
-
-mixin(Lookup.prototype, {
+extend(Lookup, Collection, {
     get: function (key) {
         return this.table.get(key);
     },
@@ -46,9 +42,10 @@ mixin(Lookup.prototype, {
 
     toString: function () {
         return '[Lookup]';
+    },
+
+    '@@iterator': function () {
+        return iterator(this.table);
     }
 });
 
-Lookup.prototype[iteratorSymbol] = function () {
-    return this.table[Symbol.iterator]();
-};

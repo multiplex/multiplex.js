@@ -1,5 +1,4 @@
 import Iterator from './iterator';
-import mixin from '../utils/mixin';
 import extend from '../utils/extend';
 
 /**
@@ -11,9 +10,7 @@ export default function EmptyIterator() {
     });
 }
 
-extend(EmptyIterator, Iterator);
-
-mixin(EmptyIterator.prototype, {
+extend(EmptyIterator, Iterator, {
     toString: function () {
         return '[Empty Iterator]';
     }

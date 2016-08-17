@@ -1,5 +1,4 @@
 import Iterator from './iterator';
-import mixin from '../utils/mixin';
 import extend from '../utils/extend';
 
 /**
@@ -24,9 +23,7 @@ export default function EnumerableIterator(enumerable) {
 }
 
 
-extend(EnumerableIterator, Iterator);
-
-mixin(EnumerableIterator.prototype, {
+extend(EnumerableIterator, Iterator, {
     toString: function () {
         return '[Enumerable Iterator]';
     }
