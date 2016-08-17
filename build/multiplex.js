@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (August 17, 2016)
+* Version 2.0.0 (August 18, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -1361,8 +1361,6 @@
         constructor(key, value) {
             this.key = key;
             this.value = value;
-
-            Object.freeze(this);
         }
     }
 
@@ -1475,12 +1473,12 @@
         }
 
         /**
-            * Gets the value associated with the specified key.
-            * @param {Object} key The key whose value to get.
-            * @param {Function} callback When this method returns, callback method is called with the value
-            * associated with the specified key, if the key is found; otherwise, null for the type of the value parameter.
-            * @returns {Boolean}
-            */
+        * Gets the value associated with the specified key.
+        * @param {Object} key The key whose value to get.
+        * @param {Function} callback When this method returns, callback method is called with the value
+        * associated with the specified key, if the key is found; otherwise, null for the type of the value parameter.
+        * @returns {Boolean}
+        */
         tryGetValue(key, callback) {
             assertType(callback, Function);
 
@@ -1750,7 +1748,7 @@
         }
 
         [Symbol.iterator]() {
-            return this.table[Symbol.iterator]();
+            return iterator(this.table);
         }
 
         get [Symbol.toStringTag]() {
@@ -2861,7 +2859,7 @@
 
         let dic = new Dictionary(EqualityComparer.from(comparer));
 
-        for (let element in source) {
+        for (let element of source) {
             dic.add(keySelector(element), valueSelector ? valueSelector(element) : element);
         }
 
@@ -3386,10 +3384,10 @@
     mx.Iterable = Iterable;
     mx.Iterator = Iterator;
     mx.Comparer = Comparer;
-    mx.Dictionary = Dictionary;
-    mx.KeyValuePair = KeyValuePair;
     mx.EqualityComparer = EqualityComparer;
     mx.Collection = Collection;
+    mx.Dictionary = Dictionary;
+    mx.KeyValuePair = KeyValuePair;
     mx.Lookup = Lookup;
     mx.Map = Map;
     mx.Set = Set;
