@@ -34,8 +34,27 @@ mixin(HashTable.prototype, {
         return this.find(key) !== -1;
     },
 
+    containsValue: function (value) {
+        var slots = this.slots,
+            count = this.count(),
+            comparer = this.comparer;
+
+        for (var i = 0; i < count; i++) {
+            if (slots[i].hash !== undefined && comparer.equals(slots[i].value, value)) {
+                return true;
+            }
+        }
+
+        return false;
+    },
+
     count: function () {
         return this.size - this.freeCount;
+    },
+
+    entry: function (key) {
+        var index = this.find(key);
+        return index === -1 ? undefined : [key, this.slots[index].value];
     },
 
     entries: function () {
@@ -216,6 +235,7 @@ HashTable.prototype[iteratorSymbol] = function () {
 
 // type 0: key, 1: value, -1: [key, value]
 export function HashTableIterator(table, type) {
+    this.table = table;
     IterableIterator.call(this, function () {
         var index = 0,
             slot = null,
@@ -243,6 +263,12 @@ export function HashTableIterator(table, type) {
 }
 
 extend(HashTableIterator, IterableIterator);
+
+mixin(HashTableIterator, {
+    count: function () {
+        return this.table.count();
+    }
+});
 
 
 function HashTableSlot(hash, next, key, value) {
