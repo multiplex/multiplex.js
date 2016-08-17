@@ -28,8 +28,27 @@ export default class HashTable {
         return this.find(key) !== -1;
     }
 
+    containsValue(value) {
+        let slots = this.slots,
+            count = this.count(),
+            comparer = this.comparer;
+
+        for (let i = 0; i < count; i++) {
+            if (slots[i].hash !== undefined && comparer.equals(slots[i].value, value)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     count() {
         return this.size - this.freeCount;
+    }
+
+    entry(key) {
+        let index = this.find(key);
+        return index === -1 ? undefined : [key, this.slots[index].value];
     }
 
     entries() {
@@ -223,6 +242,12 @@ export class HashTableIterator extends IterableIterator {
                 }
             }
         });
+
+        this.table = table;
+    }
+
+    count() {
+        return this.table.count();
     }
 }
 
