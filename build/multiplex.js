@@ -77,6 +77,8 @@
     const ERROR_NO_MATCH = 'Sequence contains no matching element.';
     const ERROR_NON_NUMERIC_TYPE = 'Value is not a number.';
     const ERROR_MORE_THAN_ONE_ELEMENT = 'Sequence contains more than one element.';
+    const ERROR_KEY_NOT_FOUND = 'The given key was not present in the collection.';
+    const ERROR_DUPLICATE_KEY = 'An item with the same key has already been added.';
 
     function isType(obj, type) {
         // use 'typeof' operator in an if clause yields in better performance than switch-case
@@ -1117,8 +1119,27 @@
             return this.find(key) !== -1;
         }
 
+        containsValue(value) {
+            let slots = this.slots,
+                count = this.count(),
+                comparer = this.comparer;
+
+            for (let i = 0; i < count; i++) {
+                if (slots[i].hash !== undefined && comparer.equals(slots[i].value, value)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         count() {
             return this.size - this.freeCount;
+        }
+
+        entry(key) {
+            let index = this.find(key);
+            return index === -1 ? undefined : [key, this.slots[index].value];
         }
 
         entries() {
@@ -1312,6 +1333,12 @@
                     }
                 }
             });
+
+            this.table = table;
+        }
+
+        count() {
+            return this.table.count();
         }
     }
 
@@ -1364,6 +1391,122 @@
             this.table = table;
         }
 
+        /**
+        * Adds an element with the provided key and value to the Dictionary.
+        * @param {Object} key The object to use as the key of the element to add.
+        * @param {Object} value The object to use as the value of the element to add.
+        */
+        add(key, value) {
+            if (!this.table.add(key, value)) {
+                error(ERROR_DUPLICATE_KEY);
+            }
+        }
+
+        /**
+        * Removes all keys and values from the Dictionary.
+        */
+        clear() {
+            this.table.clear();
+        }
+
+        /**
+        * Gets the number of elements contained in the Dictionary.
+        * @returns {Number}
+        */
+        count() {
+            return this.table.count();
+        }
+
+        /**
+        * Determines whether the Dictionary contains the specified key.
+        * @param {Object} key The key to locate in the Dictionary.
+        * @returns {Boolean}
+        */
+        containsKey(key) {
+            return this.table.contains(key);
+        }
+
+        /**
+        * Determines whether the Dictionary contains a specific value.
+        * @param {Object} value The value to locate in the Dictionary.
+        * @returns {Boolean}
+        */
+        containsValue(value) {
+            return this.table.containsValue(value);
+        }
+
+        /**
+        * Gets a Collection containing the keys of the Dictionary.
+        * @returns {Collection}
+        */
+        keys() {
+            return new KeyCollection(this);
+        }
+
+        /**
+        * Gets a Collection containing the values in the Dictionary.
+        * @returns {Collection}
+        */
+        values() {
+            return new ValueCollection(this);
+        }
+
+        /**
+        * Gets element with the specified key.
+        * @param {Object} key The key of the element to get.
+        * @returns {Object}
+        */
+        get(key) {
+            let entry = this.table.entry(key);
+            if (entry !== undefined) {
+                return entry[1];
+            }
+
+            error(ERROR_KEY_NOT_FOUND);
+        }
+
+        /**
+        * Sets the element with the specified key.
+        * @param {Object} key The key of the element to set.
+        * @param {Object} value The object to use as the value of the element to set.
+        */
+        set(key, value) {
+            this.table.set(key, value);
+        }
+
+        /**
+            * Gets the value associated with the specified key.
+            * @param {Object} key The key whose value to get.
+            * @param {Function} callback When this method returns, callback method is called with the value
+            * associated with the specified key, if the key is found; otherwise, null for the type of the value parameter.
+            * @returns {Boolean}
+            */
+        tryGetValue(key, callback) {
+            assertType(callback, Function);
+
+            let entry = this.table.entry(key);
+
+            if (entry !== undefined) {
+                callback(entry.value);
+                return true;
+            }
+
+            return false;
+        }
+
+        /**
+        * Removes the element with the specified key from the Dictionary.
+        * @param {Object} key The key of the element to remove.
+        * @returns {Boolean}
+        */
+        remove(key) {
+            return this.table.remove(key);
+        }
+
+        valueOf() {
+            return this.keys();
+        }
+
         get [Symbol.toStringTag]() {
             return 'Dictionary';
         }
@@ -1374,6 +1517,38 @@
 
         [Symbol.iterator]() {
             return new DictionaryIterator(this);
+        }
+    }
+
+
+    class KeyCollection extends HashTableIterator {
+        // type 0: key, 1: value, -1: [key, value]
+        constructor(dic) {
+            super(dic.table, 0);
+        }
+
+        get [Symbol.toStringTag]() {
+            return 'Key Collection';
+        }
+
+        toString() {
+            return '[Key Collection]';
+        }
+    }
+
+
+    class ValueCollection extends HashTableIterator {
+        // type 0: key, 1: value, -1: [key, value]
+        constructor(dic) {
+            super(dic.table, 1);
+        }
+
+        get [Symbol.toStringTag]() {
+            return 'Value Collection';
+        }
+
+        toString() {
+            return '[Value Collection]';
         }
     }
 
