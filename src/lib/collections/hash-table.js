@@ -264,7 +264,7 @@ export function HashTableIterator(table, type) {
 
 extend(HashTableIterator, IterableIterator);
 
-mixin(HashTableIterator, {
+mixin(HashTableIterator.prototype, {
     count: function () {
         return this.table.count();
     }
