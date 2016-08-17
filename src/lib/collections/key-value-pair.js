@@ -3,10 +3,8 @@
 * @param {Object} key The object defined in each key/value pair.
 * @param {Object} value The definition associated with key.
 */
-export default function (key, value) {
+export default function KeyValuePair(key, value) {
     this.key = key;
     this.value = value;
-
-    Object.freeze(this);
 }
 
