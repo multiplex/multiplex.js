@@ -125,7 +125,7 @@ export default class Dictionary extends Collection {
         let entry = this.table.entry(key);
 
         if (entry !== undefined) {
-            callback(entry.value);
+            callback(entry[1]);
             return true;
         }
 
