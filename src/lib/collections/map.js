@@ -57,7 +57,7 @@ export default class Map extends Collection {
     }
 
     keys() {
-        return new MapIterator(this, 0);
+        return new MapIterator(this, key => key);
     }
 
     set(key, value) {
@@ -66,7 +66,7 @@ export default class Map extends Collection {
     }
 
     values() {
-        return new MapIterator(this, 1);
+        return new MapIterator(this, (key, value) => value);
     }
 
     valueOf() {
@@ -86,15 +86,14 @@ export default class Map extends Collection {
     }
 
     [Symbol.iterator]() {
-        return new MapIterator(this, -1);
+        return new MapIterator(this);
     }
 }
 
 
 class MapIterator extends HashTableIterator {
-    // type 0: key, 1: value, -1: [key, value]
-    constructor(map, type = 0) {
-        super(map.table, type);
+    constructor(map, selector = null) {
+        super(map.table, selector);
     }
 
     get [Symbol.toStringTag]() {

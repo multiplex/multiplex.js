@@ -1316,8 +1316,7 @@
 
 
     class HashTableIterator extends IterableIterator {
-        // type 0: key, 1: value, -1: [key, value]
-        constructor(table, type = -1) {
+        constructor(table, selector = null) {
             super(function* () {
                 let index = 0,
                     slot = null,
@@ -1329,7 +1328,7 @@
 
                     // freed slots have undefined as hashCode value and do not enumerate
                     if (slot.hash !== undefined) {
-                        yield type === -1 ? [slot.key, slot.value] : (type === 0 ? slot.key : slot.value);
+                        yield selector ? selector(slot.key, slot.value) : [slot.key, slot.value];
                     }
                 }
             });
@@ -1432,7 +1431,7 @@
         * @returns {Collection}
         */
         keys() {
-            return new KeyCollection(this);
+            return new KeyValueIterator(this, key => key);
         }
 
         /**
@@ -1440,7 +1439,7 @@
         * @returns {Collection}
         */
         values() {
-            return new ValueCollection(this);
+            return new KeyValueIterator(this, (key, value) => value);
         }
 
         /**
@@ -1508,58 +1507,22 @@
         }
 
         [Symbol.iterator]() {
-            return new DictionaryIterator(this);
+            return new KeyValueIterator(this, (key, value) => new KeyValuePair(key, value));
         }
     }
 
 
-    class KeyCollection extends HashTableIterator {
-        // type 0: key, 1: value, -1: [key, value]
-        constructor(dic) {
-            super(dic.table, 0);
+    class KeyValueIterator extends HashTableIterator {
+        constructor(dic, selector = null) {
+            super(dic.table, selector);
         }
 
         get [Symbol.toStringTag]() {
-            return 'Key Collection';
+            return 'KeyValue Iterator';
         }
 
         toString() {
-            return '[Key Collection]';
-        }
-    }
-
-
-    class ValueCollection extends HashTableIterator {
-        // type 0: key, 1: value, -1: [key, value]
-        constructor(dic) {
-            super(dic.table, 1);
-        }
-
-        get [Symbol.toStringTag]() {
-            return 'Value Collection';
-        }
-
-        toString() {
-            return '[Value Collection]';
-        }
-    }
-
-
-    class DictionaryIterator extends IterableIterator {
-        constructor(dic) {
-            super(function* () {
-                for (let element in dic.table) {
-                    yield new KeyValuePair(element[0], element[1]);
-                }
-            });
-        }
-
-        get [Symbol.toStringTag]() {
-            return 'Dictionary Iterator';
-        }
-
-        toString() {
-            return '[Dictionary Iterator]';
+            return '[KeyValue Iterator]';
         }
     }
 
@@ -1807,7 +1770,7 @@
         }
 
         keys() {
-            return new MapIterator(this, 0);
+            return new MapIterator(this, key => key);
         }
 
         set(key, value) {
@@ -1816,7 +1779,7 @@
         }
 
         values() {
-            return new MapIterator(this, 1);
+            return new MapIterator(this, (key, value) => value);
         }
 
         valueOf() {
@@ -1836,15 +1799,14 @@
         }
 
         [Symbol.iterator]() {
-            return new MapIterator(this, -1);
+            return new MapIterator(this);
         }
     }
 
 
     class MapIterator extends HashTableIterator {
-        // type 0: key, 1: value, -1: [key, value]
-        constructor(map, type = 0) {
-            super(map.table, type);
+        constructor(map, selector = null) {
+            super(map.table, selector);
         }
 
         get [Symbol.toStringTag]() {
@@ -1903,11 +1865,11 @@
         }
 
         keys() {
-            return new SetIterator(this, 0);
+            return new SetIterator(this, key => key);
         }
 
         values() {
-            return new SetIterator(this, 1);
+            return new SetIterator(this, (key, value) => value);
         }
 
         valueOf() {
@@ -1927,15 +1889,14 @@
         }
 
         [Symbol.iterator]() {
-            return new SetIterator(this, 0);
+            return this.keys();
         }
     }
 
 
     class SetIterator extends HashTableIterator {
-        // type 0: key, 1: value, -1: [key, value]
-        constructor(set, type = 0) {
-            super(set.table, type);
+        constructor(set, selector = null) {
+            super(set.table, selector);
         }
 
         get [Symbol.toStringTag]() {

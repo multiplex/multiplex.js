@@ -1,5 +1,4 @@
 import Collection from './collection';
-import IterableIterator from '../iteration/iterable-iterator';
 import HashTable, {HashTableIterator} from './hash-table';
 import EqualityComparer from './equality-comparer';
 import KeyValuePair from './key-value-pair';
@@ -78,7 +77,7 @@ export default class Dictionary extends Collection {
     * @returns {Collection}
     */
     keys() {
-        return new KeyCollection(this);
+        return new KeyValueIterator(this, key => key);
     }
 
     /**
@@ -86,7 +85,7 @@ export default class Dictionary extends Collection {
     * @returns {Collection}
     */
     values() {
-        return new ValueCollection(this);
+        return new KeyValueIterator(this, (key, value) => value);
     }
 
     /**
@@ -154,57 +153,21 @@ export default class Dictionary extends Collection {
     }
 
     [Symbol.iterator]() {
-        return new DictionaryIterator(this);
+        return new KeyValueIterator(this, (key, value) => new KeyValuePair(key, value));
     }
 }
 
 
-class KeyCollection extends HashTableIterator {
-    // type 0: key, 1: value, -1: [key, value]
-    constructor(dic) {
-        super(dic.table, 0);
+class KeyValueIterator extends HashTableIterator {
+    constructor(dic, selector = null) {
+        super(dic.table, selector);
     }
 
     get [Symbol.toStringTag]() {
-        return 'Key Collection';
+        return 'KeyValue Iterator';
     }
 
     toString() {
-        return '[Key Collection]';
-    }
-}
-
-
-class ValueCollection extends HashTableIterator {
-    // type 0: key, 1: value, -1: [key, value]
-    constructor(dic) {
-        super(dic.table, 1);
-    }
-
-    get [Symbol.toStringTag]() {
-        return 'Value Collection';
-    }
-
-    toString() {
-        return '[Value Collection]';
-    }
-}
-
-
-class DictionaryIterator extends IterableIterator {
-    constructor(dic) {
-        super(function* () {
-            for (let element in dic.table) {
-                yield new KeyValuePair(element[0], element[1]);
-            }
-        });
-    }
-
-    get [Symbol.toStringTag]() {
-        return 'Dictionary Iterator';
-    }
-
-    toString() {
-        return '[Dictionary Iterator]';
+        return '[KeyValue Iterator]';
     }
 }

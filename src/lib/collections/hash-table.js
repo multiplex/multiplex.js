@@ -225,8 +225,7 @@ export default class HashTable {
 
 
 export class HashTableIterator extends IterableIterator {
-    // type 0: key, 1: value, -1: [key, value]
-    constructor(table, type = -1) {
+    constructor(table, selector = null) {
         super(function* () {
             let index = 0,
                 slot = null,
@@ -238,7 +237,7 @@ export class HashTableIterator extends IterableIterator {
 
                 // freed slots have undefined as hashCode value and do not enumerate
                 if (slot.hash !== undefined) {
-                    yield type === -1 ? [slot.key, slot.value] : (type === 0 ? slot.key : slot.value);
+                    yield selector ? selector(slot.key, slot.value) : [slot.key, slot.value];
                 }
             }
         });

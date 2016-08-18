@@ -49,11 +49,11 @@ export default class Set extends Collection {
     }
 
     keys() {
-        return new SetIterator(this, 0);
+        return new SetIterator(this, key => key);
     }
 
     values() {
-        return new SetIterator(this, 1);
+        return new SetIterator(this, (key, value) => value);
     }
 
     valueOf() {
@@ -73,15 +73,14 @@ export default class Set extends Collection {
     }
 
     [Symbol.iterator]() {
-        return new SetIterator(this, 0);
+        return this.keys();
     }
 }
 
 
 class SetIterator extends HashTableIterator {
-    // type 0: key, 1: value, -1: [key, value]
-    constructor(set, type = 0) {
-        super(set.table, type);
+    constructor(set, selector = null) {
+        super(set.table, selector);
     }
 
     get [Symbol.toStringTag]() {
