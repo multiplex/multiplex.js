@@ -63,7 +63,9 @@ extend(Map, Collection, {
     },
 
     keys: function () {
-        return new MapIterator(this, 0);
+        return new MapIterator(this, function (key) {
+            return key;
+        });
     },
 
     set: function (key, value) {
@@ -73,7 +75,9 @@ extend(Map, Collection, {
     },
 
     values: function () {
-        return new MapIterator(this, 1);
+        return new MapIterator(this, function (key, value) {
+            return value;
+        });
     },
 
     valueOf: function () {
@@ -85,16 +89,15 @@ extend(Map, Collection, {
     },
 
     '@@iterator': function () {
-        return new MapIterator(this, -1);
+        return new MapIterator(this);
     }
 });
 
 
 
 
-// type 0: key, 1: value, -1: [key, value]
-function MapIterator(map, type) {
-    HashTableIterator.call(this, map, type);
+function MapIterator(map, selector) {
+    HashTableIterator.call(this, map, selector);
 }
 
 extend(MapIterator, HashTableIterator, {

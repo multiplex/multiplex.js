@@ -56,11 +56,15 @@ extend(Set, Collection, {
     },
 
     keys: function () {
-        return new SetIterator(this, 0);
+        return new SetIterator(this, function (key) {
+            return key;
+        });
     },
 
     values: function () {
-        return new SetIterator(this, 1);
+        return new SetIterator(this, function (key, value) {
+            return value;
+        });
     },
 
     valueOf: function () {
@@ -72,15 +76,14 @@ extend(Set, Collection, {
     },
 
     '@@iterator': function () {
-        return new SetIterator(this, 0);
+        return this.keys();
     }
 });
 
 
 
-// type 0: key, 1: value, -1: [key, value]
-function SetIterator(set, type) {
-    HashTableIterator.call(this, set, type);
+function SetIterator(set, selector) {
+    HashTableIterator.call(this, set, selector);
 }
 
 extend(SetIterator, HashTableIterator, {

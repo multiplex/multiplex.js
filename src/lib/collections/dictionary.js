@@ -1,7 +1,3 @@
-import Iterator from '../iteration/iterator';
-import IterableIterator from '../iteration/iterable-iterator';
-import iterator from '../iteration/iterator-factory';
-
 import Collection from './collection';
 import HashTable, {HashTableIterator} from './hash-table';
 import EqualityComparer from './equality-comparer';
@@ -83,7 +79,9 @@ extend(Dictionary, Collection, {
     * @returns {Collection}
     */
     keys: function () {
-        return new KeyCollection(this);
+        return new KeyValueIterator(this, function (key) {
+            return key;
+        });
     },
 
     /**
@@ -91,7 +89,9 @@ extend(Dictionary, Collection, {
     * @returns {Collection}
     */
     values: function () {
-        return new ValueCollection(this);
+        return new KeyValueIterator(this, function (key, value) {
+            return value;
+        });
     },
 
     /**
@@ -155,60 +155,20 @@ extend(Dictionary, Collection, {
     },
 
     '@@iterator': function () {
-        return new DictionaryIterator(this);
-    }
-});
-
-
-
-function KeyCollection(dic) {
-    // type 0: key, 1: value, -1: [key, value]
-    HashTableIterator.call(this, dic, 0);
-}
-
-extend(KeyCollection, HashTableIterator, {
-    toString: function () {
-        return '[Key Collection]';
-    }
-});
-
-
-
-function ValueCollection(dic) {
-    // type 0: key, 1: value, -1: [key, value]
-    HashTableIterator.call(this, dic, 1);
-}
-
-extend(ValueCollection, HashTableIterator, {
-    toString: function () {
-        return '[Value Collection]';
-    }
-});
-
-
-
-function DictionaryIterator(dic) {
-    IterableIterator.call(this, function () {
-        var it = iterator(dic.table),
-            next;
-
-        return new Iterator(function () {
-            if (!(next = it.next()).done) {
-                return {
-                    value: new KeyValuePair(next.value[0], next.value[1]),
-                    done: false
-                };
-            }
-
-            return {
-                done: true
-            };
+        return new KeyValueIterator(this, function (key, value) {
+            return new KeyValuePair(key, value);
         });
-    });
+    }
+});
+
+
+
+function KeyValueIterator(dic, selector) {
+    HashTableIterator.call(this, dic, selector);
 }
 
-extend(DictionaryIterator, IterableIterator, {
+extend(KeyValueIterator, HashTableIterator, {
     toString: function () {
-        return '[Dictionary Iterator]';
+        return '[KeyValue Iterator]';
     }
 });

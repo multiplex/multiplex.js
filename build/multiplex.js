@@ -1412,15 +1412,14 @@
         },
 
         '@@iterator': function () {
-            return new HashTableIterator(this, -1);
+            return new HashTableIterator(this);
         }
     });
 
 
 
 
-    // type 0: key, 1: value, -1: [key, value]
-    function HashTableIterator(table, type) {
+    function HashTableIterator(table, selector) {
         IterableIterator.call(this, function () {
             var index = 0,
                 slot = null,
@@ -1434,7 +1433,7 @@
                     // freed slots have undefined as hashCode value and do not enumerate
                     if (slot.hash !== undefined) {
                         return {
-                            value: type === -1 ? [slot.key, slot.value] : (type === 0 ? slot.key : slot.value),
+                            value: selector ? selector(slot.key, slot.value) : [slot.key, slot.value],
                             done: false
                         };
                     }
@@ -1540,7 +1539,9 @@
         * @returns {Collection}
         */
         keys: function () {
-            return new KeyCollection(this);
+            return new KeyValueIterator(this, function (key) {
+                return key;
+            });
         },
 
         /**
@@ -1548,7 +1549,9 @@
         * @returns {Collection}
         */
         values: function () {
-            return new ValueCollection(this);
+            return new KeyValueIterator(this, function (key, value) {
+                return value;
+            });
         },
 
         /**
@@ -1612,61 +1615,21 @@
         },
 
         '@@iterator': function () {
-            return new DictionaryIterator(this);
-        }
-    });
-
-
-
-    function KeyCollection(dic) {
-        // type 0: key, 1: value, -1: [key, value]
-        HashTableIterator.call(this, dic, 0);
-    }
-
-    extend(KeyCollection, HashTableIterator, {
-        toString: function () {
-            return '[Key Collection]';
-        }
-    });
-
-
-
-    function ValueCollection(dic) {
-        // type 0: key, 1: value, -1: [key, value]
-        HashTableIterator.call(this, dic, 1);
-    }
-
-    extend(ValueCollection, HashTableIterator, {
-        toString: function () {
-            return '[Value Collection]';
-        }
-    });
-
-
-
-    function DictionaryIterator(dic) {
-        IterableIterator.call(this, function () {
-            var it = iterator(dic.table),
-                next;
-
-            return new Iterator(function () {
-                if (!(next = it.next()).done) {
-                    return {
-                        value: new KeyValuePair(next.value[0], next.value[1]),
-                        done: false
-                    };
-                }
-
-                return {
-                    done: true
-                };
+            return new KeyValueIterator(this, function (key, value) {
+                return new KeyValuePair(key, value);
             });
-        });
+        }
+    });
+
+
+
+    function KeyValueIterator(dic, selector) {
+        HashTableIterator.call(this, dic, selector);
     }
 
-    extend(DictionaryIterator, IterableIterator, {
+    extend(KeyValueIterator, HashTableIterator, {
         toString: function () {
-            return '[Dictionary Iterator]';
+            return '[KeyValue Iterator]';
         }
     });
 
@@ -1913,7 +1876,9 @@
         },
 
         keys: function () {
-            return new MapIterator(this, 0);
+            return new MapIterator(this, function (key) {
+                return key;
+            });
         },
 
         set: function (key, value) {
@@ -1923,7 +1888,9 @@
         },
 
         values: function () {
-            return new MapIterator(this, 1);
+            return new MapIterator(this, function (key, value) {
+                return value;
+            });
         },
 
         valueOf: function () {
@@ -1935,16 +1902,15 @@
         },
 
         '@@iterator': function () {
-            return new MapIterator(this, -1);
+            return new MapIterator(this);
         }
     });
 
 
 
 
-    // type 0: key, 1: value, -1: [key, value]
-    function MapIterator(map, type) {
-        HashTableIterator.call(this, map, type);
+    function MapIterator(map, selector) {
+        HashTableIterator.call(this, map, selector);
     }
 
     extend(MapIterator, HashTableIterator, {
@@ -2005,11 +1971,15 @@
         },
 
         keys: function () {
-            return new SetIterator(this, 0);
+            return new SetIterator(this, function (key) {
+                return key;
+            });
         },
 
         values: function () {
-            return new SetIterator(this, 1);
+            return new SetIterator(this, function (key, value) {
+                return value;
+            });
         },
 
         valueOf: function () {
@@ -2021,15 +1991,14 @@
         },
 
         '@@iterator': function () {
-            return new SetIterator(this, 0);
+            return this.keys();
         }
     });
 
 
 
-    // type 0: key, 1: value, -1: [key, value]
-    function SetIterator(set, type) {
-        HashTableIterator.call(this, set, type);
+    function SetIterator(set, selector) {
+        HashTableIterator.call(this, set, selector);
     }
 
     extend(SetIterator, HashTableIterator, {
