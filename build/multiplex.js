@@ -1355,6 +1355,24 @@
             this.key = key;
             this.value = value;
         }
+
+        __hash__() {
+            return combineHash(runtime.hash(this.key), runtime.hash(this.value));
+        }
+
+        __eq__(obj) {
+            return obj instanceof KeyValuePair &&
+                runtime.equals(this.key, obj.key) &&
+                runtime.equals(this.value, obj.value);
+        }
+
+        get [Symbol.toStringTag]() {
+            return 'KeyValuePair';
+        }
+
+        toString() {
+            return '[KeyValuePair]';
+        }
     }
 
     function isNumber(val) {
