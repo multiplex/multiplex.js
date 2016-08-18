@@ -1466,6 +1466,22 @@
         this.value = value;
     }
 
+    mixin(KeyValuePair.prototype, {
+        __hash__: function () {
+            return combineHash(runtime.hash(this.key), runtime.hash(this.value));
+        },
+
+        __eq__: function (obj) {
+            return obj instanceof KeyValuePair &&
+                runtime.equals(this.key, obj.key) &&
+                runtime.equals(this.value, obj.value);
+        },
+
+        toString: function () {
+            return '[KeyValuePair]';
+        }
+    });
+
     function isNumber(val) {
         return typeof val === 'number';
     }
