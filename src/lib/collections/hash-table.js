@@ -235,7 +235,6 @@ mixin(HashTable.prototype, {
 
 // type 0: key, 1: value, -1: [key, value]
 export function HashTableIterator(table, type) {
-    this.table = table;
     IterableIterator.call(this, function () {
         var index = 0,
             slot = null,
@@ -262,11 +261,7 @@ export function HashTableIterator(table, type) {
     });
 }
 
-extend(HashTableIterator, IterableIterator, {
-    count: function () {
-        return this.table.count();
-    }
-});
+extend(HashTableIterator, IterableIterator);
 
 
 function HashTableSlot(hash, next, key, value) {
