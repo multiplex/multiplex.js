@@ -130,7 +130,7 @@ extend(Dictionary, Collection, {
         var entry = this.table.entry(key);
 
         if (entry !== undefined) {
-            callback(entry.value);
+            callback(entry[1]);
             return true;
         }
 
