@@ -242,12 +242,6 @@ export class HashTableIterator extends IterableIterator {
                 }
             }
         });
-
-        this.table = table;
-    }
-
-    count() {
-        return this.table.count();
     }
 }
 

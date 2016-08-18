@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (August 18, 2016)
+* Version 2.0.0 (August 19, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -420,7 +420,7 @@
 
     function valueOf(obj) {
         if (obj instanceof Date) {
-            return isFunction(obj.getTime) ? obj.getTime() : 0;
+            return obj.getTime();
         }
         else {
             return isFunction(obj.valueOf) ? obj.valueOf() : 0;
@@ -1333,12 +1333,6 @@
                     }
                 }
             });
-
-            this.table = table;
-        }
-
-        count() {
-            return this.table.count();
         }
     }
 
@@ -1485,7 +1479,7 @@
             let entry = this.table.entry(key);
 
             if (entry !== undefined) {
-                callback(entry.value);
+                callback(entry[1]);
                 return true;
             }
 
