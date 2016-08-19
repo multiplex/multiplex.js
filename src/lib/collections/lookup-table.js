@@ -1,5 +1,5 @@
 import Grouping from './grouping';
-import ArrayIterator from '../iteration/iterator-array';
+import Iterator from '../iteration/iterator';
 import EqualityComparer from './equality-comparer';
 import resize from '../utils/resize';
 
@@ -109,7 +109,29 @@ export default class LookupTable {
     }
 
     [Symbol.iterator]() {
-        return new ArrayIterator(this.slots);
+        return new LookupTableIterator(this);
+    }
+}
+
+
+export class LookupTableIterator extends Iterator {
+    constructor(lookup) {
+        let index = -1,
+            size = lookup.size,
+            slots = lookup.slots;
+
+        super(() => {
+            if (++index < size) {
+                return {
+                    value: slots[index++].grouping,
+                    done: false
+                };
+            }
+
+            return {
+                done: true
+            };
+        });
     }
 }
 

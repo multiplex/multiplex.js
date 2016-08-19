@@ -1319,15 +1319,15 @@
         constructor(table, selector = null) {
             super(function* () {
                 let index = 0,
-                    slot = null,
                     size = table.size,
-                    slots = table.slots;
+                    slots = table.slots,
+                    slot;
 
                 while (index < size) {
                     slot = slots[index++];
 
                     // freed slots have undefined as hashCode value and do not enumerate
-                    if (slot.hash !== undefined) {
+                    if (slot !== undefined && slot.hash !== undefined) {
                         yield selector ? selector(slot.key, slot.value) : [slot.key, slot.value];
                     }
                 }
@@ -1357,13 +1357,13 @@
         }
 
         __hash__() {
-            return combineHash(runtime.hash(this.key), runtime.hash(this.value));
+            return combineHash(runtimeHash(this.key), runtimeHash(this.value));
         }
 
         __eq__(obj) {
             return obj instanceof KeyValuePair &&
-                runtime.equals(this.key, obj.key) &&
-                runtime.equals(this.value, obj.value);
+                runtimeEquals(this.key, obj.key) &&
+                runtimeEquals(this.value, obj.value);
         }
 
         get [Symbol.toStringTag]() {
@@ -1670,7 +1670,29 @@
         }
 
         [Symbol.iterator]() {
-            return new ArrayIterator(this.slots);
+            return new LookupTableIterator(this);
+        }
+    }
+
+
+    class LookupTableIterator extends Iterator {
+        constructor(lookup) {
+            let index = -1,
+                size = lookup.size,
+                slots = lookup.slots;
+
+            super(() => {
+                if (++index < size) {
+                    return {
+                        value: slots[index++].grouping,
+                        done: false
+                    };
+                }
+
+                return {
+                    done: true
+                };
+            });
         }
     }
 
