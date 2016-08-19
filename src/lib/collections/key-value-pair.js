@@ -1,4 +1,4 @@
-import runtime from '../runtime/runtime';
+import {runtimeHash, runtimeEquals} from '../runtime/runtime';
 import combineHash from '../runtime/hash-combine';
 import mixin from '../utils/mixin';
 
@@ -14,13 +14,13 @@ export default function KeyValuePair(key, value) {
 
 mixin(KeyValuePair.prototype, {
     __hash__: function () {
-        return combineHash(runtime.hash(this.key), runtime.hash(this.value));
+        return combineHash(runtimeHash(this.key), runtimeHash(this.value));
     },
 
     __eq__: function (obj) {
         return obj instanceof KeyValuePair &&
-            runtime.equals(this.key, obj.key) &&
-            runtime.equals(this.value, obj.value);
+            runtimeEquals(this.key, obj.key) &&
+            runtimeEquals(this.value, obj.value);
     },
 
     toString: function () {
