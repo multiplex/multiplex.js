@@ -1,4 +1,4 @@
-import runtime from '../runtime/runtime';
+import {runtimeHash, runtimeEquals} from '../runtime/runtime';
 import combineHash from '../runtime/hash-combine';
 
 /**
@@ -13,13 +13,13 @@ export default class KeyValuePair {
     }
 
     __hash__() {
-        return combineHash(runtime.hash(this.key), runtime.hash(this.value));
+        return combineHash(runtimeHash(this.key), runtimeHash(this.value));
     }
 
     __eq__(obj) {
         return obj instanceof KeyValuePair &&
-            runtime.equals(this.key, obj.key) &&
-            runtime.equals(this.value, obj.value);
+            runtimeEquals(this.key, obj.key) &&
+            runtimeEquals(this.value, obj.value);
     }
 
     get [Symbol.toStringTag]() {
