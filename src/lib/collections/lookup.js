@@ -1,7 +1,6 @@
 import Collection from './collection';
-import LookupTable from './lookup-table';
+import LookupTable, {LookupTableIterator} from './lookup-table';
 import EqualityComparer from './equality-comparer';
-import iterator from '../iteration/iterator-factory';
 import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
 
@@ -39,7 +38,7 @@ export default class Lookup extends Collection {
     }
 
     [Symbol.iterator]() {
-        return iterator(this.table);
+        return new LookupTableIterator(this.table);
     }
 
     get [Symbol.toStringTag]() {

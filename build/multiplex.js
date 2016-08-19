@@ -1319,15 +1319,15 @@
         constructor(table, selector = null) {
             super(function* () {
                 let index = 0,
+                    slot = null,
                     size = table.size,
-                    slots = table.slots,
-                    slot;
+                    slots = table.slots;
 
                 while (index < size) {
                     slot = slots[index++];
 
                     // freed slots have undefined as hashCode value and do not enumerate
-                    if (slot !== undefined && slot.hash !== undefined) {
+                    if (slot.hash !== undefined) {
                         yield selector ? selector(slot.key, slot.value) : [slot.key, slot.value];
                     }
                 }
@@ -1745,7 +1745,7 @@
         }
 
         [Symbol.iterator]() {
-            return iterator(this.table);
+            return new LookupTableIterator(this.table);
         }
 
         get [Symbol.toStringTag]() {
