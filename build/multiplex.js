@@ -1468,13 +1468,13 @@
 
     mixin(KeyValuePair.prototype, {
         __hash__: function () {
-            return combineHash(runtime.hash(this.key), runtime.hash(this.value));
+            return combineHash(runtimeHash(this.key), runtimeHash(this.value));
         },
 
         __eq__: function (obj) {
             return obj instanceof KeyValuePair &&
-                runtime.equals(this.key, obj.key) &&
-                runtime.equals(this.value, obj.value);
+                runtimeEquals(this.key, obj.key) &&
+                runtimeEquals(this.value, obj.value);
         },
 
         toString: function () {
@@ -1761,7 +1761,7 @@
         },
 
         '@@iterator': function () {
-            return new ArrayIterator(this.slots);
+            return new LookupTableIterator(this);
         }
     });
 
@@ -1778,6 +1778,28 @@
         }
     });
 
+
+
+    function LookupTableIterator(lookup) {
+        var index = -1,
+            size = lookup.size,
+            slots = lookup.slots;
+
+        Iterator.call(this, function () {
+            if (++index < size) {
+                return {
+                    value: slots[index++].grouping,
+                    done: false
+                };
+            }
+
+            return {
+                done: true
+            };
+        });
+    }
+
+    extend(LookupTableIterator, Iterator);
 
 
     function LookupTableSlot(hash, grouping, next) {
