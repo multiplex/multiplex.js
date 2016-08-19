@@ -1,6 +1,5 @@
 import Collection from './collection';
-import LookupTable from './lookup-table';
-import iterator from '../iteration/iterator-factory';
+import LookupTable, {LookupTableIterator} from './lookup-table';
 import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
 import forOf from '../utils/for-of';
@@ -45,7 +44,7 @@ extend(Lookup, Collection, {
     },
 
     '@@iterator': function () {
-        return iterator(this.table);
+        return new LookupTableIterator(this.table);
     }
 });
 

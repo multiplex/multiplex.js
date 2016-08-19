@@ -1853,7 +1853,7 @@
         },
 
         '@@iterator': function () {
-            return iterator(this.table);
+            return new LookupTableIterator(this.table);
         }
     });
 

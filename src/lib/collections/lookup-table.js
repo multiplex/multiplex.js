@@ -122,7 +122,7 @@ mixin(LookupTable, {
 
 
 
-function LookupTableIterator(lookup) {
+export function LookupTableIterator(lookup) {
     var index = -1,
         size = lookup.size,
         slots = lookup.slots;
