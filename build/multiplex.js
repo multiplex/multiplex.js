@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (August 20, 2016)
+* Version 2.0.0 (August 21, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -323,13 +323,16 @@
         }
     }
 
+    var iterableSource = (typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol') ?
+        Symbol('iterable') : '@@iterable';
+
     /**
     * Defines abstract Iterable class.
     * @param {Iterable|Array|String|Function|Function*|Object} source An Iterable object.
     */
     function Iterable(source) {
         if (source !== null && source !== undefined) {
-            this._source = source;
+            this[iterableSource] = source;
         }
     }
 
@@ -339,11 +342,11 @@
         },
 
         valueOf: function () {
-            return this._source;
+            return this[iterableSource];
         },
 
         '@@iterator': function () {
-            return iterator(this._source);
+            return iterator(this[iterableSource]);
         }
     });
 
