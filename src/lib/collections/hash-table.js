@@ -86,7 +86,6 @@ export default class HashTable {
     }
 
     forEach(callback, target, thisArg = null) {
-
         if (thisArg !== null) {
             callback = callback.bind(thisArg);
         }
