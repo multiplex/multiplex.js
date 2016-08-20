@@ -86,13 +86,13 @@ export default class HashTable {
     }
 
     forEach(callback, target, thisArg = null) {
+
+        if (thisArg !== null) {
+            callback = callback.bind(thisArg);
+        }
+
         for (let element of this) {
-            if (thisArg) {
-                callback.call(thisArg, element[0], element[1], target);
-            }
-            else {
-                callback(element[0], element[1], target);
-            }
+            callback(element[0], element[1], target);
         }
     }
 
