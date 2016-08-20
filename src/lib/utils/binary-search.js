@@ -1,23 +1,23 @@
-export default function binarySearch(array, index, length, value, comparer) {
-    let _lo = index,
-        _hi = index + length - 1,
-        _order = 0,
-        _i = 0;
+export default function binarySearch(array, index, length, value, compare) {
+    let lo = index,
+        hi = index + length - 1,
+        order = 0,
+        i = 0;
 
-    while (_lo <= _hi) {
-        _i = _lo + ((_hi - _lo) >> 1);
-        _order = comparer(array[_i], value);
+    while (lo <= hi) {
+        i = lo + ((hi - lo) >> 1);
+        order = compare(array[i], value);
 
-        if (_order === 0) {
-            return _i;
+        if (order === 0) {
+            return i;
         }
-        else if (_order < 0) {
-            _lo = _i + 1;
+        else if (order < 0) {
+            lo = i + 1;
         }
         else {
-            _hi = _i - 1;
+            hi = i - 1;
         }
     }
 
-    return ~_lo;
+    return ~lo;
 }
