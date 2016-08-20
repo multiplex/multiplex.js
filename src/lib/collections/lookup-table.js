@@ -26,7 +26,7 @@ export default class LookupTable {
     }
 
     entries() {
-        var arr = new Array(this.size),
+        let arr = new Array(this.size),
             index = 0;
 
         for (let i = 0, count = this.slots.length; i < count; i++) {
