@@ -2,12 +2,12 @@
     "name": "multiplexjs",
     "title": "Multiplex.js",
     "description": "Comprehensive data-structure and LINQ library for JavaScript.",
-    "version": "2.0.0",
+    "version": "3.0.0",
     "main": "dist/multiplex.js",
     "jsnext:main": "dist/multiplex.es6.js",
     "typings": "dist/multiplex.d.ts",
     "author": "Kamyar Nazeri",
-    "license": "Apache-2.0",
+    "license": "MIT",
     "homepage": "https://github.com/multiplex/multiplex.js",
     "keywords": [
         "mx",
@@ -43,7 +43,7 @@
         ]
     },
     "devDependencies": {
-        "load-grunt-tasks": "3.5.0",
+        "load-grunt-tasks": "3.5.2",
         "grunt": "1.0.1",
         "grunt-cli": "1.2.0",
         "grunt-contrib-clean": "1.0.0",
@@ -56,8 +56,8 @@
         "grunt-jscs": "3.0.1",
         "benchmark": "2.1.0",
         "qunit": "0.9.1",
-        "rollup": "0.34.1",
-        "coveralls": "2.11.11",
+        "rollup": "0.34.10",
+        "coveralls": "2.11.12",
         "nyc": "7.1.0"
     },
     "scripts": {
