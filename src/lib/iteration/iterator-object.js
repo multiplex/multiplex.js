@@ -1,5 +1,4 @@
 import Iterator from './iterator';
-import mixin from '../utils/mixin';
 import extend from '../utils/extend';
 
 /**
@@ -28,9 +27,7 @@ export default function ObjectIterator(obj) {
     });
 }
 
-extend(ObjectIterator, Iterator);
-
-mixin(ObjectIterator.prototype, {
+extend(ObjectIterator, Iterator, {
     toString: function () {
         return '[Object Iterator]';
     }

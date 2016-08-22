@@ -4,8 +4,8 @@ import isArrayLike from '../utils/is-array-like';
 import ArrayIterator from './iterator-array';
 import ObjectIterator from './iterator-object';
 import EmptyIterator from './iterator-empty';
-import iteratorSymbol from './iterator-symbol';
 import EnumerableIterator from './iterator-enumerable';
+import iteratorSymbol from '../utils/iterator-symbol';
 
 /**
 * Creates an iterator object

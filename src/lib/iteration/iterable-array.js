@@ -1,9 +1,8 @@
 import Iterable from './iterable';
 import ArrayIterator from './iterator-array';
-import iteratorSymbol from './iterator-symbol';
-import mixin from '../utils/mixin';
 import extend from '../utils/extend';
 import isFunction from '../utils/is-function';
+import iteratorSymbol from '../utils/iterator-symbol';
 
 /**
 * Creates a new ArrayIterable instance.
@@ -13,16 +12,13 @@ export default function ArrayIterable(value) {
     Iterable.call(this, value);
 }
 
-extend(ArrayIterable, Iterable);
-
-ArrayIterable.prototype[iteratorSymbol] = function () {
-    var arr = this.valueOf();
-    return isFunction(arr[iteratorSymbol]) ? arr[iteratorSymbol]() : new ArrayIterator(arr);
-};
-
-mixin(ArrayIterable.prototype, {
+extend(ArrayIterable, Iterable, {
     toString: function () {
         return '[Array Iterable]';
+    },
+
+    '@@iterator': function () {
+        var arr = this.valueOf();
+        return isFunction(arr[iteratorSymbol]) ? arr[iteratorSymbol]() : new ArrayIterator(arr);
     }
 });
-

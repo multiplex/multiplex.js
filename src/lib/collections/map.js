@@ -1,12 +1,10 @@
 import Collection from './collection';
 import HashTable, {HashTableIterator} from './hash-table';
-import iteratorSymbol from '../iteration/iterator-symbol';
 import bufferTo from '../utils/buffer-to';
 import isArray from '../utils/is-array';
 import error from '../utils/error';
 import forOf from '../utils/for-of';
 import extend from '../utils/extend';
-import mixin from '../utils/mixin';
 
 export default function Map(iterable, comparer) {
     var table = new HashTable(comparer);
@@ -26,9 +24,7 @@ export default function Map(iterable, comparer) {
     this.size = this.table.count();
 }
 
-extend(Map, Collection);
-
-mixin(Map.prototype, {
+extend(Map, Collection, {
     clear: function () {
         this.table.clear();
         this.size = 0;
@@ -67,7 +63,9 @@ mixin(Map.prototype, {
     },
 
     keys: function () {
-        return new MapIterator(this, 0);
+        return new MapIterator(this, function (key) {
+            return key;
+        });
     },
 
     set: function (key, value) {
@@ -77,7 +75,9 @@ mixin(Map.prototype, {
     },
 
     values: function () {
-        return new MapIterator(this, 1);
+        return new MapIterator(this, function (key, value) {
+            return value;
+        });
     },
 
     valueOf: function () {
@@ -86,25 +86,21 @@ mixin(Map.prototype, {
 
     toString: function () {
         return '[Map]';
+    },
+
+    '@@iterator': function () {
+        return new MapIterator(this);
     }
 });
 
-extend(Map, Collection);
-
-Map.prototype[iteratorSymbol] = function () {
-    return new MapIterator(this, -1);
-};
 
 
 
-// type 0: key, 1: value, -1: [key, value]
-function MapIterator(map, type) {
-    HashTableIterator.call(this, map, type);
+function MapIterator(map, selector) {
+    HashTableIterator.call(this, map, selector);
 }
 
-extend(MapIterator, HashTableIterator);
-
-mixin(MapIterator.prototype, {
+extend(MapIterator, HashTableIterator, {
     toString: function () {
         return '[Map Iterator]';
     }

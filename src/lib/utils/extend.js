@@ -1,7 +1,8 @@
+import mixin from './mixin';
 import isFunction from './is-function';
 
 /*jshint newcap:false*/
-export default function extend(type, superType) {
+export default function extend(type, superType, properties) {
     if (isFunction(Object.create)) {
         type.prototype = Object.create(superType.prototype);
     }
@@ -12,4 +13,8 @@ export default function extend(type, superType) {
     }
 
     type.prototype.constructor = type;
+
+    if (properties) {
+        mixin(type.prototype, properties);
+    }
 }

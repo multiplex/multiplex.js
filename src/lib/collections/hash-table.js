@@ -1,7 +1,6 @@
 import Iterator from '../iteration/iterator';
 import IterableIterator from '../iteration/iterable-iterator';
 import EqualityComparer from './equality-comparer';
-import iteratorSymbol from '../iteration/iterator-symbol';
 import resize from '../utils/resize';
 import forOf from '../utils/for-of';
 import extend from '../utils/extend';
@@ -34,8 +33,27 @@ mixin(HashTable.prototype, {
         return this.find(key) !== -1;
     },
 
+    containsValue: function (value) {
+        var slots = this.slots,
+            count = this.count(),
+            comparer = this.comparer;
+
+        for (var i = 0; i < count; i++) {
+            if (slots[i].hash !== undefined && comparer.equals(slots[i].value, value)) {
+                return true;
+            }
+        }
+
+        return false;
+    },
+
     count: function () {
         return this.size - this.freeCount;
+    },
+
+    entry: function (key) {
+        var index = this.find(key);
+        return index === -1 ? undefined : [key, this.slots[index].value];
     },
 
     entries: function () {
@@ -205,17 +223,17 @@ mixin(HashTable.prototype, {
 
     set: function (key, value) {
         this.insert(key, value, false);
+    },
+
+    '@@iterator': function () {
+        return new HashTableIterator(this);
     }
 });
 
 
-HashTable.prototype[iteratorSymbol] = function () {
-    return new HashTableIterator(this, -1);
-};
 
 
-// type 0: key, 1: value, -1: [key, value]
-export function HashTableIterator(table, type) {
+export function HashTableIterator(table, selector) {
     IterableIterator.call(this, function () {
         var index = 0,
             slot = null,
@@ -229,7 +247,7 @@ export function HashTableIterator(table, type) {
                 // freed slots have undefined as hashCode value and do not enumerate
                 if (slot.hash !== undefined) {
                     return {
-                        value: type === -1 ? [slot.key, slot.value] : (type === 0 ? slot.key : slot.value),
+                        value: selector ? selector(slot.key, slot.value) : [slot.key, slot.value],
                         done: false
                     };
                 }

@@ -1,5 +1,4 @@
 import ArrayIterable from '../iteration/iterable-array';
-import mixin from '../utils/mixin';
 import extend from '../utils/extend';
 import buffer from '../utils/buffer';
 import bufferTo from '../utils/buffer-to';
@@ -16,9 +15,7 @@ export default function Collection(value) {
     ArrayIterable.call(this, value);
 }
 
-extend(Collection, ArrayIterable);
-
-mixin(Collection.prototype, {
+extend(Collection, ArrayIterable, {
     /**
     * Gets the number of elements contained in the Collection.
     * @returns {Number}

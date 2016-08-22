@@ -1,9 +1,11 @@
 import mixin from '../utils/mixin';
 import isFunction from '../utils/is-function';
 
-import EmptyIterable from '../iteration/iterable-empty';
 import List from '../collections/list';
 import Lookup from '../collections/lookup';
+import EmptyIterable from '../iteration/iterable-empty';
+import OrderedIterable from '../collections/ordered-iterable';
+
 import buffer from '../utils/buffer';
 import range from './range';
 import repeat from './repeat';
@@ -39,6 +41,7 @@ import skipWhile from './skip-while';
 import sum from './sum';
 import take from './take';
 import takeWhile from './take-while';
+import toDictionary from './to-dictionary';
 import union from './union';
 import where from './where';
 import zip from './zip';
@@ -308,6 +311,26 @@ export default function linq(iterable) {
         },
 
         /**
+        * Sorts the elements of a sequence in ascending order by using a specified comparer.
+        * @param {Function} keySelector A function to extract a key from each element. eg. function(item)
+        * @param {Comparer=} comparer A Comparer to compare keys.
+        * @returns {OrderedIterable}
+        */
+        orderBy: function (keySelector, comparer) {
+            return new OrderedIterable(this, keySelector, comparer, false);
+        },
+
+        /**
+        * Sorts the elements of a sequence in descending order by using a specified comparer.
+        * @param {Function} keySelector A function to extract a key from each element. eg. function(item)
+        * @param {Comparer=} comparer A Comparer to compare keys.
+        * @returns {OrderedIterable}
+        */
+        orderByDescending: function (keySelector, comparer) {
+            return new OrderedIterable(this, keySelector, comparer, true);
+        },
+
+        /**
         * Inverts the order of the elements in a sequence.
         * @returns {Iterable}
         */
@@ -406,6 +429,17 @@ export default function linq(iterable) {
         */
         takeWhile: function (predicate) {
             return takeWhile(this, predicate);
+        },
+
+        /**
+        * Creates a Dictionary from an Iterable according to a specified key selector function, a comparer, and an element selector function.
+        * @param {Function} keySelector A function to extract a key from each element. eg. function(item)
+        * @param {Function=} valueSelector A transform function to produce a result element value from each element. eg. function(item)
+        * @param {EqualityComparer=} comparer An equality comparer to compare values.
+        * @returns {Dictionary}
+        */
+        toDictionary: function (keySelector, valueSelector, comparer) {
+            return toDictionary(this, keySelector, valueSelector, comparer);
         },
 
         /**

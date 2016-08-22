@@ -1,9 +1,9 @@
 import Grouping from './grouping';
-import ArrayIterator from '../iteration/iterator-array';
+import Iterator from '../iteration/iterator';
 import EqualityComparer from './equality-comparer';
-import iteratorSymbol from '../iteration/iterator-symbol';
 import resize from '../utils/resize';
 import forOf from '../utils/for-of';
+import extend from '../utils/extend';
 import mixin from '../utils/mixin';
 
 var emptyGrouping = new Grouping(null, []);
@@ -100,6 +100,10 @@ mixin(LookupTable.prototype, {
             slot.next = this.buckets[bucket];
             this.buckets[bucket] = index;
         }
+    },
+
+    '@@iterator': function () {
+        return new LookupTableIterator(this);
     }
 });
 
@@ -117,9 +121,27 @@ mixin(LookupTable, {
 });
 
 
-LookupTable.prototype[iteratorSymbol] = function () {
-    return new ArrayIterator(this.slots);
-};
+
+export function LookupTableIterator(lookup) {
+    var index = -1,
+        size = lookup.size,
+        slots = lookup.slots;
+
+    Iterator.call(this, function () {
+        if (++index < size) {
+            return {
+                value: slots[index++].grouping,
+                done: false
+            };
+        }
+
+        return {
+            done: true
+        };
+    });
+}
+
+extend(LookupTableIterator, Iterator);
 
 
 function LookupTableSlot(hash, grouping, next) {

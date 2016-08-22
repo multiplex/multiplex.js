@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (August 13, 2016)
+* Version 2.0.0 (August 21, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -16,6 +16,9 @@
     function isFunction(fn) {
         return typeof fn === 'function';
     }
+
+    var iteratorSymbol = (typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol') ?
+        Symbol.iterator : '@@iterator';
 
     function mixin(obj, properties, attributes) {
         attributes = attributes || {};
@@ -35,6 +38,10 @@
     }
 
     function define(obj, prop, attributes) {
+        if (prop === '@@iterator') {
+            prop = iteratorSymbol;
+        }
+
         if (isFunction(Object.defineProperty)) {
             Object.defineProperty(obj, prop, attributes);
         }
@@ -53,6 +60,8 @@
     var ERROR_NO_MATCH = 'Sequence contains no matching element.';
     var ERROR_NON_NUMERIC_TYPE = 'Value is not a number.';
     var ERROR_MORE_THAN_ONE_ELEMENT = 'Sequence contains more than one element.';
+    var ERROR_KEY_NOT_FOUND = 'The given key was not present in the collection.';
+    var ERROR_DUPLICATE_KEY = 'An item with the same key has already been added.';
 
     function isType(obj, type) {
         // use 'typeof' operator in an if clause yields in better performance than switch-case
@@ -153,7 +162,7 @@
     }
 
     /*jshint newcap:false*/
-    function extend(type, superType) {
+    function extend(type, superType, properties) {
         if (isFunction(Object.create)) {
             type.prototype = Object.create(superType.prototype);
         }
@@ -164,6 +173,10 @@
         }
 
         type.prototype.constructor = type;
+
+        if (properties) {
+            mixin(type.prototype, properties);
+        }
     }
 
     /**
@@ -188,9 +201,7 @@
         });
     }
 
-    extend(ArrayIterator, Iterator);
-
-    mixin(ArrayIterator.prototype, {
+    extend(ArrayIterator, Iterator, {
         toString: function () {
             return '[Array Iterator]';
         }
@@ -222,9 +233,7 @@
         });
     }
 
-    extend(ObjectIterator, Iterator);
-
-    mixin(ObjectIterator.prototype, {
+    extend(ObjectIterator, Iterator, {
         toString: function () {
             return '[Object Iterator]';
         }
@@ -239,16 +248,11 @@
         });
     }
 
-    extend(EmptyIterator, Iterator);
-
-    mixin(EmptyIterator.prototype, {
+    extend(EmptyIterator, Iterator, {
         toString: function () {
             return '[Empty Iterator]';
         }
     });
-
-    var iteratorSymbol = (typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol') ?
-        Symbol.iterator : '@@iterator';
 
     /**
     * Supports an iteration over an .Net Enumerable.
@@ -272,9 +276,7 @@
     }
 
 
-    extend(EnumerableIterator, Iterator);
-
-    mixin(EnumerableIterator.prototype, {
+    extend(EnumerableIterator, Iterator, {
         toString: function () {
             return '[Enumerable Iterator]';
         }
@@ -321,19 +323,18 @@
         }
     }
 
+    var iterableSource = (typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol') ?
+        Symbol('iterable') : '@@iterable';
+
     /**
     * Defines abstract Iterable class.
     * @param {Iterable|Array|String|Function|Function*|Object} source An Iterable object.
     */
     function Iterable(source) {
         if (source !== null && source !== undefined) {
-            this._source = source;
+            this[iterableSource] = source;
         }
     }
-
-    Iterable.prototype[iteratorSymbol] = function () {
-        return iterator(this._source);
-    };
 
     mixin(Iterable.prototype, {
         toString: function () {
@@ -341,7 +342,11 @@
         },
 
         valueOf: function () {
-            return this._source;
+            return this[iterableSource];
+        },
+
+        '@@iterator': function () {
+            return iterator(this[iterableSource]);
         }
     });
 
@@ -353,16 +358,14 @@
         Iterable.call(this, value);
     }
 
-    extend(ArrayIterable, Iterable);
-
-    ArrayIterable.prototype[iteratorSymbol] = function () {
-        var arr = this.valueOf();
-        return isFunction(arr[iteratorSymbol]) ? arr[iteratorSymbol]() : new ArrayIterator(arr);
-    };
-
-    mixin(ArrayIterable.prototype, {
+    extend(ArrayIterable, Iterable, {
         toString: function () {
             return '[Array Iterable]';
+        },
+
+        '@@iterator': function () {
+            var arr = this.valueOf();
+            return isFunction(arr[iteratorSymbol]) ? arr[iteratorSymbol]() : new ArrayIterator(arr);
         }
     });
 
@@ -374,15 +377,13 @@
         Iterable.call(this, value);
     }
 
-    extend(ObjectIterable, Iterable);
-
-    ObjectIterable.prototype[iteratorSymbol] = function () {
-        return new ObjectIterator(this.valueOf());
-    };
-
-    mixin(ObjectIterable.prototype, {
+    extend(ObjectIterable, Iterable, {
         toString: function () {
             return '[Object Iterable]';
+        },
+
+        '@@iterator': function () {
+            return new ObjectIterator(this.valueOf());
         }
     });
 
@@ -392,15 +393,13 @@
     function EmptyIterable() {
     }
 
-    extend(EmptyIterable, Iterable);
-
-    EmptyIterable.prototype[iteratorSymbol] = function () {
-        return new EmptyIterator();
-    };
-
-    mixin(EmptyIterable.prototype, {
+    extend(EmptyIterable, Iterable, {
         toString: function () {
             return '[Empty Iterable]';
+        },
+
+        '@@iterator': function () {
+            return new EmptyIterator();
         }
     });
 
@@ -438,7 +437,7 @@
 
     function valueOf(obj) {
         if (obj instanceof Date) {
-            return isFunction(obj.getTime) ? obj.getTime() : 0;
+            return obj.getTime();
         }
         else {
             return isFunction(obj.valueOf) ? obj.valueOf() : 0;
@@ -1093,9 +1092,7 @@
         ArrayIterable.call(this, value);
     }
 
-    extend(Collection, ArrayIterable);
-
-    mixin(Collection.prototype, {
+    extend(Collection, ArrayIterable, {
         /**
         * Gets the number of elements contained in the Collection.
         * @returns {Number}
@@ -1118,20 +1115,31 @@
         }
     });
 
-    function Grouping(key, elements) {
-        this.key = key;
-        this.elements = elements;
+    /**
+    * Supports both iterable and iterator protocols using specified factory method.
+    * @param {Function} factory A function to create iterator instance.
+    */
+    function IterableIterator(factory) {
+        assertType(factory, Function);
+        Iterable.call(this, factory);
     }
 
-    extend(Grouping, Collection);
-
-    mixin(Grouping.prototype, {
-        valueOf: function () {
-            return this.elements;
+    extend(IterableIterator, Iterable, {
+        next: function () {
+            var iterator = this.iterator;
+            if (iterator === undefined) {
+                iterator = this.valueOf()();
+                this.iterator = iterator;
+            }
+            return iterator.next();
         },
 
         toString: function () {
-            return '[Grouping]';
+            return '[Iterable Iterator]';
+        },
+
+        '@@iterator': function () {
+            return new IterableIterator(this.valueOf());
         }
     });
 
@@ -1187,210 +1195,6 @@
         }
     }
 
-    var emptyGrouping = new Grouping(null, []);
-
-    function LookupTable(comparer) {
-        this.size = 0;
-        this.slots = new Array(7);
-        this.buckets = new Array(7);
-        this.comparer = EqualityComparer.from(comparer);
-    }
-
-
-    mixin(LookupTable.prototype, {
-        add: function (key, value) {
-            this.getGrouping(key, value, true);
-        },
-
-        get: function (key) {
-            return this.getGrouping(key, null, false) || emptyGrouping;
-        },
-
-        contains: function (key) {
-            return this.getGrouping(key, null, false) !== null;
-        },
-
-        entries: function () {
-            var arr = new Array(this.size),
-                index = 0;
-
-            for (var i = 0, count = this.slots.length; i < count; i++) {
-                arr[index++] = this.slots[i].grouping;
-            }
-
-            return arr;
-        },
-
-        getGrouping: function (key, value, create) {
-            var comparer = this.comparer,
-                hash = comparer.hash(key) & 0x7FFFFFFF,
-                bucket = hash % this.buckets.length,
-                index = this.buckets[bucket],
-                grouping = null,
-                slot = null;
-
-
-            while (index !== undefined) {
-                slot = this.slots[index];
-
-                if (slot.hash === hash && comparer.equals(slot.grouping.key, key)) {
-                    grouping = slot.grouping;
-                    break;
-                }
-
-                index = slot.next;
-            }
-
-
-            if (create === true) {
-                if (grouping === null) {
-                    if (this.size === this.slots.length) {
-                        this.resize();
-                        bucket = hash % this.buckets.length;
-                    }
-
-                    index = this.size;
-                    this.size++;
-
-                    grouping = new Grouping(key, [value]);
-                    this.slots[index] = new LookupTableSlot(hash, grouping, this.buckets[bucket]);
-                    this.buckets[bucket] = index;
-                }
-                else {
-                    grouping.elements.push(value);
-                }
-            }
-
-            return grouping;
-        },
-
-        resize: function () {
-            var size = this.size,
-                newSize = resize(size),
-                slot = null,
-                bucket = 0;
-
-            this.slots.length = newSize;
-            this.buckets.length = newSize;
-
-
-            // rehash values & update buckets and slots
-            for (var index = 0; index < size; index++) {
-                slot = this.slots[index];
-                bucket = slot.hash % newSize;
-                slot.next = this.buckets[bucket];
-                this.buckets[bucket] = index;
-            }
-        }
-    });
-
-
-    mixin(LookupTable, {
-        create: function (source, keySelector, comparer) {
-            var lookup = new LookupTable(comparer);
-
-            forOf(source, function (element) {
-                lookup.add(keySelector(element), element);
-            });
-
-            return lookup;
-        }
-    });
-
-
-    LookupTable.prototype[iteratorSymbol] = function () {
-        return new ArrayIterator(this.slots);
-    };
-
-
-    function LookupTableSlot(hash, grouping, next) {
-        this.hash = hash;
-        this.next = next;
-        this.grouping = grouping;
-    }
-
-    function assertNotNull(obj) {
-        if (obj === null || obj === undefined) {
-            error('Value cannot be null.');
-        }
-    }
-
-    function Lookup(source, keySelector, elementSelector, comparer) {
-        assertNotNull(source);
-        assertType(keySelector, Function);
-
-        if (elementSelector) {
-            assertType(elementSelector, Function);
-        }
-
-        var table = new LookupTable(comparer);
-        this.table = table;
-
-        forOf(source, function (element) {
-            table.add(keySelector(element), elementSelector ? elementSelector(element) : element);
-        });
-    }
-
-
-    extend(Lookup, Collection);
-
-
-    mixin(Lookup.prototype, {
-        get: function (key) {
-            return this.table.get(key);
-        },
-
-        contains: function (key) {
-            return this.table.contains(key);
-        },
-
-        count: function () {
-            return this.table.size;
-        },
-
-        valueOf: function () {
-            this.table.entries();
-        },
-
-        toString: function () {
-            return '[Lookup]';
-        }
-    });
-
-    Lookup[iteratorSymbol] = function () {
-        return this.table[Symbol.iterator]();
-    };
-
-    /**
-    * Supports both iterable and iterator protocols using specified factory method.
-    * @param {Function} factory A function to create iterator instance.
-    */
-    function IterableIterator(factory) {
-        assertType(factory, Function);
-        Iterable.call(this, factory);
-    }
-
-    extend(IterableIterator, Iterable);
-
-    IterableIterator.prototype[iteratorSymbol] = function () {
-        return new IterableIterator(this.valueOf());
-    };
-
-    mixin(IterableIterator.prototype, {
-        next: function () {
-            var iterator = this.iterator;
-            if (iterator === undefined) {
-                iterator = this.valueOf()();
-                this.iterator = iterator;
-            }
-            return iterator.next();
-        },
-
-        toString: function () {
-            return '[Iterable Iterator]';
-        }
-    });
-
     function HashTable(comparer) {
         this.initialize();
         this.comparer = EqualityComparer.from(comparer);
@@ -1418,8 +1222,27 @@
             return this.find(key) !== -1;
         },
 
+        containsValue: function (value) {
+            var slots = this.slots,
+                count = this.count(),
+                comparer = this.comparer;
+
+            for (var i = 0; i < count; i++) {
+                if (slots[i].hash !== undefined && comparer.equals(slots[i].value, value)) {
+                    return true;
+                }
+            }
+
+            return false;
+        },
+
         count: function () {
             return this.size - this.freeCount;
+        },
+
+        entry: function (key) {
+            var index = this.find(key);
+            return index === -1 ? undefined : [key, this.slots[index].value];
         },
 
         entries: function () {
@@ -1589,17 +1412,17 @@
 
         set: function (key, value) {
             this.insert(key, value, false);
+        },
+
+        '@@iterator': function () {
+            return new HashTableIterator(this);
         }
     });
 
 
-    HashTable.prototype[iteratorSymbol] = function () {
-        return new HashTableIterator(this, -1);
-    };
 
 
-    // type 0: key, 1: value, -1: [key, value]
-    function HashTableIterator(table, type) {
+    function HashTableIterator(table, selector) {
         IterableIterator.call(this, function () {
             var index = 0,
                 slot = null,
@@ -1613,7 +1436,7 @@
                     // freed slots have undefined as hashCode value and do not enumerate
                     if (slot.hash !== undefined) {
                         return {
-                            value: type === -1 ? [slot.key, slot.value] : (type === 0 ? slot.key : slot.value),
+                            value: selector ? selector(slot.key, slot.value) : [slot.key, slot.value],
                             done: false
                         };
                     }
@@ -1636,6 +1459,975 @@
         this.value = value;     // item's value
     }
 
+    /**
+    * Initializes a new instance of the KeyValuePair with the specified key and value.
+    * @param {Object} key The object defined in each key/value pair.
+    * @param {Object} value The definition associated with key.
+    */
+    function KeyValuePair(key, value) {
+        this.key = key;
+        this.value = value;
+    }
+
+    mixin(KeyValuePair.prototype, {
+        __hash__: function () {
+            return combineHash(runtimeHash(this.key), runtimeHash(this.value));
+        },
+
+        __eq__: function (obj) {
+            return obj instanceof KeyValuePair &&
+                runtimeEquals(this.key, obj.key) &&
+                runtimeEquals(this.value, obj.value);
+        },
+
+        toString: function () {
+            return '[KeyValuePair]';
+        }
+    });
+
+    function isNumber(val) {
+        return typeof val === 'number';
+    }
+
+    /**
+    * Initializes a new instance of the Dictionary.
+    * @param {Dictionary|EqualityComparer|Number} value The Dictionary whose elements are copied to the new Dictionary or the EqualityComparer or Capacity
+    * @param {EqualityComparer=} comparer The EqualityComparer implementation to use when comparing keys.
+    */
+    function Dictionary(value, comparer) {
+        var dic = isType(value, Dictionary) ? value : null,
+            cmp = EqualityComparer.from(dic ? comparer : value),
+            table = new HashTable(cmp, dic ? dic.count() : (isNumber(value) ? value : 0));
+
+        if (dic) {
+            forOf(dic, function (element) {
+                table.add(element.key, element.value);
+            });
+        }
+
+        this.table = table;
+    }
+
+    extend(Dictionary, Collection, {
+        /**
+        * Adds an element with the provided key and value to the Dictionary.
+        * @param {Object} key The object to use as the key of the element to add.
+        * @param {Object} value The object to use as the value of the element to add.
+        */
+        add: function (key, value) {
+            if (!this.table.add(key, value)) {
+                error(ERROR_DUPLICATE_KEY);
+            }
+        },
+
+        /**
+        * Removes all keys and values from the Dictionary.
+        */
+        clear: function () {
+            this.table.clear();
+        },
+
+        /**
+        * Gets the number of elements contained in the Dictionary.
+        * @returns {Number}
+        */
+        count: function () {
+            return this.table.count();
+        },
+
+        /**
+        * Determines whether the Dictionary contains the specified key.
+        * @param {Object} key The key to locate in the Dictionary.
+        * @returns {Boolean}
+        */
+        containsKey: function (key) {
+            return this.table.contains(key);
+        },
+
+        /**
+        * Determines whether the Dictionary contains a specific value.
+        * @param {Object} value The value to locate in the Dictionary.
+        * @returns {Boolean}
+        */
+        containsValue: function (value) {
+            return this.table.containsValue(value);
+        },
+
+        /**
+        * Gets a Collection containing the keys of the Dictionary.
+        * @returns {Collection}
+        */
+        keys: function () {
+            return new KeyValueIterator(this, function (key) {
+                return key;
+            });
+        },
+
+        /**
+        * Gets a Collection containing the values in the Dictionary.
+        * @returns {Collection}
+        */
+        values: function () {
+            return new KeyValueIterator(this, function (key, value) {
+                return value;
+            });
+        },
+
+        /**
+        * Gets element with the specified key.
+        * @param {Object} key The key of the element to get.
+        * @returns {Object}
+        */
+        get: function (key) {
+            var entry = this.table.entry(key);
+            if (entry !== undefined) {
+                return entry[1];
+            }
+
+            error(ERROR_KEY_NOT_FOUND);
+        },
+
+        /**
+        * Sets the element with the specified key.
+        * @param {Object} key The key of the element to set.
+        * @param {Object} value The object to use as the value of the element to set.
+        */
+        set: function (key, value) {
+            this.table.set(key, value);
+        },
+
+        /**
+        * Gets the value associated with the specified key.
+        * @param {Object} key The key whose value to get.
+        * @param {Function} callback When this method returns, callback method is called with the value
+        * associated with the specified key, if the key is found; otherwise, null for the type of the value parameter.
+        * @returns {Boolean}
+        */
+        tryGetValue: function (key, callback) {
+            assertType(callback, Function);
+
+            var entry = this.table.entry(key);
+
+            if (entry !== undefined) {
+                callback(entry[1]);
+                return true;
+            }
+
+            return false;
+        },
+
+        /**
+        * Removes the element with the specified key from the Dictionary.
+        * @param {Object} key The key of the element to remove.
+        * @returns {Boolean}
+        */
+        remove: function (key) {
+            return this.table.remove(key);
+        },
+
+        valueOf: function () {
+            return this.keys();
+        },
+
+        toString: function () {
+            return '[Dictionary]';
+        },
+
+        '@@iterator': function () {
+            return new KeyValueIterator(this, function (key, value) {
+                return new KeyValuePair(key, value);
+            });
+        }
+    });
+
+
+
+    function KeyValueIterator(dic, selector) {
+        HashTableIterator.call(this, dic, selector);
+    }
+
+    extend(KeyValueIterator, HashTableIterator, {
+        toString: function () {
+            return '[KeyValue Iterator]';
+        }
+    });
+
+    function ReadOnlyCollection(list) {
+        Collection.call(this, list);
+    }
+
+    extend(ReadOnlyCollection, Collection, {
+    });
+
+    function assertNotNull(obj) {
+        if (obj === null || obj === undefined) {
+            error('Value cannot be null.');
+        }
+    }
+
+    function binarySearch(array, index, length, value, comparer) {
+        var lo = index,
+            hi = index + length - 1,
+            order = 0,
+            i = 0;
+
+        while (lo <= hi) {
+            i = lo + ((hi - lo) >> 1);
+            order = comparer(array[i], value);
+
+            if (order === 0) {
+                return i;
+            }
+            else if (order < 0) {
+                lo = i + 1;
+            }
+            else {
+                hi = i - 1;
+            }
+        }
+
+        return ~lo;
+    }
+
+    var ARRAY_PROTOTYPE = Array.prototype;
+
+    /**
+    * Initializes a new instance of the List class.
+    * @param {Number|Iterable|...Object=} value The number of elements, Arbitrary number of arguments or the collection whose elements are copied to the new list.
+    */
+    function List(value) {
+        this.length = 0;
+
+        if (arguments.length === 1) {
+            if (isNumber(value)) {
+                this.length = value;
+            }
+
+            else {
+                this.addRange(value);
+            }
+        }
+        else {
+            this.addRange(arguments);
+        }
+    }
+
+    extend(List, Collection, {
+        /**
+        * Adds an object to the end of the List.
+        * @param {Object} item The object to be added to the end of the List.
+        */
+        add: function (item) {
+            this[this.length++] = item;
+        },
+
+        /**
+        * Adds the elements of the specified collection to the end of the List.
+        * @param {Iterable} collection The collection whose elements should be added to the end of the List.
+        */
+        addRange: function (collection) {
+            assertNotNull(collection);
+            this.insertRange(this.length, collection);
+        },
+
+        /**
+        * Returns a read-only wrapper for the current list.
+        * @returns {ReadOnlyCollection}
+        */
+        asReadOnly: function () {
+            return new ReadOnlyCollection(this);
+        },
+
+        /**
+        * Searches a range of elements in the sorted List for an element using the specified comparer and returns the zero-based index of the element.
+        * @param {Object} item The object to locate.
+        * @param {Comparer=} comparer The Comparer implementation to use when comparing elements.
+        * @param {Number=} index The zero-based starting index of the range to search.
+        * @param {Number=} count The length of the range to search.
+        * @returns {Number}
+        */
+        binarySearch: function (item, comparer, index, count) {
+            index = index || 0;
+            count = count || this.length;
+            comparer = Comparer.from(comparer);
+
+            return binarySearch(this, index, count, item, comparer.compare);
+        },
+
+        /**
+        * Removes all items from the List.
+        */
+        clear: function () {
+            shrinkList(this, 0);
+        },
+
+        /**
+        * Gets the number of elements contained in the List.
+        * @returns {Number}
+        */
+        count: function () {
+            return this.length;
+        },
+
+        /**
+        * Determines whether the List contains a specific value.
+        * @param {Object} item The object to locate in the List.
+        * @returns {Boolean}
+        */
+        contains: function (item) {
+            return this.indexOf(item) !== -1;
+        },
+
+        /**
+        * Copies the elements of the List to an Array, starting at a particular Array index.
+        * @param {Array} array The one-dimensional Array that is the destination of the elements copied from List.
+        * @param {Number} arrayIndex The zero-based index in array at which copying begins.
+        */
+        copyTo: function (array, arrayIndex) {
+            bufferTo(this, array, arrayIndex);
+        },
+
+        /**
+        * Determines whether the List contains elements that match the conditions defined by the specified predicate.
+        * @param {Function} match The predicate function that defines the conditions of the elements to search for. eg. function(item)
+        * @returns {Boolean}
+        */
+        exists: function (match) {
+            return this.findIndex(match) !== -1;
+        },
+
+        /**
+        * Searches for an element that matches the conditions defined by the specified predicate, and returns the first occurrence within the entire List.
+        * @param {Function} match The predicate function that defines the conditions of the elements to search for. eg. function(item)
+        * @returns {Object}
+        */
+        find: function (match) {
+            assertType(match, Function);
+
+            for (var i = 0, len = this.length; i < len; i++) {
+                if (match(this[i]) === true) {
+                    return this[i];
+                }
+            }
+        },
+
+        /**
+        * Searches for an element that matches the conditions defined by the specified predicate,
+        * and returns the zero-based index of the first occurrence within the range of elements
+        * in the List that starts at the specified index and contains the specified number of elements.
+        * @param {Number|Function} startIndexOrMatch The zero-based starting index of the search or the predicate function, eg. function(item)
+        * @param {Number|Function=} countOrMatch The number of elements in the section to search or the predicate function, eg. function(item)
+        * @param {Function=} match The predicate function that defines the conditions of the elements to search for, eg. function(item)
+        * @returns {Number}
+        */
+        findIndex: function (startIndexOrMatch, countOrMatch, match) {
+            var len = this.length,
+                startIndex = isNumber(startIndexOrMatch) ? startIndexOrMatch : 0,
+                count = isNumber(countOrMatch) ? countOrMatch : len - startIndex;
+
+            match = isFunction(startIndexOrMatch) ? startIndexOrMatch : (isFunction(countOrMatch) ? countOrMatch : match);
+
+            assertType(match, Function);
+            validateListIndex(this, startIndex);
+
+            while (count-- > 0 && startIndex < len) {
+                if (match(this[startIndex]) === true) {
+                    return startIndex;
+                }
+
+                startIndex++;
+            }
+
+            return -1;
+        },
+
+        /**
+        * Searches for an element that matches the conditions defined by the specified predicate,
+        * and returns the last occurrence within the entire List.
+        * @param {Function} match The predicate function that defines the conditions of the elements to search for. eg. function(item)
+        * @returns {Object}
+        */
+        findLast: function (match) {
+            assertType(match, Function);
+
+            var len = this.length;
+            while (len-- > 0) {
+                if (match(this[len]) === true) {
+                    return this[len];
+                }
+            }
+
+            return undefined;
+        },
+
+        /**
+        * Searches for an element that matches the conditions defined by the specified predicate,
+        * and returns the zero-based index  of the last occurrence within the range of elements
+        * in the List that contains the specified number of elements and ends at the specified index.
+        * @param {Number|Function} startIndexOrMatch The zero-based starting index of the search or the predicate, eg. function(item)
+        * @param {Number|Function=} countOrMatch The number of elements in the section to search or the predicate, eg. function(item)
+        * @param {Function=} match The predicate function that defines the conditions of the elements to search for, eg. function(item)
+        * @returns {Number}
+        */
+        findLastIndex: function (startIndexOrMatch, countOrMatch, match) {
+            var startIndex = isNumber(startIndexOrMatch) ? startIndexOrMatch : this.length - 1,
+                count = isNumber(countOrMatch) ? countOrMatch : startIndex;
+
+            match = isFunction(startIndexOrMatch) ? startIndexOrMatch : (isFunction(countOrMatch) ? countOrMatch : match);
+
+            assertType(match, Function);
+            validateListIndex(this, startIndex);
+
+            while (count-- > 0 && startIndex > 0) {
+                if (match(this[startIndex]) === true) {
+                    return startIndex;
+                }
+
+                startIndex--;
+            }
+
+            return -1;
+        },
+
+        /**
+        * Retrieves all the elements that match the conditions defined by the specified predicate.
+        * @param {Function} match The predicate function that defines the conditions of the elements to search for. eg. function(item)
+        * @returns {List}
+        */
+        findAll: function (match) {
+            assertType(match, Function);
+
+            var arr = new Array(this.length),
+                count = 0;
+
+            for (var i = 0, len = this.length; i < len; i++) {
+                if (match(this[i]) === true) {
+                    arr[count++] = this[i];
+                }
+            }
+
+            arr.length = count;
+            return new List(arr);
+        },
+
+        /**
+        * Performs the specified action on each element of the List.
+        * @param {Function} action The action function to perform on each element of the List. eg. function(item)
+        */
+        forEach: function (action, thisArg) {
+            assertType(action, Function);
+
+            for (var i = 0, len = this.length; i < len; i++) {
+                if (thisArg) {
+                    action.call(thisArg, this[i]);
+                }
+                else {
+                    action(this[i]);
+                }
+            }
+        },
+
+        /**
+        * Gets the element at the specified index.
+        * @param {Number} index The zero-based index of the element to get.
+        * @returns {Object}
+        */
+        get: function (index) {
+            validateListIndex(this, index);
+            return this[index];
+        },
+
+        /**
+        * Creates a shallow copy of a range of elements in the source List.
+        * @param {Number} index The zero-based List index at which the range starts.
+        * @param {Number} count The number of elements in the range.
+        * @returns {List}
+        */
+        getRange: function (index, count) {
+            validateListIndex(this, index + count - 1);
+            return new List(this.slice(index, index + count));
+        },
+
+        /**
+        * Searches for the specified object and returns the zero-based index of the first occurrence within
+        * the range of elements in the List that extends from the specified index to the last element.
+        * @param {Object} item The object to locate in the List.
+        * @param {Number=} index The zero-based starting index of the search. 0 (zero) is valid in an empty list.
+        * @returns {Number}
+        */
+        indexOf: ARRAY_PROTOTYPE.indexOf,
+
+        /**
+        * Inserts an element into the List at the specified index.
+        * @param {Number} index The zero-based index at which item should be inserted.
+        * @param {Object} item The object to insert.
+        */
+        insert: function (index, item) {
+            if (index !== this.length) {
+                validateListIndex(this, index);
+            }
+
+            var len = ++this.length;
+
+            while (len-- > index) {
+                this[len] = this[len - 1];
+            }
+
+            this[index] = item;
+        },
+
+        /**
+        * Inserts the elements of a collection into the List at the specified index.
+        * @param {Number} index The zero-based index at which item should be inserted.
+        * @param {Iterable} collection The collection whose elements should be inserted into the List.
+        */
+        insertRange: function (index, collection) {
+            assertType(index, Number);
+            assertNotNull(collection);
+
+            if (index !== this.length) {
+                validateListIndex(this, index);
+            }
+
+            var arr = buffer(collection),
+                count = arr.length,
+                len = this.length + count;
+
+            this.length = len;
+
+            while (len-- > index) {
+                this[len] = this[len - count];
+            }
+
+            while (count-- > 0) {
+                this[index + count] = arr[count];
+            }
+        },
+
+        /**
+        * Searches for the specified object and returns the zero-based index of the last occurrence
+        * within the range of elements in the List that extends from the specified index to the last element.
+        * @param {Object} item The object to locate in the List.
+        * @param {Number=} index The zero-based starting index of the search. 0 (zero) is valid in an empty list.
+        * @returns {Number}
+        */
+        lastIndexOf: ARRAY_PROTOTYPE.lastIndexOf,
+
+        /**
+        * Removes the first occurrence of a specific object from the List.
+        * @param {Object} item The object to remove from the List.
+        * @returns {Boolean}
+        */
+        remove: function (item) {
+            var index = this.indexOf(item);
+
+            if (index !== -1) {
+                this.removeAt(index);
+                return true;
+            }
+
+            return false;
+        },
+
+        /**
+        * Removes all the elements that match the conditions defined by the specified predicate.
+        * @param {Function} match The predicate function that defines the conditions of the elements to remove. eg. function(item)
+        * @returns {Number}
+        */
+        removeAll: function (match) {
+            assertType(match, Function);
+
+            var freeIndex = 0,
+                len = this.length;
+
+            while (freeIndex < len && !match(this[freeIndex])) {
+                freeIndex++;
+            }
+
+            if (freeIndex >= len) {
+                return 0;
+            }
+
+            var current = freeIndex + 1;
+
+            while (current < len) {
+                while (current < len && match(this[current])) {
+                    current++;
+                }
+
+                if (current < len) {
+                    this[freeIndex++] = this[current++];
+                }
+            }
+
+            shrinkList(this, freeIndex);
+            return len - freeIndex;
+        },
+
+        /**
+        * Removes the element at the specified index of the List.
+        * @param {Number} index The zero-based index of the element to remove.
+        */
+        removeAt: function (index) {
+            validateListIndex(this, index);
+
+            var i = index,
+                len = --this.length;
+
+            for (; i < len; i++) {
+                this[i] = this[i + 1];
+            }
+
+            delete this[len];
+        },
+
+        /**
+        * Removes a range of elements from the List.
+        * @param {Number} index The zero-based index of the element to remove.
+        * @param {Number} count The number of elements to remove.
+        */
+        removeRange: function (index, count) {
+            validateListIndex(this, index + count - 1);
+
+            var len = this.length - count;
+
+            for (; index < len; index++) {
+                this[index] = this[index + count];
+            }
+
+            shrinkList(this, len);
+        },
+
+        /**
+        * Reverses the order of the elements in the specified range.
+        * @param {Number=} index The zero-based starting index of the range to reverse.
+        * @param {Number=} count The number of elements in the range to reverse.
+        */
+        reverse: function (index, count) {
+            index = index || 0;
+            count = count || this.length;
+            validateListIndex(this, index + count - 1);
+
+            var arr = this.slice(index, index + count).reverse(),
+                len = arr.length;
+
+            while (len-- > 0) {
+                this[len + index] = arr[len];
+            }
+        },
+
+        /**
+        * Returns a shallow copy of a portion of the list into a new array object.
+        * @param {Number=} begin Zero-based index at which to begin extraction.
+        * @param {Number=} end Zero-based index at which to end extraction
+        * @returns {Array}
+        */
+        slice: ARRAY_PROTOTYPE.slice,
+
+        /**
+        * Changes the content of the list by removing existing elements and/or adding new elements.
+        * @param {Number} start Index at which to start changing the list.
+        * @param {Number} deleteCount An integer indicating the number of old list elements to remove.
+        * @param {Object...} items The elements to add to the list.
+        * @returns {Array}
+        */
+        splice: ARRAY_PROTOTYPE.splice,
+
+        /**
+        * Sets the element at the specified index.
+        * @param {Number} index The zero-based index of the element to set.
+        * @param {Object} item The object to be added at the specified index.
+        */
+        set: function (index, value) {
+            validateListIndex(this, index);
+            this[index] = value;
+        },
+
+        /**
+        * Sorts the elements in a range of elements in List using the specified comparer.
+        * @param {Number|Function|Comparer} val The starting index, the comparison function or the Comparer.
+        * @param {Number=} count The length of the range to sort.
+        * @param {Comparer=} comparer The Comparer implementation to use when comparing elements.
+        */
+        sort: function (indexOrComparer, count, comparer) {
+            var index = isNumber(indexOrComparer) ? indexOrComparer : 0,
+                total = count || this.length - index,
+                comparision = indexOrComparer === null ? null :
+                    (isFunction(indexOrComparer) ? indexOrComparer :
+                        Comparer.from(comparer || indexOrComparer).compare);
+
+            validateListIndex(this, index + total - 1);
+
+            var arr = this.slice(index, index + total).sort(comparision),
+                len = arr.length;
+
+            while (len-- > 0) {
+                this[len + index] = arr[len];
+            }
+        },
+
+        /**
+        * Copies the elements of the List to a new array.
+        * @returns {Array}
+        */
+        toArray: function () {
+            return this.slice();
+        },
+
+        /**
+        * Determines whether every element in the List matches the conditions defined by the specified predicate.
+        * @param {Function} match The Predicate function that defines the conditions to check against the elements, eg. function(item)
+        * @returns {Boolean}
+        */
+        trueForAll: function (match) {
+            assertType(match, Function);
+
+            for (var i = 0, len = this.length; i < len; i++) {
+                if (match(this[i]) === false) {
+                    return false;
+                }
+            }
+
+            return true;
+        },
+
+        valueOf: function () {
+            return this.toArray();
+        },
+
+        toString: function () {
+            return '[List]';
+        },
+
+        '@@iterator': function () {
+            return new ArrayIterator(this);
+        }
+    });
+
+
+    /// helper method to shrink the list to lower size and delete upper indexes
+    function shrinkList(list, newSize) {
+        var size = list.length;
+        list.length = newSize;
+
+        if (size < newSize) {
+            do {
+                delete list[newSize];
+            }
+            while (newSize-- < size);
+        }
+    }
+
+
+    /// helper method to validate index against being out of range
+    function validateListIndex(list, index) {
+        if (index < 0 || index >= list.length) {
+            error(ERROR_ARGUMENT_OUT_OF_RANGE);
+        }
+    }
+
+    function Grouping(key, elements) {
+        this.key = key;
+        this.elements = elements;
+    }
+
+    extend(Grouping, Collection, {
+        valueOf: function () {
+            return this.elements;
+        },
+
+        toString: function () {
+            return '[Grouping]';
+        }
+    });
+
+    var emptyGrouping = new Grouping(null, []);
+
+    function LookupTable(comparer) {
+        this.size = 0;
+        this.slots = new Array(7);
+        this.buckets = new Array(7);
+        this.comparer = EqualityComparer.from(comparer);
+    }
+
+
+    mixin(LookupTable.prototype, {
+        add: function (key, value) {
+            this.getGrouping(key, value, true);
+        },
+
+        get: function (key) {
+            return this.getGrouping(key, null, false) || emptyGrouping;
+        },
+
+        contains: function (key) {
+            return this.getGrouping(key, null, false) !== null;
+        },
+
+        entries: function () {
+            var arr = new Array(this.size),
+                index = 0;
+
+            for (var i = 0, count = this.slots.length; i < count; i++) {
+                arr[index++] = this.slots[i].grouping;
+            }
+
+            return arr;
+        },
+
+        getGrouping: function (key, value, create) {
+            var comparer = this.comparer,
+                hash = comparer.hash(key) & 0x7FFFFFFF,
+                bucket = hash % this.buckets.length,
+                index = this.buckets[bucket],
+                grouping = null,
+                slot = null;
+
+
+            while (index !== undefined) {
+                slot = this.slots[index];
+
+                if (slot.hash === hash && comparer.equals(slot.grouping.key, key)) {
+                    grouping = slot.grouping;
+                    break;
+                }
+
+                index = slot.next;
+            }
+
+
+            if (create === true) {
+                if (grouping === null) {
+                    if (this.size === this.slots.length) {
+                        this.resize();
+                        bucket = hash % this.buckets.length;
+                    }
+
+                    index = this.size;
+                    this.size++;
+
+                    grouping = new Grouping(key, [value]);
+                    this.slots[index] = new LookupTableSlot(hash, grouping, this.buckets[bucket]);
+                    this.buckets[bucket] = index;
+                }
+                else {
+                    grouping.elements.push(value);
+                }
+            }
+
+            return grouping;
+        },
+
+        resize: function () {
+            var size = this.size,
+                newSize = resize(size),
+                slot = null,
+                bucket = 0;
+
+            this.slots.length = newSize;
+            this.buckets.length = newSize;
+
+
+            // rehash values & update buckets and slots
+            for (var index = 0; index < size; index++) {
+                slot = this.slots[index];
+                bucket = slot.hash % newSize;
+                slot.next = this.buckets[bucket];
+                this.buckets[bucket] = index;
+            }
+        },
+
+        '@@iterator': function () {
+            return new LookupTableIterator(this);
+        }
+    });
+
+
+    mixin(LookupTable, {
+        create: function (source, keySelector, comparer) {
+            var lookup = new LookupTable(comparer);
+
+            forOf(source, function (element) {
+                lookup.add(keySelector(element), element);
+            });
+
+            return lookup;
+        }
+    });
+
+
+
+    function LookupTableIterator(lookup) {
+        var index = -1,
+            size = lookup.size,
+            slots = lookup.slots;
+
+        Iterator.call(this, function () {
+            if (++index < size) {
+                return {
+                    value: slots[index++].grouping,
+                    done: false
+                };
+            }
+
+            return {
+                done: true
+            };
+        });
+    }
+
+    extend(LookupTableIterator, Iterator);
+
+
+    function LookupTableSlot(hash, grouping, next) {
+        this.hash = hash;
+        this.next = next;
+        this.grouping = grouping;
+    }
+
+    function Lookup(source, keySelector, elementSelector, comparer) {
+        assertNotNull(source);
+        assertType(keySelector, Function);
+
+        if (elementSelector) {
+            assertType(elementSelector, Function);
+        }
+
+        var table = new LookupTable(comparer);
+        this.table = table;
+
+        forOf(source, function (element) {
+            table.add(keySelector(element), elementSelector ? elementSelector(element) : element);
+        });
+    }
+
+
+    extend(Lookup, Collection, {
+        get: function (key) {
+            return this.table.get(key);
+        },
+
+        contains: function (key) {
+            return this.table.contains(key);
+        },
+
+        count: function () {
+            return this.table.size;
+        },
+
+        valueOf: function () {
+            this.table.entries();
+        },
+
+        toString: function () {
+            return '[Lookup]';
+        },
+
+        '@@iterator': function () {
+            return new LookupTableIterator(this.table);
+        }
+    });
+
     function Map(iterable, comparer) {
         var table = new HashTable(comparer);
 
@@ -1654,9 +2446,7 @@
         this.size = this.table.count();
     }
 
-    extend(Map, Collection);
-
-    mixin(Map.prototype, {
+    extend(Map, Collection, {
         clear: function () {
             this.table.clear();
             this.size = 0;
@@ -1695,7 +2485,9 @@
         },
 
         keys: function () {
-            return new MapIterator(this, 0);
+            return new MapIterator(this, function (key) {
+                return key;
+            });
         },
 
         set: function (key, value) {
@@ -1705,7 +2497,9 @@
         },
 
         values: function () {
-            return new MapIterator(this, 1);
+            return new MapIterator(this, function (key, value) {
+                return value;
+            });
         },
 
         valueOf: function () {
@@ -1714,25 +2508,21 @@
 
         toString: function () {
             return '[Map]';
+        },
+
+        '@@iterator': function () {
+            return new MapIterator(this);
         }
     });
 
-    extend(Map, Collection);
-
-    Map.prototype[iteratorSymbol] = function () {
-        return new MapIterator(this, -1);
-    };
 
 
 
-    // type 0: key, 1: value, -1: [key, value]
-    function MapIterator(map, type) {
-        HashTableIterator.call(this, map, type);
+    function MapIterator(map, selector) {
+        HashTableIterator.call(this, map, selector);
     }
 
-    extend(MapIterator, HashTableIterator);
-
-    mixin(MapIterator.prototype, {
+    extend(MapIterator, HashTableIterator, {
         toString: function () {
             return '[Map Iterator]';
         }
@@ -1751,9 +2541,7 @@
         this.size = this.table.count();
     }
 
-    extend(Set, Collection);
-
-    mixin(Set.prototype, {
+    extend(Set, Collection, {
         add: function (value) {
             this.table.add(value, value);
             this.size = this.table.count();
@@ -1792,11 +2580,15 @@
         },
 
         keys: function () {
-            return new SetIterator(this, 0);
+            return new SetIterator(this, function (key) {
+                return key;
+            });
         },
 
         values: function () {
-            return new SetIterator(this, 1);
+            return new SetIterator(this, function (key, value) {
+                return value;
+            });
         },
 
         valueOf: function () {
@@ -1805,34 +2597,194 @@
 
         toString: function () {
             return '[Set]';
+        },
+
+        '@@iterator': function () {
+            return this.keys();
         }
     });
 
-    extend(Set, Collection);
-
-    Set.prototype[iteratorSymbol] = function () {
-        return new SetIterator(this, 0);
-    };
 
 
-    // type 0: key, 1: value, -1: [key, value]
-    function SetIterator(set, type) {
-        HashTableIterator.call(this, set, type);
+    function SetIterator(set, selector) {
+        HashTableIterator.call(this, set, selector);
     }
 
-    extend(SetIterator, HashTableIterator);
-
-    mixin(SetIterator.prototype, {
+    extend(SetIterator, HashTableIterator, {
         toString: function () {
             return '[Set Iterator]';
         }
     });
 
-    function List(value) {
-        this._value = value;
+    function OrderedIterable(source, keySelector, comparer, descending, parent) {
+        assertNotNull(source);
+        assertType(keySelector, Function);
+        comparer = Comparer.from(comparer);
+
+        var sorter = new OrderedIterableSorter(keySelector, comparer, descending);
+
+        if (parent) {
+            sorter = parent.sorter.create(sorter);
+        }
+
+        Iterable.call(this, source);
+        this.sorter = sorter;
     }
 
-    extend(List, Collection);
+
+    function OrderedIterableSorter(keySelector, comparer, descending, next) {
+        this.keySelector = keySelector;
+        this.comparer = comparer;
+        this.descending = descending;
+        this.next = next;
+    }
+
+
+    extend(OrderedIterable, Iterable, {
+        /**
+        * Performs a subsequent ordering of the elements in a sequence in ascending order by using a comparer.
+        * @param {Function} keySelector A function to extract a key from each element. eg. function(item)
+        * @param {Comparer=} comparer A Comparer to compare keys.
+        * @returns {OrderedIterable}
+        */
+        thenBy: function (keySelector, comparer) {
+            return new OrderedIterable(this.valueOf(), keySelector, comparer, false, this);
+        },
+
+        /**
+        * Performs a subsequent ordering of the elements in a sequence in descending order by using a comparer.
+        * @param {Function} keySelector A function to extract a key from each element. eg. function(item)
+        * @param {Comparer=} comparer A Comparer to compare keys.
+        * @returns {OrderedIterable}
+        */
+        thenByDescending: function (keySelector, comparer) {
+            return new OrderedIterable(this.valueOf(), keySelector, comparer, true, this);
+        },
+
+        toString: function () {
+            return '[Ordered Iterable]';
+        },
+
+        '@@iterator': function () {
+            var index = 0,
+                arr = buffer(this.valueOf()),
+                len = arr.length,
+                map = this.sorter.sort(arr);
+
+            return new Iterator(function () {
+                if (index < len) {
+                    return {
+                        value: arr[map[index++]],
+                        done: false
+                    };
+                }
+                return {
+                    done: true
+                };
+            });
+        }
+    });
+
+
+    mixin(OrderedIterableSorter.prototype, {
+        create: function (next) {
+            return new OrderedIterableSorter(
+                this.keySelector,
+                this.comparer,
+                this.descending,
+                this.next ? this.next.create(next) : next
+            );
+        },
+
+        computeKeys: function (elements) {
+            var count = elements.length,
+                keys = new Array(count),
+                selector = this.keySelector;
+
+            for (var i = 0; i < count; i++) {
+                keys[i] = selector(elements[i]);
+            }
+
+            if (this.next !== undefined) {
+                this.next.computeKeys(elements, count);
+            }
+
+            this.keys = keys;
+        },
+
+        compareKeys: function (index1, index2) {
+            var c = this.comparer.compare(this.keys[index1], this.keys[index2]);
+
+            if (c === 0) {
+                if (this.next === undefined) {
+                    return index1 - index2;
+                }
+                return this.next.compareKeys(index1, index2);
+            }
+
+            return this.descending ? -c : c;
+        },
+
+        sort: function (elements) {
+            var count = elements.length,
+                map = new Array(count);
+
+            this.computeKeys(elements);
+
+            for (var i = 0; i < count; i++) {
+                map[i] = i;
+            }
+
+            this.quickSort(map, 0, count - 1);
+
+            return map;
+        },
+
+        quickSort: function (map, left, right) {
+            do {
+                var i = left,
+                    j = right,
+                    x = map[i + ((j - i) >> 1)];
+
+                do {
+                    while (i < map.length && this.compareKeys(x, map[i]) > 0) {
+                        i++;
+                    }
+
+                    while (j >= 0 && this.compareKeys(x, map[j]) < 0) {
+                        j--;
+                    }
+
+                    if (i > j) {
+                        break;
+                    }
+
+                    if (i < j) {
+                        var temp = map[i];
+                        map[i] = map[j];
+                        map[j] = temp;
+                    }
+                    i++;
+                    j--;
+                } while (i <= j);
+
+                if (j - left <= right - i) {
+                    if (left < j) {
+                        this.quickSort(map, left, j);
+                    }
+
+                    left = i;
+                }
+                else {
+                    if (i < right) {
+                        this.quickSort(map, i, right);
+                    }
+
+                    right = j;
+                }
+            } while (left < right);
+        }
+    });
 
     function rangeIterator(start, count) {
         assertType(start, Number);
@@ -2732,6 +3684,23 @@
         });
     }
 
+    function toDictionary(source, keySelector, valueSelector, comparer) {
+        assertNotNull(source);
+        assertType(keySelector, Function);
+
+        if (valueSelector) {
+            assertType(valueSelector, Function);
+        }
+
+        var dic = new Dictionary(EqualityComparer.from(comparer));
+
+        forOf(source, function (element) {
+            dic.add(keySelector(element), valueSelector ? valueSelector(element) : element);
+        });
+
+        return dic;
+    }
+
     function unionIterator(first, second, comparer) {
         assertNotNull(first);
         assertNotNull(second);
@@ -3049,6 +4018,26 @@
             },
 
             /**
+            * Sorts the elements of a sequence in ascending order by using a specified comparer.
+            * @param {Function} keySelector A function to extract a key from each element. eg. function(item)
+            * @param {Comparer=} comparer A Comparer to compare keys.
+            * @returns {OrderedIterable}
+            */
+            orderBy: function (keySelector, comparer) {
+                return new OrderedIterable(this, keySelector, comparer, false);
+            },
+
+            /**
+            * Sorts the elements of a sequence in descending order by using a specified comparer.
+            * @param {Function} keySelector A function to extract a key from each element. eg. function(item)
+            * @param {Comparer=} comparer A Comparer to compare keys.
+            * @returns {OrderedIterable}
+            */
+            orderByDescending: function (keySelector, comparer) {
+                return new OrderedIterable(this, keySelector, comparer, true);
+            },
+
+            /**
             * Inverts the order of the elements in a sequence.
             * @returns {Iterable}
             */
@@ -3150,6 +4139,17 @@
             },
 
             /**
+            * Creates a Dictionary from an Iterable according to a specified key selector function, a comparer, and an element selector function.
+            * @param {Function} keySelector A function to extract a key from each element. eg. function(item)
+            * @param {Function=} valueSelector A transform function to produce a result element value from each element. eg. function(item)
+            * @param {EqualityComparer=} comparer An equality comparer to compare values.
+            * @returns {Dictionary}
+            */
+            toDictionary: function (keySelector, valueSelector, comparer) {
+                return toDictionary(this, keySelector, valueSelector, comparer);
+            },
+
+            /**
             * Creates an array from an Iterable.
             * @returns {Array}
             */
@@ -3235,6 +4235,9 @@
     mx.Comparer = Comparer;
     mx.EqualityComparer = EqualityComparer;
     mx.Collection = Collection;
+    mx.Dictionary = Dictionary;
+    mx.KeyValuePair = KeyValuePair;
+    mx.List = List;
     mx.Lookup = Lookup;
     mx.Map = Map;
     mx.Set = Set;

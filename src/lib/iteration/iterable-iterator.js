@@ -1,7 +1,5 @@
 import Iterable from './iterable';
-import iteratorSymbol from './iterator-symbol';
 import assertType from '../utils/assert-type';
-import mixin from '../utils/mixin';
 import extend from '../utils/extend';
 
 /**
@@ -13,13 +11,7 @@ export default function IterableIterator(factory) {
     Iterable.call(this, factory);
 }
 
-extend(IterableIterator, Iterable);
-
-IterableIterator.prototype[iteratorSymbol] = function () {
-    return new IterableIterator(this.valueOf());
-};
-
-mixin(IterableIterator.prototype, {
+extend(IterableIterator, Iterable, {
     next: function () {
         var iterator = this.iterator;
         if (iterator === undefined) {
@@ -31,6 +23,9 @@ mixin(IterableIterator.prototype, {
 
     toString: function () {
         return '[Iterable Iterator]';
+    },
+
+    '@@iterator': function () {
+        return new IterableIterator(this.valueOf());
     }
 });
-

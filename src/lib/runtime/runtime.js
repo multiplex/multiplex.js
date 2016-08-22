@@ -5,7 +5,7 @@ import equals from './equals';
 import equalsSymbol from './equals-symbol';
 import compare from './compare';
 import compareSymbol from './compare-symbol';
-import iteratorSymbol from '../iteration/iterator-symbol';
+import iteratorSymbol from '../utils/iterator-symbol';
 
 
 var runtime = {
