@@ -161,7 +161,6 @@
         return false;
     }
 
-    /*jshint newcap:false*/
     function extend(type, superType, properties) {
         if (isFunction(Object.create)) {
             type.prototype = Object.create(superType.prototype);
