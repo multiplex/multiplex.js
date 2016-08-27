@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (August 26, 2016)
+* Version 2.0.0 (August 27, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -20,6 +20,19 @@
     var iteratorSymbol = (typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol') ?
         Symbol.iterator : '@@iterator';
 
+    function define(obj, prop, attributes) {
+        if (prop === '@@iterator') {
+            prop = iteratorSymbol;
+        }
+
+        if (isFunction(Object.defineProperty)) {
+            Object.defineProperty(obj, prop, attributes);
+        }
+        else {
+            obj[prop] = attributes.get ? attributes.get.apply(obj) : attributes.value;
+        }
+    }
+
     function mixin(obj, properties, attributes) {
         attributes = attributes || {};
 
@@ -35,19 +48,6 @@
         }
 
         return obj;
-    }
-
-    function define(obj, prop, attributes) {
-        if (prop === '@@iterator') {
-            prop = iteratorSymbol;
-        }
-
-        if (isFunction(Object.defineProperty)) {
-            Object.defineProperty(obj, prop, attributes);
-        }
-        else {
-            obj[prop] = attributes.get ? attributes.get.apply(obj) : attributes.value;
-        }
     }
 
     function error(msg) {
@@ -516,8 +516,11 @@
         return ((h1 << 7) | (h1 >> 25)) ^ h2;
     }
 
+    var OBJECT_PROTOTYPE = Object.prototype;
+    var ARRAY_PROTOTYPE = Array.prototype;
+
     function isObjectLiteral(obj) {
-        return Object.getPrototypeOf(obj) === Object.prototype;
+        return Object.getPrototypeOf(obj) === OBJECT_PROTOTYPE;
     }
 
     var OBJECT_HASH_SEED = Math.floor(Math.random() * 0XFFFF) + 0XFFFF;
@@ -1652,10 +1655,99 @@
     });
 
     function ReadOnlyCollection(list) {
-        Collection.call(this, list);
+        assertType(list, List);
+        this.list = list;
+
+        define(this, 'length', {
+            get: function () {
+                return list.length;
+            }
+        });
+
+        for (var i = 0, len = list.length; i < len; i++) {
+            this[i] = list[i];
+        }
+
+        Object.freeze(this);
     }
 
     extend(ReadOnlyCollection, Collection, {
+        /**
+        * Gets the number of elements contained in the ReadOnlyCollection.
+        * @returns {Number}
+        */
+        count: function () {
+            return this.length;
+        },
+
+        /**
+        * Determines whether the ReadOnlyCollection contains a specific value.
+        * @param {Object} item The object to locate in the ReadOnlyCollection.
+        * @returns {Boolean}
+        */
+        contains: function (item) {
+            this.list.contains(item);
+        },
+
+        /**
+        * Copies the elements of the ReadOnlyCollection to an Array, starting at a particular Array index.
+        * @param {Array} array The one-dimensional Array that is the destination of the elements copied from ReadOnlyCollection.
+        * @param {Number} arrayIndex The zero-based index in array at which copying begins.
+        */
+        copyTo: function (array, arrayIndex) {
+            this.list.copyTo(array, arrayIndex);
+        },
+
+        /**
+        * Gets the element at the specified index.
+        * @param {Number} index The zero-based index of the element to get.
+        * @returns {Object}
+        */
+        get: function (index) {
+            return this.list.get(index);
+        },
+
+        /**
+        * Searches for the specified object and returns the zero-based index of the first occurrence within the entire ReadOnlyCollection.
+        * @param {Object} item The object to locate in the ReadOnlyCollection.
+        * @returns {Number}
+        */
+        indexOf: function (item) {
+            return this.list.indexOf(item);
+        },
+
+        /**
+        * Returns a shallow copy of a portion of the list into a new array object.
+        * @param {Number=} begin Zero-based index at which to begin extraction.
+        * @param {Number=} end Zero-based index at which to end extraction
+        * @returns {Array}
+        */
+        slice: ARRAY_PROTOTYPE.slice,
+
+        /**
+        * Changes the content of the list by removing existing elements and/or adding new elements.
+        * @param {Number} start Index at which to start changing the list.
+        * @param {Number} deleteCount An integer indicating the number of old list elements to remove.
+        * @param {Object...} items The elements to add to the list.
+        * @returns {Array}
+        */
+        splice: ARRAY_PROTOTYPE.splice,
+
+        /**
+        * Buffers collection into an array.
+        * @returns {Array}
+        */
+        toArray: function () {
+            return this.list.toArray();
+        },
+
+        toString: function () {
+            return '[ReadOnly Collection]';
+        },
+
+        '@@iterator': function () {
+            return new ArrayIterator(this);
+        }
     });
 
     function assertNotNull(obj) {
@@ -1687,8 +1779,6 @@
 
         return ~lo;
     }
-
-    var ARRAY_PROTOTYPE = Array.prototype;
 
     /**
     * Initializes a new instance of the List class.
@@ -2191,7 +2281,7 @@
         },
 
         valueOf: function () {
-            return this.toArray();
+            return this.slice();
         },
 
         toString: function () {
