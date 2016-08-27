@@ -11,10 +11,9 @@ import binarySearch from '../utils/binary-search';
 import buffer from '../utils/buffer';
 import bufferTo from '../utils/buffer-to';
 import extend from '../utils/extend';
+import {ARRAY_PROTOTYPE} from '../utils/builtin-types';
 import error, {ERROR_ARGUMENT_OUT_OF_RANGE} from '../utils/error';
 
-
-var ARRAY_PROTOTYPE = Array.prototype;
 
 /**
 * Initializes a new instance of the List class.
@@ -517,7 +516,7 @@ extend(List, Collection, {
     },
 
     valueOf: function () {
-        return this.toArray();
+        return this.slice();
     },
 
     toString: function () {
