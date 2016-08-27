@@ -10,9 +10,9 @@ import assertType from '../utils/assert-type';
 import binarySearch from '../utils/binary-search';
 import buffer from '../utils/buffer';
 import bufferTo from '../utils/buffer-to';
+import {ARRAY_PROTOTYPE} from '../utils/builtin-types';
 import error, {ERROR_ARGUMENT_OUT_OF_RANGE} from '../utils/error';
 
-const ARRAY_PROTOTYPE = Array.prototype;
 
 /**
 * Initializes a new instance of the List class.
