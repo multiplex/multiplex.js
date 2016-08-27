@@ -1631,7 +1631,7 @@
     class ReadOnlyCollection extends Collection {
         constructor(list) {
             assertType(list, List);
-            super();
+            super(list);
             this.list = list;
 
             for (var i = 0, len = list.length; i < len; i++) {
