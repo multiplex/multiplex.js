@@ -1688,6 +1688,7 @@
 
     function ReadOnlyCollection(list) {
         assertType(list, List);
+        Collection.call(this, list);
         this.list = list;
 
         define(this, 'length', {
