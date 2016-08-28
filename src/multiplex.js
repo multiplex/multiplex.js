@@ -18,6 +18,7 @@ import List from './lib/collections/list';
 import Lookup from './lib/collections/lookup';
 import Map from './lib/collections/map';
 import Set from './lib/collections/set';
+import Stack from './lib/collections/stack';
 import linq from './lib/linq/_linq';
 
 linq(Iterable);
@@ -55,5 +56,6 @@ mx.List = List;
 mx.Lookup = Lookup;
 mx.Map = Map;
 mx.Set = Set;
+mx.Stack = Stack;
 
 export default mx;
