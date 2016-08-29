@@ -18,7 +18,7 @@ import List from './lib/collections/list';
 import Lookup from './lib/collections/lookup';
 import Map from './lib/collections/map';
 import Set from './lib/collections/set';
-import Queue from './lib/collections/Queue';
+import Queue from './lib/collections/queue';
 import Stack from './lib/collections/stack';
 import linq from './lib/linq/_linq';
 
