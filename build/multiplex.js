@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 3.0.0 (August 29, 2016)
+* Version 3.0.0 (August 30, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -2226,6 +2226,92 @@
         }
     }
 
+    /**
+    * Represents a doubly linked list.
+    */
+    class LinkedList extends Collection {
+        /**
+        * Initializes a new instance of the LinkedList class that that is empty or contains elements copied from the specified collection.
+        * @param {Iterable=} collection The collection to copy elements from.
+        */
+        constructor(collection = null) {
+            super();
+            this.size = 0;
+            this.head = null;
+
+            if (collection) {
+                let arr = buffer(collection);
+                for (let i = 0, len = arr.length; i < len; i++) {
+                    this.addLast(arr[i]);
+                }
+            }
+        }
+
+        get [Symbol.toStringTag]() {
+            return 'LinkedList';
+        }
+
+        toString() {
+            return '[LinkedList]';
+        }
+    }
+
+    /**
+    * Represents a node in a LinkedList.
+    */
+    class LinkedListNode {
+        /**
+        * Initializes a new instance of the LinkedListNode class, containing the specified value.
+        * @param {Object} value The value to contain in the LinkedListNode
+        */
+        constructor(value) {
+            this._value = value;
+            this._list = null;
+            this._next = null;
+            this._prev = null;
+        }
+
+        /**
+        * Gets the value contained in the node.
+        * @returns {Object}
+        */
+        value() {
+            return this._value;
+        }
+
+        /**
+        * Gets the LinkedList that the LinkedListNode belongs to.
+        * @returns {LinkedList}
+        */
+        list() {
+            return this._list;
+        }
+
+        /**
+        * Gets the next node in the LinkedList.
+        * @returns {LinkedListNode}
+        */
+        next() {
+            return this._next === null || this._next === this._list.head ? null : this._next;
+        }
+
+        /**
+        * Gets the previous node in the LinkedList.
+        * @returns {LinkedListNode}
+        */
+        previous() {
+            return this._prev === null || this === this._list.head ? null : this._prev;
+        }
+
+        get [Symbol.toStringTag]() {
+            return 'LinkedList Node';
+        }
+
+        toString() {
+            return '[LinkedList Node]';
+        }
+    }
+
     class Grouping extends Collection {
         constructor(key, elements) {
             super();
@@ -4085,6 +4171,8 @@
     mx.Dictionary = Dictionary;
     mx.KeyValuePair = KeyValuePair;
     mx.List = List;
+    mx.LinkedList = LinkedList;
+    mx.LinkedListNode = LinkedListNode;
     mx.Lookup = Lookup;
     mx.Map = Map;
     mx.Set = Set;
