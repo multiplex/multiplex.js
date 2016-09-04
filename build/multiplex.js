@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 3.0.0 (August 30, 2016)
+* Version 3.0.0 (September 04, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -2740,6 +2740,21 @@
         }
     }
 
+    class SortedList extends Collection {
+        constructor(collection = null) {
+            let items = collection ? buffer(collection) : [];
+            super(items);
+        }
+
+        get [Symbol.toStringTag]() {
+            return 'Sorted List';
+        }
+
+        toString() {
+            return '[Sorted List]';
+        }
+    }
+
     function mixin(obj, properties, attributes) {
         attributes = attributes || {};
 
@@ -4178,6 +4193,7 @@
     mx.Set = Set;
     mx.Queue = Queue;
     mx.Stack = Stack;
+    mx.SortedList = SortedList;
     mx.version = '3.0.0';
 
     return mx;

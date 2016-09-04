@@ -22,6 +22,7 @@ import Map from './lib/collections/map';
 import Set from './lib/collections/set';
 import Queue from './lib/collections/queue';
 import Stack from './lib/collections/stack';
+import SortedList from './lib/collections/sorted-list';
 import linq from './lib/linq/_linq';
 
 linq(Iterable);
@@ -63,5 +64,6 @@ mx.Map = Map;
 mx.Set = Set;
 mx.Queue = Queue;
 mx.Stack = Stack;
+mx.SortedList = SortedList;
 
 export default mx;
