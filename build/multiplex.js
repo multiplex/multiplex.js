@@ -2711,6 +2711,10 @@
         }
     }
 
+    /**
+    * Initializes a new instance of the Queue class that that is empty or contains elements copied from the specified collection.
+    * @param {Iterable=} collection The collection to copy elements from.
+    */
     class Queue extends Collection {
         constructor(collection = null) {
             let items = collection ? buffer(collection) : [];
