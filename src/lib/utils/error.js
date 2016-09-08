@@ -11,3 +11,4 @@ export const ERROR_NON_NUMERIC_TYPE = 'Value is not a number.';
 export const ERROR_MORE_THAN_ONE_ELEMENT = 'Sequence contains more than one element.';
 export const ERROR_KEY_NOT_FOUND = 'The given key was not present in the collection.';
 export const ERROR_DUPLICATE_KEY = 'An item with the same key has already been added.';
+export const ERROR_EMPTY_COLLECTION = 'Collection is empty.';
