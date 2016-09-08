@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (September 04, 2016)
+* Version 2.0.0 (September 08, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -62,6 +62,7 @@
     var ERROR_MORE_THAN_ONE_ELEMENT = 'Sequence contains more than one element.';
     var ERROR_KEY_NOT_FOUND = 'The given key was not present in the collection.';
     var ERROR_DUPLICATE_KEY = 'An item with the same key has already been added.';
+    var ERROR_EMPTY_COLLECTION = 'Collection is empty.';
 
     function isType(obj, type) {
         // use 'typeof' operator in an if clause yields in better performance than switch-case
@@ -322,7 +323,7 @@
         }
     }
 
-    var iterableSource = (typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol') ?
+    var iterableSymbol = (typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol') ?
         Symbol('iterable') : '@@iterable';
 
     /**
@@ -331,7 +332,7 @@
     */
     function Iterable(source) {
         if (source !== null && source !== undefined) {
-            this[iterableSource] = source;
+            this[iterableSymbol] = source;
         }
     }
 
@@ -341,11 +342,11 @@
         },
 
         valueOf: function () {
-            return this[iterableSource];
+            return this[iterableSymbol];
         },
 
         '@@iterator': function () {
-            return iterator(this[iterableSource]);
+            return iterator(this[iterableSymbol]);
         }
     });
 
@@ -2790,12 +2791,72 @@
         }
     });
 
+    /**
+    * Initializes a new instance of the Stack class that that is empty or contains elements copied from the specified collection.
+    * @param {Iterable=} collection The collection to copy elements from.
+    */
     function Stack(collection) {
         var items = collection ? buffer(collection) : [];
         Collection.call(this, items);
     }
 
     extend(Stack, Collection, {
+        /**
+        * Removes all objects from the Stack.
+        */
+        clear: function () {
+            this[iterableSymbol].length = 0;
+        },
+
+        /**
+        * Gets the number of elements contained in the Stack.
+        * @returns {Number}
+        */
+        count: function () {
+            return this[iterableSymbol].length;
+        },
+
+        /**
+        * Determines whether an element is in the Stack.
+        * @param {Object} item The object to locate in the Stack.
+        * @returns {Boolean}
+        */
+        contains: function (item) {
+            return this[iterableSymbol].indexOf(item) !== -1;
+        },
+
+        /**
+        * Returns the object at the top of the Stack without removing it.
+        * @returns {Object}
+        */
+        peek: function () {
+            if (this.count() > 0) {
+                return this[iterableSymbol][this.count() - 1];
+            }
+
+            error(ERROR_EMPTY_COLLECTION);
+        },
+
+        /**
+        *   Removes and returns the object at the top of the Stack.
+        *   @returns {Object}
+        */
+        pop: function () {
+            if (this.count() > 0) {
+                return this[iterableSymbol].pop();
+            }
+
+            error(ERROR_EMPTY_COLLECTION);
+        },
+
+        /**
+        * Inserts an object at the top of the Stack.
+        * @param {Object} item The object to push onto the Stack.
+        */
+        push: function (item) {
+            this[iterableSymbol].push(item);
+        },
+
         toString: function () {
             return '[Stack]';
         }
