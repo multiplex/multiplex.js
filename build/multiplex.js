@@ -2780,6 +2780,10 @@
         }
     });
 
+    /**
+    * Initializes a new instance of the Queue class that that is empty or contains elements copied from the specified collection.
+    * @param {Iterable=} collection The collection to copy elements from.
+    */
     function Queue(collection) {
         var items = collection ? buffer(collection) : [];
         Collection.call(this, items);

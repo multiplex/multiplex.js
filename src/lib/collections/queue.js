@@ -4,6 +4,10 @@ import extend from '../utils/extend';
 import iterableSymbol from '../iteration/iterable-symbol';
 import error, {ERROR_EMPTY_COLLECTION} from '../utils/error';
 
+/**
+* Initializes a new instance of the Queue class that that is empty or contains elements copied from the specified collection.
+* @param {Iterable=} collection The collection to copy elements from.
+*/
 export default function Queue(collection) {
     var items = collection ? buffer(collection) : [];
     Collection.call(this, items);
