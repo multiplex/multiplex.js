@@ -21,14 +21,6 @@ export default class Stack extends Collection {
     }
 
     /**
-    * Gets the number of elements contained in the Stack.
-    * @returns {Number}
-    */
-    count() {
-        return this[iterableSymbol].length;
-    }
-
-    /**
     * Determines whether an element is in the Stack.
     * @param {Object} item The object to locate in the Stack.
     * @returns {Boolean}
@@ -42,8 +34,10 @@ export default class Stack extends Collection {
     * @returns {Object}
     */
     peek() {
-        if (this.count() > 0) {
-            return this[iterableSymbol][this.count() - 1];
+        let items = this[iterableSymbol];
+
+        if (items.length > 0) {
+            return items[this.length - 1];
         }
 
         error(ERROR_EMPTY_COLLECTION);
