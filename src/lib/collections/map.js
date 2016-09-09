@@ -6,6 +6,11 @@ import error from '../utils/error';
 import forOf from '../utils/for-of';
 import extend from '../utils/extend';
 
+/**
+* Initializes a new instance of the Map class that that is empty or contains elements copied from the specified iterable.
+* @param {Iterable=} iterable An iterable object whose all of its elements will be added to the new Map.
+* @param {EqualityComparer=} comparer An equality comparer to compare items.
+*/
 export default function Map(iterable, comparer) {
     var table = new HashTable(comparer);
 
@@ -25,19 +30,35 @@ export default function Map(iterable, comparer) {
 }
 
 extend(Map, Collection, {
+    /**
+    * Removes all elements from the Map object.
+    */
     clear: function () {
         this.table.clear();
         this.size = 0;
     },
 
+    /**
+    * Copies the keys of the Map to an existing one-dimensional Array, starting at the specified array index.
+    * @param {Array} array The one-dimensional Array that is the destination of the elements copied from Collection.
+    * @param {Number} arrayIndex The zero-based index in array at which copying begins.
+    */
     copyTo: function (array, arrayIndex) {
         bufferTo(this.keys(), array, arrayIndex);
     },
 
+    /**
+    * Returns the number of values in the Map object.
+    */
     count: function () {
         return this.size;
     },
 
+    /**
+    * Removes any value associated to the key and returns the value that Map.prototype.has(key) would have previously returned.
+    * @param {Object} key The key of the element to remove from the Map object.
+    * @returns {Object}
+    */
     delete: function (key) {
         var value = this.table.get(key),
             result = this.table.remove(key);
@@ -46,40 +67,77 @@ extend(Map, Collection, {
         return result ? value : false;
     },
 
+    /**
+    * Returns a new Iterator object that contains an array of [key, value] for each element in the Map object in insertion order.
+    * @returns {Iterator}
+    */
     entries: function () {
         return new MapIterator(this, -1);
     },
 
+    /**
+    * Calls callback once for each value present in the Map object, in insertion order.
+    * @param {Function} callback Function to execute for each element.
+    * @param {Object=} thisArg If a provided, it will be used as the this value for each callback.
+    */
     forEach: function (callback, thisArg) {
         this.table.forEach(callback, this, thisArg);
     },
 
+    /**
+    * Returns a boolean asserting whether a value has been associated to the key in the Map object or not.
+    * @param {Object} key The key of the element to return from the Map object.
+    * @returns {Object}
+    */
     get: function (key) {
         return this.table.get(key);
     },
 
-    has: function (value) {
-        return this.table.contains(value);
+    /**
+    * Returns a boolean asserting whether an element is present with the given value in the Map object or not.
+    * @param {Object} key The key of the element to test for presence in the Map object.
+    * @returns {Boolean}
+    */
+    has: function (key) {
+        return this.table.contains(key);
     },
 
+    /**
+    * Returns a new Iterator object that contains the keys for each element in the Map object in insertion order.
+    * @returns {Iterator}
+    */
     keys: function () {
         return new MapIterator(this, function (key) {
             return key;
         });
     },
 
+    /**
+    * Sets the value for the key in the Map object. Returns the Map object.
+    * @param {Object} key The key of the element to add to the Map object.
+    * @param {Object} value The value of the element to add to the Map object.
+    * @returns {Map}
+    */
     set: function (key, value) {
         this.table.set(key, value);
         this.size = this.table.count();
         return this;
     },
 
+    /**
+    * Returns a new Iterator object that contains the values for each element in the Map object in insertion order.
+    * @returns {Iterator}
+    */
     values: function () {
         return new MapIterator(this, function (key, value) {
             return value;
         });
     },
 
+    /**
+    * Returns an array that contains an array of [key, value] for each element in the Map object in insertion order.
+    * @returns {Array}
+    */
     valueOf: function () {
         return this.table.entries();
     },
@@ -88,6 +146,10 @@ extend(Map, Collection, {
         return '[Map]';
     },
 
+    /**
+    * Returns a new Iterator object that contains an array of [key, value] for each element in the Map object in insertion order.
+    * @returns {Iterator}
+    */
     '@@iterator': function () {
         return new MapIterator(this);
     }
