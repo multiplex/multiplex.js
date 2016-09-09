@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (September 08, 2016)
+* Version 2.0.0 (September 09, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -514,7 +514,7 @@
     var hashSymbol = '__hash__';
 
     function combineHash(h1, h2) {
-        return ((h1 << 7) | (h1 >> 25)) ^ h2;
+        return (((h1 << 5) | (h1 >> 27)) + h1) ^ h2;
     }
 
     var OBJECT_PROTOTYPE = Object.prototype;
