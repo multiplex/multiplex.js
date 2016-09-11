@@ -26,8 +26,10 @@ export default function SortedList(value, comparer) {
     this.slot = new SortedListSlot(capacity, dic ? dic.count() : 0, Comparer.from(comparer || value));
 
     if (dic) {
-        var arr = buffer(dic).sort(this.slot.comparer.compare),
-            len = capacity;
+        var arr = buffer(dic).sort(function (a, b) {
+            return this.slot.comparer.compare(a, b)
+        }),
+        len = capacity;
 
         while (len-- > 0) {
             this.slot.keys[len] = arr[len].key;
