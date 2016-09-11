@@ -1,6 +1,9 @@
+import Iterable from '../iteration/iterable';
+import Iterator from '../iteration/iterator';
 import Collection from './collection';
 import Dcitionary from './dictionary';
 import Comparer from './comparer';
+import KeyValuePair from './key-value-pair';
 import isType from '../utils/is-type';
 import isNumber from '../utils/is-number';
 import assertType from '../utils/assert-type';
@@ -27,9 +30,9 @@ export default function SortedList(value, comparer) {
 
     if (dic) {
         var arr = buffer(dic).sort(function (a, b) {
-            return this.slot.comparer.compare(a, b)
+            return this.slot.comparer.compare(a, b);
         }),
-        len = capacity;
+            len = capacity;
 
         while (len-- > 0) {
             this.slot.keys[len] = arr[len].key;
@@ -296,6 +299,28 @@ extend(SortedList, Collection, {
 
     toString: function () {
         return '[Sorted List]';
+    },
+
+    '@@iterator': function () {
+        return new Iterable(function () {
+            var keys = this.slot.keys,
+                values = this.slot.values,
+                size = this.slot.size,
+                index = -1;
+
+            return new Iterator(function () {
+                while (++index < size) {
+                    return {
+                        value: new KeyValuePair(keys[index], values[index]),
+                        done: false
+                    };
+                }
+
+                return {
+                    done: true
+                };
+            });
+        });
     }
 });
 

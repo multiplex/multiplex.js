@@ -3039,7 +3039,9 @@
         this.slot = new SortedListSlot(capacity, dic ? dic.count() : 0, Comparer.from(comparer || value));
 
         if (dic) {
-            var arr = buffer(dic).sort(this.slot.comparer.compare),
+            var arr = buffer(dic).sort(function (a, b) {
+                return this.slot.comparer.compare(a, b);
+            }),
                 len = capacity;
 
             while (len-- > 0) {
@@ -3307,6 +3309,28 @@
 
         toString: function () {
             return '[Sorted List]';
+        },
+
+        '@@iterator': function () {
+            return new Iterable(function () {
+                var keys = this.slot.keys,
+                    values = this.slot.values,
+                    size = this.slot.size,
+                    index = -1;
+
+                return new Iterator(function () {
+                    while (++index < size) {
+                        return {
+                            value: new KeyValuePair(keys[index], values[index]),
+                            done: false
+                        };
+                    }
+
+                    return {
+                        done: true
+                    };
+                });
+            });
         }
     });
 
