@@ -1,4 +1,4 @@
-export default function binarySearch(array, index, length, value, comparer) {
+export default function binarySearch(array, index, length, value, compare) {
     var lo = index,
         hi = index + length - 1,
         order = 0,
@@ -6,7 +6,7 @@ export default function binarySearch(array, index, length, value, comparer) {
 
     while (lo <= hi) {
         i = lo + ((hi - lo) >> 1);
-        order = comparer(array[i], value);
+        order = compare(array[i], value);
 
         if (order === 0) {
             return i;
