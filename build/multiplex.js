@@ -843,7 +843,7 @@
                 return defaultComparer;
             }
 
-            else if (value instanceof Comparer) {
+            else if (value instanceof Comparer || isFunction(value)) {
                 return value;
             }
 
@@ -2988,10 +2988,11 @@
             let dic = isType(value, Dictionary) ? value : null,
                 capacity = isNumber(value, Number) ? value : (dic ? dic.count() : 0);
 
-            this.slot = new SortedListSlot(capacity, dic ? dic.count() : 0, Comparer.from(comparer || value));
+            comparer = Comparer.from(comparer || value);
+            this.slot = new SortedListSlot(capacity, dic ? dic.count() : 0, comparer);
 
             if (dic) {
-                let arr = buffer(dic).sort((a, b) => this.slot.comparer.compare(a, b)),
+                let arr = buffer(dic).sort(comparer.compare),
                     len = capacity;
 
                 while (len-- > 0) {
@@ -3009,7 +3010,7 @@
         add(key, value) {
             assertNotNull(key);
 
-            let index = binarySearch(this.slot.keys, 0, this.slot.size, key, (a, b) => this.slot.comparer.compare(a, b));
+            let index = binarySearch(this.slot.keys, 0, this.slot.size, key, this.slot.comparer.compare);
 
             if (index >= 0) {
                 error(ERROR_DUPLICATE_KEY);
@@ -3106,7 +3107,7 @@
         * @returns {Collection}
         */
         keys() {
-            return new Collection(this.keys.slice(0, this.size));
+            return new Collection(this.keys.slice(0, this.slot.size));
         }
 
         /**
@@ -3124,7 +3125,7 @@
         */
         indexOfKey(key) {
             assertNotNull(key);
-            return binarySearch(this.slot.keys, 0, this.slot.size, key, (a, b) => this.slot.comparer.compare(a, b));
+            return binarySearch(this.slot.keys, 0, this.slot.size, key, this.slot.comparer.compare);
         }
 
         /**
@@ -3137,11 +3138,11 @@
         }
 
         /**
-    * Removes the element with the specified key from the SortedList.
-    * Returns true if the element is successfully removed; otherwise, false.This method also returns false if key was not found in the original SortedList.
-    * @param { Object } key The key of the element to remove.
-    * @returns { Boolean }
-    */
+        * Removes the element with the specified key from the SortedList.
+        * Returns true if the element is successfully removed; otherwise, false.This method also returns false if key was not found in the original SortedList.
+        * @param { Object } key The key of the element to remove.
+        * @returns { Boolean }
+        */
         remove(key) {
             let index = this.indexOfKey(key);
 
