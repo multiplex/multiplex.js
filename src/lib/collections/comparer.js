@@ -41,7 +41,7 @@ export default class Comparer {
             return defaultComparer;
         }
 
-        else if (value instanceof Comparer) {
+        else if (value instanceof Comparer || isFunction(value)) {
             return value;
         }
 
