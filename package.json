@@ -4,7 +4,6 @@
     "description": "Comprehensive data-structure and LINQ library for JavaScript.",
     "version": "3.0.0",
     "main": "dist/multiplex.js",
-    "jsnext:main": "dist/multiplex.es6.js",
     "typings": "dist/multiplex.d.ts",
     "author": "Kamyar Nazeri",
     "license": "MIT",
@@ -56,7 +55,7 @@
         "grunt-jscs": "3.0.1",
         "benchmark": "2.1.0",
         "qunit": "0.9.1",
-        "rollup": "0.34.10",
+        "rollup": "0.35.9",
         "coveralls": "2.11.12",
         "nyc": "7.1.0"
     },
