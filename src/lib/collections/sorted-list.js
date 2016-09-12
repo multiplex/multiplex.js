@@ -26,12 +26,11 @@ export default function SortedList(value, comparer) {
     var dic = isType(value, Dcitionary) ? value : null,
         capacity = isNumber(value, Number) ? value : (dic ? dic.count() : 0);
 
-    this.slot = new SortedListSlot(capacity, dic ? dic.count() : 0, Comparer.from(comparer || value));
+    comparer = Comparer.from(comparer || value);
+    this.slot = new SortedListSlot(capacity, dic ? dic.count() : 0, comparer);
 
     if (dic) {
-        var arr = buffer(dic).sort(function (a, b) {
-            return this.slot.comparer.compare(a, b);
-        }),
+        var arr = buffer(dic).sort(comparer.compare),
             len = capacity;
 
         while (len-- > 0) {
@@ -51,9 +50,7 @@ extend(SortedList, Collection, {
     add: function (key, value) {
         assertNotNull(key);
 
-        var index = binarySearch(this.slot.keys, 0, this.slot.size, key, function (a, b) {
-            return this.slot.comparer.compare(a, b);
-        });
+        var index = binarySearch(this.slot.keys, 0, this.slot.size, key, this.slot.comparer.compare);
 
         if (index >= 0) {
             error(ERROR_DUPLICATE_KEY);
@@ -152,7 +149,7 @@ extend(SortedList, Collection, {
     * @returns {Collection}
     */
     keys: function () {
-        return new Collection(this.keys.slice(0, this.size));
+        return new Collection(this.keys.slice(0, this.slot.size));
     },
 
     /**
@@ -171,9 +168,7 @@ extend(SortedList, Collection, {
     */
     indexOfKey: function (key) {
         assertNotNull(key);
-        return binarySearch(this.slot.keys, 0, this.slot.size, key, function (a, b) {
-            return this.slot.comparer.compare(a, b);
-        });
+        return binarySearch(this.slot.keys, 0, this.slot.size, key, this.slot.comparer.compare);
     },
 
     /**
