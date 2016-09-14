@@ -1,4 +1,3 @@
-import Iterable from '../iteration/iterable';
 import Iterator from '../iteration/iterator';
 import Collection from './collection';
 import Dcitionary from './dictionary';
@@ -297,24 +296,22 @@ extend(SortedList, Collection, {
     },
 
     '@@iterator': function () {
-        return new Iterable(function () {
-            var keys = this.slot.keys,
-                values = this.slot.values,
-                size = this.slot.size,
-                index = -1;
+        var keys = this.slot.keys,
+            values = this.slot.values,
+            size = this.slot.size,
+            index = -1;
 
-            return new Iterator(function () {
-                while (++index < size) {
-                    return {
-                        value: new KeyValuePair(keys[index], values[index]),
-                        done: false
-                    };
-                }
-
+        return new Iterator(function () {
+            while (++index < size) {
                 return {
-                    done: true
+                    value: new KeyValuePair(keys[index], values[index]),
+                    done: false
                 };
-            });
+            }
+
+            return {
+                done: true
+            };
         });
     }
 });
