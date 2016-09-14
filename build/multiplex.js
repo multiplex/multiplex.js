@@ -3627,15 +3627,22 @@
         }
 
         [Symbol.iterator]() {
-            return new Iterable(function* () {
-                let keys = this.slot.keys,
-                    values = this.slot.values,
-                    size = this.slot.size,
-                    index = -1;
+            let keys = this.slot.keys,
+                values = this.slot.values,
+                size = this.slot.size,
+                index = -1;
 
+            return new Iterator(function () {
                 while (++index < size) {
-                    yield new KeyValuePair(keys[index], values[index]);
+                    return {
+                        value: new KeyValuePair(keys[index], values[index]),
+                        done: false
+                    };
                 }
+
+                return {
+                    done: true
+                };
             });
         }
     }
