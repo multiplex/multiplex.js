@@ -2228,34 +2228,6 @@
     }
 
     /**
-    * Defines abstract Iterable class.
-    * @param {Iterable|Array|String|Function|Function*|Object} source An Iterable object.
-    */
-    class Iterable$1 {
-        constructor(source = null) {
-            if (source !== null && source !== undefined) {
-                this[iterableSymbol] = source;
-            }
-        }
-
-        get [Symbol.toStringTag]() {
-            return 'Iterable';
-        }
-
-        toString() {
-            return '[Iterable]';
-        }
-
-        valueOf() {
-            return this[iterableSymbol];
-        }
-
-        [Symbol.iterator]() {
-            return iterator(this[iterableSymbol]);
-        }
-    }
-
-    /**
     * Represents a node in a LinkedList.
     */
     class LinkedListNode {
@@ -2431,7 +2403,7 @@
         addBefore(node, value) {
             assertType(node, LinkedListNode);
 
-            var newNode;
+            let newNode;
 
             if (value instanceof LinkedListNode) {
                 newNode = value;
@@ -2680,17 +2652,24 @@
             let head = this.head,
                 node = head;
 
-            return new Iterable$1(function* () {
-                while (node !== null) {
-                    let current = node._value;
+            return new Iterator(function () {
+                if (node !== null) {
+                    var current = node._value;
 
                     node = node._next;
                     if (node === head) {
                         node = null;
                     }
 
-                    yield current;
+                    return {
+                        value: current,
+                        done: false
+                    };
                 }
+
+                return {
+                    done: true
+                };
             });
         }
     }

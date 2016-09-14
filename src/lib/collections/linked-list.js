@@ -1,5 +1,5 @@
 import Collection from './collection';
-import Iterable from '../iteration/Iterable';
+import Iterator from '../iteration/iterator';
 import LinkedListNode from './linked-list-node';
 import buffer from '../utils/buffer';
 import bufferTo from '../utils/buffer-to';
@@ -127,7 +127,7 @@ export default class LinkedList extends Collection {
     addBefore(node, value) {
         assertType(node, LinkedListNode);
 
-        var newNode;
+        let newNode;
 
         if (value instanceof LinkedListNode) {
             newNode = value;
@@ -376,17 +376,24 @@ export default class LinkedList extends Collection {
         let head = this.head,
             node = head;
 
-        return new Iterable(function* () {
-            while (node !== null) {
-                let current = node._value;
+        return new Iterator(function () {
+            if (node !== null) {
+                var current = node._value;
 
                 node = node._next;
                 if (node === head) {
                     node = null;
                 }
 
-                yield current;
+                return {
+                    value: current,
+                    done: false
+                };
             }
+
+            return {
+                done: true
+            };
         });
     }
 }
