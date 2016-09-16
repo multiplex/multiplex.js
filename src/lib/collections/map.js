@@ -14,7 +14,7 @@ import extend from '../utils/extend';
 export default function Map(iterable, comparer) {
     var table = new HashTable(comparer);
 
-    if (iterable !== null) {
+    if (iterable) {
         forOf(iterable, function (element) {
             if (isArray(element)) {
                 table.add(element[0], element[1]);

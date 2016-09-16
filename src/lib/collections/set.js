@@ -12,7 +12,7 @@ import extend from '../utils/extend';
 export default function Set(iterable, comparer) {
     var table = new HashTable(comparer);
 
-    if (iterable !== null) {
+    if (iterable) {
         forOf(iterable, function (element) {
             table.add(element, element);
         });

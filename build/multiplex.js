@@ -2377,10 +2377,9 @@
         this.head = null;
 
         if (collection) {
-            var arr = buffer(collection);
-            for (var i = 0, len = arr.length; i < len; i++) {
-                this.addLast(arr[i]);
-            }
+            forOf(collection, function (element) {
+                this.addLast(element);
+            });
         }
     }
 
@@ -2963,7 +2962,7 @@
     function Map(iterable, comparer) {
         var table = new HashTable(comparer);
 
-        if (iterable !== null) {
+        if (iterable) {
             forOf(iterable, function (element) {
                 if (isArray(element)) {
                     table.add(element[0], element[1]);
@@ -3125,7 +3124,7 @@
     function Set(iterable, comparer) {
         var table = new HashTable(comparer);
 
-        if (iterable !== null) {
+        if (iterable) {
             forOf(iterable, function (element) {
                 table.add(element, element);
             });
