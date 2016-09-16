@@ -1,6 +1,7 @@
 import Collection from './collection';
 import HashTable, {HashTableIterator} from './hash-table';
 import bufferTo from '../utils/buffer-to';
+import $iterable from '../iteration/iterable-factory';
 
 /**
 * Initializes a new instance of the Set class that that is empty or contains elements copied from the specified iterable.
@@ -12,8 +13,8 @@ export default class Set extends Collection {
         super();
         this.table = new HashTable(comparer);
 
-        if (iterable !== null) {
-            for (let element of iterable) {
+        if (iterable) {
+            for (let element of $iterable(iterable)) {
                 this.table.add(element, element);
             }
         }

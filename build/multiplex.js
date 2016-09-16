@@ -2297,9 +2297,8 @@
             this.head = null;
 
             if (collection) {
-                let arr = buffer(collection);
-                for (let i = 0, len = arr.length; i < len; i++) {
-                    this.addLast(arr[i]);
+                for (let element of $iterable(collection)) {
+                    this.addLast(element);
                 }
             }
         }

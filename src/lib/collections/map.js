@@ -3,6 +3,7 @@ import HashTable, {HashTableIterator} from './hash-table';
 import bufferTo from '../utils/buffer-to';
 import isArray from '../utils/is-array';
 import error from '../utils/error';
+import $iterable from '../iteration/iterable-factory';
 
 /**
 * Initializes a new instance of the Map class that that is empty or contains elements copied from the specified iterable.
@@ -14,8 +15,8 @@ export default class Map extends Collection {
         super();
         this.table = new HashTable(comparer);
 
-        if (iterable !== null) {
-            for (let element of iterable) {
+        if (iterable) {
+            for (let element of $iterable(iterable)) {
                 if (isArray(element)) {
                     this.table.add(element[0], element[1]);
                 }
