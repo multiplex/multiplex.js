@@ -1,11 +1,11 @@
 import Collection from './collection';
 import Iterator from '../iteration/iterator';
 import LinkedListNode from './linked-list-node';
-import buffer from '../utils/buffer';
 import bufferTo from '../utils/buffer-to';
 import assertType from '../utils/assert-type';
 import {runtimeEquals} from '../runtime/runtime';
 import error, {ERROR_EMPTY_COLLECTION} from '../utils/error';
+import $iterable from '../iteration/iterable-factory';
 
 /**
 * Represents a doubly linked list.
@@ -21,9 +21,8 @@ export default class LinkedList extends Collection {
         this.head = null;
 
         if (collection) {
-            let arr = buffer(collection);
-            for (let i = 0, len = arr.length; i < len; i++) {
-                this.addLast(arr[i]);
+            for (let element of $iterable(collection)) {
+                this.addLast(element);
             }
         }
     }
