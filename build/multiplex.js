@@ -2853,7 +2853,7 @@
             super();
             this.table = new LookupTable(comparer);
 
-            for (let element of source) {
+            for (let element of $iterable(source)) {
                 this.table.add(keySelector(element), elementSelector ? elementSelector(element) : element);
             }
         }
@@ -2897,8 +2897,8 @@
             super();
             this.table = new HashTable(comparer);
 
-            if (iterable !== null) {
-                for (let element of iterable) {
+            if (iterable) {
+                for (let element of $iterable(iterable)) {
                     if (isArray(element)) {
                         this.table.add(element[0], element[1]);
                     }
@@ -3065,8 +3065,8 @@
             super();
             this.table = new HashTable(comparer);
 
-            if (iterable !== null) {
-                for (let element of iterable) {
+            if (iterable) {
+                for (let element of $iterable(iterable)) {
                     this.table.add(element, element);
                 }
             }
@@ -3359,12 +3359,11 @@
             this.slot = new SortedListSlot(capacity, dic ? dic.count() : 0, comparer);
 
             if (dic) {
-                let arr = buffer(dic).sort(comparer.compare),
-                    len = capacity;
+                let arr = buffer(dic).sort((x, y) => comparer.compare(x.key, y.key));
 
-                while (len-- > 0) {
-                    this.slot.keys[len] = arr[len].key;
-                    this.slot.values[len] = arr[len].value;
+                while (capacity-- > 0) {
+                    this.slot.keys[capacity] = arr[capacity].key;
+                    this.slot.values[capacity] = arr[capacity].value;
                 }
             }
         }
