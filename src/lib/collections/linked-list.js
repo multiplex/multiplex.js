@@ -1,7 +1,7 @@
 import Collection from './collection';
 import Iterator from '../iteration/iterator';
 import LinkedListNode from './linked-list-node';
-import buffer from '../utils/buffer';
+import forOf from '../utils/for-of';
 import bufferTo from '../utils/buffer-to';
 import assertType from '../utils/assert-type';
 import extend from '../utils/extend';
@@ -18,10 +18,9 @@ export default function LinkedList(collection) {
     this.head = null;
 
     if (collection) {
-        var arr = buffer(collection);
-        for (var i = 0, len = arr.length; i < len; i++) {
-            this.addLast(arr[i]);
-        }
+        forOf(collection, function (element) {
+            this.addLast(element);
+        });
     }
 }
 
