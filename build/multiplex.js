@@ -3402,12 +3402,13 @@
         this.slot = new SortedListSlot(capacity, dic ? dic.count() : 0, comparer);
 
         if (dic) {
-            var arr = buffer(dic).sort(comparer.compare),
-                len = capacity;
+            var arr = buffer(dic).sort(function (x, y) {
+                return comparer.compare(x.key, y.key);
+            });
 
-            while (len-- > 0) {
-                this.slot.keys[len] = arr[len].key;
-                this.slot.values[len] = arr[len].value;
+            while (capacity-- > 0) {
+                this.slot.keys[capacity] = arr[capacity].key;
+                this.slot.values[capacity] = arr[capacity].value;
             }
         }
     }
