@@ -1,4 +1,4 @@
-import iterator from './iterator-factory';
+import $iterator from './iterator-factory';
 import iterableSymbol from './iterable-symbol';
 
 /**
@@ -25,7 +25,7 @@ export default class Iterable {
     }
 
     [Symbol.iterator]() {
-        return iterator(this[iterableSymbol]);
+        return $iterator(this[iterableSymbol]);
     }
 }
 

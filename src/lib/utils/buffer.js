@@ -1,9 +1,9 @@
 import isArray from './is-array';
 import isString from './is-string';
 import isArrayLike from './is-array-like';
-import iterable from '../iteration/iterable-factory';
 import Collection from '../collections/collection';
 import ArrayIterable from '../iteration/iterable-array';
+import $iterable from '../iteration/iterable-factory';
 
 /**
 * Buffers an Iterale object into an array.
@@ -29,7 +29,7 @@ export default function buffer(value) {
 
     // do it the hard way
     else {
-        return [...iterable(value)];
+        return [...$iterable(value)];
     }
 }
 

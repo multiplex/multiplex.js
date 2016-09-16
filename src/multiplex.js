@@ -1,6 +1,6 @@
 import Iterable from './lib/iteration/iterable';
 import Iterator from './lib/iteration/iterator';
-import factory from './lib/iteration/iterable-factory';
+import $iterable from './lib/iteration/iterable-factory';
 
 import runtime, {
     runtimeHash,
@@ -34,7 +34,7 @@ linq(Iterable);
 * @returns {Iterable}
 */
 function mx(value) {
-    return factory(value);
+    return $iterable(value);
 }
 
 

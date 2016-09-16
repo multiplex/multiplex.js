@@ -1,7 +1,7 @@
-import iterator from '../iteration/iterator-factory';
 import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
 import asArray from '../utils/as-array';
+import $iterator from '../iteration/iterator-factory';
 import error, {ERROR_ARGUMENT_OUT_OF_RANGE} from '../utils/error';
 
 export default function elementAtIterator(source, index) {
@@ -22,7 +22,7 @@ export default function elementAtIterator(source, index) {
     }
 
     else {
-        let it = iterator(source),
+        let it = $iterator(source),
             next;
 
         while (!(next = it.next()).done) {

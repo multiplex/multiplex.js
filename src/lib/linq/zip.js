@@ -1,7 +1,7 @@
 import Iterable from '../iteration/iterable';
-import iterator from '../iteration/iterator-factory';
 import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
+import $iterator from '../iteration/iterator-factory';
 
 export default function zipIterator(first, second, resultSelector) {
     assertNotNull(first);
@@ -9,8 +9,8 @@ export default function zipIterator(first, second, resultSelector) {
     assertType(resultSelector, Function);
 
     return new Iterable(function* () {
-        let it1 = iterator(first),
-            it2 = iterator(second),
+        let it1 = $iterator(first),
+            it2 = $iterator(second),
             next1,
             next2;
 

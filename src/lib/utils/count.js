@@ -1,7 +1,7 @@
-import isArrayLike from './is-array-like';
-import iterable from '../iteration/iterable-factory';
 import Collection from '../collections/collection';
 import ArrayIterable from '../iteration/iterable-array';
+import isArrayLike from './is-array-like';
+import $iterable from '../iteration/iterable-factory';
 
 /*jshint unused:false*/
 export default function count(value) {
@@ -20,7 +20,7 @@ export default function count(value) {
     else {
         let count = 0;
 
-        for (let element of iterable(value)) {
+        for (let element of $iterable(value)) {
             count++;
         }
 

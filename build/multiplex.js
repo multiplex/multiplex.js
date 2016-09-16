@@ -254,7 +254,7 @@
     * Creates an iterator object
     * @param {Object} obj An object to create iterator from.
     */
-    function iterator(obj) {
+    function $iterator(obj) {
         // empty iteration
         if (obj === null || obj === undefined) {
             return new EmptyIterator();
@@ -317,7 +317,7 @@
         }
 
         [Symbol.iterator]() {
-            return iterator(this[iterableSymbol]);
+            return $iterator(this[iterableSymbol]);
         }
     }
 
@@ -387,7 +387,7 @@
         }
     }
 
-    function iterable(value) {
+    function $iterable(value) {
         if (value === null || value === undefined) {
             return new EmptyIterable();
         }
@@ -968,7 +968,7 @@
 
         // do it the hard way
         else {
-            return [...iterable(value)];
+            return [...$iterable(value)];
         }
     }
 
@@ -4018,7 +4018,7 @@
         else {
             let count = 0;
 
-            for (let element of iterable(value)) {
+            for (let element of $iterable(value)) {
                 count++;
             }
 
@@ -4040,7 +4040,7 @@
         assertNotNull(source);
 
         return new Iterable(function* () {
-            let it = iterator(source),
+            let it = $iterator(source),
                 next = it.next();
 
             if (!next.done) {
@@ -4099,7 +4099,7 @@
         }
 
         else {
-            let it = iterator(source),
+            let it = $iterator(source),
                 next;
 
             while (!(next = it.next()).done) {
@@ -4370,8 +4370,8 @@
         assertNotNull(second);
         comparer = EqualityComparer.from(comparer);
 
-        let it1 = iterator(first),
-            it2 = iterator(second),
+        let it1 = $iterator(first),
+            it2 = $iterator(second),
             next1,
             next2;
 
@@ -4443,7 +4443,7 @@
         }
 
         return new Iterable(function* () {
-            let it = iterator(source),
+            let it = $iterator(source),
                 next;
 
             while (count > 0 && !it.next().done) {
@@ -4591,8 +4591,8 @@
         assertType(resultSelector, Function);
 
         return new Iterable(function* () {
-            let it1 = iterator(first),
-                it2 = iterator(second),
+            let it1 = $iterator(first),
+                it2 = $iterator(second),
                 next1,
                 next2;
 
@@ -5065,7 +5065,7 @@
     * @returns {Iterable}
     */
     function mx(value) {
-        return iterable(value);
+        return $iterable(value);
     }
 
 

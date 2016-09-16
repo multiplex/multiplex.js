@@ -7,7 +7,7 @@ import ObjectIterable from './iterable-object';
 import EmptyIterable from './iterable-empty';
 
 
-export default function iterable(value) {
+export default function $iterable(value) {
     if (value === null || value === undefined) {
         return new EmptyIterable();
     }

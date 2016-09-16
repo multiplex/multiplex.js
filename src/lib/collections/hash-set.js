@@ -1,7 +1,7 @@
 import Collection from './collection';
 import HashTable from './hash-table';
 import EqulityComparer from './equality-comparer';
-import iterable from '../iteration/iterable-factory';
+import $iterable from '../iteration/iterable-factory';
 
 export default class HashSet extends Collection {
     constructor(source = null, comparer = EqulityComparer.instance) {
@@ -9,7 +9,7 @@ export default class HashSet extends Collection {
         this.table = new HashTable(EqulityComparer.from(comparer));
 
         if (source) {
-            for (let element of iterable(source)) {
+            for (let element of $iterable(source)) {
                 this.table.add(element);
             }
         }

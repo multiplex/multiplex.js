@@ -1,9 +1,9 @@
 import Iterable from '../iteration/iterable';
-import iterator from '../iteration/iterator-factory';
 import buffer from '../utils/buffer';
 import asArray from '../utils/as-array';
 import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
+import $iterator from '../iteration/iterator-factory';
 
 export default function skipIterator(source, count) {
     assertNotNull(source);
@@ -16,7 +16,7 @@ export default function skipIterator(source, count) {
     }
 
     return new Iterable(function* () {
-        let it = iterator(source),
+        let it = $iterator(source),
             next;
 
         while (count > 0 && !it.next().done) {
