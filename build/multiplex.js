@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (September 15, 2016)
+* Version 2.0.0 (September 16, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -286,7 +286,7 @@
     * Creates an iterator object
     * @param {Object} obj An object to create iterator from.
     */
-    function iterator(obj) {
+    function $iterator(obj) {
         // empty iteration
         if (obj === null || obj === undefined) {
             return new EmptyIterator();
@@ -346,7 +346,7 @@
         },
 
         '@@iterator': function () {
-            return iterator(this[iterableSymbol]);
+            return $iterator(this[iterableSymbol]);
         }
     });
 
@@ -403,7 +403,7 @@
         }
     });
 
-    function iterable(value) {
+    function $iterable(value) {
         if (value === null || value === undefined) {
             return new EmptyIterable();
         }
@@ -1023,7 +1023,7 @@
 
         // do it the hard way
         else {
-            var it = iterator(value),
+            var it = $iterator(value),
                 count = 0,
                 length = 16,
                 arr = new Array(length),
@@ -1853,7 +1853,7 @@
         }
 
         else {
-            var it = iterator(source),
+            var it = $iterator(source),
                 next;
 
             while (!(next = it.next()).done) {
@@ -3981,7 +3981,7 @@
         assertType(selector, Function);
 
         return new Iterable(function () {
-            var it = iterator(source),
+            var it = $iterator(source),
                 index = 0,
                 next;
 
@@ -4030,8 +4030,8 @@
         assertNotNull(second);
 
         return new Iterable(function () {
-            var itFirst = iterator(first),
-                itSecond = iterator(second),
+            var itFirst = $iterator(first),
+                itSecond = $iterator(second),
                 next;
 
             return new Iterator(function () {
@@ -4069,7 +4069,7 @@
         assertType(predicate, Function);
 
         return new Iterable(function () {
-            var it = iterator(source),
+            var it = $iterator(source),
                 index = 0,
                 next;
 
@@ -4103,7 +4103,7 @@
         }
 
         else {
-            var it = iterator(value),
+            var it = $iterator(value),
                 count = 0;
 
             while (!it.next().done) {
@@ -4128,7 +4128,7 @@
         assertNotNull(source);
 
         return new Iterable(function () {
-            var it = iterator(source),
+            var it = $iterator(source),
                 next = it.next(),
                 empty = next.done;
 
@@ -4160,7 +4160,7 @@
         assertNotNull(source);
 
         return new Iterable(function () {
-            var it = iterator(source),
+            var it = $iterator(source),
                 table = new HashTable(comparer),
                 next;
 
@@ -4198,7 +4198,7 @@
         }
 
         else {
-            var it = iterator(source),
+            var it = $iterator(source),
                 next;
 
             while (!(next = it.next()).done) {
@@ -4218,7 +4218,7 @@
         var result = intersect ? true : false;
 
         return new Iterable(function () {
-            var it = iterator(first),
+            var it = $iterator(first),
                 table = new HashTable(comparer),
                 next;
 
@@ -4302,7 +4302,7 @@
 
         return new Iterable(function () {
             var lookup = new Lookup(source, keySelector, elementSelector, comparer),
-                it = iterator(lookup),
+                it = $iterator(lookup),
                 next;
 
             return new Iterator(function () {
@@ -4327,7 +4327,7 @@
 
         return new Iterable(function () {
             var lookup = new Lookup(inner, innerKeySelector, null, comparer),
-                it = iterator(outer),
+                it = $iterator(outer),
                 next;
 
             return new Iterator(function () {
@@ -4352,7 +4352,7 @@
 
         return new Iterable(function () {
             var lookup = new Lookup(inner, innerKeySelector, null, comparer),
-                it = iterator(outer),
+                it = $iterator(outer),
                 elements = null,
                 index = 0,
                 next;
@@ -4473,7 +4473,7 @@
         assertType(type, Function);
 
         return new Iterable(function () {
-            var it = iterator(source),
+            var it = $iterator(source),
                 next;
 
             return new Iterator(function () {
@@ -4521,7 +4521,7 @@
         }
 
         return new Iterable(function () {
-            var it = iterator(source),
+            var it = $iterator(source),
                 next = it.next(),
                 itcol,
                 nextcol,
@@ -4530,7 +4530,7 @@
             return new Iterator(function () {
                 if (!next.done) {
                     do {
-                        itcol = itcol || iterator(collectionSelector(next.value, index++));
+                        itcol = itcol || $iterator(collectionSelector(next.value, index++));
 
                         while (!(nextcol = itcol.next()).done) {
                             return {
@@ -4556,8 +4556,8 @@
         assertNotNull(second);
         comparer = EqualityComparer.from(comparer);
 
-        var it1 = iterator(first),
-            it2 = iterator(second),
+        var it1 = $iterator(first),
+            it2 = $iterator(second),
             next1,
             next2;
 
@@ -4634,7 +4634,7 @@
         }
 
         return new Iterable(function () {
-            var it = iterator(source),
+            var it = $iterator(source),
                 next;
 
             return new Iterator(function () {
@@ -4661,7 +4661,7 @@
         assertType(predicate, Function);
 
         return new Iterable(function () {
-            var it = iterator(source),
+            var it = $iterator(source),
                 yielding = false,
                 index = 0,
                 next;
@@ -4727,7 +4727,7 @@
         }
 
         return new Iterable(function () {
-            var it = iterator(source),
+            var it = $iterator(source),
                 next;
 
             return new Iterator(function () {
@@ -4749,7 +4749,7 @@
         assertType(predicate, Function);
 
         return new Iterable(function () {
-            var it = iterator(source),
+            var it = $iterator(source),
                 index = 0,
                 next;
 
@@ -4790,8 +4790,8 @@
 
         return new Iterable(function () {
             var table = new HashTable(comparer),
-                it1 = iterator(first),
-                it2 = iterator(second),
+                it1 = $iterator(first),
+                it2 = $iterator(second),
                 next;
 
             return new Iterator(function () {
@@ -4817,8 +4817,8 @@
         assertType(resultSelector, Function);
 
         return new Iterable(function () {
-            var it1 = iterator(first),
-                it2 = iterator(second),
+            var it1 = $iterator(first),
+                it2 = $iterator(second),
                 next1,
                 next2;
 
@@ -5299,7 +5299,7 @@
     * @returns {Iterable}
     */
     function mx(value) {
-        return iterable(value);
+        return $iterable(value);
     }
 
 

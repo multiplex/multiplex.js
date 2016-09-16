@@ -1,8 +1,8 @@
 import Iterable from '../iteration/iterable';
 import Iterator from '../iteration/iterator';
-import iterator from '../iteration/iterator-factory';
 import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
+import $iterator from '../iteration/iterator-factory';
 
 export default function selectManyIterator(source, collectionSelector, resultSelector) {
     assertNotNull(source);
@@ -12,7 +12,7 @@ export default function selectManyIterator(source, collectionSelector, resultSel
     }
 
     return new Iterable(function () {
-        var it = iterator(source),
+        var it = $iterator(source),
             next = it.next(),
             itcol,
             nextcol,
@@ -21,7 +21,7 @@ export default function selectManyIterator(source, collectionSelector, resultSel
         return new Iterator(function () {
             if (!next.done) {
                 do {
-                    itcol = itcol || iterator(collectionSelector(next.value, index++));
+                    itcol = itcol || $iterator(collectionSelector(next.value, index++));
 
                     while (!(nextcol = itcol.next()).done) {
                         return {

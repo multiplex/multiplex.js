@@ -1,4 +1,4 @@
-import iterator from './iterator-factory';
+import $iterator from './iterator-factory';
 import iterableSymbol from './iterable-symbol';
 import mixin from '../utils/mixin';
 
@@ -22,6 +22,6 @@ mixin(Iterable.prototype, {
     },
 
     '@@iterator': function () {
-        return iterator(this[iterableSymbol]);
+        return $iterator(this[iterableSymbol]);
     }
 });

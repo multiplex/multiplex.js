@@ -8,7 +8,7 @@ import EmptyIterable from './iterable-empty';
 import iteratorSymbol from '../utils/iterator-symbol';
 
 
-export default function iterable(value) {
+export default function $iterable(value) {
     if (value === null || value === undefined) {
         return new EmptyIterable();
     }

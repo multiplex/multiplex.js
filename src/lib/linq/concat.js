@@ -1,15 +1,15 @@
 import Iterable from '../iteration/iterable';
 import Iterator from '../iteration/iterator';
-import iterator from '../iteration/iterator-factory';
 import assertNotNull from '../utils/assert-not-null';
+import $iterator from '../iteration/iterator-factory';
 
 export default function concatIterator(first, second) {
     assertNotNull(first);
     assertNotNull(second);
 
     return new Iterable(function () {
-        var itFirst = iterator(first),
-            itSecond = iterator(second),
+        var itFirst = $iterator(first),
+            itSecond = $iterator(second),
             next;
 
         return new Iterator(function () {

@@ -1,7 +1,7 @@
-import isArrayLike from './is-array-like';
-import iterator from '../iteration/iterator-factory';
 import Collection from '../collections/collection';
 import ArrayIterable from '../iteration/iterable-array';
+import isArrayLike from './is-array-like';
+import $iterator from '../iteration/iterator-factory';
 
 export default function count(value) {
     if (isArrayLike(value)) {
@@ -17,7 +17,7 @@ export default function count(value) {
     }
 
     else {
-        var it = iterator(value),
+        var it = $iterator(value),
             count = 0;
 
         while (!it.next().done) {

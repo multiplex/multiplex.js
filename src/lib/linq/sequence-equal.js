@@ -1,14 +1,14 @@
-import iterator from '../iteration/iterator-factory';
 import assertNotNull from '../utils/assert-not-null';
 import EqualityComparer from '../collections/equality-comparer';
+import $iterator from '../iteration/iterator-factory';
 
 export default function sequenceEqualIterator(first, second, comparer) {
     assertNotNull(first);
     assertNotNull(second);
     comparer = EqualityComparer.from(comparer);
 
-    var it1 = iterator(first),
-        it2 = iterator(second),
+    var it1 = $iterator(first),
+        it2 = $iterator(second),
         next1,
         next2;
 

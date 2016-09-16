@@ -11,7 +11,7 @@ import iteratorSymbol from '../utils/iterator-symbol';
 * Creates an iterator object
 * @param {Object} obj An object to create iterator from.
 */
-export default function iterator(obj) {
+export default function $iterator(obj) {
     // empty iteration
     if (obj === null || obj === undefined) {
         return new EmptyIterator();

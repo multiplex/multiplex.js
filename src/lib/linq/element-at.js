@@ -1,8 +1,8 @@
-import iterator from '../iteration/iterator-factory';
 import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
 import asArray from '../utils/as-array';
 import error, {ERROR_ARGUMENT_OUT_OF_RANGE} from '../utils/error';
+import $iterator from '../iteration/iterator-factory';
 
 export default function elementAtIterator(source, index) {
     assertNotNull(source);
@@ -22,7 +22,7 @@ export default function elementAtIterator(source, index) {
     }
 
     else {
-        var it = iterator(source),
+        var it = $iterator(source),
             next;
 
         while (!(next = it.next()).done) {
