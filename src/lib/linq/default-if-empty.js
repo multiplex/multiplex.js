@@ -1,13 +1,13 @@
 import Iterable from '../iteration/iterable';
 import Iterator from '../iteration/iterator';
-import iterator from '../iteration/iterator-factory';
 import assertNotNull from '../utils/assert-not-null';
+import $iterator from '../iteration/iterator-factory';
 
 export default function defaultIfEmptyIterator(source, defaultValue) {
     assertNotNull(source);
 
     return new Iterable(function () {
-        var it = iterator(source),
+        var it = $iterator(source),
             next = it.next(),
             empty = next.done;
 

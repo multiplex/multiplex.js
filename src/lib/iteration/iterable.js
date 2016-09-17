@@ -1,8 +1,6 @@
-import iterator from './iterator-factory';
+import $iterator from './iterator-factory';
+import iterableSymbol from './iterable-symbol';
 import mixin from '../utils/mixin';
-
-var iterableSource = (typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol') ?
-    Symbol('iterable') : '@@iterable';
 
 /**
 * Defines abstract Iterable class.
@@ -10,7 +8,7 @@ var iterableSource = (typeof Symbol === 'function' && typeof Symbol.iterator ===
 */
 export default function Iterable(source) {
     if (source !== null && source !== undefined) {
-        this[iterableSource] = source;
+        this[iterableSymbol] = source;
     }
 }
 
@@ -20,10 +18,10 @@ mixin(Iterable.prototype, {
     },
 
     valueOf: function () {
-        return this[iterableSource];
+        return this[iterableSymbol];
     },
 
     '@@iterator': function () {
-        return iterator(this[iterableSource]);
+        return $iterator(this[iterableSymbol]);
     }
 });

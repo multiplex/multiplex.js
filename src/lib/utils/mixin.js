@@ -1,5 +1,4 @@
-import isFunction from './is-function';
-import iteratorSymbol from './iterator-symbol';
+import define from './define';
 
 export default function mixin(obj, properties, attributes) {
     attributes = attributes || {};
@@ -17,17 +16,3 @@ export default function mixin(obj, properties, attributes) {
 
     return obj;
 }
-
-export function define(obj, prop, attributes) {
-    if (prop === '@@iterator') {
-        prop = iteratorSymbol;
-    }
-
-    if (isFunction(Object.defineProperty)) {
-        Object.defineProperty(obj, prop, attributes);
-    }
-    else {
-        obj[prop] = attributes.get ? attributes.get.apply(obj) : attributes.value;
-    }
-}
-

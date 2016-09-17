@@ -1,9 +1,9 @@
 import Iterable from '../iteration/iterable';
 import Iterator from '../iteration/iterator';
-import iterator from '../iteration/iterator-factory';
 import Lookup from '../collections/lookup';
 import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
+import $iterator from '../iteration/iterator-factory';
 
 export default function joinIterator(outer, inner, outerKeySelector, innerKeySelector, resultSelector, comparer) {
     assertNotNull(inner);
@@ -13,7 +13,7 @@ export default function joinIterator(outer, inner, outerKeySelector, innerKeySel
 
     return new Iterable(function () {
         var lookup = new Lookup(inner, innerKeySelector, null, comparer),
-            it = iterator(outer),
+            it = $iterator(outer),
             elements = null,
             index = 0,
             next;

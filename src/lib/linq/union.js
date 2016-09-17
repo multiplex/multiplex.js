@@ -1,8 +1,8 @@
 import Iterable from '../iteration/iterable';
 import Iterator from '../iteration/iterator';
 import HashTable from '../collections/hash-table';
-import iterator from '../iteration/iterator-factory';
 import assertNotNull from '../utils/assert-not-null';
+import $iterator from '../iteration/iterator-factory';
 
 export default function unionIterator(first, second, comparer) {
     assertNotNull(first);
@@ -10,8 +10,8 @@ export default function unionIterator(first, second, comparer) {
 
     return new Iterable(function () {
         var table = new HashTable(comparer),
-            it1 = iterator(first),
-            it2 = iterator(second),
+            it1 = $iterator(first),
+            it2 = $iterator(second),
             next;
 
         return new Iterator(function () {

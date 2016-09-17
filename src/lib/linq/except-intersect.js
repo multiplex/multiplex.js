@@ -1,9 +1,9 @@
 import Iterable from '../iteration/iterable';
 import Iterator from '../iteration/iterator';
-import iterator from '../iteration/iterator-factory';
 import HashTable from '../collections/hash-table';
 import forOf from '../utils/for-of';
 import assertNotNull from '../utils/assert-not-null';
+import $iterator from '../iteration/iterator-factory';
 
 export default function exceptIntersectIterator(first, second, comparer, intersect) {
     assertNotNull(first);
@@ -12,7 +12,7 @@ export default function exceptIntersectIterator(first, second, comparer, interse
     var result = intersect ? true : false;
 
     return new Iterable(function () {
-        var it = iterator(first),
+        var it = $iterator(first),
             table = new HashTable(comparer),
             next;
 

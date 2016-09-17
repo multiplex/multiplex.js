@@ -7,5 +7,3 @@
 external/* linguist-vendored=false
 *.css linguist-vendored=false
 *.html linguist-vendored=false
-*.ts linguist-vendored=false
-*.d.ts linguist-vendored=false

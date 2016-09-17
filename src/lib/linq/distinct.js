@@ -1,14 +1,14 @@
 import Iterable from '../iteration/iterable';
 import Iterator from '../iteration/iterator';
-import iterator from '../iteration/iterator-factory';
 import HashTable from '../collections/hash-table';
 import assertNotNull from '../utils/assert-not-null';
+import $iterator from '../iteration/iterator-factory';
 
 export default function distinctIterator(source, comparer) {
     assertNotNull(source);
 
     return new Iterable(function () {
-        var it = iterator(source),
+        var it = $iterator(source),
             table = new HashTable(comparer),
             next;
 

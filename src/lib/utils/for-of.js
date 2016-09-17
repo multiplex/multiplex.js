@@ -1,5 +1,5 @@
 import asArray from './as-array';
-import iterator from '../iteration/iterator-factory';
+import $iterator from '../iteration/iterator-factory';
 
 export default function forOf(source, action) {
     var arr = asArray(source);
@@ -17,7 +17,7 @@ export default function forOf(source, action) {
     }
 
     else {
-        var it = iterator(source),
+        var it = $iterator(source),
             next;
 
         while (!(next = it.next()).done) {

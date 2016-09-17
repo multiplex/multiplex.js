@@ -1,9 +1,9 @@
 import Iterable from '../iteration/iterable';
 import Iterator from '../iteration/iterator';
-import iterator from '../iteration/iterator-factory';
 import Lookup from '../collections/lookup';
 import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
+import $iterator from '../iteration/iterator-factory';
 
 export default function groupIterator(source, keySelector, elementSelector, resultSelector, comparer) {
     assertNotNull(source);
@@ -11,7 +11,7 @@ export default function groupIterator(source, keySelector, elementSelector, resu
 
     return new Iterable(function () {
         var lookup = new Lookup(source, keySelector, elementSelector, comparer),
-            it = iterator(lookup),
+            it = $iterator(lookup),
             next;
 
         return new Iterator(function () {

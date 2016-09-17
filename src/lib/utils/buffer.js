@@ -1,9 +1,9 @@
+import Collection from '../collections/collection';
+import ArrayIterable from '../iteration/iterable-array';
 import isArray from './is-array';
 import isString from './is-string';
 import isArrayLike from './is-array-like';
-import iterator from '../iteration/iterator-factory';
-import Collection from '../collections/collection';
-import ArrayIterable from '../iteration/iterable-array';
+import $iterator from '../iteration/iterator-factory';
 
 /**
 * Buffers an Iterale object into an array.
@@ -29,7 +29,7 @@ export default function buffer(value) {
 
     // do it the hard way
     else {
-        var it = iterator(value),
+        var it = $iterator(value),
             count = 0,
             length = 16,
             arr = new Array(length),
