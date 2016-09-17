@@ -28,7 +28,7 @@ module.exports = function (grunt) {
                 dest: path.join(dirs.build, files.main),
                 sourceMap: false,
                 banner: grunt.config('banner'),
-                outro: 'mx.version = \'' + grunt.config('pkg').version + '\';\n',
+                intro: 'mx.version = \'' + grunt.config('pkg').version + '\';\n',
                 footer: '\n',
                 moduleName: 'mx'
             });

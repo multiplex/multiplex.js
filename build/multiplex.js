@@ -13,6 +13,8 @@
     (global.mx = factory());
 }(this, (function () { 'use strict';
 
+mx.version = '2.0.0';
+
 function isFunction(fn) {
     return typeof fn === 'function';
 }
@@ -5332,7 +5334,6 @@ mx.Stack = Stack;
 mx.SortedList = SortedList;
 
 return mx;
-mx.version = '2.0.0';
 
 })));
 
