@@ -1,4 +1,4 @@
-import IterableIterator from '../iteration/iterable-iterator';
+import Iterator from '../iteration/iterator';
 import EqualityComparer from './equality-comparer';
 import resize from '../utils/resize';
 
@@ -223,22 +223,29 @@ export default class HashTable {
 }
 
 
-export class HashTableIterator extends IterableIterator {
+export class HashTableIterator extends Iterator {
     constructor(table, selector = null) {
-        super(function* () {
-            let index = 0,
-                slot = null,
-                size = table.size,
-                slots = table.slots;
+        let index = 0,
+            slot = null,
+            size = table.size,
+            slots = table.slots;
 
+        super(function () {
             while (index < size) {
                 slot = slots[index++];
 
                 // freed slots have undefined as hashCode value and do not enumerate
                 if (slot.hash !== undefined) {
-                    yield selector ? selector(slot.key, slot.value) : [slot.key, slot.value];
+                    return {
+                        value: selector ? selector(slot.key, slot.value) : [slot.key, slot.value],
+                        done: false
+                    };
                 }
             }
+
+            return {
+                done: true
+            };
         });
     }
 }

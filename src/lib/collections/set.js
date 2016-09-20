@@ -1,3 +1,4 @@
+import IterableIterator from '../iteration/iterable-iterator';
 import Collection from './collection';
 import HashTable, {HashTableIterator} from './hash-table';
 import bufferTo from '../utils/buffer-to';
@@ -68,7 +69,7 @@ export default class Set extends Collection {
     * @returns {Iterator}
     */
     entries() {
-        return new SetIterator(this, -1);
+        return new SetIterator(this);
     }
 
     /**
@@ -139,9 +140,9 @@ export default class Set extends Collection {
 }
 
 
-class SetIterator extends HashTableIterator {
+class SetIterator extends IterableIterator {
     constructor(set, selector = null) {
-        super(set.table, selector);
+        super(() => new HashTableIterator(set.table, selector));
     }
 
     get [Symbol.toStringTag]() {
@@ -152,3 +153,4 @@ class SetIterator extends HashTableIterator {
         return '[Set Iterator]';
     }
 }
+

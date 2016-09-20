@@ -1,3 +1,4 @@
+import IterableIterator from '../iteration/iterable-iterator';
 import Collection from './collection';
 import HashTable, {HashTableIterator} from './hash-table';
 import EqualityComparer from './equality-comparer';
@@ -158,9 +159,9 @@ export default class Dictionary extends Collection {
 }
 
 
-class KeyValueIterator extends HashTableIterator {
+class KeyValueIterator extends IterableIterator {
     constructor(dic, selector = null) {
-        super(dic.table, selector);
+        super(() => new HashTableIterator(dic.table, selector));
     }
 
     get [Symbol.toStringTag]() {
