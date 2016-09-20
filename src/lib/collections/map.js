@@ -1,3 +1,4 @@
+import IterableIterator from '../iteration/iterable-iterator';
 import Collection from './collection';
 import HashTable, {HashTableIterator} from './hash-table';
 import bufferTo from '../utils/buffer-to';
@@ -159,10 +160,12 @@ extend(Map, Collection, {
 
 
 function MapIterator(map, selector) {
-    HashTableIterator.call(this, map, selector);
+    IterableIterator.call(this, function () {
+        return new HashTableIterator(map.table, selector);
+    });
 }
 
-extend(MapIterator, HashTableIterator, {
+extend(MapIterator, IterableIterator, {
     toString: function () {
         return '[Map Iterator]';
     }

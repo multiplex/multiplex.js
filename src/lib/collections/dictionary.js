@@ -1,3 +1,4 @@
+import IterableIterator from '../iteration/iterable-iterator';
 import Collection from './collection';
 import HashTable, {HashTableIterator} from './hash-table';
 import EqualityComparer from './equality-comparer';
@@ -164,10 +165,12 @@ extend(Dictionary, Collection, {
 
 
 function KeyValueIterator(dic, selector) {
-    HashTableIterator.call(this, dic, selector);
+    IterableIterator.call(this, function () {
+        return new HashTableIterator(dic.table, selector);
+    });
 }
 
-extend(KeyValueIterator, HashTableIterator, {
+extend(KeyValueIterator, IterableIterator, {
     toString: function () {
         return '[KeyValue Iterator]';
     }

@@ -1,3 +1,4 @@
+import IterableIterator from '../iteration/iterable-iterator';
 import Collection from './collection';
 import HashTable, {HashTableIterator} from './hash-table';
 import bufferTo from '../utils/buffer-to';
@@ -138,10 +139,12 @@ extend(Set, Collection, {
 
 
 function SetIterator(set, selector) {
-    HashTableIterator.call(this, set, selector);
+    IterableIterator.call(this, function () {
+        return new HashTableIterator(set.table, selector);
+    });
 }
 
-extend(SetIterator, HashTableIterator, {
+extend(SetIterator, IterableIterator, {
     toString: function () {
         return '[Set Iterator]';
     }

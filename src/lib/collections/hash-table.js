@@ -1,5 +1,4 @@
 import Iterator from '../iteration/iterator';
-import IterableIterator from '../iteration/iterable-iterator';
 import EqualityComparer from './equality-comparer';
 import resize from '../utils/resize';
 import forOf from '../utils/for-of';
@@ -234,33 +233,31 @@ mixin(HashTable.prototype, {
 
 
 export function HashTableIterator(table, selector) {
-    IterableIterator.call(this, function () {
-        var index = 0,
-            slot = null,
-            size = table.size,
-            slots = table.slots;
+    var index = 0,
+        slot = null,
+        size = table.size,
+        slots = table.slots;
 
-        return new Iterator(function () {
-            while (index < size) {
-                slot = slots[index++];
+    Iterator.call(this, function () {
+        while (index < size) {
+            slot = slots[index++];
 
-                // freed slots have undefined as hashCode value and do not enumerate
-                if (slot.hash !== undefined) {
-                    return {
-                        value: selector ? selector(slot.key, slot.value) : [slot.key, slot.value],
-                        done: false
-                    };
-                }
+            // freed slots have undefined as hashCode value and do not enumerate
+            if (slot.hash !== undefined) {
+                return {
+                    value: selector ? selector(slot.key, slot.value) : [slot.key, slot.value],
+                    done: false
+                };
             }
+        }
 
-            return {
-                done: true
-            };
-        });
+        return {
+            done: true
+        };
     });
 }
 
-extend(HashTableIterator, IterableIterator);
+extend(HashTableIterator, Iterator);
 
 
 function HashTableSlot(hash, next, key, value) {

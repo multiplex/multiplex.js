@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (September 19, 2016)
+* Version 2.0.0 (September 20, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -1791,26 +1791,13 @@ extend(ReadOnlyCollection, Collection, {
 * @param {Function} factory A function to create iterator instance.
 */
 function IterableIterator(factory) {
-    assertType(factory, Function);
     Iterable.call(this, factory);
+    this.next = factory().next;
 }
 
 extend(IterableIterator, Iterable, {
-    next: function () {
-        var iterator = this.iterator;
-        if (iterator === undefined) {
-            iterator = this.valueOf()();
-            this.iterator = iterator;
-        }
-        return iterator.next();
-    },
-
     toString: function () {
         return '[Iterable Iterator]';
-    },
-
-    '@@iterator': function () {
-        return new IterableIterator(this.valueOf());
     }
 });
 
@@ -2094,33 +2081,31 @@ mixin(HashTable.prototype, {
 
 
 function HashTableIterator(table, selector) {
-    IterableIterator.call(this, function () {
-        var index = 0,
-            slot = null,
-            size = table.size,
-            slots = table.slots;
+    var index = 0,
+        slot = null,
+        size = table.size,
+        slots = table.slots;
 
-        return new Iterator(function () {
-            while (index < size) {
-                slot = slots[index++];
+    Iterator.call(this, function () {
+        while (index < size) {
+            slot = slots[index++];
 
-                // freed slots have undefined as hashCode value and do not enumerate
-                if (slot.hash !== undefined) {
-                    return {
-                        value: selector ? selector(slot.key, slot.value) : [slot.key, slot.value],
-                        done: false
-                    };
-                }
+            // freed slots have undefined as hashCode value and do not enumerate
+            if (slot.hash !== undefined) {
+                return {
+                    value: selector ? selector(slot.key, slot.value) : [slot.key, slot.value],
+                    done: false
+                };
             }
+        }
 
-            return {
-                done: true
-            };
-        });
+        return {
+            done: true
+        };
     });
 }
 
-extend(HashTableIterator, IterableIterator);
+extend(HashTableIterator, Iterator);
 
 
 function HashTableSlot(hash, next, key, value) {
@@ -2310,10 +2295,12 @@ extend(Dictionary, Collection, {
 
 
 function KeyValueIterator(dic, selector) {
-    HashTableIterator.call(this, dic, selector);
+    IterableIterator.call(this, function () {
+        return new HashTableIterator(dic.table, selector);
+    });
 }
 
-extend(KeyValueIterator, HashTableIterator, {
+extend(KeyValueIterator, IterableIterator, {
     toString: function () {
         return '[KeyValue Iterator]';
     }
@@ -3109,10 +3096,12 @@ extend(Map, Collection, {
 
 
 function MapIterator(map, selector) {
-    HashTableIterator.call(this, map, selector);
+    IterableIterator.call(this, function () {
+        return new HashTableIterator(map.table, selector);
+    });
 }
 
-extend(MapIterator, HashTableIterator, {
+extend(MapIterator, IterableIterator, {
     toString: function () {
         return '[Map Iterator]';
     }
@@ -3252,10 +3241,12 @@ extend(Set, Collection, {
 
 
 function SetIterator(set, selector) {
-    HashTableIterator.call(this, set, selector);
+    IterableIterator.call(this, function () {
+        return new HashTableIterator(set.table, selector);
+    });
 }
 
-extend(SetIterator, HashTableIterator, {
+extend(SetIterator, IterableIterator, {
     toString: function () {
         return '[Set Iterator]';
     }
