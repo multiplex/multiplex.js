@@ -3,6 +3,7 @@ import Collection from './collection';
 import HashTable, {HashTableIterator} from './hash-table';
 import bufferTo from '../utils/buffer-to';
 import forOf from '../utils/for-of';
+import define from '../utils/define';
 import extend from '../utils/extend';
 
 /**
@@ -21,6 +22,12 @@ export default function Set(iterable, comparer) {
 
     this.table = table;
     this.size = this.table.count();
+
+    define(this, 'comparer', {
+        get: function () {
+            return table.comparer;
+        }
+    });
 }
 
 extend(Set, Collection, {

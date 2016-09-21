@@ -5,6 +5,7 @@ import bufferTo from '../utils/buffer-to';
 import isArray from '../utils/is-array';
 import error from '../utils/error';
 import forOf from '../utils/for-of';
+import define from '../utils/define';
 import extend from '../utils/extend';
 
 /**
@@ -28,6 +29,12 @@ export default function Map(iterable, comparer) {
 
     this.table = table;
     this.size = this.table.count();
+
+    define(this, 'comparer', {
+        get: function () {
+            return table.comparer;
+        }
+    });
 }
 
 extend(Map, Collection, {
