@@ -38,6 +38,14 @@ export default class Set extends Collection {
     }
 
     /**
+    * Gets the EqualityComparer object that is used to determine equality for the values in the set.
+    * @returns {EqualityComparer}
+    */
+    get comparer() {
+        return this.table.comparer;
+    }
+
+    /**
     * Copies the values of the Set to an existing one-dimensional Array, starting at the specified array index.
     * @param {Array} array The one-dimensional Array that is the destination of the elements copied from Collection.
     * @param {Number} arrayIndex The zero-based index in array at which copying begins.

@@ -48,6 +48,14 @@ export default class Dictionary extends Collection {
     }
 
     /**
+    * Gets the EqualityComparer object that is used to determine equality for the values in the set.
+    * @returns {EqualityComparer}
+    */
+    get comparer () {
+        return this.table.comparer;
+    }
+
+    /**
     * Gets the number of elements contained in the Dictionary.
     * @returns {Number}
     */
