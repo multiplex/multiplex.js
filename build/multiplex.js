@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (September 20, 2016)
+* Version 2.0.0 (September 21, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -2158,6 +2158,12 @@ function Dictionary(value, comparer) {
     }
 
     this.table = table;
+
+    define(this, 'comparer', {
+        get: function () {
+            return table.comparer;
+        }
+    });
 }
 
 extend(Dictionary, Collection, {
@@ -2943,6 +2949,16 @@ extend(Lookup, Collection, {
     }
 });
 
+function HashSet(comparer) {
+    this.comparer = comparer;
+}
+
+extend(HashSet, Collection, {
+    toString: function () {
+        return '[HashSet]';
+    }
+});
+
 /**
 * Initializes a new instance of the Map class that that is empty or contains elements copied from the specified iterable.
 * @param {Iterable=} iterable An iterable object whose all of its elements will be added to the new Map.
@@ -2964,6 +2980,12 @@ function Map(iterable, comparer) {
 
     this.table = table;
     this.size = this.table.count();
+
+    define(this, 'comparer', {
+        get: function () {
+            return table.comparer;
+        }
+    });
 }
 
 extend(Map, Collection, {
@@ -3123,6 +3145,12 @@ function Set(iterable, comparer) {
 
     this.table = table;
     this.size = this.table.count();
+
+    define(this, 'comparer', {
+        get: function () {
+            return table.comparer;
+        }
+    });
 }
 
 extend(Set, Collection, {
@@ -4082,7 +4110,13 @@ function whereIterator(source, predicate) {
     });
 }
 
-function count(value) {
+/**
+* Gets number of items in the specified iterable object.
+* @param {Iterable} value An Iterable object.
+* @param {Boolean} collectionOnly when true returns the number of items in iterable if the value is a Collection, Array or an Array-like, otherwise returns -1.
+* @returns {Number}
+*/
+function count(value, collectionOnly) {
     if (isArrayLike(value)) {
         return value.length;
     }
@@ -4095,7 +4129,7 @@ function count(value) {
         return value.count();
     }
 
-    else {
+    else if (!collectionOnly) {
         var it = $iterator(value),
             count = 0;
 
@@ -4105,16 +4139,18 @@ function count(value) {
 
         return count;
     }
+
+    return -1;
 }
 
 function countIterator(source, predicate) {
     assertNotNull(source);
 
     if (predicate) {
-        return count(whereIterator(source, predicate));
+        return count(whereIterator(source, predicate), false);
     }
 
-    return count(source);
+    return count(source, false);
 }
 
 function defaultIfEmptyIterator(source, defaultValue) {
@@ -5318,6 +5354,7 @@ mx.List = List;
 mx.LinkedList = LinkedList;
 mx.LinkedListNode = LinkedListNode;
 mx.Lookup = Lookup;
+mx.HashSet = HashSet;
 mx.Map = Map;
 mx.Set = Set;
 mx.Queue = Queue;
