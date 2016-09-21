@@ -6,8 +6,8 @@ export default function countIterator(source, predicate) {
     assertNotNull(source);
 
     if (predicate) {
-        return count(where(source, predicate));
+        return count(where(source, predicate), false);
     }
 
-    return count(source);
+    return count(source, false);
 }
