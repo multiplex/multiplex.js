@@ -3509,15 +3509,6 @@ extend(Map, Collection, {
     },
 
     /**
-    * Copies the keys of the Map to an existing one-dimensional Array, starting at the specified array index.
-    * @param {Array} array The one-dimensional Array that is the destination of the elements copied from Collection.
-    * @param {Number} arrayIndex The zero-based index in array at which copying begins.
-    */
-    copyTo: function (array, arrayIndex) {
-        bufferTo(this.keys(), array, arrayIndex);
-    },
-
-    /**
     * Returns the number of values in the Map object.
     */
     count: function () {
@@ -3605,10 +3596,10 @@ extend(Map, Collection, {
     },
 
     /**
-    * Returns an array that contains an array of [key, value] for each element in the Map object in insertion order.
+    * Creates an array from the Map.
     * @returns {Array}
     */
-    valueOf: function () {
+    toArray: function () {
         return this.table.keys();
     },
 
