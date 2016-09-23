@@ -332,8 +332,16 @@ class ArrayIterable extends Iterable {
         super(value);
     }
 
+    /**
+    * Creates an array from the Iterable.
+    * @returns {Array}
+    */
+    toArray() {
+        return this[iterableSymbol] || [];
+    }
+
     [Symbol.iterator]() {
-        let arr = this.valueOf();
+        let arr = this[iterableSymbol];
         return isFunction(arr[Symbol.iterator]) ? arr[Symbol.iterator]() : new ArrayIterator(arr);
     }
 
@@ -356,7 +364,7 @@ class ObjectIterable extends Iterable {
     }
 
     [Symbol.iterator]() {
-        return new ObjectIterator(this.valueOf());
+        return new ObjectIterator(this[iterableSymbol]);
     }
 
     get [Symbol.toStringTag]() {
@@ -960,12 +968,12 @@ function buffer(value) {
         return arrayBuffer(value);
     }
 
-    else if (value instanceof Collection) {             // Collections have 'valueOf' method
-        return arrayBuffer(value.valueOf());
+    else if (value instanceof Collection) {             // Collections have 'toArray' method
+        return arrayBuffer(value.toArray());
     }
 
     else if (value instanceof ArrayIterable) {          // ArrayIterable wrapper
-        return arrayBuffer(value.valueOf());
+        return arrayBuffer(value.toArray());
     }
 
     // do it the hard way
@@ -1043,14 +1051,6 @@ class Collection extends ArrayIterable {
     */
     copyTo(array, arrayIndex) {
         bufferTo(this.toArray(), array, arrayIndex);
-    }
-
-    /**
-    * Creates an array from the Collection.
-    * @returns {Array}
-    */
-    toArray() {
-        return this.valueOf() || [];
     }
 
     get [Symbol.toStringTag]() {
@@ -2897,7 +2897,7 @@ function count(value, collectionOnly = false) {
     }
 
     else if (value instanceof ArrayIterable) {
-        return value.valueOf().length;
+        return value.toArray().length;
     }
 
     else if (value instanceof Collection) {
@@ -4216,7 +4216,7 @@ class OrderedIterable extends Iterable {
     * @returns {OrderedIterable}
     */
     thenBy(keySelector, comparer) {
-        return new OrderedIterable(this.valueOf(), keySelector, comparer, false, this);
+        return new OrderedIterable(this[iterableSymbol], keySelector, comparer, false, this);
     }
 
     /**
@@ -4226,12 +4226,12 @@ class OrderedIterable extends Iterable {
     * @returns {OrderedIterable}
     */
     thenByDescending(keySelector, comparer) {
-        return new OrderedIterable(this.valueOf(), keySelector, comparer, true, this);
+        return new OrderedIterable(this[iterableSymbol], keySelector, comparer, true, this);
     }
 
     [Symbol.iterator]() {
         let index = 0,
-            arr = buffer(this.valueOf()),
+            arr = buffer(this[iterableSymbol]),
             len = arr.length,
             map = this.sorter.sort(arr);
 
@@ -4569,7 +4569,7 @@ function asArray(value) {
     }
 
     else if (value instanceof ArrayIterable) {      // ArrayIterable wrapper
-        return value.valueOf();
+        return value.toArray();
     }
 
     return null;

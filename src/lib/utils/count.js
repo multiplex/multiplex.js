@@ -15,7 +15,7 @@ export default function count(value, collectionOnly = false) {
     }
 
     else if (value instanceof ArrayIterable) {
-        return value.valueOf().length;
+        return value.toArray().length;
     }
 
     else if (value instanceof Collection) {
