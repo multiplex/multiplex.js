@@ -2934,7 +2934,7 @@ extend(Lookup, Collection, {
         return this.table.size;
     },
 
-    valueOf: function () {
+    toArray: function () {
         this.table.entries();
     },
 
