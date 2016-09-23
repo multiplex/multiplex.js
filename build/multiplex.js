@@ -3626,15 +3626,6 @@ class Set extends Collection {
     }
 
     /**
-    * Copies the values of the Set to an existing one-dimensional Array, starting at the specified array index.
-    * @param {Array} array The one-dimensional Array that is the destination of the elements copied from Collection.
-    * @param {Number} arrayIndex The zero-based index in array at which copying begins.
-    */
-    copyTo(array, arrayIndex) {
-        bufferTo(this.keys(), array, arrayIndex);
-    }
-
-    /**
     * Returns the number of values in the Set object.
     * @returns {Number}
     */
@@ -3695,10 +3686,10 @@ class Set extends Collection {
     }
 
     /**
-    * Returns an array that contains an array of [key, value] for each element in the Set object in insertion order.
+    * Creates an array from the Set.
     * @returns {Array}
     */
-    valueOf() {
+    toArray() {
         return this.table.keys();
     }
 
