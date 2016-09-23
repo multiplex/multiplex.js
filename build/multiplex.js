@@ -2742,7 +2742,11 @@ function Grouping(key, elements) {
 }
 
 extend(Grouping, Collection, {
-    valueOf: function () {
+    /**
+    * Creates an array from the Grouping.
+    * @returns {Array}
+    */
+    toArray: function () {
         return this.elements;
     },
 
