@@ -146,7 +146,7 @@ export default class SortedList extends Collection {
     * @returns {Collection}
     */
     keys() {
-        return new Collection(this.keys.slice(0, this.slot.size));
+        return new Collection(this.slot.keys.slice(0, this.slot.size));
     }
 
     /**
@@ -225,6 +225,14 @@ export default class SortedList extends Collection {
         }
 
         this.insert(~index, key, value);
+    }
+
+    /**
+    * Creates an array from the Sorted-List.
+    * @returns {Array}
+    */
+    toArray() {
+        return this.slot.keys;
     }
 
     /**
