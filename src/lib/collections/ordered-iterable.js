@@ -1,6 +1,7 @@
 import Iterable from '../iteration/iterable';
 import Iterator from '../iteration/iterator';
 import Comparer from './comparer';
+import iterableSymbol from '../iteration/iterable-symbol';
 import buffer from '../utils/buffer';
 import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
@@ -28,7 +29,7 @@ export default class OrderedIterable extends Iterable {
     * @returns {OrderedIterable}
     */
     thenBy(keySelector, comparer) {
-        return new OrderedIterable(this.valueOf(), keySelector, comparer, false, this);
+        return new OrderedIterable(this[iterableSymbol], keySelector, comparer, false, this);
     }
 
     /**
@@ -38,12 +39,12 @@ export default class OrderedIterable extends Iterable {
     * @returns {OrderedIterable}
     */
     thenByDescending(keySelector, comparer) {
-        return new OrderedIterable(this.valueOf(), keySelector, comparer, true, this);
+        return new OrderedIterable(this[iterableSymbol], keySelector, comparer, true, this);
     }
 
     [Symbol.iterator]() {
         let index = 0,
-            arr = buffer(this.valueOf()),
+            arr = buffer(this[iterableSymbol]),
             len = arr.length,
             map = this.sorter.sort(arr);
 
