@@ -391,6 +391,14 @@ export default class HashSet extends Collection {
         return 'HashSet';
     }
 
+    /**
+    * Creates an array from the HashSet.
+    * @returns {Array}
+    */
+    toArray() {
+        return this.table.keys();
+    }
+
     toString() {
         return '[HashSet]';
     }
