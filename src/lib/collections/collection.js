@@ -33,14 +33,6 @@ export default class Collection extends ArrayIterable {
         bufferTo(this.toArray(), array, arrayIndex);
     }
 
-    /**
-    * Creates an array from the Collection.
-    * @returns {Array}
-    */
-    toArray() {
-        return this.valueOf() || [];
-    }
-
     get [Symbol.toStringTag]() {
         return 'Collection';
     }
