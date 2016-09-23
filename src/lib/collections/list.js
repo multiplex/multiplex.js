@@ -515,10 +515,6 @@ extend(List, Collection, {
         return true;
     },
 
-    valueOf: function () {
-        return this.slice();
-    },
-
     toString: function () {
         return '[List]';
     },
