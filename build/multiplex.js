@@ -1662,10 +1662,6 @@ extend(List, Collection, {
         return true;
     },
 
-    valueOf: function () {
-        return this.slice();
-    },
-
     toString: function () {
         return '[List]';
     },
@@ -2419,15 +2415,6 @@ extend(LinkedList, Collection, {
     },
 
     /**
-    * Copies the entire LinkedList to a compatible one-dimensional Array, starting at the specified index of the target array.
-    * @param {Array} array The one-dimensional Array that is the destination of the elements copied from LinkedList.
-    * @param {Number} arrayIndex The zero-based index in array at which copying begins.
-    */
-    copyTo: function (array, arrayIndex) {
-        bufferTo(this, array, arrayIndex);
-    },
-
-    /**
     * Gets the first node of the LinkedList.
     * @returns {LinkedListNode}
     */
@@ -2707,6 +2694,10 @@ extend(LinkedList, Collection, {
 
         this.head = newNode;
         this.size++;
+    },
+
+    toArray: function () {
+        return buffer(this);
     },
 
     toString: function () {

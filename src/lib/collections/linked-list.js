@@ -2,7 +2,7 @@ import Collection from './collection';
 import Iterator from '../iteration/iterator';
 import LinkedListNode from './linked-list-node';
 import forOf from '../utils/for-of';
-import bufferTo from '../utils/buffer-to';
+import buffer from '../utils/buffer';
 import assertType from '../utils/assert-type';
 import extend from '../utils/extend';
 import {runtimeEquals} from '../runtime/runtime';
@@ -64,15 +64,6 @@ extend(LinkedList, Collection, {
     */
     contains: function (item) {
         return this.find(item) !== null;
-    },
-
-    /**
-    * Copies the entire LinkedList to a compatible one-dimensional Array, starting at the specified index of the target array.
-    * @param {Array} array The one-dimensional Array that is the destination of the elements copied from LinkedList.
-    * @param {Number} arrayIndex The zero-based index in array at which copying begins.
-    */
-    copyTo: function (array, arrayIndex) {
-        bufferTo(this, array, arrayIndex);
     },
 
     /**
@@ -355,6 +346,10 @@ extend(LinkedList, Collection, {
 
         this.head = newNode;
         this.size++;
+    },
+
+    toArray: function () {
+        return buffer(this);
     },
 
     toString: function () {
