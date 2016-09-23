@@ -1903,23 +1903,6 @@ mixin(HashTable.prototype, {
         return index === -1 ? undefined : [key, this.slots[index].value];
     },
 
-    entries: function () {
-        var arr = new Array(this.count()),
-            slots = this.slots,
-            slot = null,
-            index = 0;
-
-        for (var i = 0, count = this.size; i < count; i++) {
-            slot = slots[i];
-
-            if (slot.hash !== undefined) {
-                arr[index++] = [slot.key, slot.value];
-            }
-        }
-
-        return arr;
-    },
-
     find: function (key) {
         var comparer = this.comparer,
             hash = comparer.hash(key) & 0x7FFFFFFF,
@@ -2000,6 +1983,22 @@ mixin(HashTable.prototype, {
         this.buckets[bucket] = index;
 
         return true;
+    },
+
+    keys: function () {
+        var arr = new Array(this.count()),
+            slot = null,
+            index = 0;
+
+        for (var i = 0; i < this.size; i++) {
+            slot = this.slots[i];
+
+            if (slot.hash !== undefined) {
+                arr[index++] = slot.key;
+            }
+        }
+
+        return arr;
     },
 
     resize: function () {
@@ -3086,7 +3085,7 @@ extend(HashSet, Collection, {
             // intersect is a lot faster if we can assume uniqueness.
 
             if (areEqualityComparersEqual(this, other)) {
-                var arr = buffer(this),
+                var arr = this.table.keys(),
                     item;
 
                 c = this.count();
@@ -3271,7 +3270,7 @@ extend(HashSet, Collection, {
         assertType(match, Function);
 
         var len = this.count(),
-            arr = buffer(this),
+            arr = this.table.keys(),
             removed = 0,
             item;
 
@@ -3535,7 +3534,7 @@ extend(Map, Collection, {
     * @returns {Iterator}
     */
     entries: function () {
-        return new MapIterator(this, -1);
+        return new MapIterator(this);
     },
 
     /**
@@ -3602,7 +3601,7 @@ extend(Map, Collection, {
     * @returns {Array}
     */
     valueOf: function () {
-        return this.table.entries();
+        return this.table.keys();
     },
 
     toString: function () {
@@ -3754,7 +3753,7 @@ extend(Set, Collection, {
     * @returns {Array}
     */
     valueOf: function () {
-        return this.table.entries();
+        return this.table.keys();
     },
 
     toString: function () {

@@ -127,7 +127,7 @@ extend(Set, Collection, {
     * @returns {Array}
     */
     valueOf: function () {
-        return this.table.entries();
+        return this.table.keys();
     },
 
     toString: function () {

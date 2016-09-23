@@ -1,7 +1,6 @@
 import Collection from './collection';
 import HashTable, {HashTableIterator} from './hash-table';
 import EqulityComparer from './equality-comparer';
-import buffer from '../utils/buffer';
 import count from '../utils/count';
 import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
@@ -113,7 +112,7 @@ extend(HashSet, Collection, {
             // intersect is a lot faster if we can assume uniqueness.
 
             if (areEqualityComparersEqual(this, other)) {
-                var arr = buffer(this),
+                var arr = this.table.keys(),
                     item;
 
                 c = this.count();
@@ -298,7 +297,7 @@ extend(HashSet, Collection, {
         assertType(match, Function);
 
         var len = this.count(),
-            arr = buffer(this),
+            arr = this.table.keys(),
             removed = 0,
             item;
 

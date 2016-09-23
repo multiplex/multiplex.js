@@ -80,7 +80,7 @@ extend(Map, Collection, {
     * @returns {Iterator}
     */
     entries: function () {
-        return new MapIterator(this, -1);
+        return new MapIterator(this);
     },
 
     /**
@@ -147,7 +147,7 @@ extend(Map, Collection, {
     * @returns {Array}
     */
     valueOf: function () {
-        return this.table.entries();
+        return this.table.keys();
     },
 
     toString: function () {
