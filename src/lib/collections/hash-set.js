@@ -7,13 +7,18 @@ import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
 import $iterable from '../iteration/iterable-factory';
 
+/**
+* Initializes a new instance of the HashSet class.
+* @param {Iterable=} iterable The Iterable whose elements are copied to the new set.
+* @param {EqualityComparer=} comparer the EqualityComparer implementation to use when comparing values in the set.
+*/
 export default class HashSet extends Collection {
-    constructor(source = null, comparer = EqulityComparer.instance) {
+    constructor(iterable = null, comparer = EqulityComparer.instance) {
         super();
         this.table = new HashTable(EqulityComparer.from(comparer));
 
-        if (source) {
-            for (let element of $iterable(source)) {
+        if (iterable) {
+            for (let element of $iterable(iterable)) {
                 this.table.add(element);
             }
         }
@@ -108,11 +113,12 @@ export default class HashSet extends Collection {
 
             if (areEqualityComparersEqual(this, other)) {
                 let arr = buffer(this),
-                    len = this.count(),
                     item;
 
-                while (len-- > 0) {
-                    item = arr[len];
+                c = this.count();
+
+                while (c-- > 0) {
+                    item = arr[c];
                     if (!other.contains(item)) {
                         this.table.remove(item);
                     }
@@ -230,7 +236,7 @@ export default class HashSet extends Collection {
     isSupersetOf(other) {
         assertNotNull(other);
 
-        var c = count(other, true);
+        let c = count(other, true);
 
         if (c !== -1) {
             // if other is the empty set then this is a superset

@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 3.0.0 (September 21, 2016)
+* Version 3.0.0 (September 23, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -2924,13 +2924,18 @@ function count(value, collectionOnly = false) {
     return -1;
 }
 
+/**
+* Initializes a new instance of the HashSet class.
+* @param {Iterable=} iterable The Iterable whose elements are copied to the new set.
+* @param {EqualityComparer=} comparer the EqualityComparer implementation to use when comparing values in the set.
+*/
 class HashSet extends Collection {
-    constructor(source = null, comparer = EqualityComparer.instance) {
+    constructor(iterable = null, comparer = EqualityComparer.instance) {
         super();
         this.table = new HashTable(EqualityComparer.from(comparer));
 
-        if (source) {
-            for (let element of $iterable(source)) {
+        if (iterable) {
+            for (let element of $iterable(iterable)) {
                 this.table.add(element);
             }
         }
@@ -3025,11 +3030,12 @@ class HashSet extends Collection {
 
             if (areEqualityComparersEqual(this, other)) {
                 let arr = buffer(this),
-                    len = this.count(),
                     item;
 
-                while (len-- > 0) {
-                    item = arr[len];
+                c = this.count();
+
+                while (c-- > 0) {
+                    item = arr[c];
                     if (!other.contains(item)) {
                         this.table.remove(item);
                     }
