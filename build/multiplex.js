@@ -2194,7 +2194,7 @@ class Dictionary extends Collection {
         return this.table.remove(key);
     }
 
-    valueOf() {
+    toArray() {
         return this.keys();
     }
 
