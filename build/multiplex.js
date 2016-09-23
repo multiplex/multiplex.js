@@ -361,12 +361,20 @@ function ArrayIterable(value) {
 }
 
 extend(ArrayIterable, Iterable, {
+    /**
+    * Creates an array from the Iterable.
+    * @returns {Array}
+    */
+    toArray: function () {
+        return this[iterableSymbol] || [];
+    },
+
     toString: function () {
         return '[Array Iterable]';
     },
 
     '@@iterator': function () {
-        var arr = this.valueOf();
+        var arr = this[iterableSymbol];
         return isFunction(arr[iteratorSymbol]) ? arr[iteratorSymbol]() : new ArrayIterator(arr);
     }
 });
@@ -385,7 +393,7 @@ extend(ObjectIterable, Iterable, {
     },
 
     '@@iterator': function () {
-        return new ObjectIterator(this.valueOf());
+        return new ObjectIterator(this[iterableSymbol]);
     }
 });
 
@@ -1015,12 +1023,12 @@ function buffer(value) {
         return arrayBuffer(value);
     }
 
-    else if (value instanceof Collection) {             // Collections have 'valueOf' method
-        return arrayBuffer(value.valueOf());
+    else if (value instanceof Collection) {             // Collections have 'toArray' method
+        return arrayBuffer(value.toArray());
     }
 
     else if (value instanceof ArrayIterable) {          // ArrayIterable wrapper
-        return arrayBuffer(value.valueOf());
+        return arrayBuffer(value.toArray());
     }
 
     // do it the hard way
@@ -1113,14 +1121,6 @@ extend(Collection, ArrayIterable, {
     */
     copyTo: function (array, arrayIndex) {
         bufferTo(this.toArray(), array, arrayIndex);
-    },
-
-    /**
-    * Creates an array from the Collection.
-    * @returns {Array}
-    */
-    toArray: function () {
-        return this.valueOf() || [];
     },
 
     toString: function () {
@@ -1815,7 +1815,7 @@ function asArray(value) {
     }
 
     else if (value instanceof ArrayIterable) {      // ArrayIterable wrapper
-        return value.valueOf();
+        return value.toArray();
     }
 
     return null;
@@ -2954,7 +2954,7 @@ function count(value, collectionOnly) {
     }
 
     else if (value instanceof ArrayIterable) {
-        return value.valueOf().length;
+        return value.toArray().length;
     }
 
     else if (value instanceof Collection) {
@@ -4247,7 +4247,7 @@ extend(OrderedIterable, Iterable, {
     * @returns {OrderedIterable}
     */
     thenBy: function (keySelector, comparer) {
-        return new OrderedIterable(this.valueOf(), keySelector, comparer, false, this);
+        return new OrderedIterable(this[iterableSymbol], keySelector, comparer, false, this);
     },
 
     /**
@@ -4257,7 +4257,7 @@ extend(OrderedIterable, Iterable, {
     * @returns {OrderedIterable}
     */
     thenByDescending: function (keySelector, comparer) {
-        return new OrderedIterable(this.valueOf(), keySelector, comparer, true, this);
+        return new OrderedIterable(this[iterableSymbol], keySelector, comparer, true, this);
     },
 
     toString: function () {
@@ -4266,7 +4266,7 @@ extend(OrderedIterable, Iterable, {
 
     '@@iterator': function () {
         var index = 0,
-            arr = buffer(this.valueOf()),
+            arr = buffer(this[iterableSymbol]),
             len = arr.length,
             map = this.sorter.sort(arr);
 

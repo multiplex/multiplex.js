@@ -19,12 +19,12 @@ export default function buffer(value) {
         return arrayBuffer(value);
     }
 
-    else if (value instanceof Collection) {             // Collections have 'valueOf' method
-        return arrayBuffer(value.valueOf());
+    else if (value instanceof Collection) {             // Collections have 'toArray' method
+        return arrayBuffer(value.toArray());
     }
 
     else if (value instanceof ArrayIterable) {          // ArrayIterable wrapper
-        return arrayBuffer(value.valueOf());
+        return arrayBuffer(value.toArray());
     }
 
     // do it the hard way

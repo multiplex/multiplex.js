@@ -7,7 +7,7 @@ export default function asArray(value) {
     }
 
     else if (value instanceof ArrayIterable) {      // ArrayIterable wrapper
-        return value.valueOf();
+        return value.toArray();
     }
 
     return null;
