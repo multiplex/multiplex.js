@@ -1599,10 +1599,6 @@ class List extends Collection {
         return true;
     }
 
-    valueOf() {
-        return this.toArray();
-    }
-
     get [Symbol.toStringTag]() {
         return 'List';
     }
@@ -2348,15 +2344,6 @@ class LinkedList extends Collection {
     }
 
     /**
-    * Copies the entire LinkedList to a compatible one-dimensional Array, starting at the specified index of the target array.
-    * @param {Array} array The one-dimensional Array that is the destination of the elements copied from LinkedList.
-    * @param {Number} arrayIndex The zero-based index in array at which copying begins.
-    */
-    copyTo(array, arrayIndex) {
-        bufferTo(this, array, arrayIndex);
-    }
-
-    /**
     * Gets the first node of the LinkedList.
     * @returns {LinkedListNode}
     */
@@ -2640,6 +2627,10 @@ class LinkedList extends Collection {
 
     get [Symbol.toStringTag]() {
         return 'LinkedList';
+    }
+
+    toArray() {
+        return buffer(this);
     }
 
     toString() {

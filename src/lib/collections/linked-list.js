@@ -1,7 +1,7 @@
 import Collection from './collection';
 import Iterator from '../iteration/iterator';
 import LinkedListNode from './linked-list-node';
-import bufferTo from '../utils/buffer-to';
+import buffer from '../utils/buffer';
 import assertType from '../utils/assert-type';
 import {runtimeEquals} from '../runtime/runtime';
 import error, {ERROR_EMPTY_COLLECTION} from '../utils/error';
@@ -66,15 +66,6 @@ export default class LinkedList extends Collection {
     */
     contains(item) {
         return this.find(item) !== null;
-    }
-
-    /**
-    * Copies the entire LinkedList to a compatible one-dimensional Array, starting at the specified index of the target array.
-    * @param {Array} array The one-dimensional Array that is the destination of the elements copied from LinkedList.
-    * @param {Number} arrayIndex The zero-based index in array at which copying begins.
-    */
-    copyTo(array, arrayIndex) {
-        bufferTo(this, array, arrayIndex);
     }
 
     /**
@@ -361,6 +352,10 @@ export default class LinkedList extends Collection {
 
     get [Symbol.toStringTag]() {
         return 'LinkedList';
+    }
+
+    toArray() {
+        return buffer(this);
     }
 
     toString() {
