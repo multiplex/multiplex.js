@@ -149,7 +149,7 @@ extend(SortedList, Collection, {
     * @returns {Collection}
     */
     keys: function () {
-        return new Collection(this.keys.slice(0, this.slot.size));
+        return new Collection(this.slot.keys.slice(0, this.slot.size));
     },
 
     /**
@@ -229,6 +229,14 @@ extend(SortedList, Collection, {
         }
 
         this.insert(~index, key, value);
+    },
+
+    /**
+    * Creates an array from the Sorted-List.
+    * @returns {Array}
+    */
+    toArray: function () {
+        return this.slot.keys;
     },
 
     /**
