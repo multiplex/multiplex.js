@@ -1670,15 +1670,6 @@ class ReadOnlyCollection extends Collection {
     }
 
     /**
-    * Copies the elements of the ReadOnlyCollection to an Array, starting at a particular Array index.
-    * @param {Array} array The one-dimensional Array that is the destination of the elements copied from ReadOnlyCollection.
-    * @param {Number} arrayIndex The zero-based index in array at which copying begins.
-    */
-    copyTo(array, arrayIndex) {
-        this.list.copyTo(array, arrayIndex);
-    }
-
-    /**
     * Gets the element at the specified index.
     * @param {Number} index The zero-based index of the element to get.
     * @returns {Object}
