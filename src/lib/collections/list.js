@@ -517,10 +517,6 @@ export default class List extends Collection {
         return true;
     }
 
-    valueOf() {
-        return this.toArray();
-    }
-
     get [Symbol.toStringTag]() {
         return 'List';
     }
