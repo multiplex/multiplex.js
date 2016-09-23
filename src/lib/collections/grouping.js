@@ -7,7 +7,11 @@ export default class Grouping extends Collection {
         this.elements = elements;
     }
 
-    valueOf() {
+    /**
+    * Creates an array from the Grouping.
+    * @returns {Array}
+    */
+    toArray() {
         return this.elements;
     }
 
