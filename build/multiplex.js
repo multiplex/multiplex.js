@@ -3360,6 +3360,14 @@ extend(HashSet, Collection, {
         });
     },
 
+    /**
+    * Creates an array from the HashSet.
+    * @returns {Array}
+    */
+    toArray: function () {
+        return this.table.keys();
+    },
+
     toString: function () {
         return '[HashSet]';
     },
