@@ -2277,7 +2277,7 @@ extend(Dictionary, Collection, {
         return this.table.remove(key);
     },
 
-    valueOf: function () {
+    toArray: function () {
         return this.keys();
     },
 
