@@ -33,14 +33,6 @@ extend(Collection, ArrayIterable, {
         bufferTo(this.toArray(), array, arrayIndex);
     },
 
-    /**
-    * Creates an array from the Collection.
-    * @returns {Array}
-    */
-    toArray: function () {
-        return this.valueOf() || [];
-    },
-
     toString: function () {
         return '[Collection]';
     }
