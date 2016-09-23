@@ -1033,7 +1033,7 @@ class Collection extends ArrayIterable {
     * @returns {Number}
     */
     count() {
-        return this.valueOf() ? this.valueOf().length : 0;
+        return this.toArray().length;
     }
 
     /**
@@ -1042,7 +1042,15 @@ class Collection extends ArrayIterable {
     * @param {Number} arrayIndex The zero-based index in array at which copying begins.
     */
     copyTo(array, arrayIndex) {
-        bufferTo(this.valueOf(), array, arrayIndex);
+        bufferTo(this.toArray(), array, arrayIndex);
+    }
+
+    /**
+    * Creates an array from the Collection.
+    * @returns {Array}
+    */
+    toArray() {
+        return this.valueOf() || [];
     }
 
     get [Symbol.toStringTag]() {
