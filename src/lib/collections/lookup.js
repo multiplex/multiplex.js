@@ -34,7 +34,7 @@ export default class Lookup extends Collection {
         return this.table.size;
     }
 
-    valueOf() {
+    toArray() {
         this.table.entries();
     }
 
