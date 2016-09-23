@@ -1819,22 +1819,6 @@ class HashTable {
         return index === -1 ? undefined : [key, this.slots[index].value];
     }
 
-    entries() {
-        let arr = new Array(this.count()),
-            slot = null,
-            index = 0;
-
-        for (let i = 0, count = this.size; i < count; i++) {
-            slot = this.slots[i];
-
-            if (slot.hash !== undefined) {
-                arr[index++] = [slot.key, slot.value];
-            }
-        }
-
-        return arr;
-    }
-
     find(key) {
         let comparer = this.comparer,
             hash = comparer.hash(key) & 0x7FFFFFFF,
@@ -1913,6 +1897,22 @@ class HashTable {
         this.buckets[bucket] = index;
 
         return true;
+    }
+
+    keys() {
+        let arr = new Array(this.count()),
+            slot = null,
+            index = 0;
+
+        for (let i = 0; i < this.size; i++) {
+            slot = this.slots[i];
+
+            if (slot.hash !== undefined) {
+                arr[index++] = slot.key;
+            }
+        }
+
+        return arr;
     }
 
     resize() {
@@ -3029,7 +3029,7 @@ class HashSet extends Collection {
             // intersect is a lot faster if we can assume uniqueness.
 
             if (areEqualityComparersEqual(this, other)) {
-                let arr = buffer(this),
+                let arr = this.table.keys(),
                     item;
 
                 c = this.count();
@@ -3153,7 +3153,7 @@ class HashSet extends Collection {
     isSupersetOf(other) {
         assertNotNull(other);
 
-        var c = count(other, true);
+        let c = count(other, true);
 
         if (c !== -1) {
             // if other is the empty set then this is a superset
@@ -3209,7 +3209,7 @@ class HashSet extends Collection {
         assertType(match, Function);
 
         let len = this.count(),
-            arr = buffer(this),
+            arr = this.table.keys(),
             removed = 0,
             item;
 
@@ -3533,7 +3533,7 @@ class Map extends Collection {
     * @returns {Array}
     */
     valueOf() {
-        return this.table.entries();
+        return this.table.keys();
     }
 
     /**
@@ -3691,7 +3691,7 @@ class Set extends Collection {
     * @returns {Array}
     */
     valueOf() {
-        return this.table.entries();
+        return this.table.keys();
     }
 
     /**

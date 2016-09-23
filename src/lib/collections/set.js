@@ -119,7 +119,7 @@ export default class Set extends Collection {
     * @returns {Array}
     */
     valueOf() {
-        return this.table.entries();
+        return this.table.keys();
     }
 
     /**

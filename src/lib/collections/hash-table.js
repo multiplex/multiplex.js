@@ -51,22 +51,6 @@ export default class HashTable {
         return index === -1 ? undefined : [key, this.slots[index].value];
     }
 
-    entries() {
-        let arr = new Array(this.count()),
-            slot = null,
-            index = 0;
-
-        for (let i = 0, count = this.size; i < count; i++) {
-            slot = this.slots[i];
-
-            if (slot.hash !== undefined) {
-                arr[index++] = [slot.key, slot.value];
-            }
-        }
-
-        return arr;
-    }
-
     find(key) {
         let comparer = this.comparer,
             hash = comparer.hash(key) & 0x7FFFFFFF,
@@ -145,6 +129,22 @@ export default class HashTable {
         this.buckets[bucket] = index;
 
         return true;
+    }
+
+    keys() {
+        let arr = new Array(this.count()),
+            slot = null,
+            index = 0;
+
+        for (let i = 0; i < this.size; i++) {
+            slot = this.slots[i];
+
+            if (slot.hash !== undefined) {
+                arr[index++] = slot.key;
+            }
+        }
+
+        return arr;
     }
 
     resize() {
