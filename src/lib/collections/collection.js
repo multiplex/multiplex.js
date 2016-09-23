@@ -21,7 +21,7 @@ extend(Collection, ArrayIterable, {
     * @returns {Number}
     */
     count: function () {
-        return this.valueOf() ? this.valueOf().length : 0;
+        return this.toArray().length;
     },
 
     /**
@@ -30,7 +30,15 @@ extend(Collection, ArrayIterable, {
     * @param {Number} arrayIndex The zero-based index in array at which copying begins.
     */
     copyTo: function (array, arrayIndex) {
-        bufferTo(this.valueOf(), array, arrayIndex);
+        bufferTo(this.toArray(), array, arrayIndex);
+    },
+
+    /**
+    * Creates an array from the Collection.
+    * @returns {Array}
+    */
+    toArray: function () {
+        return this.valueOf() || [];
     },
 
     toString: function () {
