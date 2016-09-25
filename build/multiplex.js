@@ -22,7 +22,7 @@ function isFunction(fn) {
 var iteratorSymbol = (typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol') ?
     Symbol.iterator : '@@iterator';
 
-function define$1(obj, prop, attributes) {
+function defineProperty(obj, prop, attributes) {
     if (prop === '@@iterator') {
         prop = iteratorSymbol;
     }
@@ -40,7 +40,7 @@ function mixin(obj, properties, attributes) {
 
     for (var _prop in properties) {
         if (properties.hasOwnProperty(_prop)) {
-            define$1(obj, _prop, {
+            defineProperty(obj, _prop, {
                 value: properties[_prop],
                 writable: attributes.writable || true,
                 enumerable: attributes.enumerable || false,
@@ -1128,9 +1128,625 @@ extend(Collection, ArrayIterable, {
     }
 });
 
+function ReadOnlyCollection(list) {
+    if (!isArrayLike(list)) {
+        error('Invalid argument!');
+    }
+
+    Collection.call(this, list);
+    this.list = list;
+
+    defineProperty(this, 'length', {
+        get: function () {
+            return list.length;
+        }
+    });
+
+    for (var i = 0, len = list.length; i < len; i++) {
+        this[i] = list[i];
+    }
+
+    Object.freeze(this);
+}
+
+extend(ReadOnlyCollection, Collection, {
+    /**
+     * Gets the number of elements contained in the ReadOnlyCollection.
+     * @returns {Number}
+     */
+    count: function () {
+        return this.length;
+    },
+
+    /**
+     * Determines whether the ReadOnlyCollection contains a specific value.
+     * @param {Object} item The object to locate in the ReadOnlyCollection.
+     * @returns {Boolean}
+     */
+    contains: function (item) {
+        this.list.contains(item);
+    },
+
+    /**
+     * Gets the element at the specified index.
+     * @param {Number} index The zero-based index of the element to get.
+     * @returns {Object}
+     */
+    get: function (index) {
+        return this.list.get(index);
+    },
+
+    /**
+     * Searches for the specified object and returns the zero-based index of the first occurrence within the entire ReadOnlyCollection.
+     * @param {Object} item The object to locate in the ReadOnlyCollection.
+     * @returns {Number}
+     */
+    indexOf: function (item) {
+        return this.list.indexOf(item);
+    },
+
+    /**
+     * Returns a shallow copy of a portion of the list into a new array object.
+     * @param {Number=} begin Zero-based index at which to begin extraction.
+     * @param {Number=} end Zero-based index at which to end extraction
+     * @returns {Array}
+     */
+    slice: ARRAY_PROTOTYPE.slice,
+
+    /**
+     * Changes the content of the list by removing existing elements and/or adding new elements.
+     * @param {Number} start Index at which to start changing the list.
+     * @param {Number} deleteCount An integer indicating the number of old list elements to remove.
+     * @param {Object...} items The elements to add to the list.
+     * @returns {Array}
+     */
+    splice: ARRAY_PROTOTYPE.splice,
+
+    /**
+     * Buffers collection into an array.
+     * @returns {Array}
+     */
+    toArray: function () {
+        return this.list.toArray();
+    },
+
+    toString: function () {
+        return '[ReadOnly Collection]';
+    },
+
+    '@@iterator': function () {
+        return new ArrayIterator(this);
+    }
+});
+
+/**
+* Supports both iterable and iterator protocols using specified factory method.
+* @param {Function} factory A function to create iterator instance.
+*/
+function IterableIterator(factory) {
+    Iterable.call(this, factory);
+    this.next = factory().next;
+}
+
+extend(IterableIterator, Iterable, {
+    toString: function () {
+        return '[Iterable Iterator]';
+    }
+});
+
+/// Array of primes larger than: 2 ^ (4 x n)
+var primes = [17, 67, 257, 1031, 4099, 16411, 65537, 262147, 1048583, 4194319, 16777259];
+
+function resize(size) {
+    for (var i = 0, len = primes.length; i < len; i++) {
+        if (primes[i] > size) {
+            return primes[i];
+        }
+    }
+
+    return primes[primes.length - 1];
+}
+
+function asArray(value) {
+    if (isArrayLike(value)) {                       // array-likes have fixed element count
+        return value;
+    }
+
+    else if (value instanceof ArrayIterable) {      // ArrayIterable wrapper
+        return value.toArray();
+    }
+
+    return null;
+}
+
+function forOf(source, action) {
+    var arr = asArray(source);
+
+    // fast array iteration
+    if (arr) {
+        var len = arr.length,
+            i = 0;
+
+        for (; i < len;) {
+            if (action(arr[i++]) !== undefined) {
+                break;
+            }
+        }
+    }
+
+    else {
+        var it = $iterator(source),
+            next;
+
+        while (!(next = it.next()).done) {
+            if (action(next.value) !== undefined) {
+                break;
+            }
+        }
+    }
+}
+
+function HashTable(comparer) {
+    this.initialize();
+    this.comparer = EqualityComparer.from(comparer);
+}
+
+
+mixin(HashTable.prototype, {
+    initialize: function () {
+        this.size = 0;                      // total number of slots, including release slots (freeCount)
+        this.freeIndex = undefined;         // next free index in the bucket list
+        this.freeCount = 0;                 // total number of release slots
+        this.buckets = new Array(7);        // bucket list. index: hash, value: slot index;
+        this.slots = new Array(7);          // slot list. next: index of the next bucket;
+    },
+
+    add: function (key, value) {
+        return this.insert(key, value, true);
+    },
+
+    clear: function () {
+        this.initialize();
+    },
+
+    contains: function (key) {
+        return this.find(key) !== -1;
+    },
+
+    containsValue: function (value) {
+        var slots = this.slots,
+            count = this.count(),
+            comparer = this.comparer;
+
+        for (var i = 0; i < count; i++) {
+            if (slots[i].hash !== undefined && comparer.equals(slots[i].value, value)) {
+                return true;
+            }
+        }
+
+        return false;
+    },
+
+    count: function () {
+        return this.size - this.freeCount;
+    },
+
+    entry: function (key) {
+        var index = this.find(key);
+        return index === -1 ? undefined : [key, this.slots[index].value];
+    },
+
+    find: function (key) {
+        var comparer = this.comparer,
+            hash = comparer.hash(key) & 0x7FFFFFFF,
+            slot = null;
+
+        for (var index = this.buckets[hash % this.buckets.length]; index !== undefined;) {
+            slot = this.slots[index];
+
+            if (slot.hash === hash && comparer.equals(slot.key, key)) {
+                return index;
+            }
+
+            index = slot.next;
+        }
+
+        return -1;
+    },
+
+    forEach: function (callback, target, thisArg) {
+        forOf(this, function (element) {
+            if (thisArg) {
+                callback.call(thisArg, element[0], element[1], target);
+            }
+            else {
+                callback(element[0], element[1], target);
+            }
+        });
+    },
+
+    insert: function (key, value, add) {
+        var comparer = this.comparer,
+            hash = comparer.hash(key) & 0x7FFFFFFF,
+            bucket = hash % this.buckets.length,
+            slot = null,
+            index = 0;
+
+
+        // check for item existance, freed slots have undefined hash-code value and do not need enumeration
+        for (index = this.buckets[bucket]; index !== undefined;) {
+            slot = this.slots[index];
+
+            if (slot.hash === hash && comparer.equals(slot.key, key)) {
+                if (add) {
+                    return false;
+                }
+
+                slot.value = value;
+                return true;
+            }
+
+            index = slot.next;
+        }
+
+
+
+        // item with the same key does not exists, add item
+
+        index = 0;
+
+        // there's already a free index
+        if (this.freeCount > 0) {
+            index = this.freeIndex;                         // consume free index
+            this.freeIndex = this.slots[index].next;      // save new free index
+            this.freeCount--;                               // update number of free slots
+        }
+        else {
+            if (this.size === this.buckets.length) {
+                this.resize();
+                bucket = hash % this.buckets.length;
+            }
+
+            // find a new free index
+            index = this.size;
+            this.size++;
+        }
+
+        this.slots[index] = new HashTableSlot(hash, this.buckets[bucket], key, value);
+        this.buckets[bucket] = index;
+
+        return true;
+    },
+
+    keys: function () {
+        var arr = new Array(this.count()),
+            slot = null,
+            index = 0;
+
+        for (var i = 0; i < this.size; i++) {
+            slot = this.slots[i];
+
+            if (slot.hash !== undefined) {
+                arr[index++] = slot.key;
+            }
+        }
+
+        return arr;
+    },
+
+    resize: function () {
+        var size = this.size,
+            newSize = resize(size),
+            slot = null,
+            bucket = 0;
+
+        this.buckets.length = newSize;          // expand buckets
+        this.slots.length = newSize;            // expand slots
+
+
+        // rehash values & update buckets and slots
+        for (var index = 0; index < size; index++) {
+            slot = this.slots[index];
+
+            // freed slots have undefined hashCode value and do not need rehash
+            if (slot.hash !== undefined) {
+                bucket = slot.hash % newSize;          // rehash
+                slot.next = this.buckets[bucket];      // update slot's next index in the bucket chain
+                this.buckets[bucket] = index;           // update bucket index
+            }
+        }
+    },
+
+    remove: function (key) {
+        var comparer = this.comparer,
+            hash = comparer.hash(key) & 0x7FFFFFFF,     // hash-code of the key
+            bucket = hash % this.buckets.length,        // bucket index
+            last,
+            slot;
+
+        // freed slots have undefined hash-code value and do not need enumeration
+        for (var index = this.buckets[bucket]; index !== undefined;) {
+            slot = this.slots[index];
+
+            if (slot.hash === hash && comparer.equals(slot.key, key)) {
+                // last item in the chained bucket list
+                if (last === undefined) {
+                    this.buckets[bucket] = slot.next;
+                }
+                else {
+                    this.slots[last].next = slot.next;
+                }
+
+                slot.hash = undefined;         // release the slot
+                slot.next = this.freeIndex;    // save previous free index
+                slot.key = null;
+                slot.value = null;
+
+                this.freeIndex = index;         // save new free index
+                this.freeCount++;               // update number of free slots
+                return true;
+            }
+
+            last = index;
+            index = slot.next;
+        }
+
+        // item does not exist
+        return false;
+    },
+
+    get: function (key) {
+        var index = this.find(key);
+        return index === -1 ? undefined : this.slots[index].value;
+    },
+
+    set: function (key, value) {
+        this.insert(key, value, false);
+    },
+
+    '@@iterator': function () {
+        return new HashTableIterator(this);
+    }
+});
+
+
+
+
+function HashTableIterator(table, selector) {
+    var index = 0,
+        slot = null,
+        size = table.size,
+        slots = table.slots;
+
+    Iterator.call(this, function () {
+        while (index < size) {
+            slot = slots[index++];
+
+            // freed slots have undefined as hashCode value and do not enumerate
+            if (slot.hash !== undefined) {
+                return {
+                    value: selector ? selector(slot.key, slot.value) : [slot.key, slot.value],
+                    done: false
+                };
+            }
+        }
+
+        return {
+            done: true
+        };
+    });
+}
+
+extend(HashTableIterator, Iterator);
+
+
+function HashTableSlot(hash, next, key, value) {
+    this.hash = hash;       // item's key hash-code
+    this.next = next;       // index of the next bucket in the chained bucket list
+    this.key = key;         // item's key
+    this.value = value;     // item's value
+}
+
+/**
+* Initializes a new instance of the KeyValuePair with the specified key and value.
+* @param {Object} key The object defined in each key/value pair.
+* @param {Object} value The definition associated with key.
+*/
+function KeyValuePair(key, value) {
+    this.key = key;
+    this.value = value;
+}
+
+mixin(KeyValuePair.prototype, {
+    __hash__: function () {
+        return combineHash(runtimeHash(this.key), runtimeHash(this.value));
+    },
+
+    __eq__: function (obj) {
+        return obj instanceof KeyValuePair &&
+            runtimeEquals(this.key, obj.key) &&
+            runtimeEquals(this.value, obj.value);
+    },
+
+    toString: function () {
+        return '[KeyValuePair]';
+    }
+});
+
 function isNumber(val) {
     return typeof val === 'number';
 }
+
+/**
+* Initializes a new instance of the Dictionary.
+* @param {Dictionary|EqualityComparer|Number} value The Dictionary whose elements are copied to the new Dictionary or the EqualityComparer or Capacity
+* @param {EqualityComparer=} comparer The EqualityComparer implementation to use when comparing keys.
+*/
+function Dictionary(value, comparer) {
+    var dic = isType(value, Dictionary) ? value : null,
+        cmp = EqualityComparer.from(dic ? comparer : value),
+        table = new HashTable(cmp, dic ? dic.count() : (isNumber(value) ? value : 0));
+
+    if (dic) {
+        forOf(dic, function (element) {
+            table.add(element.key, element.value);
+        });
+    }
+
+    this.table = table;
+
+    defineProperty(this, 'comparer', {
+        get: function () {
+            return table.comparer;
+        }
+    });
+}
+
+extend(Dictionary, Collection, {
+    /**
+    * Adds an element with the provided key and value to the Dictionary.
+    * @param {Object} key The object to use as the key of the element to add.
+    * @param {Object} value The object to use as the value of the element to add.
+    */
+    add: function (key, value) {
+        if (!this.table.add(key, value)) {
+            error(ERROR_DUPLICATE_KEY);
+        }
+    },
+
+    /**
+    * Removes all keys and values from the Dictionary.
+    */
+    clear: function () {
+        this.table.clear();
+    },
+
+    /**
+    * Gets the number of elements contained in the Dictionary.
+    * @returns {Number}
+    */
+    count: function () {
+        return this.table.count();
+    },
+
+    /**
+    * Determines whether the Dictionary contains the specified key.
+    * @param {Object} key The key to locate in the Dictionary.
+    * @returns {Boolean}
+    */
+    containsKey: function (key) {
+        return this.table.contains(key);
+    },
+
+    /**
+    * Determines whether the Dictionary contains a specific value.
+    * @param {Object} value The value to locate in the Dictionary.
+    * @returns {Boolean}
+    */
+    containsValue: function (value) {
+        return this.table.containsValue(value);
+    },
+
+    /**
+    * Gets a Collection containing the keys of the Dictionary.
+    * @returns {Collection}
+    */
+    keys: function () {
+        return new KeyValueIterator(this, function (key) {
+            return key;
+        });
+    },
+
+    /**
+    * Gets a Collection containing the values in the Dictionary.
+    * @returns {Collection}
+    */
+    values: function () {
+        return new KeyValueIterator(this, function (key, value) {
+            return value;
+        });
+    },
+
+    /**
+    * Gets element with the specified key.
+    * @param {Object} key The key of the element to get.
+    * @returns {Object}
+    */
+    get: function (key) {
+        var entry = this.table.entry(key);
+        if (entry !== undefined) {
+            return entry[1];
+        }
+
+        error(ERROR_KEY_NOT_FOUND);
+    },
+
+    /**
+    * Sets the element with the specified key.
+    * @param {Object} key The key of the element to set.
+    * @param {Object} value The object to use as the value of the element to set.
+    */
+    set: function (key, value) {
+        this.table.set(key, value);
+    },
+
+    /**
+    * Gets the value associated with the specified key.
+    * @param {Object} key The key whose value to get.
+    * @param {Function} callback When this method returns, callback method is called with the value
+    * associated with the specified key, if the key is found; otherwise, null for the type of the value parameter.
+    * @returns {Boolean}
+    */
+    tryGetValue: function (key, callback) {
+        assertType(callback, Function);
+
+        var entry = this.table.entry(key);
+
+        if (entry !== undefined) {
+            callback(entry[1]);
+            return true;
+        }
+
+        return false;
+    },
+
+    /**
+    * Removes the element with the specified key from the Dictionary.
+    * @param {Object} key The key of the element to remove.
+    * @returns {Boolean}
+    */
+    remove: function (key) {
+        return this.table.remove(key);
+    },
+
+    toArray: function () {
+        return this.keys();
+    },
+
+    toString: function () {
+        return '[Dictionary]';
+    },
+
+    '@@iterator': function () {
+        return new KeyValueIterator(this, function (key, value) {
+            return new KeyValuePair(key, value);
+        });
+    }
+});
+
+
+
+function KeyValueIterator(dic, selector) {
+    IterableIterator.call(this, function () {
+        return new HashTableIterator(dic.table, selector);
+    });
+}
+
+extend(KeyValueIterator, IterableIterator, {
+    toString: function () {
+        return '[KeyValue Iterator]';
+    }
+});
 
 function assertNotNull(obj) {
     if (obj === null || obj === undefined) {
@@ -1692,619 +2308,6 @@ function validateListIndex(list, index) {
         error(ERROR_ARGUMENT_OUT_OF_RANGE);
     }
 }
-
-function ReadOnlyCollection(list) {
-    assertType(list, List);
-    Collection.call(this, list);
-    this.list = list;
-
-    define$1(this, 'length', {
-        get: function () {
-            return list.length;
-        }
-    });
-
-    for (var i = 0, len = list.length; i < len; i++) {
-        this[i] = list[i];
-    }
-
-    Object.freeze(this);
-}
-
-extend(ReadOnlyCollection, Collection, {
-    /**
-    * Gets the number of elements contained in the ReadOnlyCollection.
-    * @returns {Number}
-    */
-    count: function () {
-        return this.length;
-    },
-
-    /**
-    * Determines whether the ReadOnlyCollection contains a specific value.
-    * @param {Object} item The object to locate in the ReadOnlyCollection.
-    * @returns {Boolean}
-    */
-    contains: function (item) {
-        this.list.contains(item);
-    },
-
-    /**
-    * Gets the element at the specified index.
-    * @param {Number} index The zero-based index of the element to get.
-    * @returns {Object}
-    */
-    get: function (index) {
-        return this.list.get(index);
-    },
-
-    /**
-    * Searches for the specified object and returns the zero-based index of the first occurrence within the entire ReadOnlyCollection.
-    * @param {Object} item The object to locate in the ReadOnlyCollection.
-    * @returns {Number}
-    */
-    indexOf: function (item) {
-        return this.list.indexOf(item);
-    },
-
-    /**
-    * Returns a shallow copy of a portion of the list into a new array object.
-    * @param {Number=} begin Zero-based index at which to begin extraction.
-    * @param {Number=} end Zero-based index at which to end extraction
-    * @returns {Array}
-    */
-    slice: ARRAY_PROTOTYPE.slice,
-
-    /**
-    * Changes the content of the list by removing existing elements and/or adding new elements.
-    * @param {Number} start Index at which to start changing the list.
-    * @param {Number} deleteCount An integer indicating the number of old list elements to remove.
-    * @param {Object...} items The elements to add to the list.
-    * @returns {Array}
-    */
-    splice: ARRAY_PROTOTYPE.splice,
-
-    /**
-    * Buffers collection into an array.
-    * @returns {Array}
-    */
-    toArray: function () {
-        return this.list.toArray();
-    },
-
-    toString: function () {
-        return '[ReadOnly Collection]';
-    },
-
-    '@@iterator': function () {
-        return new ArrayIterator(this);
-    }
-});
-
-/**
-* Supports both iterable and iterator protocols using specified factory method.
-* @param {Function} factory A function to create iterator instance.
-*/
-function IterableIterator(factory) {
-    Iterable.call(this, factory);
-    this.next = factory().next;
-}
-
-extend(IterableIterator, Iterable, {
-    toString: function () {
-        return '[Iterable Iterator]';
-    }
-});
-
-/// Array of primes larger than: 2 ^ (4 x n)
-var primes = [17, 67, 257, 1031, 4099, 16411, 65537, 262147, 1048583, 4194319, 16777259];
-
-function resize(size) {
-    for (var i = 0, len = primes.length; i < len; i++) {
-        if (primes[i] > size) {
-            return primes[i];
-        }
-    }
-
-    return primes[primes.length - 1];
-}
-
-function asArray(value) {
-    if (isArrayLike(value)) {                       // array-likes have fixed element count
-        return value;
-    }
-
-    else if (value instanceof ArrayIterable) {      // ArrayIterable wrapper
-        return value.toArray();
-    }
-
-    return null;
-}
-
-function forOf(source, action) {
-    var arr = asArray(source);
-
-    // fast array iteration
-    if (arr) {
-        var len = arr.length,
-            i = 0;
-
-        for (; i < len;) {
-            if (action(arr[i++]) !== undefined) {
-                break;
-            }
-        }
-    }
-
-    else {
-        var it = $iterator(source),
-            next;
-
-        while (!(next = it.next()).done) {
-            if (action(next.value) !== undefined) {
-                break;
-            }
-        }
-    }
-}
-
-function HashTable(comparer) {
-    this.initialize();
-    this.comparer = EqualityComparer.from(comparer);
-}
-
-
-mixin(HashTable.prototype, {
-    initialize: function () {
-        this.size = 0;                      // total number of slots, including release slots (freeCount)
-        this.freeIndex = undefined;         // next free index in the bucket list
-        this.freeCount = 0;                 // total number of release slots
-        this.buckets = new Array(7);        // bucket list. index: hash, value: slot index;
-        this.slots = new Array(7);          // slot list. next: index of the next bucket;
-    },
-
-    add: function (key, value) {
-        return this.insert(key, value, true);
-    },
-
-    clear: function () {
-        this.initialize();
-    },
-
-    contains: function (key) {
-        return this.find(key) !== -1;
-    },
-
-    containsValue: function (value) {
-        var slots = this.slots,
-            count = this.count(),
-            comparer = this.comparer;
-
-        for (var i = 0; i < count; i++) {
-            if (slots[i].hash !== undefined && comparer.equals(slots[i].value, value)) {
-                return true;
-            }
-        }
-
-        return false;
-    },
-
-    count: function () {
-        return this.size - this.freeCount;
-    },
-
-    entry: function (key) {
-        var index = this.find(key);
-        return index === -1 ? undefined : [key, this.slots[index].value];
-    },
-
-    find: function (key) {
-        var comparer = this.comparer,
-            hash = comparer.hash(key) & 0x7FFFFFFF,
-            slot = null;
-
-        for (var index = this.buckets[hash % this.buckets.length]; index !== undefined;) {
-            slot = this.slots[index];
-
-            if (slot.hash === hash && comparer.equals(slot.key, key)) {
-                return index;
-            }
-
-            index = slot.next;
-        }
-
-        return -1;
-    },
-
-    forEach: function (callback, target, thisArg) {
-        forOf(this, function (element) {
-            if (thisArg) {
-                callback.call(thisArg, element[0], element[1], target);
-            }
-            else {
-                callback(element[0], element[1], target);
-            }
-        });
-    },
-
-    insert: function (key, value, add) {
-        var comparer = this.comparer,
-            hash = comparer.hash(key) & 0x7FFFFFFF,
-            bucket = hash % this.buckets.length,
-            slot = null,
-            index = 0;
-
-
-        // check for item existance, freed slots have undefined hash-code value and do not need enumeration
-        for (index = this.buckets[bucket]; index !== undefined;) {
-            slot = this.slots[index];
-
-            if (slot.hash === hash && comparer.equals(slot.key, key)) {
-                if (add) {
-                    return false;
-                }
-
-                slot.value = value;
-                return true;
-            }
-
-            index = slot.next;
-        }
-
-
-
-        // item with the same key does not exists, add item
-
-        index = 0;
-
-        // there's already a free index
-        if (this.freeCount > 0) {
-            index = this.freeIndex;                         // consume free index
-            this.freeIndex = this.slots[index].next;      // save new free index
-            this.freeCount--;                               // update number of free slots
-        }
-        else {
-            if (this.size === this.buckets.length) {
-                this.resize();
-                bucket = hash % this.buckets.length;
-            }
-
-            // find a new free index
-            index = this.size;
-            this.size++;
-        }
-
-        this.slots[index] = new HashTableSlot(hash, this.buckets[bucket], key, value);
-        this.buckets[bucket] = index;
-
-        return true;
-    },
-
-    keys: function () {
-        var arr = new Array(this.count()),
-            slot = null,
-            index = 0;
-
-        for (var i = 0; i < this.size; i++) {
-            slot = this.slots[i];
-
-            if (slot.hash !== undefined) {
-                arr[index++] = slot.key;
-            }
-        }
-
-        return arr;
-    },
-
-    resize: function () {
-        var size = this.size,
-            newSize = resize(size),
-            slot = null,
-            bucket = 0;
-
-        this.buckets.length = newSize;          // expand buckets
-        this.slots.length = newSize;            // expand slots
-
-
-        // rehash values & update buckets and slots
-        for (var index = 0; index < size; index++) {
-            slot = this.slots[index];
-
-            // freed slots have undefined hashCode value and do not need rehash
-            if (slot.hash !== undefined) {
-                bucket = slot.hash % newSize;          // rehash
-                slot.next = this.buckets[bucket];      // update slot's next index in the bucket chain
-                this.buckets[bucket] = index;           // update bucket index
-            }
-        }
-    },
-
-    remove: function (key) {
-        var comparer = this.comparer,
-            hash = comparer.hash(key) & 0x7FFFFFFF,     // hash-code of the key
-            bucket = hash % this.buckets.length,        // bucket index
-            last,
-            slot;
-
-        // freed slots have undefined hash-code value and do not need enumeration
-        for (var index = this.buckets[bucket]; index !== undefined;) {
-            slot = this.slots[index];
-
-            if (slot.hash === hash && comparer.equals(slot.key, key)) {
-                // last item in the chained bucket list
-                if (last === undefined) {
-                    this.buckets[bucket] = slot.next;
-                }
-                else {
-                    this.slots[last].next = slot.next;
-                }
-
-                slot.hash = undefined;         // release the slot
-                slot.next = this.freeIndex;    // save previous free index
-                slot.key = null;
-                slot.value = null;
-
-                this.freeIndex = index;         // save new free index
-                this.freeCount++;               // update number of free slots
-                return true;
-            }
-
-            last = index;
-            index = slot.next;
-        }
-
-        // item does not exist
-        return false;
-    },
-
-    get: function (key) {
-        var index = this.find(key);
-        return index === -1 ? undefined : this.slots[index].value;
-    },
-
-    set: function (key, value) {
-        this.insert(key, value, false);
-    },
-
-    '@@iterator': function () {
-        return new HashTableIterator(this);
-    }
-});
-
-
-
-
-function HashTableIterator(table, selector) {
-    var index = 0,
-        slot = null,
-        size = table.size,
-        slots = table.slots;
-
-    Iterator.call(this, function () {
-        while (index < size) {
-            slot = slots[index++];
-
-            // freed slots have undefined as hashCode value and do not enumerate
-            if (slot.hash !== undefined) {
-                return {
-                    value: selector ? selector(slot.key, slot.value) : [slot.key, slot.value],
-                    done: false
-                };
-            }
-        }
-
-        return {
-            done: true
-        };
-    });
-}
-
-extend(HashTableIterator, Iterator);
-
-
-function HashTableSlot(hash, next, key, value) {
-    this.hash = hash;       // item's key hash-code
-    this.next = next;       // index of the next bucket in the chained bucket list
-    this.key = key;         // item's key
-    this.value = value;     // item's value
-}
-
-/**
-* Initializes a new instance of the KeyValuePair with the specified key and value.
-* @param {Object} key The object defined in each key/value pair.
-* @param {Object} value The definition associated with key.
-*/
-function KeyValuePair(key, value) {
-    this.key = key;
-    this.value = value;
-}
-
-mixin(KeyValuePair.prototype, {
-    __hash__: function () {
-        return combineHash(runtimeHash(this.key), runtimeHash(this.value));
-    },
-
-    __eq__: function (obj) {
-        return obj instanceof KeyValuePair &&
-            runtimeEquals(this.key, obj.key) &&
-            runtimeEquals(this.value, obj.value);
-    },
-
-    toString: function () {
-        return '[KeyValuePair]';
-    }
-});
-
-/**
-* Initializes a new instance of the Dictionary.
-* @param {Dictionary|EqualityComparer|Number} value The Dictionary whose elements are copied to the new Dictionary or the EqualityComparer or Capacity
-* @param {EqualityComparer=} comparer The EqualityComparer implementation to use when comparing keys.
-*/
-function Dictionary(value, comparer) {
-    var dic = isType(value, Dictionary) ? value : null,
-        cmp = EqualityComparer.from(dic ? comparer : value),
-        table = new HashTable(cmp, dic ? dic.count() : (isNumber(value) ? value : 0));
-
-    if (dic) {
-        forOf(dic, function (element) {
-            table.add(element.key, element.value);
-        });
-    }
-
-    this.table = table;
-
-    define$1(this, 'comparer', {
-        get: function () {
-            return table.comparer;
-        }
-    });
-}
-
-extend(Dictionary, Collection, {
-    /**
-    * Adds an element with the provided key and value to the Dictionary.
-    * @param {Object} key The object to use as the key of the element to add.
-    * @param {Object} value The object to use as the value of the element to add.
-    */
-    add: function (key, value) {
-        if (!this.table.add(key, value)) {
-            error(ERROR_DUPLICATE_KEY);
-        }
-    },
-
-    /**
-    * Removes all keys and values from the Dictionary.
-    */
-    clear: function () {
-        this.table.clear();
-    },
-
-    /**
-    * Gets the number of elements contained in the Dictionary.
-    * @returns {Number}
-    */
-    count: function () {
-        return this.table.count();
-    },
-
-    /**
-    * Determines whether the Dictionary contains the specified key.
-    * @param {Object} key The key to locate in the Dictionary.
-    * @returns {Boolean}
-    */
-    containsKey: function (key) {
-        return this.table.contains(key);
-    },
-
-    /**
-    * Determines whether the Dictionary contains a specific value.
-    * @param {Object} value The value to locate in the Dictionary.
-    * @returns {Boolean}
-    */
-    containsValue: function (value) {
-        return this.table.containsValue(value);
-    },
-
-    /**
-    * Gets a Collection containing the keys of the Dictionary.
-    * @returns {Collection}
-    */
-    keys: function () {
-        return new KeyValueIterator(this, function (key) {
-            return key;
-        });
-    },
-
-    /**
-    * Gets a Collection containing the values in the Dictionary.
-    * @returns {Collection}
-    */
-    values: function () {
-        return new KeyValueIterator(this, function (key, value) {
-            return value;
-        });
-    },
-
-    /**
-    * Gets element with the specified key.
-    * @param {Object} key The key of the element to get.
-    * @returns {Object}
-    */
-    get: function (key) {
-        var entry = this.table.entry(key);
-        if (entry !== undefined) {
-            return entry[1];
-        }
-
-        error(ERROR_KEY_NOT_FOUND);
-    },
-
-    /**
-    * Sets the element with the specified key.
-    * @param {Object} key The key of the element to set.
-    * @param {Object} value The object to use as the value of the element to set.
-    */
-    set: function (key, value) {
-        this.table.set(key, value);
-    },
-
-    /**
-    * Gets the value associated with the specified key.
-    * @param {Object} key The key whose value to get.
-    * @param {Function} callback When this method returns, callback method is called with the value
-    * associated with the specified key, if the key is found; otherwise, null for the type of the value parameter.
-    * @returns {Boolean}
-    */
-    tryGetValue: function (key, callback) {
-        assertType(callback, Function);
-
-        var entry = this.table.entry(key);
-
-        if (entry !== undefined) {
-            callback(entry[1]);
-            return true;
-        }
-
-        return false;
-    },
-
-    /**
-    * Removes the element with the specified key from the Dictionary.
-    * @param {Object} key The key of the element to remove.
-    * @returns {Boolean}
-    */
-    remove: function (key) {
-        return this.table.remove(key);
-    },
-
-    toArray: function () {
-        return this.keys();
-    },
-
-    toString: function () {
-        return '[Dictionary]';
-    },
-
-    '@@iterator': function () {
-        return new KeyValueIterator(this, function (key, value) {
-            return new KeyValuePair(key, value);
-        });
-    }
-});
-
-
-
-function KeyValueIterator(dic, selector) {
-    IterableIterator.call(this, function () {
-        return new HashTableIterator(dic.table, selector);
-    });
-}
-
-extend(KeyValueIterator, IterableIterator, {
-    toString: function () {
-        return '[KeyValue Iterator]';
-    }
-});
 
 /**
 * Represents a node in a LinkedList.
@@ -2990,7 +2993,7 @@ function HashSet(iterable, comparer) {
     }
 
     this.table = table;
-    define(this, 'comparer', {
+    defineProperty(this, 'comparer', {
         get: function () {
             return table.comparer;
         }
@@ -3486,7 +3489,7 @@ function Map(iterable, comparer) {
     this.table = table;
     this.size = this.table.count();
 
-    define$1(this, 'comparer', {
+    defineProperty(this, 'comparer', {
         get: function () {
             return table.comparer;
         }
@@ -3642,7 +3645,7 @@ function Set(iterable, comparer) {
     this.table = table;
     this.size = this.table.count();
 
-    define$1(this, 'comparer', {
+    defineProperty(this, 'comparer', {
         get: function () {
             return table.comparer;
         }
