@@ -4,7 +4,7 @@ import HashTable, {HashTableIterator} from './hash-table';
 import isArray from '../utils/is-array';
 import error from '../utils/error';
 import forOf from '../utils/for-of';
-import define from '../utils/define';
+import defineProperty from '../utils/define-property';
 import extend from '../utils/extend';
 
 /**
@@ -29,7 +29,7 @@ export default function Map(iterable, comparer) {
     this.table = table;
     this.size = this.table.count();
 
-    define(this, 'comparer', {
+    defineProperty(this, 'comparer', {
         get: function () {
             return table.comparer;
         }

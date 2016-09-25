@@ -6,6 +6,7 @@ import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
 import forOf from '../utils/for-of';
 import extend from '../utils/extend';
+import defineProperty from '../utils/define-property';
 import $iterator from '../iteration/iterator-factory';
 
 /**
@@ -23,7 +24,7 @@ export default function HashSet(iterable, comparer) {
     }
 
     this.table = table;
-    define(this, 'comparer', {
+    defineProperty(this, 'comparer', {
         get: function () {
             return table.comparer;
         }

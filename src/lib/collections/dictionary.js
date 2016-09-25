@@ -8,7 +8,7 @@ import isType from '../utils/is-type';
 import isNumber from '../utils/is-number';
 import assertType from '../utils/assert-type';
 import forOf from '../utils/for-of';
-import define from '../utils/define';
+import defineProperty from '../utils/define-property';
 import extend from '../utils/extend';
 import error, {ERROR_DUPLICATE_KEY, ERROR_KEY_NOT_FOUND} from '../utils/error';
 
@@ -30,7 +30,7 @@ export default function Dictionary(value, comparer) {
 
     this.table = table;
 
-    define(this, 'comparer', {
+    defineProperty(this, 'comparer', {
         get: function () {
             return table.comparer;
         }

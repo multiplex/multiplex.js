@@ -1,7 +1,7 @@
 import isFunction from './is-function';
 import iteratorSymbol from './iterator-symbol';
 
-export default function define(obj, prop, attributes) {
+export default function defineProperty(obj, prop, attributes) {
     if (prop === '@@iterator') {
         prop = iteratorSymbol;
     }
