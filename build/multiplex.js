@@ -1062,8 +1062,602 @@ class Collection extends ArrayIterable {
     }
 }
 
+class ReadOnlyCollection extends Collection {
+    constructor(list) {
+        if (!isArrayLike(list)) {
+            error('Invalid argument!');
+        }
+
+        super(list);
+        this.list = list;
+
+        for (var i = 0, len = list.length; i < len; i++) {
+            this[i] = list[i];
+        }
+
+        Object.freeze(this);
+    }
+
+    /**
+     * Gets the number of elements contained in the ReadOnlyCollection.
+     * @returns {Number}
+     */
+    count() {
+        return this.length;
+    }
+
+    /**
+     * Determines whether the ReadOnlyCollection contains a specific value.
+     * @param {Object} item The object to locate in the ReadOnlyCollection.
+     * @returns {Boolean}
+     */
+    contains(item) {
+        this.list.contains(item);
+    }
+
+    /**
+     * Gets the element at the specified index.
+     * @param {Number} index The zero-based index of the element to get.
+     * @returns {Object}
+     */
+    get(index) {
+        return this.list.get(index);
+    }
+
+    /**
+     * Gets the number of elements contained in the ReadOnlyCollection.
+     * @returns {Number}
+     */
+    get length() {
+        return this.list.length;
+    }
+
+    /**
+     * Searches for the specified object and returns the zero-based index of the first occurrence within the entire ReadOnlyCollection.
+     * @param {Object} item The object to locate in the ReadOnlyCollection.
+     * @returns {Number}
+     */
+    indexOf(item) {
+        return this.list.indexOf(item);
+    }
+
+    /**
+     * Returns a shallow copy of a portion of the list into a new array object.
+     * @param {Number=} begin Zero-based index at which to begin extraction.
+     * @param {Number=} end Zero-based index at which to end extraction
+     * @returns {Array}
+     */
+    slice(begin = 0, end = undefined) {
+        return ARRAY_PROTOTYPE.slice.call(this, begin, end === undefined ? this.length : end);
+    }
+
+    /**
+     * Changes the content of the list by removing existing elements and/or adding new elements.
+     * @param {Number} start Index at which to start changing the list.
+     * @param {Number} deleteCount An integer indicating the number of old list elements to remove.
+     * @param {Object...} items The elements to add to the list.
+     * @returns {Array}
+     */
+    splice(start, deleteCount, ...items) {
+        return ARRAY_PROTOTYPE.splice.call(this, start, deleteCount, items);
+    }
+
+    /**
+     * Buffers collection into an array.
+     * @returns {Array}
+     */
+    toArray() {
+        return this.list.toArray();
+    }
+
+    get[Symbol.toStringTag]() {
+        return 'ReadOnly Collection';
+    }
+
+    toString() {
+        return '[ReadOnly Collection]';
+    }
+
+    [Symbol.iterator]() {
+        return new ArrayIterator(this);
+    }
+}
+
+/**
+* Supports both iterable and iterator protocols using specified factory method.
+* @param {Function} factory A function to create iterator instance.
+*/
+class IterableIterator extends Iterable {
+    constructor(factory) {
+        super(factory);
+        this.next = factory().next;
+    }
+
+    get [Symbol.toStringTag]() {
+        return 'Iterable Iterator';
+    }
+
+    toString() {
+        return '[Iterable Iterator]';
+    }
+}
+
+/// Array of primes larger than: 2 ^ (4 x n)
+const primes = [17, 67, 257, 1031, 4099, 16411, 65537, 262147, 1048583, 4194319, 16777259];
+
+function resize(size) {
+    for (let i = 0, len = primes.length; i < len; i++) {
+        if (primes[i] > size) {
+            return primes[i];
+        }
+    }
+
+    return primes[primes.length - 1];
+}
+
+class HashTable {
+    constructor(comparer, capacity = 0) {
+        this.initialize(capacity);
+        this.comparer = EqualityComparer.from(comparer);
+    }
+
+    initialize(capacity) {
+        this.size = 0;                              // total number of slots, including release slots (freeCount)
+        this.freeIndex = undefined;                 // next free index in the bucket list
+        this.freeCount = 0;                         // total number of release slots
+        this.buckets = new Array(capacity || 7);    // bucket list. index: hash, value: slot index;
+        this.slots = new Array(capacity || 7);      // slot list. next: index of the next bucket;
+    }
+
+    add(key, value = null) {
+        return this.insert(key, value, true);
+    }
+
+    clear() {
+        this.initialize(0);
+    }
+
+    contains(key) {
+        return this.find(key) !== -1;
+    }
+
+    containsValue(value) {
+        let slots = this.slots,
+            count = this.count(),
+            comparer = this.comparer;
+
+        for (let i = 0; i < count; i++) {
+            if (slots[i].hash !== undefined && comparer.equals(slots[i].value, value)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    count() {
+        return this.size - this.freeCount;
+    }
+
+    entry(key) {
+        let index = this.find(key);
+        return index === -1 ? undefined : [key, this.slots[index].value];
+    }
+
+    find(key) {
+        let comparer = this.comparer,
+            hash = comparer.hash(key) & 0x7FFFFFFF,
+            slot = null;
+
+        for (let index = this.buckets[hash % this.buckets.length]; index !== undefined;) {
+            slot = this.slots[index];
+
+            if (slot.hash === hash && comparer.equals(slot.key, key)) {
+                return index;
+            }
+
+            index = slot.next;
+        }
+
+        return -1;
+    }
+
+    forEach(callback, target, thisArg = null) {
+        if (thisArg !== null) {
+            callback = callback.bind(thisArg);
+        }
+
+        for (let element of this) {
+            callback(element[0], element[1], target);
+        }
+    }
+
+    insert(key, value, add) {
+        let comparer = this.comparer,
+            hash = comparer.hash(key) & 0x7FFFFFFF,
+            bucket = hash % this.buckets.length,
+            slot = null;
+
+
+        // check for item existance, freed slots have undefined hash-code value and do not need enumeration
+        for (let index = this.buckets[bucket]; index !== undefined;) {
+            slot = this.slots[index];
+
+            if (slot.hash === hash && comparer.equals(slot.key, key)) {
+                if (add) {
+                    return false;
+                }
+
+                slot.value = value;
+                return true;
+            }
+
+            index = slot.next;
+        }
+
+
+
+        // item with the same key does not exists, add item
+
+        let index = 0;
+
+        // there's already a free index
+        if (this.freeCount > 0) {
+            index = this.freeIndex;                         // consume free index
+            this.freeIndex = this.slots[index].next;      // save new free index
+            this.freeCount--;                               // update number of free slots
+        }
+        else {
+            if (this.size === this.buckets.length) {
+                this.resize();
+                bucket = hash % this.buckets.length;
+            }
+
+            // find a new free index
+            index = this.size;
+            this.size++;
+        }
+
+        this.slots[index] = new HashTableSlot(hash, this.buckets[bucket], key, value);
+        this.buckets[bucket] = index;
+
+        return true;
+    }
+
+    keys() {
+        let arr = new Array(this.count()),
+            slot = null,
+            index = 0;
+
+        for (let i = 0; i < this.size; i++) {
+            slot = this.slots[i];
+
+            if (slot.hash !== undefined) {
+                arr[index++] = slot.key;
+            }
+        }
+
+        return arr;
+    }
+
+    resize() {
+        let size = this.size,
+            newSize = resize(size),
+            slot = null,
+            bucket = 0;
+
+        this.buckets.length = newSize;          // expand buckets
+        this.slots.length = newSize;            // expand slots
+
+
+        // rehash values & update buckets and slots
+        for (let index = 0; index < size; index++) {
+            slot = this.slots[index];
+
+            // freed slots have undefined hashCode value and do not need rehash
+            if (slot.hash !== undefined) {
+                bucket = slot.hash % newSize;           // rehash
+                slot.next = this.buckets[bucket];       // update slot's next index in the bucket chain
+                this.buckets[bucket] = index;           // update bucket index
+            }
+        }
+    }
+
+    remove(key) {
+        let comparer = this.comparer,
+            hash = comparer.hash(key) & 0x7FFFFFFF,     // hash-code of the key
+            bucket = hash % this.buckets.length,        // bucket index
+            last,
+            slot;
+
+        // freed slots have undefined hash-code value and do not need enumeration
+        for (let index = this.buckets[bucket]; index !== undefined;) {
+            slot = this.slots[index];
+
+            if (slot.hash === hash && comparer.equals(slot.key, key)) {
+                // last item in the chained bucket list
+                if (last === undefined) {
+                    this.buckets[bucket] = slot.next;
+                }
+                else {
+                    this.slots[last].next = slot.next;
+                }
+
+                slot.hash = undefined;          // release the slot
+                slot.next = this.freeIndex;     // save previous free index
+                slot.key = null;
+                slot.value = null;
+
+                this.freeIndex = index;         // save new free index
+                this.freeCount++;               // update number of free slots
+                return true;
+            }
+
+            last = index;
+            index = slot.next;
+        }
+
+        // item does not exist
+        return false;
+    }
+
+    get(key) {
+        let index = this.find(key);
+        return index === -1 ? undefined : this.slots[index].value;
+    }
+
+    set(key, value) {
+        this.insert(key, value, false);
+    }
+
+    [Symbol.iterator]() {
+        return new HashTableIterator(this);
+    }
+}
+
+
+class HashTableIterator extends Iterator {
+    constructor(table, selector = null) {
+        let index = 0,
+            slot = null,
+            size = table.size,
+            slots = table.slots;
+
+        super(function () {
+            while (index < size) {
+                slot = slots[index++];
+
+                // freed slots have undefined as hashCode value and do not enumerate
+                if (slot.hash !== undefined) {
+                    return {
+                        value: selector ? selector(slot.key, slot.value) : [slot.key, slot.value],
+                        done: false
+                    };
+                }
+            }
+
+            return {
+                done: true
+            };
+        });
+    }
+}
+
+
+class HashTableSlot {
+    constructor(hash, next, key, value = null) {
+        this.hash = hash;       // item's key hash-code
+        this.next = next;       // index of the next bucket in the chained bucket list
+        this.key = key;         // item's key
+        this.value = value;     // item's value
+    }
+}
+
+/**
+* Initializes a new instance of the KeyValuePair with the specified key and value.
+* @param {Object} key The object defined in each key/value pair.
+* @param {Object} value The definition associated with key.
+*/
+class KeyValuePair {
+    constructor(key, value) {
+        this.key = key;
+        this.value = value;
+    }
+
+    __hash__() {
+        return combineHash(runtimeHash(this.key), runtimeHash(this.value));
+    }
+
+    __eq__(obj) {
+        return obj instanceof KeyValuePair &&
+            runtimeEquals(this.key, obj.key) &&
+            runtimeEquals(this.value, obj.value);
+    }
+
+    get [Symbol.toStringTag]() {
+        return 'KeyValuePair';
+    }
+
+    toString() {
+        return '[KeyValuePair]';
+    }
+}
+
 function isNumber(val) {
     return typeof val === 'number';
+}
+
+/**
+* Initializes a new instance of the Dictionary.
+* @param {Dictionary|EqualityComparer|Number} value The Dictionary whose elements are copied to the new Dictionary or the EqualityComparer or Capacity
+* @param {EqualityComparer=} comparer The EqualityComparer implementation to use when comparing keys.
+*/
+class Dictionary extends Collection {
+    constructor(value, comparer = EqualityComparer.instance) {
+        let dic = isType(value, Dictionary) ? value : null,
+            cmp = EqualityComparer.from(dic ? comparer : value),
+            table = new HashTable(cmp, dic ? dic.count() : (isNumber(value) ? value : 0));
+
+        if (dic) {
+            for (let element of dic) {
+                table.add(element.key, element.value);
+            }
+        }
+
+        super();
+        this.table = table;
+    }
+
+    /**
+    * Adds an element with the provided key and value to the Dictionary.
+    * @param {Object} key The object to use as the key of the element to add.
+    * @param {Object} value The object to use as the value of the element to add.
+    */
+    add(key, value) {
+        if (!this.table.add(key, value)) {
+            error(ERROR_DUPLICATE_KEY);
+        }
+    }
+
+    /**
+    * Removes all keys and values from the Dictionary.
+    */
+    clear() {
+        this.table.clear();
+    }
+
+    /**
+    * Gets the EqualityComparer object that is used to determine equality for the values in the set.
+    * @returns {EqualityComparer}
+    */
+    get comparer () {
+        return this.table.comparer;
+    }
+
+    /**
+    * Gets the number of elements contained in the Dictionary.
+    * @returns {Number}
+    */
+    count() {
+        return this.table.count();
+    }
+
+    /**
+    * Determines whether the Dictionary contains the specified key.
+    * @param {Object} key The key to locate in the Dictionary.
+    * @returns {Boolean}
+    */
+    containsKey(key) {
+        return this.table.contains(key);
+    }
+
+    /**
+    * Determines whether the Dictionary contains a specific value.
+    * @param {Object} value The value to locate in the Dictionary.
+    * @returns {Boolean}
+    */
+    containsValue(value) {
+        return this.table.containsValue(value);
+    }
+
+    /**
+    * Gets a Collection containing the keys of the Dictionary.
+    * @returns {Collection}
+    */
+    keys() {
+        return new KeyValueIterator(this, key => key);
+    }
+
+    /**
+    * Gets a Collection containing the values in the Dictionary.
+    * @returns {Collection}
+    */
+    values() {
+        return new KeyValueIterator(this, (key, value) => value);
+    }
+
+    /**
+    * Gets element with the specified key.
+    * @param {Object} key The key of the element to get.
+    * @returns {Object}
+    */
+    get(key) {
+        let entry = this.table.entry(key);
+        if (entry !== undefined) {
+            return entry[1];
+        }
+
+        error(ERROR_KEY_NOT_FOUND);
+    }
+
+    /**
+    * Sets the element with the specified key.
+    * @param {Object} key The key of the element to set.
+    * @param {Object} value The object to use as the value of the element to set.
+    */
+    set(key, value) {
+        this.table.set(key, value);
+    }
+
+    /**
+    * Gets the value associated with the specified key.
+    * @param {Object} key The key whose value to get.
+    * @param {Function} callback When this method returns, callback method is called with the value
+    * associated with the specified key, if the key is found; otherwise, null for the type of the value parameter.
+    * @returns {Boolean}
+    */
+    tryGetValue(key, callback) {
+        assertType(callback, Function);
+
+        let entry = this.table.entry(key);
+
+        if (entry !== undefined) {
+            callback(entry[1]);
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+    * Removes the element with the specified key from the Dictionary.
+    * @param {Object} key The key of the element to remove.
+    * @returns {Boolean}
+    */
+    remove(key) {
+        return this.table.remove(key);
+    }
+
+    toArray() {
+        return this.keys();
+    }
+
+    get [Symbol.toStringTag]() {
+        return 'Dictionary';
+    }
+
+    toString() {
+        return '[Dictionary]';
+    }
+
+    [Symbol.iterator]() {
+        return new KeyValueIterator(this, (key, value) => new KeyValuePair(key, value));
+    }
+}
+
+
+class KeyValueIterator extends IterableIterator {
+    constructor(dic, selector = null) {
+        super(() => new HashTableIterator(dic.table, selector));
+    }
+
+    get [Symbol.toStringTag]() {
+        return 'KeyValue Iterator';
+    }
+
+    toString() {
+        return '[KeyValue Iterator]';
+    }
 }
 
 function assertNotNull(obj) {
@@ -1632,597 +2226,6 @@ function shrinkList(list, newSize) {
 function validateListIndex(list, index) {
     if (index < 0 || index >= list.length) {
         error(ERROR_ARGUMENT_OUT_OF_RANGE);
-    }
-}
-
-class ReadOnlyCollection extends Collection {
-    constructor(list) {
-        assertType(list, List);
-        super(list);
-        this.list = list;
-
-        for (var i = 0, len = list.length; i < len; i++) {
-            this[i] = list[i];
-        }
-
-        Object.freeze(this);
-    }
-
-    /**
-    * Gets the number of elements contained in the ReadOnlyCollection.
-    * @returns {Number}
-    */
-    count() {
-        return this.length;
-    }
-
-    /**
-    * Determines whether the ReadOnlyCollection contains a specific value.
-    * @param {Object} item The object to locate in the ReadOnlyCollection.
-    * @returns {Boolean}
-    */
-    contains(item) {
-        this.list.contains(item);
-    }
-
-    /**
-    * Gets the element at the specified index.
-    * @param {Number} index The zero-based index of the element to get.
-    * @returns {Object}
-    */
-    get(index) {
-        return this.list.get(index);
-    }
-
-    /**
-    * Gets the number of elements contained in the ReadOnlyCollection.
-    * @returns {Number}
-    */
-    get length() {
-        return this.list.length;
-    }
-
-    /**
-    * Searches for the specified object and returns the zero-based index of the first occurrence within the entire ReadOnlyCollection.
-    * @param {Object} item The object to locate in the ReadOnlyCollection.
-    * @returns {Number}
-    */
-    indexOf(item) {
-        return this.list.indexOf(item);
-    }
-
-    /**
-    * Returns a shallow copy of a portion of the list into a new array object.
-    * @param {Number=} begin Zero-based index at which to begin extraction.
-    * @param {Number=} end Zero-based index at which to end extraction
-    * @returns {Array}
-    */
-    slice(begin = 0, end = undefined) {
-        return ARRAY_PROTOTYPE.slice.call(this, begin, end === undefined ? this.length : end);
-    }
-
-    /**
-    * Changes the content of the list by removing existing elements and/or adding new elements.
-    * @param {Number} start Index at which to start changing the list.
-    * @param {Number} deleteCount An integer indicating the number of old list elements to remove.
-    * @param {Object...} items The elements to add to the list.
-    * @returns {Array}
-    */
-    splice(start, deleteCount, ...items) {
-        return ARRAY_PROTOTYPE.splice.call(this, start, deleteCount, items);
-    }
-
-    /**
-    * Buffers collection into an array.
-    * @returns {Array}
-    */
-    toArray() {
-        return this.list.toArray();
-    }
-
-    get [Symbol.toStringTag]() {
-        return 'ReadOnly Collection';
-    }
-
-    toString() {
-        return '[ReadOnly Collection]';
-    }
-
-    [Symbol.iterator]() {
-        return new ArrayIterator(this);
-    }
-}
-
-/**
-* Supports both iterable and iterator protocols using specified factory method.
-* @param {Function} factory A function to create iterator instance.
-*/
-class IterableIterator extends Iterable {
-    constructor(factory) {
-        super(factory);
-        this.next = factory().next;
-    }
-
-    get [Symbol.toStringTag]() {
-        return 'Iterable Iterator';
-    }
-
-    toString() {
-        return '[Iterable Iterator]';
-    }
-}
-
-/// Array of primes larger than: 2 ^ (4 x n)
-const primes = [17, 67, 257, 1031, 4099, 16411, 65537, 262147, 1048583, 4194319, 16777259];
-
-function resize(size) {
-    for (let i = 0, len = primes.length; i < len; i++) {
-        if (primes[i] > size) {
-            return primes[i];
-        }
-    }
-
-    return primes[primes.length - 1];
-}
-
-class HashTable {
-    constructor(comparer, capacity = 0) {
-        this.initialize(capacity);
-        this.comparer = EqualityComparer.from(comparer);
-    }
-
-    initialize(capacity) {
-        this.size = 0;                              // total number of slots, including release slots (freeCount)
-        this.freeIndex = undefined;                 // next free index in the bucket list
-        this.freeCount = 0;                         // total number of release slots
-        this.buckets = new Array(capacity || 7);    // bucket list. index: hash, value: slot index;
-        this.slots = new Array(capacity || 7);      // slot list. next: index of the next bucket;
-    }
-
-    add(key, value = null) {
-        return this.insert(key, value, true);
-    }
-
-    clear() {
-        this.initialize(0);
-    }
-
-    contains(key) {
-        return this.find(key) !== -1;
-    }
-
-    containsValue(value) {
-        let slots = this.slots,
-            count = this.count(),
-            comparer = this.comparer;
-
-        for (let i = 0; i < count; i++) {
-            if (slots[i].hash !== undefined && comparer.equals(slots[i].value, value)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    count() {
-        return this.size - this.freeCount;
-    }
-
-    entry(key) {
-        let index = this.find(key);
-        return index === -1 ? undefined : [key, this.slots[index].value];
-    }
-
-    find(key) {
-        let comparer = this.comparer,
-            hash = comparer.hash(key) & 0x7FFFFFFF,
-            slot = null;
-
-        for (let index = this.buckets[hash % this.buckets.length]; index !== undefined;) {
-            slot = this.slots[index];
-
-            if (slot.hash === hash && comparer.equals(slot.key, key)) {
-                return index;
-            }
-
-            index = slot.next;
-        }
-
-        return -1;
-    }
-
-    forEach(callback, target, thisArg = null) {
-        if (thisArg !== null) {
-            callback = callback.bind(thisArg);
-        }
-
-        for (let element of this) {
-            callback(element[0], element[1], target);
-        }
-    }
-
-    insert(key, value, add) {
-        let comparer = this.comparer,
-            hash = comparer.hash(key) & 0x7FFFFFFF,
-            bucket = hash % this.buckets.length,
-            slot = null;
-
-
-        // check for item existance, freed slots have undefined hash-code value and do not need enumeration
-        for (let index = this.buckets[bucket]; index !== undefined;) {
-            slot = this.slots[index];
-
-            if (slot.hash === hash && comparer.equals(slot.key, key)) {
-                if (add) {
-                    return false;
-                }
-
-                slot.value = value;
-                return true;
-            }
-
-            index = slot.next;
-        }
-
-
-
-        // item with the same key does not exists, add item
-
-        let index = 0;
-
-        // there's already a free index
-        if (this.freeCount > 0) {
-            index = this.freeIndex;                         // consume free index
-            this.freeIndex = this.slots[index].next;      // save new free index
-            this.freeCount--;                               // update number of free slots
-        }
-        else {
-            if (this.size === this.buckets.length) {
-                this.resize();
-                bucket = hash % this.buckets.length;
-            }
-
-            // find a new free index
-            index = this.size;
-            this.size++;
-        }
-
-        this.slots[index] = new HashTableSlot(hash, this.buckets[bucket], key, value);
-        this.buckets[bucket] = index;
-
-        return true;
-    }
-
-    keys() {
-        let arr = new Array(this.count()),
-            slot = null,
-            index = 0;
-
-        for (let i = 0; i < this.size; i++) {
-            slot = this.slots[i];
-
-            if (slot.hash !== undefined) {
-                arr[index++] = slot.key;
-            }
-        }
-
-        return arr;
-    }
-
-    resize() {
-        let size = this.size,
-            newSize = resize(size),
-            slot = null,
-            bucket = 0;
-
-        this.buckets.length = newSize;          // expand buckets
-        this.slots.length = newSize;            // expand slots
-
-
-        // rehash values & update buckets and slots
-        for (let index = 0; index < size; index++) {
-            slot = this.slots[index];
-
-            // freed slots have undefined hashCode value and do not need rehash
-            if (slot.hash !== undefined) {
-                bucket = slot.hash % newSize;           // rehash
-                slot.next = this.buckets[bucket];       // update slot's next index in the bucket chain
-                this.buckets[bucket] = index;           // update bucket index
-            }
-        }
-    }
-
-    remove(key) {
-        let comparer = this.comparer,
-            hash = comparer.hash(key) & 0x7FFFFFFF,     // hash-code of the key
-            bucket = hash % this.buckets.length,        // bucket index
-            last,
-            slot;
-
-        // freed slots have undefined hash-code value and do not need enumeration
-        for (let index = this.buckets[bucket]; index !== undefined;) {
-            slot = this.slots[index];
-
-            if (slot.hash === hash && comparer.equals(slot.key, key)) {
-                // last item in the chained bucket list
-                if (last === undefined) {
-                    this.buckets[bucket] = slot.next;
-                }
-                else {
-                    this.slots[last].next = slot.next;
-                }
-
-                slot.hash = undefined;          // release the slot
-                slot.next = this.freeIndex;     // save previous free index
-                slot.key = null;
-                slot.value = null;
-
-                this.freeIndex = index;         // save new free index
-                this.freeCount++;               // update number of free slots
-                return true;
-            }
-
-            last = index;
-            index = slot.next;
-        }
-
-        // item does not exist
-        return false;
-    }
-
-    get(key) {
-        let index = this.find(key);
-        return index === -1 ? undefined : this.slots[index].value;
-    }
-
-    set(key, value) {
-        this.insert(key, value, false);
-    }
-
-    [Symbol.iterator]() {
-        return new HashTableIterator(this);
-    }
-}
-
-
-class HashTableIterator extends Iterator {
-    constructor(table, selector = null) {
-        let index = 0,
-            slot = null,
-            size = table.size,
-            slots = table.slots;
-
-        super(function () {
-            while (index < size) {
-                slot = slots[index++];
-
-                // freed slots have undefined as hashCode value and do not enumerate
-                if (slot.hash !== undefined) {
-                    return {
-                        value: selector ? selector(slot.key, slot.value) : [slot.key, slot.value],
-                        done: false
-                    };
-                }
-            }
-
-            return {
-                done: true
-            };
-        });
-    }
-}
-
-
-class HashTableSlot {
-    constructor(hash, next, key, value = null) {
-        this.hash = hash;       // item's key hash-code
-        this.next = next;       // index of the next bucket in the chained bucket list
-        this.key = key;         // item's key
-        this.value = value;     // item's value
-    }
-}
-
-/**
-* Initializes a new instance of the KeyValuePair with the specified key and value.
-* @param {Object} key The object defined in each key/value pair.
-* @param {Object} value The definition associated with key.
-*/
-class KeyValuePair {
-    constructor(key, value) {
-        this.key = key;
-        this.value = value;
-    }
-
-    __hash__() {
-        return combineHash(runtimeHash(this.key), runtimeHash(this.value));
-    }
-
-    __eq__(obj) {
-        return obj instanceof KeyValuePair &&
-            runtimeEquals(this.key, obj.key) &&
-            runtimeEquals(this.value, obj.value);
-    }
-
-    get [Symbol.toStringTag]() {
-        return 'KeyValuePair';
-    }
-
-    toString() {
-        return '[KeyValuePair]';
-    }
-}
-
-/**
-* Initializes a new instance of the Dictionary.
-* @param {Dictionary|EqualityComparer|Number} value The Dictionary whose elements are copied to the new Dictionary or the EqualityComparer or Capacity
-* @param {EqualityComparer=} comparer The EqualityComparer implementation to use when comparing keys.
-*/
-class Dictionary extends Collection {
-    constructor(value, comparer = EqualityComparer.instance) {
-        let dic = isType(value, Dictionary) ? value : null,
-            cmp = EqualityComparer.from(dic ? comparer : value),
-            table = new HashTable(cmp, dic ? dic.count() : (isNumber(value) ? value : 0));
-
-        if (dic) {
-            for (let element of dic) {
-                table.add(element.key, element.value);
-            }
-        }
-
-        super();
-        this.table = table;
-    }
-
-    /**
-    * Adds an element with the provided key and value to the Dictionary.
-    * @param {Object} key The object to use as the key of the element to add.
-    * @param {Object} value The object to use as the value of the element to add.
-    */
-    add(key, value) {
-        if (!this.table.add(key, value)) {
-            error(ERROR_DUPLICATE_KEY);
-        }
-    }
-
-    /**
-    * Removes all keys and values from the Dictionary.
-    */
-    clear() {
-        this.table.clear();
-    }
-
-    /**
-    * Gets the EqualityComparer object that is used to determine equality for the values in the set.
-    * @returns {EqualityComparer}
-    */
-    get comparer () {
-        return this.table.comparer;
-    }
-
-    /**
-    * Gets the number of elements contained in the Dictionary.
-    * @returns {Number}
-    */
-    count() {
-        return this.table.count();
-    }
-
-    /**
-    * Determines whether the Dictionary contains the specified key.
-    * @param {Object} key The key to locate in the Dictionary.
-    * @returns {Boolean}
-    */
-    containsKey(key) {
-        return this.table.contains(key);
-    }
-
-    /**
-    * Determines whether the Dictionary contains a specific value.
-    * @param {Object} value The value to locate in the Dictionary.
-    * @returns {Boolean}
-    */
-    containsValue(value) {
-        return this.table.containsValue(value);
-    }
-
-    /**
-    * Gets a Collection containing the keys of the Dictionary.
-    * @returns {Collection}
-    */
-    keys() {
-        return new KeyValueIterator(this, key => key);
-    }
-
-    /**
-    * Gets a Collection containing the values in the Dictionary.
-    * @returns {Collection}
-    */
-    values() {
-        return new KeyValueIterator(this, (key, value) => value);
-    }
-
-    /**
-    * Gets element with the specified key.
-    * @param {Object} key The key of the element to get.
-    * @returns {Object}
-    */
-    get(key) {
-        let entry = this.table.entry(key);
-        if (entry !== undefined) {
-            return entry[1];
-        }
-
-        error(ERROR_KEY_NOT_FOUND);
-    }
-
-    /**
-    * Sets the element with the specified key.
-    * @param {Object} key The key of the element to set.
-    * @param {Object} value The object to use as the value of the element to set.
-    */
-    set(key, value) {
-        this.table.set(key, value);
-    }
-
-    /**
-    * Gets the value associated with the specified key.
-    * @param {Object} key The key whose value to get.
-    * @param {Function} callback When this method returns, callback method is called with the value
-    * associated with the specified key, if the key is found; otherwise, null for the type of the value parameter.
-    * @returns {Boolean}
-    */
-    tryGetValue(key, callback) {
-        assertType(callback, Function);
-
-        let entry = this.table.entry(key);
-
-        if (entry !== undefined) {
-            callback(entry[1]);
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-    * Removes the element with the specified key from the Dictionary.
-    * @param {Object} key The key of the element to remove.
-    * @returns {Boolean}
-    */
-    remove(key) {
-        return this.table.remove(key);
-    }
-
-    toArray() {
-        return this.keys();
-    }
-
-    get [Symbol.toStringTag]() {
-        return 'Dictionary';
-    }
-
-    toString() {
-        return '[Dictionary]';
-    }
-
-    [Symbol.iterator]() {
-        return new KeyValueIterator(this, (key, value) => new KeyValuePair(key, value));
-    }
-}
-
-
-class KeyValueIterator extends IterableIterator {
-    constructor(dic, selector = null) {
-        super(() => new HashTableIterator(dic.table, selector));
-    }
-
-    get [Symbol.toStringTag]() {
-        return 'KeyValue Iterator';
-    }
-
-    toString() {
-        return '[KeyValue Iterator]';
     }
 }
 
