@@ -1,6 +1,6 @@
 [![npm version][npm-version-image]][npm-url] 
 [![build status][travis-image]][travis-url]
-[![code climate][climate-image]][https://coveralls.io/repos/github/multiplex/multiplex.js/badge.svg]
+[![code climate][climate-image]][climate-url]
 [![coverage status][coverage-image]][coverage-url] 
 [![apache license][license-image]][license-url]
 
