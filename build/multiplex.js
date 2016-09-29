@@ -3887,10 +3887,10 @@ extend(Stack, Collection, {
 });
 
 /**
-* Initializes a new instance of the SortedList class.
-* @param {Dictionary|Comparer|Number=} value The Dictionary whose elements are copied to the new SortedList, he Comparer implementation to use when comparing keys or The initial number of elements that the SortedList can contain.
-* @param {Comparer=} comparer The Comparer implementation to use when comparing keys.
-*/
+ * Initializes a new instance of the SortedList class.
+ * @param {Dictionary|Comparer|Number=} value The Dictionary whose elements are copied to the new SortedList, he Comparer implementation to use when comparing keys or The initial number of elements that the SortedList can contain.
+ * @param {Comparer=} comparer The Comparer implementation to use when comparing keys.
+ */
 function SortedList(value, comparer) {
     var dic = isType(value, Dictionary) ? value : null,
         capacity = isNumber(value, Number) ? value : (dic ? dic.count() : 0);
@@ -3913,10 +3913,10 @@ function SortedList(value, comparer) {
 
 extend(SortedList, Collection, {
     /**
-    * Adds an element with the specified key and value into the SortedList.
-    * @param {Object} key The key of the element to add.
-    * @param {Object} value The value of the element to add.
-    */
+     * Adds an element with the specified key and value into the SortedList.
+     * @param {Object} key The key of the element to add.
+     * @param {Object} value The value of the element to add.
+     */
     add: function (key, value) {
         assertNotNull(key);
 
@@ -3930,15 +3930,14 @@ extend(SortedList, Collection, {
     },
 
     /**
-    * Gets or sets the number of elements that the SortedList can contain.
-    * @param {Number} value The number of elements that the SortedList can contain.
-    * @returns {Number}
-    */
+     * Gets or sets the number of elements that the SortedList can contain.
+     * @param {Number} value The number of elements that the SortedList can contain.
+     * @returns {Number}
+     */
     capacity: function (value) {
         if (value === null || value === undefined) {
             return this.slot.keys.length;
-        }
-        else {
+        } else {
             assertType(value, Number);
 
             if (value !== this.slot.keys.length) {
@@ -3954,55 +3953,56 @@ extend(SortedList, Collection, {
 
 
     /**
-    * Removes all elements from the SortedList.
-    */
+     * Removes all elements from the SortedList.
+     */
     clear: function () {
-        this.slot = new SortedListSlot(0, 0, this.slot.compare);
+        this.slot.keys.length = 0;
+        this.slot.values.length = 0;
     },
 
 
     /**
-    * Gets the Comparer for the sorted list.
-    * @returns {Comparer}
-    */
+     * Gets the Comparer for the sorted list.
+     * @returns {Comparer}
+     */
     comparer: function () {
         return this.slot.comparer;
     },
 
 
     /**
-    * Determines whether the SortedList contains a specific key.
-    * @param {Object} key The key to locate in the SortedList.
-    * @returns {Boolean}
-    */
+     * Determines whether the SortedList contains a specific key.
+     * @param {Object} key The key to locate in the SortedList.
+     * @returns {Boolean}
+     */
     containsKey: function (key) {
         return this.indexOfKey(key) >= 0;
     },
 
 
     /**
-    * Determines whether the SortedList contains a specific value.
-    * @param {Object} value The value to locate in the SortedList.
-    * @returns {Boolean}
-    */
+     * Determines whether the SortedList contains a specific value.
+     * @param {Object} value The value to locate in the SortedList.
+     * @returns {Boolean}
+     */
     containsValue: function (value) {
         return this.indexOfValue(value) >= 0;
     },
 
     /**
-    * Gets the number of key/value pairs contained in the SortedList.
-    * @returns {Number}
-    */
+     * Gets the number of key/value pairs contained in the SortedList.
+     * @returns {Number}
+     */
     count: function () {
         return this.slot.size;
     },
 
 
     /**
-    * Gets the value associated with the specified key.
-    * @param {Object} key The key whose value to get.
-    * @returns {Object}
-    */
+     * Gets the value associated with the specified key.
+     * @param {Object} key The key whose value to get.
+     * @returns {Object}
+     */
     get: function (key) {
         var index = this.indexOfKey(key);
 
@@ -4015,47 +4015,47 @@ extend(SortedList, Collection, {
 
 
     /**
-    * Gets a collection containing the keys in the SortedList, in sorted order.
-    * @returns {Collection}
-    */
+     * Gets a collection containing the keys in the SortedList, in sorted order.
+     * @returns {Collection}
+     */
     keys: function () {
-        return new Collection(this.slot.keys.slice(0, this.slot.size));
+        return this.slot.keys;
     },
 
     /**
-    * Gets a collection containing the values in the SortedLis.
-    * @returns {Collection}
-    */
+     * Gets a collection containing the values in the SortedLis.
+     * @returns {Collection}
+     */
     values: function () {
-        return new Collection(this.slot.values.slice(0, this.slot.size));
+        return this.slot.values;
     },
 
 
     /**
-    * Searches for the specified key and returns the zero-based index within the entire SortedList.
-    * @param {Object} key The key to locate in the SortedList.
-    * @returns {Number}
-    */
+     * Searches for the specified key and returns the zero-based index within the entire SortedList.
+     * @param {Object} key The key to locate in the SortedList.
+     * @returns {Number}
+     */
     indexOfKey: function (key) {
         assertNotNull(key);
         return binarySearch(this.slot.keys, 0, this.slot.size, key, this.slot.comparer.compare);
     },
 
     /**
-    * Searches for the specified value and returns the zero-based index of the first occurrence within the entire SortedList.
-    * @param {Object} value The value to locate in the SortedList.
-    * @returns {Number}
-    */
+     * Searches for the specified value and returns the zero-based index of the first occurrence within the entire SortedList.
+     * @param {Object} value The value to locate in the SortedList.
+     * @returns {Number}
+     */
     indexOfValue: function (value) {
         return this.slot.values.indexOf(value);
     },
 
     /**
-    * Removes the element with the specified key from the SortedList.
-    * Returns true if the element is successfully removed; otherwise, false.This method also returns false if key was not found in the original SortedList.
-    * @param { Object } key The key of the element to remove.
-    * @returns { Boolean }
-    */
+     * Removes the element with the specified key from the SortedList.
+     * Returns true if the element is successfully removed; otherwise, false.This method also returns false if key was not found in the original SortedList.
+     * @param { Object } key The key of the element to remove.
+     * @returns { Boolean }
+     */
     remove: function (key) {
         var index = this.indexOfKey(key);
 
@@ -4068,9 +4068,9 @@ extend(SortedList, Collection, {
     },
 
     /**
-    * Removes the element at the specified index of the SortedList.
-    * @param {Number} index The zero-based index of the element to remove.
-    */
+     * Removes the element at the specified index of the SortedList.
+     * @param {Number} index The zero-based index of the element to remove.
+     */
     removeAt: function (index) {
         assertType(index, Number);
 
@@ -4086,10 +4086,10 @@ extend(SortedList, Collection, {
     },
 
     /**
-    * Sets the value associated with the specified key.
-    * @param {Object} key The key whose value to get or set.
-    * @param {Object} value The value associated with the specified key.
-    */
+     * Sets the value associated with the specified key.
+     * @param {Object} key The key whose value to get or set.
+     * @param {Object} value The value associated with the specified key.
+     */
     set: function (key, value) {
         var index = this.indexOfKey(key);
 
@@ -4102,16 +4102,16 @@ extend(SortedList, Collection, {
     },
 
     /**
-    * Creates an array from the Sorted-List.
-    * @returns {Array}
-    */
+     * Creates an array from the Sorted-List.
+     * @returns {Array}
+     */
     toArray: function () {
         return this.slot.keys;
     },
 
     /**
-    * Sets the capacity to the actual number of elements in the SortedList, if that number is less than 90 percent of current capacity.
-    */
+     * Sets the capacity to the actual number of elements in the SortedList, if that number is less than 90 percent of current capacity.
+     */
     trimExcess: function () {
         var threshold = this.slot.keys.length * 0.9;
 
@@ -4121,12 +4121,12 @@ extend(SortedList, Collection, {
     },
 
     /**
-    * Gets the value associated with the specified key.
-    * @param {Object} key The key whose value to get.
-    * @param {Function} callback When this method returns, callback method is called with the value
-    * associated with the specified key, if the key is found; otherwise, null for the type of the value parameter.
-    * @returns {Boolean}
-    */
+     * Gets the value associated with the specified key.
+     * @param {Object} key The key whose value to get.
+     * @param {Function} callback When this method returns, callback method is called with the value
+     * associated with the specified key, if the key is found; otherwise, null for the type of the value parameter.
+     * @returns {Boolean}
+     */
     tryGetValue: function (key, callback) {
         assertType(callback, Function);
 
