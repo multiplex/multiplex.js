@@ -27,7 +27,9 @@ module.exports = function (grunt) {
 
     // transpile unit tests
     function transpileTests() {
-        var units = grunt.file.expand({ cwd: dirs.unit }, '**/*.js');
+        var units = grunt.file.expand({
+            cwd: dirs.unit
+        }, '**/[^_]*.js');
 
         return Promise.all(units.map(function (file) {
             return rollup.rollup({
@@ -44,6 +46,7 @@ module.exports = function (grunt) {
                     footer: '\n',
                     sourceMap: false,
                     dest: path.join(dirs.build, dirs.test, file),
+                    moduleName: 'mx',
                     globals: function (id) {
                         if (id.endsWith('multiplex')) {
                             return 'mx';
@@ -78,7 +81,9 @@ module.exports = function (grunt) {
 
     grunt.task.registerTask('build-testrunner', 'creates testrunner html/js file to run unit-tests', function () {
         var testrunner = grunt.file.read(path.join(dirs.test, files.testrunner + '.js')),
-            units = grunt.file.expand({ cwd: dirs.unit }, '**/*.js').map(function (file) {
+            units = grunt.file.expand({
+                cwd: dirs.unit
+            }, '**/[^_]*.js').map(function (file) {
                 return '\n    \'./' + file + '\'';
             }),
             modules = 'var modules = [' + units.join(',') + '\n];\n';
