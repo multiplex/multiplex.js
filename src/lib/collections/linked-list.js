@@ -393,7 +393,7 @@ export default class LinkedList extends Collection {
 }
 
 
-function validateNode(node, list) {
+function validateNode(node, list = null) {
     if ((list === null && node._list !== null) || node._list !== list) {
         error('Invalid node list.');
     }
