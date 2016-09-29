@@ -150,7 +150,7 @@ export default class Dictionary extends Collection {
     }
 
     toArray() {
-        return this.keys();
+        return this.table.keys();
     }
 
     get [Symbol.toStringTag]() {
