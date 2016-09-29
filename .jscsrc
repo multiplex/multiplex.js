@@ -101,7 +101,7 @@
     },
     "disallowTrailingWhitespace": true,
     "disallowTrailingComma": true,
-    "requireLineFeedAtFileEnd": true,
+    "requireLineFeedAtFileEnd": false,
     "requireCapitalizedConstructors": true,
     "validateQuoteMarks": {
         "mark": "'",
