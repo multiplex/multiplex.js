@@ -3125,7 +3125,7 @@ extend(HashSet, Collection, {
                 // this has strictly less than number of items in other, so the following
                 // check suffices for proper subset.
                 else {
-                    return isSubsetOfHashSetWithSameEC(this, other);
+                    return containsAllElements(other, this);
                 }
             }
         }
@@ -3190,7 +3190,7 @@ extend(HashSet, Collection, {
             }
 
             else {
-                return isSubsetOfHashSetWithSameEC(this, other);
+                return containsAllElements(other, this);
             }
         }
 
@@ -3414,20 +3414,6 @@ function containsAllElements(set, other) {
 
     forOf(other, function (element) {
         if (!set.contains(element)) {
-            res = false;
-            return res;
-        }
-    });
-
-    return res;
-}
-
-
-function isSubsetOfHashSetWithSameEC(set, other) {
-    var res = true;
-
-    forOf(set, function (element) {
-        if (!other.contains(element)) {
             res = false;
             return res;
         }
