@@ -154,7 +154,7 @@ export default class HashSet extends Collection {
                 // this has strictly less than number of items in other, so the following
                 // check suffices for proper subset.
                 else {
-                    return isSubsetOfHashSetWithSameEC(this, other);
+                    return containsAllElements(other, this);
                 }
             }
         }
@@ -219,7 +219,7 @@ export default class HashSet extends Collection {
             }
 
             else {
-                return isSubsetOfHashSetWithSameEC(this, other);
+                return containsAllElements(other, this);
             }
         }
 
@@ -440,17 +440,6 @@ function areEqualityComparersEqual(set1, set2) {
 function containsAllElements(set, other) {
     for (let element of other) {
         if (!set.contains(element)) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-
-function isSubsetOfHashSetWithSameEC(set, other) {
-    for (let element of set) {
-        if (!other.contains(element)) {
             return false;
         }
     }
