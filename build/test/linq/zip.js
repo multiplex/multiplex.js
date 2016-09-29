@@ -6,6 +6,30 @@
 
 mx = 'default' in mx ? mx['default'] : mx;
 
+var arr = [1, 2, 3, 4, 5];
+var collection = new mx.Collection(arr);
+var list = new mx.List(arr);
+var linkedList = new mx.LinkedList(arr);
+var hashSet = new mx.HashSet(arr);
+var stack = new mx.Stack(arr);
+var queue = new mx.Queue(arr);
+var set = new mx.Set(arr);
+
+var map = new mx.Map(mx(arr).select(function (t) {
+    return [t, t];
+}));
+
+var dictionary = mx(arr).toDictionary(function (t) {
+    return t;
+});
+
+var lookup = mx(arr).toLookup(function (t) {
+    return t;
+});
+
+var readOnlyCollection = list.asReadOnly();
+var sortedList = new mx.SortedList(dictionary);
+
 var qunit = typeof QUnit === 'undefined' ? require('qunitjs') : QUnit;
 var qmodule = qunit.module;
 var qtest = qunit.test;
@@ -21,17 +45,17 @@ qtest('homogeneous zip', function (assert) {
         return t + u;
     }).toArray(), ['ac', 'bd'], 'Zip two string objects!');
 
-    assert.deepEqual(new mx.List(1, 2).zip(new mx.List(3, 4), function (t, u) {
+    assert.deepEqual(list.zip(list, function (t, u) {
         return t + u;
-    }).toArray(), [4, 6], 'Zip two Lists!');
+    }).toArray(), [2, 4, 6, 8, 10], 'Zip two Lists!');
 
-    assert.deepEqual(new mx.Set([1, 2]).zip(new mx.Set([3, 4]), function (t, u) {
+    assert.deepEqual(set.zip(set, function (t, u) {
         return t + u;
-    }).toArray(), [4, 6], 'Zip two Sets!');
+    }).toArray(), [2, 4, 6, 8, 10], 'Zip two Sets!');
 
-    assert.deepEqual(new mx.Map([[1, 2]]).zip(new mx.Map([[3, 4]]), function (t, u) {
+    assert.deepEqual(map.zip(map, function (t, u) {
         return t[0] + u[0];
-    }).toArray(), [4], 'Zip two Maps!');
+    }).toArray(), [2, 4, 6, 8, 10], 'Zip two Maps!');
 });
 
 

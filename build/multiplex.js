@@ -1720,7 +1720,7 @@ extend(Dictionary, Collection, {
     },
 
     toArray: function () {
-        return this.keys();
+        return this.table.keys();
     },
 
     toString: function () {
@@ -2369,8 +2369,9 @@ function LinkedList(collection) {
     this.head = null;
 
     if (collection) {
+        var list = this;
         forOf(collection, function (element) {
-            this.addLast(element);
+            list.addLast(element);
         });
     }
 }
@@ -2493,7 +2494,7 @@ extend(LinkedList, Collection, {
 
         if (value instanceof LinkedListNode) {
             node = value;
-            validateNode(node);
+            validateNode(node, null);
 
             if (this.head === null) {
                 this.insertNodeToEmptyList(node);
@@ -2521,7 +2522,7 @@ extend(LinkedList, Collection, {
 
         if (value instanceof LinkedListNode) {
             node = value;
-            validateNode(node);
+            validateNode(node, null);
 
             if (this.head === null) {
                 this.insertNodeToEmptyList(node);
@@ -2675,7 +2676,7 @@ extend(LinkedList, Collection, {
         assertType(node, LinkedListNode);
         assertType(newNode, LinkedListNode);
 
-        validateNode(newNode);
+        validateNode(newNode, null);
         validateNode(node, this);
 
         newNode._list = this;
@@ -2689,7 +2690,7 @@ extend(LinkedList, Collection, {
 
     insertNodeToEmptyList: function (newNode) {
         assertType(newNode, LinkedListNode);
-        validateNode(newNode);
+        validateNode(newNode, null);
 
         newNode._list = this;
         newNode._next = newNode;

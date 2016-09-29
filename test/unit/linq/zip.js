@@ -1,4 +1,5 @@
 import mx from '../../multiplex';
+import * as mocks from './_mocks';
 import {
     qmodule,
     qtest
@@ -15,17 +16,17 @@ qtest('homogeneous zip', function (assert) {
         return t + u;
     }).toArray(), ['ac', 'bd'], 'Zip two string objects!');
 
-    assert.deepEqual(new mx.List(1, 2).zip(new mx.List(3, 4), function (t, u) {
+    assert.deepEqual(mocks.list.zip(mocks.list, function (t, u) {
         return t + u;
-    }).toArray(), [4, 6], 'Zip two Lists!');
+    }).toArray(), [2, 4, 6, 8, 10], 'Zip two Lists!');
 
-    assert.deepEqual(new mx.Set([1, 2]).zip(new mx.Set([3, 4]), function (t, u) {
+    assert.deepEqual(mocks.set.zip(mocks.set, function (t, u) {
         return t + u;
-    }).toArray(), [4, 6], 'Zip two Sets!');
+    }).toArray(), [2, 4, 6, 8, 10], 'Zip two Sets!');
 
-    assert.deepEqual(new mx.Map([[1, 2]]).zip(new mx.Map([[3, 4]]), function (t, u) {
+    assert.deepEqual(mocks.map.zip(mocks.map, function (t, u) {
         return t[0] + u[0];
-    }).toArray(), [4], 'Zip two Maps!');
+    }).toArray(), [2, 4, 6, 8, 10], 'Zip two Maps!');
 });
 
 
