@@ -155,7 +155,7 @@ extend(Dictionary, Collection, {
     },
 
     toArray: function () {
-        return this.keys();
+        return this.table.keys();
     },
 
     toString: function () {
