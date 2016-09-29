@@ -3978,7 +3978,7 @@ class SortedList extends Collection {
     * @returns {Collection}
     */
     keys() {
-        return new Collection(this.slot.keys.slice(0, this.slot.size));
+        return this.slot.keys;
     }
 
     /**
@@ -3986,7 +3986,7 @@ class SortedList extends Collection {
     * @returns {Collection}
     */
     values() {
-        return new Collection(this.slot.values.slice(0, this.slot.size));
+        return this.slot.values;
     }
 
     /**
