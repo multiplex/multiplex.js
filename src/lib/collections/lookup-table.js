@@ -123,7 +123,7 @@ export class LookupTableIterator extends Iterator {
         super(() => {
             if (++index < size) {
                 return {
-                    value: slots[index++].grouping,
+                    value: slots[index].grouping,
                     done: false
                 };
             }
