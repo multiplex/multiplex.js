@@ -8,21 +8,19 @@ var hashSet = new mx.HashSet(arr);
 var stack = new mx.Stack(arr);
 var queue = new mx.Queue(arr);
 var set = new mx.Set(arr);
-
-var map = new mx.Map(mx(arr).select(function (t) {
-    return [t, t];
-}));
-
-var dictionary = mx(arr).toDictionary(function (t) {
-    return t;
-});
-
-var lookup = mx(arr).toLookup(function (t) {
-    return t;
-});
-
+var map = new mx.Map();
+var dictionary = new mx.Dictionary();
+var sortedList = new mx.SortedList();
 var readOnlyCollection = list.asReadOnly();
-var sortedList = new mx.SortedList(dictionary);
+var lookup = new mx.Lookup(arr, function (t) {
+    return t;
+});
+
+for (var i = 0; i < arr.length; i++) {
+    map.set(arr[i], arr[i]);
+    dictionary.set(arr[i], arr[i]);
+    sortedList.add(arr[i], arr[i]);
+}
 
 export {
     collection,
