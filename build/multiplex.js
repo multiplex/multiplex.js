@@ -5355,7 +5355,7 @@ function linq(iterable) {
         * @returns {Object}
         */
         aggregate: function (seed, func, resultSelector) {
-            return aggregateIterator(this, func, resultSelector);
+            return aggregateIterator(this, seed, func, resultSelector);
         },
 
         /**
