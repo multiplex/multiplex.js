@@ -84,7 +84,7 @@ export default function linq(iterable) {
         * @returns {Object}
         */
         aggregate: function (seed, func, resultSelector) {
-            return aggregate(this, func, resultSelector);
+            return aggregate(this, seed, func, resultSelector);
         },
 
         /**
