@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 3.0.0 (September 30, 2016)
+* Version 3.0.0 (October 01, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -1024,10 +1024,10 @@ function bufferTo(value, array, index) {
 }
 
 /**
-* Initializes a new instance of the abstract Collection class.
-* @param {Iterable=} value Iterable whose elements are copied to the new collection.
-*/
-class Collection extends ArrayIterable {
+ * Initializes a new instance of the abstract Collection class.
+ * @param {Iterable=} value Iterable whose elements are copied to the new collection.
+ */
+class Collection extends Iterable {
     constructor(value = null) {
         if (value !== null && value !== undefined) {
             value = isArrayLike(value) ? value : buffer(value);
@@ -1037,28 +1037,40 @@ class Collection extends ArrayIterable {
     }
 
     /**
-    * Gets the number of elements contained in the Collection.
-    * @returns {Number}
-    */
+     * Gets the number of elements contained in the Collection.
+     * @returns {Number}
+     */
     count() {
         return this.toArray().length;
     }
 
     /**
-    * Copies the Collection to an existing one-dimensional Array, starting at the specified array index.
-    * @param {Array} array The one-dimensional Array that is the destination of the elements copied from Collection.
-    * @param {Number} arrayIndex The zero-based index in array at which copying begins.
-    */
+     * Copies the Collection to an existing one-dimensional Array, starting at the specified array index.
+     * @param {Array} array The one-dimensional Array that is the destination of the elements copied from Collection.
+     * @param {Number} arrayIndex The zero-based index in array at which copying begins.
+     */
     copyTo(array, arrayIndex) {
         bufferTo(this.toArray(), array, arrayIndex);
     }
 
-    get [Symbol.toStringTag]() {
+    /**
+     * Creates an array from the Iterable.
+     * @returns {Array}
+     */
+    toArray() {
+        return this[iterableSymbol] || [];
+    }
+
+    get[Symbol.toStringTag]() {
         return 'Collection';
     }
 
     toString() {
         return '[Collection]';
+    }
+
+    [Symbol.iterator]() {
+        return new ArrayIterator(this.toArray());
     }
 }
 
@@ -2821,7 +2833,7 @@ class LookupTableIterator extends Iterator {
         super(() => {
             if (++index < size) {
                 return {
-                    value: slots[index++].grouping,
+                    value: slots[index].grouping,
                     done: false
                 };
             }
