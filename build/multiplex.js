@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 3.0.0 (September 29, 2016)
+* Version 3.0.0 (September 30, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -1629,7 +1629,7 @@ class Dictionary extends Collection {
     }
 
     toArray() {
-        return this.keys();
+        return this.table.keys();
     }
 
     get [Symbol.toStringTag]() {
@@ -2671,7 +2671,7 @@ class LinkedList extends Collection {
 }
 
 
-function validateNode(node, list) {
+function validateNode(node, list = null) {
     if ((list === null && node._list !== null) || node._list !== list) {
         error('Invalid node list.');
     }
@@ -4390,9 +4390,10 @@ function repeatIterator(element, count) {
     });
 }
 
-function aggregateIterator(source, seed, func, resultSelector) {
+function aggregateIterator(source, seed, func, resultSelector = t => t) {
     assertNotNull(source);
     assertType(func, Function);
+    resultSelector = resultSelector;
     assertType(resultSelector, Function);
 
     let result = seed;
