@@ -1,28 +1,29 @@
 import mx from '../../multiplex';
 
-var arr = [1, 2, 3, 4, 5];
-var collection = new mx.Collection(arr);
-var list = new mx.List(arr);
-var linkedList = new mx.LinkedList(arr);
-var hashSet = new mx.HashSet(arr);
-var stack = new mx.Stack(arr);
-var queue = new mx.Queue(arr);
-var set = new mx.Set(arr);
+var array = [1, 2, 3, 4, 5];
+var collection = new mx.Collection(array);
+var list = new mx.List(array);
+var linkedList = new mx.LinkedList(array);
+var hashSet = new mx.HashSet(array);
+var stack = new mx.Stack(array);
+var queue = new mx.Queue(array);
+var set = new mx.Set(array);
 var map = new mx.Map();
 var dictionary = new mx.Dictionary();
 var sortedList = new mx.SortedList();
 var readOnlyCollection = list.asReadOnly();
-var lookup = new mx.Lookup(arr, function (t) {
+var lookup = new mx.Lookup(array, function (t) {
     return t;
 });
 
-for (var i = 0; i < arr.length; i++) {
-    map.set(arr[i], arr[i]);
-    dictionary.set(arr[i], arr[i]);
-    sortedList.add(arr[i], arr[i]);
+for (var i = 0; i < array.length; i++) {
+    map.set(array[i], array[i]);
+    dictionary.set(array[i], array[i]);
+    sortedList.add(array[i], array[i]);
 }
 
 export {
+    array,
     collection,
     list,
     linkedList,
