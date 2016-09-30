@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (September 30, 2016)
+* Version 2.0.0 (October 01, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -1095,36 +1095,48 @@ function bufferTo(value, array, index) {
 }
 
 /**
-* Initializes a new instance of the abstract Collection class.
-*/
+ * Initializes a new instance of the abstract Collection class.
+ */
 function Collection(value) {
     if (value !== null && value !== undefined) {
         value = isArrayLike(value) ? value : buffer(value);
     }
 
-    ArrayIterable.call(this, value);
+    Iterable.call(this, value);
 }
 
-extend(Collection, ArrayIterable, {
+extend(Collection, Iterable, {
     /**
-    * Gets the number of elements contained in the Collection.
-    * @returns {Number}
-    */
+     * Gets the number of elements contained in the Collection.
+     * @returns {Number}
+     */
     count: function () {
         return this.toArray().length;
     },
 
     /**
-    * Copies the Collection to an existing one-dimensional Array, starting at the specified array index.
-    * @param {Array} array The one-dimensional Array that is the destination of the elements copied from Collection.
-    * @param {Number} arrayIndex The zero-based index in array at which copying begins.
-    */
+     * Copies the Collection to an existing one-dimensional Array, starting at the specified array index.
+     * @param {Array} array The one-dimensional Array that is the destination of the elements copied from Collection.
+     * @param {Number} arrayIndex The zero-based index in array at which copying begins.
+     */
     copyTo: function (array, arrayIndex) {
         bufferTo(this.toArray(), array, arrayIndex);
     },
 
+    /**
+    * Creates an array from the Iterable.
+    * @returns {Array}
+    */
+    toArray: function () {
+        return this[iterableSymbol] || [];
+    },
+
     toString: function () {
         return '[Collection]';
+    },
+
+    '@@iterator': function () {
+        return new ArrayIterator(this.toArray());
     }
 });
 
@@ -2883,7 +2895,7 @@ function LookupTableIterator(lookup) {
     Iterator.call(this, function () {
         if (++index < size) {
             return {
-                value: slots[index++].grouping,
+                value: slots[index].grouping,
                 done: false
             };
         }
