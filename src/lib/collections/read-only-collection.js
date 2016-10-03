@@ -1,6 +1,7 @@
 import Collection from './collection';
 import ArrayIterator from '../iteration/iterator-array';
 import isArrayLike from '../utils/is-array-like';
+import buffer from '../utils/buffer';
 import error from '../utils/error';
 import extend from '../utils/extend';
 import defineProperty from '../utils/define-property';
@@ -13,6 +14,7 @@ export default function ReadOnlyCollection(list) {
         error('Invalid argument!');
     }
 
+    list = buffer(list);
     Collection.call(this, list);
     this.list = list;
 
@@ -35,7 +37,7 @@ extend(ReadOnlyCollection, Collection, {
      * @returns {Number}
      */
     count: function () {
-        return this.length;
+        return this.list.length;
     },
 
     /**
@@ -44,7 +46,7 @@ extend(ReadOnlyCollection, Collection, {
      * @returns {Boolean}
      */
     contains: function (item) {
-        this.list.contains(item);
+        return this.list.indexOf(item) !== -1;
     },
 
     /**
@@ -53,7 +55,7 @@ extend(ReadOnlyCollection, Collection, {
      * @returns {Object}
      */
     get: function (index) {
-        return this.list.get(index);
+        return this[index];
     },
 
     /**
@@ -87,7 +89,7 @@ extend(ReadOnlyCollection, Collection, {
      * @returns {Array}
      */
     toArray: function () {
-        return this.list.toArray();
+        return this.list.slice();
     },
 
     toString: function () {
