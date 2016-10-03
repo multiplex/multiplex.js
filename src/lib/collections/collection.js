@@ -23,6 +23,8 @@ export default class Collection extends Iterable {
      * @returns {Number}
      */
     count() {
+        // if not overridden in subclass,
+        // gets the count of the collection by converting the collection to an array
         return this.toArray().length;
     }
 
@@ -40,7 +42,9 @@ export default class Collection extends Iterable {
      * @returns {Array}
      */
     toArray() {
-        return this[iterableSymbol] || [];
+        // if the collection does not have an iterable value
+        // converts the collection to an array buffering the collection
+        return this[iterableSymbol] || buffer(this, true);
     }
 
     get[Symbol.toStringTag]() {
@@ -52,6 +56,8 @@ export default class Collection extends Iterable {
     }
 
     [Symbol.iterator]() {
-        return new ArrayIterator(this.toArray());
+        // if not overridden in subclass,
+        // gets the specified iterable's iterator or an empty iterator
+        return new ArrayIterator(this[iterableSymbol] || []);
     }
 }
