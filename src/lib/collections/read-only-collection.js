@@ -1,5 +1,6 @@
 import Collection from './collection';
 import ArrayIterator from '../iteration/iterator-array';
+import buffer from '../utils/buffer';
 import isArrayLike from '../utils/is-array-like';
 import error from '../utils/error';
 import {
@@ -12,6 +13,7 @@ export default class ReadOnlyCollection extends Collection {
             error('Invalid argument!');
         }
 
+        list = buffer(list);
         super(list);
         this.list = list;
 
@@ -27,7 +29,7 @@ export default class ReadOnlyCollection extends Collection {
      * @returns {Number}
      */
     count() {
-        return this.length;
+        return this.list.length;
     }
 
     /**
@@ -36,7 +38,7 @@ export default class ReadOnlyCollection extends Collection {
      * @returns {Boolean}
      */
     contains(item) {
-        this.list.contains(item);
+        return this.list.includes(item);
     }
 
     /**
@@ -45,7 +47,7 @@ export default class ReadOnlyCollection extends Collection {
      * @returns {Object}
      */
     get(index) {
-        return this.list.get(index);
+        return this[index];
     }
 
     /**
@@ -91,7 +93,7 @@ export default class ReadOnlyCollection extends Collection {
      * @returns {Array}
      */
     toArray() {
-        return this.list.toArray();
+        return this.list.slice();
     }
 
     get[Symbol.toStringTag]() {
