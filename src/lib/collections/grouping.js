@@ -8,6 +8,14 @@ export default function Grouping(key, elements) {
 
 extend(Grouping, Collection, {
     /**
+    * Gets the number of elements in the Grouping.
+    * @returns {Number}
+    */
+    count: function () {
+        return this.elements.length;
+    },
+
+    /**
     * Creates an array from the Grouping.
     * @returns {Array}
     */
