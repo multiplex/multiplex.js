@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 3.0.0 (October 01, 2016)
+* Version 3.0.0 (October 03, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -957,29 +957,30 @@ function isString(val) {
 /**
 * Buffers an Iterale object into an array.
 * @param {Iterale} value An Iterale object.
+* @param {Boolean} forceIterate If true, buffers the specified iterable object using its iterator.
 * @returns {Array}
 */
-function buffer(value) {
-    if (value === null || value === undefined) {        // empty value
-        return [];
-    }
+function buffer(value, forceIterate = false) {
+    if (!forceIterate) {
+        if (value === null || value === undefined) {        // empty value
+            return [];
+        }
 
-    else if (isArrayLike(value)) {                      // array-likes have fixed element count
-        return arrayBuffer(value);
-    }
+        else if (isArrayLike(value)) {                      // array-likes have fixed element count
+            return arrayBuffer(value);
+        }
 
-    else if (value instanceof Collection) {             // Collections have 'toArray' method
-        return arrayBuffer(value.toArray());
-    }
+        else if (value instanceof Collection) {             // Collections have 'toArray' method
+            return arrayBuffer(value.toArray());
+        }
 
-    else if (value instanceof ArrayIterable) {          // ArrayIterable wrapper
-        return arrayBuffer(value.toArray());
+        else if (value instanceof ArrayIterable) {          // ArrayIterable wrapper
+            return arrayBuffer(value.toArray());
+        }
     }
 
     // do it the hard way
-    else {
-        return [...$iterable(value)];
-    }
+    return [...$iterable(value)];
 }
 
 
@@ -1041,6 +1042,8 @@ class Collection extends Iterable {
      * @returns {Number}
      */
     count() {
+        // if not overridden in subclass,
+        // gets the count of the collection by converting the collection to an array
         return this.toArray().length;
     }
 
@@ -1058,7 +1061,9 @@ class Collection extends Iterable {
      * @returns {Array}
      */
     toArray() {
-        return this[iterableSymbol] || [];
+        // if the collection does not have an iterable value
+        // converts the collection to an array buffering the collection
+        return this[iterableSymbol] || buffer(this, true);
     }
 
     get[Symbol.toStringTag]() {
@@ -1070,7 +1075,9 @@ class Collection extends Iterable {
     }
 
     [Symbol.iterator]() {
-        return new ArrayIterator(this.toArray());
+        // if not overridden in subclass,
+        // gets the specified iterable's iterator or an empty iterator
+        return new ArrayIterator(this[iterableSymbol] || []);
     }
 }
 
@@ -1080,6 +1087,7 @@ class ReadOnlyCollection extends Collection {
             error('Invalid argument!');
         }
 
+        list = buffer(list);
         super(list);
         this.list = list;
 
@@ -1095,7 +1103,7 @@ class ReadOnlyCollection extends Collection {
      * @returns {Number}
      */
     count() {
-        return this.length;
+        return this.list.length;
     }
 
     /**
@@ -1104,7 +1112,7 @@ class ReadOnlyCollection extends Collection {
      * @returns {Boolean}
      */
     contains(item) {
-        this.list.contains(item);
+        return this.list.includes(item);
     }
 
     /**
@@ -1113,7 +1121,7 @@ class ReadOnlyCollection extends Collection {
      * @returns {Object}
      */
     get(index) {
-        return this.list.get(index);
+        return this[index];
     }
 
     /**
@@ -1159,7 +1167,7 @@ class ReadOnlyCollection extends Collection {
      * @returns {Array}
      */
     toArray() {
-        return this.list.toArray();
+        return this.list.slice();
     }
 
     get[Symbol.toStringTag]() {
@@ -1638,10 +1646,6 @@ class Dictionary extends Collection {
     */
     remove(key) {
         return this.table.remove(key);
-    }
-
-    toArray() {
-        return this.table.keys();
     }
 
     get [Symbol.toStringTag]() {
@@ -2644,10 +2648,6 @@ class LinkedList extends Collection {
         return 'LinkedList';
     }
 
-    toArray() {
-        return buffer(this);
-    }
-
     toString() {
         return '[LinkedList]';
     }
@@ -2694,6 +2694,14 @@ class Grouping extends Collection {
         super();
         this.key = key;
         this.elements = elements;
+    }
+
+    /**
+    * Gets the number of elements in the Grouping.
+    * @returns {Number}
+    */
+    count() {
+        return this.elements.length;
     }
 
     /**
@@ -4069,14 +4077,6 @@ class SortedList extends Collection {
         }
 
         this.insert(~index, key, value);
-    }
-
-    /**
-    * Creates an array from the Sorted-List.
-    * @returns {Array}
-    */
-    toArray() {
-        return this.slot.keys;
     }
 
     /**
