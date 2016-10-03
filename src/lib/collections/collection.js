@@ -23,6 +23,8 @@ extend(Collection, Iterable, {
      * @returns {Number}
      */
     count: function () {
+        // if not overridden in subclass,
+        // gets the count of the collection by converting the collection to an array
         return this.toArray().length;
     },
 
@@ -40,7 +42,9 @@ extend(Collection, Iterable, {
     * @returns {Array}
     */
     toArray: function () {
-        return this[iterableSymbol] || [];
+        // if the collection does not have an iterable value
+        // converts the collection to an array buffering the collection
+        return this[iterableSymbol] || buffer(this, true);
     },
 
     toString: function () {
@@ -48,6 +52,8 @@ extend(Collection, Iterable, {
     },
 
     '@@iterator': function () {
-        return new ArrayIterator(this.toArray());
+        // if not overridden in subclass,
+        // gets the specified iterable's iterator or an empty iterator
+        return new ArrayIterator(this[iterableSymbol] || []);
     }
 });
