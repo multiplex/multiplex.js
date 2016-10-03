@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (October 02, 2016)
+* Version 2.0.0 (October 03, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -1012,45 +1012,46 @@ function isString(val) {
 /**
 * Buffers an Iterale object into an array.
 * @param {Iterale} value An Iterale object.
+* @param {Boolean} forceIterate If true, buffers the specified iterable object using its iterator.
 * @returns {Array}
 */
-function buffer(value) {
-    if (value === null || value === undefined) {        // empty value
-        return [];
-    }
+function buffer(value, forceIterate) {
+    if (!forceIterate) {
+        if (value === null || value === undefined) {        // empty value
+            return [];
+        }
 
-    else if (isArrayLike(value)) {                      // array-likes have fixed element count
-        return arrayBuffer(value);
-    }
+        else if (isArrayLike(value)) {                      // array-likes have fixed element count
+            return arrayBuffer(value);
+        }
 
-    else if (value instanceof Collection) {             // Collections have 'toArray' method
-        return arrayBuffer(value.toArray());
-    }
+        else if (value instanceof Collection) {             // Collections have 'toArray' method
+            return arrayBuffer(value.toArray());
+        }
 
-    else if (value instanceof ArrayIterable) {          // ArrayIterable wrapper
-        return arrayBuffer(value.toArray());
+        else if (value instanceof ArrayIterable) {          // ArrayIterable wrapper
+            return arrayBuffer(value.toArray());
+        }
     }
 
     // do it the hard way
-    else {
-        var it = $iterator(value),
-            count = 0,
-            length = 16,
-            arr = new Array(length),
-            result;
+    var it = $iterator(value),
+        count = 0,
+        length = 16,
+        arr = new Array(length),
+        result;
 
-        while (!(result = it.next()).done) {
-            if (count >= length) {
-                length *= 4;
-                arr.length = length;
-            }
-
-            arr[count++] = result.value;
+    while (!(result = it.next()).done) {
+        if (count >= length) {
+            length *= 4;
+            arr.length = length;
         }
 
-        arr.length = count;
-        return arr;
+        arr[count++] = result.value;
     }
+
+    arr.length = count;
+    return arr;
 }
 
 
@@ -1111,6 +1112,8 @@ extend(Collection, Iterable, {
      * @returns {Number}
      */
     count: function () {
+        // if not overridden in subclass,
+        // gets the count of the collection by converting the collection to an array
         return this.toArray().length;
     },
 
@@ -1128,7 +1131,9 @@ extend(Collection, Iterable, {
     * @returns {Array}
     */
     toArray: function () {
-        return this[iterableSymbol] || [];
+        // if the collection does not have an iterable value
+        // converts the collection to an array buffering the collection
+        return this[iterableSymbol] || buffer(this, true);
     },
 
     toString: function () {
@@ -1136,7 +1141,9 @@ extend(Collection, Iterable, {
     },
 
     '@@iterator': function () {
-        return new ArrayIterator(this.toArray());
+        // if not overridden in subclass,
+        // gets the specified iterable's iterator or an empty iterator
+        return new ArrayIterator(this[iterableSymbol] || []);
     }
 });
 
@@ -1145,6 +1152,7 @@ function ReadOnlyCollection(list) {
         error('Invalid argument!');
     }
 
+    list = buffer(list);
     Collection.call(this, list);
     this.list = list;
 
@@ -1167,7 +1175,7 @@ extend(ReadOnlyCollection, Collection, {
      * @returns {Number}
      */
     count: function () {
-        return this.length;
+        return this.list.length;
     },
 
     /**
@@ -1176,7 +1184,7 @@ extend(ReadOnlyCollection, Collection, {
      * @returns {Boolean}
      */
     contains: function (item) {
-        this.list.contains(item);
+        return this.list.indexOf(item) !== -1;
     },
 
     /**
@@ -1185,7 +1193,7 @@ extend(ReadOnlyCollection, Collection, {
      * @returns {Object}
      */
     get: function (index) {
-        return this.list.get(index);
+        return this[index];
     },
 
     /**
@@ -1219,7 +1227,7 @@ extend(ReadOnlyCollection, Collection, {
      * @returns {Array}
      */
     toArray: function () {
-        return this.list.toArray();
+        return this.list.slice();
     },
 
     toString: function () {
@@ -1729,10 +1737,6 @@ extend(Dictionary, Collection, {
     */
     remove: function (key) {
         return this.table.remove(key);
-    },
-
-    toArray: function () {
-        return this.table.keys();
     },
 
     toString: function () {
@@ -2712,10 +2716,6 @@ extend(LinkedList, Collection, {
         this.size++;
     },
 
-    toArray: function () {
-        return buffer(this);
-    },
-
     toString: function () {
         return '[LinkedList]';
     },
@@ -2758,6 +2758,14 @@ function Grouping(key, elements) {
 }
 
 extend(Grouping, Collection, {
+    /**
+    * Gets the number of elements in the Grouping.
+    * @returns {Number}
+    */
+    count: function () {
+        return this.elements.length;
+    },
+
     /**
     * Creates an array from the Grouping.
     * @returns {Array}
@@ -4112,14 +4120,6 @@ extend(SortedList, Collection, {
         }
 
         this.insert(~index, key, value);
-    },
-
-    /**
-     * Creates an array from the Sorted-List.
-     * @returns {Array}
-     */
-    toArray: function () {
-        return this.slot.keys;
     },
 
     /**
