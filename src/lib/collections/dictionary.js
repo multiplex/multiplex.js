@@ -149,10 +149,6 @@ export default class Dictionary extends Collection {
         return this.table.remove(key);
     }
 
-    toArray() {
-        return this.table.keys();
-    }
-
     get [Symbol.toStringTag]() {
         return 'Dictionary';
     }

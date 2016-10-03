@@ -1,7 +1,6 @@
 import Collection from './collection';
 import Iterator from '../iteration/iterator';
 import LinkedListNode from './linked-list-node';
-import buffer from '../utils/buffer';
 import assertType from '../utils/assert-type';
 import {runtimeEquals} from '../runtime/runtime';
 import error, {ERROR_EMPTY_COLLECTION} from '../utils/error';
@@ -352,10 +351,6 @@ export default class LinkedList extends Collection {
 
     get [Symbol.toStringTag]() {
         return 'LinkedList';
-    }
-
-    toArray() {
-        return buffer(this);
     }
 
     toString() {

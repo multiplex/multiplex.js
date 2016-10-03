@@ -228,14 +228,6 @@ export default class SortedList extends Collection {
     }
 
     /**
-    * Creates an array from the Sorted-List.
-    * @returns {Array}
-    */
-    toArray() {
-        return this.slot.keys;
-    }
-
-    /**
     * Sets the capacity to the actual number of elements in the SortedList, if that number is less than 90 percent of current capacity.
     */
     trimExcess() {
