@@ -8,29 +8,30 @@ import $iterable from '../iteration/iterable-factory';
 /**
 * Buffers an Iterale object into an array.
 * @param {Iterale} value An Iterale object.
+* @param {Boolean} forceIterate If true, buffers the specified iterable object using its iterator.
 * @returns {Array}
 */
-export default function buffer(value) {
-    if (value === null || value === undefined) {        // empty value
-        return [];
-    }
+export default function buffer(value, forceIterate = false) {
+    if (!forceIterate) {
+        if (value === null || value === undefined) {        // empty value
+            return [];
+        }
 
-    else if (isArrayLike(value)) {                      // array-likes have fixed element count
-        return arrayBuffer(value);
-    }
+        else if (isArrayLike(value)) {                      // array-likes have fixed element count
+            return arrayBuffer(value);
+        }
 
-    else if (value instanceof Collection) {             // Collections have 'toArray' method
-        return arrayBuffer(value.toArray());
-    }
+        else if (value instanceof Collection) {             // Collections have 'toArray' method
+            return arrayBuffer(value.toArray());
+        }
 
-    else if (value instanceof ArrayIterable) {          // ArrayIterable wrapper
-        return arrayBuffer(value.toArray());
+        else if (value instanceof ArrayIterable) {          // ArrayIterable wrapper
+            return arrayBuffer(value.toArray());
+        }
     }
 
     // do it the hard way
-    else {
-        return [...$iterable(value)];
-    }
+    return [...$iterable(value)];
 }
 
 
