@@ -8,6 +8,14 @@ export default class Grouping extends Collection {
     }
 
     /**
+    * Gets the number of elements in the Grouping.
+    * @returns {Number}
+    */
+    count() {
+        return this.elements.length;
+    }
+
+    /**
     * Creates an array from the Grouping.
     * @returns {Array}
     */
