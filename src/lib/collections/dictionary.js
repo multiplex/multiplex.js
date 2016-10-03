@@ -154,10 +154,6 @@ extend(Dictionary, Collection, {
         return this.table.remove(key);
     },
 
-    toArray: function () {
-        return this.table.keys();
-    },
-
     toString: function () {
         return '[Dictionary]';
     },

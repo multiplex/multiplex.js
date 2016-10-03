@@ -2,7 +2,6 @@ import Collection from './collection';
 import Iterator from '../iteration/iterator';
 import LinkedListNode from './linked-list-node';
 import forOf from '../utils/for-of';
-import buffer from '../utils/buffer';
 import assertType from '../utils/assert-type';
 import extend from '../utils/extend';
 import {runtimeEquals} from '../runtime/runtime';
@@ -347,10 +346,6 @@ extend(LinkedList, Collection, {
 
         this.head = newNode;
         this.size++;
-    },
-
-    toArray: function () {
-        return buffer(this);
     },
 
     toString: function () {
