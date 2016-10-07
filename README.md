@@ -453,13 +453,13 @@ Now by running the `grunt` command, in the `Multiplex` directory, you can build 
 grunt
 ```
 
-To execute all unit tests using grunt, run `grunt tests` command; This uses [PhantomJS](http://www.phantomjs.org/) to run over 500 unit tests defined in `test` directory, you can also run tests from within your browser by running `test\mx.html` file.
+This will first build Multiplex source code and all unit tests in the `build/` subdirectory, and then executes tests using grunt; you can also run tests from within your browser by running `build\test\testrunner.html` file.
 
 To build a full version of Multiplex use:
 ````
 grunt release
 ````
-When the tests pass, the built version of Multiplex will be put in the `build/` subdirectory, along with the minified copy and associated map file.
+When the tests pass, the built version of Multiplex will be put in the `dist/` subdirectory, along with the minified copy and associated map file.
 
 
 [npm-url]: https://npmjs.org/package/multiplexjs
