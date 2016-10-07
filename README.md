@@ -43,7 +43,7 @@ Multiplex is a set of data-structures and implementation of .Net LINQ methods in
 * [Executing a query](#executing-a-query)
 * [LINQ expression trees](#linq-expression-trees)
 * [Using object literals](#using-object-literals)
-* [Working with Enumerable](#working-with-enumerable)
+* [Working with Iterable](#working-with-iterable)
   - [Multiplex Collections](#--multiplex-collections)
   - [Array and String](#--array-and-string)
   - [Array-like objects (arguments, NodeList, jQuery)](#--array-like-objects-arguments-nodelist-jquery)
@@ -202,32 +202,32 @@ var grp = mx(arr)
 
 
 
-### Working with Enumerable
+### Working with Iterable
 ----------------------------
-*Enumerable* is the base class for all collections that can be enumerated. It contains a `getEnumerator()` method, which returns an *Enumerator* object. *Enumerator* provides the ability to iterate through the collection by exposing a `current` property and `next()` method. *Enumerator* is an implementation of [Iterator Design Pattern](http://en.wikipedia.org/wiki/Iterator).
+*Iterable* is the base class for all objects that can be iterated. It contains a `Symbol.iterator` method, which returns an *Iterator* object. *Iterator* provides the ability to iterate through the collection by exposing a `next()` method. *Iterator* is an implementation of [Iterator Design Pattern](http://en.wikipedia.org/wiki/Iterator).
 
-The methods in *Enumerable* class provide an implementation of the standard query operators for querying data sources which are *Enumerable*, that is, either are sub-class of the *Enumerable* class or implement `getEnumerator()` method. The standard query operators are general purpose methods that follow the LINQ pattern and enable you to express traversal, filter, and projection operations over data in JavaScript.
+The methods in *Iterable* class provide an implementation of the standard query operators for querying data sources which are *Iterable*, that is, either are sub-class of the *Iterable* class or implement `Symbol.iterator` method. The standard query operators are general purpose methods that follow the LINQ pattern and enable you to express traversal, filter, and projection operations over data in JavaScript.
 
-The followings are types which can be used to create an *Enumerable* in Multiplex:
+The followings are types which can be used to create an *Iterable* in Multiplex:
 
 
 
 #### - Multiplex Collections
-All the collections defined in Multiplex are *Enumerable*, and can be used in LINQ queries:
+All the collections defined in Multiplex are *Iterable*, and can be used in LINQ queries:
 ````javascript
 var list = new mx.List([1, 2, 3, 4]);       // a list of numbers
 var set = new mx.HashSet([1, 2, 3, 4]);     // a set of numbers
 var dic = list.toDictionary("t => t");      // a dictionary with numeric keys
 
-list.select(t => t).toArray();            // [1, 2, 3, 4]
-set.select(t => t).toArray();             // [1, 2, 3, 4]
-dic.select(t => t.key).toArray();         // [1, 2, 3, 4]
+list.select(t => t * 2).toArray();            // [2, 4, 6, 8]
+set.select(t => t * 2).toArray();             // [2, 4, 6, 8]
+dic.select(t => t.key * 2).toArray();         // [2, 4, 6, 8]
 ````
 
 
 
 #### - Array and String
-*Array*s and *Strings* are *Enumerable* per ser, because they have a default iteration behavior. This means you can pass *String* or *Array* objects to any method accepting *Iterable* argument without wrapping it in an *Enumerable* object.
+*Array*s and *Strings* are *Iterable* per ser, because they have a default iteration behavior. This means you can pass *String* or *Array* objects to any method accepting *Iterable* argument without wrapping it in an *Iterable* object.
 This comes handy in LINQ operations, so instead of this:
 
 ````javascript
@@ -248,7 +248,7 @@ In practice, LINQ operations accept any argument implementing [ES6 iteration pro
 
 
 #### - Array-like objects: `arguments`, `NodeList`, `jQuery`
-Array-like objects which expose the `length` property can be used as `Enumerable`, examples are `jQuery` objects, collections returned by `document.querySelectorAll` method and the `arguments` object corresponding to the arguments passed to a function.
+Array-like objects which expose the `length` property can be used as `Iterable`, examples are `jQuery` objects, collections returned by `document.querySelectorAll` method and the `arguments` object corresponding to the arguments passed to a function.
 
 The following example uses `jQuery` and Multiplex to get the count of each element in a page:
 ````javascript
@@ -266,7 +266,7 @@ mx(document.querySelectorAll("*"))
   .toArray();
 ````
 
-The following example uses Multiplex to enumerate `arguments` variable available within the `Test` function:
+The following example uses Multiplex to iterate `arguments` variable available within the `Test` function:
 ````javascript
 function Test()
 {
@@ -315,7 +315,7 @@ Read more about [getEnumerator()](https://msdn.microsoft.com/en-us/library/syste
 
 
 #### - Regular JavaScript objects
-Any regular JavaScript object can be used as an *Enumerable* source, if an object does not implement `getEnumerator()` method, Multiplex uses object's enumerable properties, in the same order as that provided by a `for...in` loop, projecting `KeyValuePair` objects with `key` being the name of the property and `value` as value of the property:
+Any regular JavaScript object can be used as an *Iterable* source, if an object does not implement `getEnumerator()` method, Multiplex uses object's enumerable properties, in the same order as that provided by a `for...in` loop, projecting `KeyValuePair` objects with `key` being the name of the property and `value` as value of the property:
 
 ````javascript
 var obj = { name: "myObj", val: 1 };
@@ -325,7 +325,7 @@ mx(obj).toArray();      // [{ key: "name", value: "myObj" }, { key: "val", value
 
 
 #### - ECMAScript 6 iteration protocols
-[Iteration protocols](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols) is an addition of ECMAScript 6. Objects implementing this protocol can be used as an *Enumerable* source in Multiplex and are discussed in the next section.
+[Iteration protocols](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols) is an addition of ECMAScript 6. Objects implementing this protocol can be used as an *Iterable* source in Multiplex and are discussed in the next section.
 
 
 
@@ -335,20 +335,20 @@ mx(obj).toArray();      // [{ key: "name", value: "myObj" }, { key: "val", value
 #### ES6 Iteration protocols
 ECMAScript 6 comes with two iteration protocols: The iterable protocol and the iterator protocol:
 
-* The iterable protocol allows JavaScript objects to define or customize their iteration behavior. In order to be iterable, an object must implement the `@@iterator` method, meaning that the object (or one of the objects up its prototype chain) must have a property with a `Symbol.iterator` key. It is pretty much like the `getEnumerator()` method in the *Enumerable* class.
-* The iterator protocol defines a standard way to produce a sequence of values. An object is an iterator when it implements a `next()` method. It is pretty much like the *Enumerator* class.
+* The iterable protocol allows JavaScript objects to define or customize their iteration behavior. In order to be iterable, an object must implement the `@@iterator` method, meaning that the object (or one of the objects up its prototype chain) must have a property with a `Symbol.iterator` key. It is pretty much like the `getEnumerator()` method in the *Iterable* class.
+* The iterator protocol defines a standard way to produce a sequence of values. An object is an iterator when it implements a `next()` method. It is pretty much like the *Iterable* class.
 
 *Whenever an object needs to be iterated (such as at the beginning of a `for..of` loop), its `@@iterator` method is called with no arguments, and the returned iterator is used to obtain the values to be iterated.*
 
 Both iterable and iterator protocols are supported in Multiplex:
-* Every *Enumerable* object implements *iterable protocol*
-* Every JavaScript object implementing *iterator protocol* can be used as a source to *Enumerable*
+* Every *Iterable* object implements *iterable protocol*
+* Every JavaScript object implementing *iterator protocol* can be used as a source to *Iterable*
 
 
-The following example demonstrates the use of *iterable protocol* and `for-of` loop in an *Enumerable* object:
+The following example demonstrates the use of *iterable protocol* and `for-of` loop in an *Iterable* object:
 
 ````javascript
-var source = mx.range(0, 4);      // An Enumerable of numbers
+var source = mx.range(0, 4);              // An Iterable of numbers
 var iterable = source[Symbol.iterator];   // Retrieve @@iterator method
 
 for(var value of source){
@@ -361,7 +361,7 @@ for(var value of source){
 
 ````
 
-The following example demonstrates the use of `iterator protocol` in a `Set` to create an `Enumerable`:
+The following example demonstrates the use of `iterator protocol` in a `Set` to create an `Iterable`:
 
 *(`String`, `Array`, `TypedArray`, `Map` and `Set` are all built-in JavaScript iterables, because the prototype objects of them all have an `@@iterator` method.)*
 
@@ -373,9 +373,9 @@ mx(set).toArray();                // [1, 2, 3]
 #### Generator functions
 Generators are functions which can be exited and later re-entered. Their context (variable bindings) will be saved across re-entrances. Generators are part of ES6 iteration protocols.
 
-The `function*` declaration defines a generator function, which returns a *Generator* object. A generator object is both, *iterator* and *iterable* and is a simple, efficient way to create an *Enumerable*:
+The `function*` declaration defines a generator function, which returns a *Generator* object. A generator object is both, *iterator* and *iterable* and is a simple, efficient way to create an *Iterable*:
 
-The following example demonstrates the use of *generator function* in to create an *Enumerable*:
+The following example demonstrates the use of *generator function* in to create an *Iterable*:
 
 ````javascript
 var gen = function* () {
@@ -387,10 +387,10 @@ var gen = function* () {
 mx(gen).toArray();    // [1, 2, 3]
 ````
 
-*In practice, using generator function, is the best way to create a custom Enumerable.*
+*In practice, using generator function, is the best way to create a custom Iterable.*
 
 #### Legacy generator functions
-Generator functions are great to create an *Enumerable*, however, browser support is at this point very limited (Chrome 39+, FireFox 36+)
+Generator functions are great to create an *Iterable*, however, browser support is at this point very limited (Chrome 39+, FireFox 36+)
 
 To simulate generators functions, Multiplex supports an alternative legacy syntax which makes use of `closure` to create a stateful generator function. You have to use Multiplex's *Enumerator* class to initiate a generator function. 
 When the *Enumerator*'s `next()` method is called, the generator function's body is executed and a `yielder` parameter is passed to the generator function. The `yielder` parameter is itself a **function** which upon execution yields  the value to be returned from the *Enumerator*:
