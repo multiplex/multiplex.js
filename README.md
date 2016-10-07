@@ -24,6 +24,8 @@ Multiplex is a set of data-structures and implementation of .Net LINQ methods in
   - `Queue` - first-in, first-out (FIFO) collection of objects.
   - `Stack` - last-in-first-out (LIFO) collection of objects.
   - `Lookup` - collection of keys each mapped to one or more values.
+  - `Map` - collection of key/value pairs.
+  - `Set` - collection of unique values of any type.
 * Over 40 LINQ methods (90 method overloads).
 * LINQ lazy evaluation.
 * TypeScript support.
@@ -91,7 +93,7 @@ Lambda comes from the *Lambda Calculus* and refers to anonymous functions in pro
 
 Previous example using Lambda notation:
 ````javascript
-var query = mx([1, 2, 3, 4, 5]).select("t => t * t");
+var query = mx([1, 2, 3, 4, 5]).select(t => t * t);
 ````
 
 
@@ -105,7 +107,7 @@ In a query that returns a sequence of values, the query variable itself never ho
 The following example uses the `toArray` method to immediately evaluate a sequence into an array:
 
 ````javascript
-mx([1, 2, 3, 4, 5]).select("t => t * t").toArray();   // [1, 4, 9, 16, 25]
+mx([1, 2, 3, 4, 5]).select(t => t * t).toArray();   // [1, 4, 9, 16, 25]
 ````
 
 The following example uses the `sum` method to evaluate sum of the first 10 numbers:
@@ -117,7 +119,7 @@ mx([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).sum();            // 55
 And the following example uses the `forEach` method to iterate over an array of numbers and print them in the developer console:
 
 ````javascript
-mx([1, 2, 3, 4, 5]).forEach("t => console.log(t)");
+mx([1, 2, 3, 4, 5]).forEach(t => console.log(t));
 // 1
 // 2
 // 3
@@ -133,8 +135,8 @@ Since LINQ queries execution is deferred, you can chain different LINQ operation
 
 ````javascript
 mx.range(0, 1000)
-    .where("t => t % 2 == 0")
-    .orderByDescending("t => t")
+    .where(t => t % 2 == 0)
+    .orderByDescending(t => t)
     .take(10)
     .toArray();
 ````
@@ -152,7 +154,7 @@ Note that the query is executed only 10 times, as soon as the query reaches the 
 An object literal is a list of zero or more pairs of property names and associated values of an object, enclosed in curly braces `{}`. Anonymous types typically are used in the select clause of a query expression to return a subset of the properties from each object in the source sequence:
 
 ````javascript
-mx([1, 2, 3]).select("t => { val: t }").toArray();   // [{ val: 1 }, { val: 2 }, { val: 3 }]
+mx([1, 2, 3]).select(t => ({ val: t })).toArray();   // [{ val: 1 }, { val: 2 }, { val: 3 }]
 ````
 
 In Multiplex, equality comparison on anonymous types are defined in terms of the equality of the properties, two instances of the same anonymous type are equal only if all their properties are equal. That becomes very handy working with LINQ operations which make use of equality to produce results, eg. `contains`, `join`, `groupBy`, `groupJoin`, `distinct`, `except` and `intersect`.
@@ -190,8 +192,8 @@ var arr =
 ];
 
 var grp = mx(arr)
-  .groupBy("t => { id: t.id, val: t.val }")   // group `key`
-  .select("t => t.key")
+  .groupBy(t => ({ id: t.id, val: t.val }))   // group `key`
+  .select(t => t.key)
   .toArray();
   
 // [{ id: 1, val: 10 }, { id: 2, val: 20 }]
@@ -217,9 +219,9 @@ var list = new mx.List([1, 2, 3, 4]);       // a list of numbers
 var set = new mx.HashSet([1, 2, 3, 4]);     // a set of numbers
 var dic = list.toDictionary("t => t");      // a dictionary with numeric keys
 
-list.select("t => t").toArray();            // [1, 2, 3, 4]
-set.select("t => t").toArray();             // [1, 2, 3, 4]
-dic.select("t => t.key").toArray();         // [1, 2, 3, 4]
+list.select(t => t).toArray();            // [1, 2, 3, 4]
+set.select(t => t).toArray();             // [1, 2, 3, 4]
+dic.select(t => t.key).toArray();         // [1, 2, 3, 4]
 ````
 
 
@@ -251,16 +253,16 @@ Array-like objects which expose the `length` property can be used as `Enumerable
 The following example uses `jQuery` and Multiplex to get the count of each element in a page:
 ````javascript
 mx($("*"))
-  .groupBy("t => t.nodeName")
-  .select("t => { name: t.key, count: t.count() }")
+  .groupBy(t => t.nodeName)
+  .select(t => ({ name: t.key, count: t.count() }))
   .toArray();
 ````
 
 The same result using `document.querySelectorAll`:
 ````javascript
 mx(document.querySelectorAll("*"))
-  .groupBy("t => t.nodeName")
-  .select("t => { name: t.key, count: t.count() }")
+  .groupBy(t => t.nodeName)
+  .select(t => ({ name: t.key, count: t.count() }))
   .toArray();
 ````
 
@@ -268,7 +270,7 @@ The following example uses Multiplex to enumerate `arguments` variable available
 ````javascript
 function Test()
 {
-  mx(arguments).forEach("t => console.log(t)");
+  mx(arguments).forEach(t => console.log(t));
 }
 
 Test(1, 2, 3);    // 1, 2, 3
