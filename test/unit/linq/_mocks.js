@@ -26,6 +26,7 @@ export {
     array,
     collection,
     list,
+    readOnlyCollection,
     linkedList,
     hashSet,
     stack,
@@ -34,6 +35,5 @@ export {
     map,
     dictionary,
     lookup,
-    readOnlyCollection,
     sortedList
 };

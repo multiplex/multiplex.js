@@ -72,6 +72,18 @@ qtest('collections aggregate', function (assert) {
 
 
 
+    assert.equal(mx(readOnlyCollection).aggregate(10, function (a, b) {
+        return a + b;
+    }), 25, 'Aggregate readOnlyCollection of numbers with seed!');
+
+    assert.equal(mx(readOnlyCollection).aggregate(10, function (a, b) {
+        return a + b;
+    }, function (t) {
+        return t * 2;
+    }), 50, 'Aggregate readOnlyCollection of numbers with seed and result selector!');
+
+
+
     assert.equal(mx(linkedList).aggregate(10, function (a, b) {
         return a + b;
     }), 25, 'Aggregate linkedList of numbers with seed!');
@@ -165,18 +177,6 @@ qtest('collections aggregate', function (assert) {
     }, function (t) {
         return t * 2;
     }), 50, 'Aggregate sortedList of numbers with seed and result selector!');
-
-
-
-    assert.equal(mx(readOnlyCollection).aggregate(10, function (a, b) {
-        return a + b;
-    }), 25, 'Aggregate readOnlyCollection of numbers with seed!');
-
-    assert.equal(mx(readOnlyCollection).aggregate(10, function (a, b) {
-        return a + b;
-    }, function (t) {
-        return t * 2;
-    }), 50, 'Aggregate readOnlyCollection of numbers with seed and result selector!');
 
 
 
