@@ -34,114 +34,54 @@ var qtest = qunit.test;
 
 qmodule('linq-aggregate');
 
-qtest('basic aggregate over numbers', function (assert) {
-    assert.equal(mx(array).aggregate(10, function (a, b) {
-        return a + b;
-    }), 25, 'Aggregate 5 numbers with seed!');
 
-    assert.equal(mx(array).aggregate(10, function (a, b) {
-        return a + b;
-    }, function (t) {
-        return t * 2;
-    }), 50, 'Aggregate 5 numbers with seed and result selector!');
+function sumAggregateFunc(a, b) {
+    return a + b;
+}
+
+function simpleAggregateResult(t) {
+    return t * 2;
+}
+
+
+qtest('basic aggregate over numbers', function (assert) {
+    assert.equal(mx(array).aggregate(10, sumAggregateFunc), 25, 'Aggregate 5 numbers with seed!');
+
+    assert.equal(mx(array).aggregate(10, sumAggregateFunc, simpleAggregateResult), 50, 'Aggregate 5 numbers with seed and result selector!');
 });
 
 
 qtest('collections aggregate', function (assert) {
-    assert.equal(mx(collection).aggregate(10, function (a, b) {
-        return a + b;
-    }), 25, 'Aggregate collection of numbers with seed!');
-
-    assert.equal(mx(collection).aggregate(10, function (a, b) {
-        return a + b;
-    }, function (t) {
-        return t * 2;
-    }), 50, 'Aggregate collection of numbers with seed and result selector!');
+    assert.equal(mx(collection).aggregate(10, sumAggregateFunc), 25, 'Aggregate collection of numbers with seed!');
+    assert.equal(mx(collection).aggregate(10, sumAggregateFunc, simpleAggregateResult), 50, 'Aggregate collection of numbers with seed and result selector!');
 
 
-
-    assert.equal(mx(list).aggregate(10, function (a, b) {
-        return a + b;
-    }), 25, 'Aggregate list of numbers with seed!');
-
-    assert.equal(mx(list).aggregate(10, function (a, b) {
-        return a + b;
-    }, function (t) {
-        return t * 2;
-    }), 50, 'Aggregate list of numbers with seed and result selector!');
+    assert.equal(mx(list).aggregate(10, sumAggregateFunc), 25, 'Aggregate list of numbers with seed!');
+    assert.equal(mx(list).aggregate(10, sumAggregateFunc, simpleAggregateResult), 50, 'Aggregate list of numbers with seed and result selector!');
 
 
-
-    assert.equal(mx(readOnlyCollection).aggregate(10, function (a, b) {
-        return a + b;
-    }), 25, 'Aggregate readOnlyCollection of numbers with seed!');
-
-    assert.equal(mx(readOnlyCollection).aggregate(10, function (a, b) {
-        return a + b;
-    }, function (t) {
-        return t * 2;
-    }), 50, 'Aggregate readOnlyCollection of numbers with seed and result selector!');
+    assert.equal(mx(readOnlyCollection).aggregate(10, sumAggregateFunc), 25, 'Aggregate readOnlyCollection of numbers with seed!');
+    assert.equal(mx(readOnlyCollection).aggregate(10, sumAggregateFunc, simpleAggregateResult), 50, 'Aggregate readOnlyCollection of numbers with seed and result selector!');
 
 
-
-    assert.equal(mx(linkedList).aggregate(10, function (a, b) {
-        return a + b;
-    }), 25, 'Aggregate linkedList of numbers with seed!');
-
-    assert.equal(mx(linkedList).aggregate(10, function (a, b) {
-        return a + b;
-    }, function (t) {
-        return t * 2;
-    }), 50, 'Aggregate linkedList of numbers with seed and result selector!');
+    assert.equal(mx(linkedList).aggregate(10, sumAggregateFunc), 25, 'Aggregate linkedList of numbers with seed!');
+    assert.equal(mx(linkedList).aggregate(10, sumAggregateFunc, simpleAggregateResult), 50, 'Aggregate linkedList of numbers with seed and result selector!');
 
 
-
-    assert.equal(mx(hashSet).aggregate(10, function (a, b) {
-        return a + b;
-    }), 25, 'Aggregate hashSet of numbers with seed!');
-
-    assert.equal(mx(hashSet).aggregate(10, function (a, b) {
-        return a + b;
-    }, function (t) {
-        return t * 2;
-    }), 50, 'Aggregate hashSet of numbers with seed and result selector!');
+    assert.equal(mx(hashSet).aggregate(10, sumAggregateFunc), 25, 'Aggregate hashSet of numbers with seed!');
+    assert.equal(mx(hashSet).aggregate(10, sumAggregateFunc, simpleAggregateResult), 50, 'Aggregate hashSet of numbers with seed and result selector!');
 
 
-
-    assert.equal(mx(stack).aggregate(10, function (a, b) {
-        return a + b;
-    }), 25, 'Aggregate stack of numbers with seed!');
-
-    assert.equal(mx(stack).aggregate(10, function (a, b) {
-        return a + b;
-    }, function (t) {
-        return t * 2;
-    }), 50, 'Aggregate stack of numbers with seed and result selector!');
+    assert.equal(mx(stack).aggregate(10, sumAggregateFunc), 25, 'Aggregate stack of numbers with seed!');
+    assert.equal(mx(stack).aggregate(10, sumAggregateFunc, simpleAggregateResult), 50, 'Aggregate stack of numbers with seed and result selector!');
 
 
-
-    assert.equal(mx(queue).aggregate(10, function (a, b) {
-        return a + b;
-    }), 25, 'Aggregate queue of numbers with seed!');
-
-    assert.equal(mx(queue).aggregate(10, function (a, b) {
-        return a + b;
-    }, function (t) {
-        return t * 2;
-    }), 50, 'Aggregate queue of numbers with seed and result selector!');
+    assert.equal(mx(queue).aggregate(10, sumAggregateFunc), 25, 'Aggregate queue of numbers with seed!');
+    assert.equal(mx(queue).aggregate(10, sumAggregateFunc, simpleAggregateResult), 50, 'Aggregate queue of numbers with seed and result selector!');
 
 
-
-    assert.equal(mx(set).aggregate(10, function (a, b) {
-        return a + b;
-    }), 25, 'Aggregate set of numbers with seed!');
-
-    assert.equal(mx(set).aggregate(10, function (a, b) {
-        return a + b;
-    }, function (t) {
-        return t * 2;
-    }), 50, 'Aggregate set of numbers with seed and result selector!');
-
+    assert.equal(mx(set).aggregate(10, sumAggregateFunc), 25, 'Aggregate set of numbers with seed!');
+    assert.equal(mx(set).aggregate(10, sumAggregateFunc, simpleAggregateResult), 50, 'Aggregate set of numbers with seed and result selector!');
 
 
     assert.equal(mx(map).aggregate(10, function (a, b) {
@@ -150,9 +90,7 @@ qtest('collections aggregate', function (assert) {
 
     assert.equal(mx(map).aggregate(10, function (a, b) {
         return a + b[0];
-    }, function (t) {
-        return t * 2;
-    }), 50, 'Aggregate map of numbers with seed and result selector!');
+    }, simpleAggregateResult), 50, 'Aggregate map of numbers with seed and result selector!');
 
 
 
@@ -162,9 +100,7 @@ qtest('collections aggregate', function (assert) {
 
     assert.equal(mx(dictionary).aggregate(10, function (a, b) {
         return a + b.key;
-    }, function (t) {
-        return t * 2;
-    }), 50, 'Aggregate dictionary of numbers with seed and result selector!');
+    }, simpleAggregateResult), 50, 'Aggregate dictionary of numbers with seed and result selector!');
 
 
 
@@ -174,9 +110,7 @@ qtest('collections aggregate', function (assert) {
 
     assert.equal(mx(sortedList).aggregate(10, function (a, b) {
         return a + b.key;
-    }, function (t) {
-        return t * 2;
-    }), 50, 'Aggregate sortedList of numbers with seed and result selector!');
+    }, simpleAggregateResult), 50, 'Aggregate sortedList of numbers with seed and result selector!');
 
 
 
@@ -186,9 +120,7 @@ qtest('collections aggregate', function (assert) {
 
     assert.equal(mx(lookup).aggregate(10, function (a, b) {
         return a + b.key;
-    }, function (t) {
-        return t * 2;
-    }), 50, 'Aggregate lookup of numbers with seed and result selector!');
+    }, simpleAggregateResult), 50, 'Aggregate lookup of numbers with seed and result selector!');
 });
 
 
@@ -203,9 +135,7 @@ qtest('aggregate method validations', function (assert) {
     }, 'non-function aggregate function');
 
     assert.throws(function () {
-        mx([1]).aggregate(0, function (a, b) {
-            return a + b;
-        }, 1);
+        mx([1]).aggregate(0, sumAggregateFunc, 1);
     }, 'non-function resultSelector');
 });
 

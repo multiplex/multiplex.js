@@ -34,53 +34,38 @@ var qtest = qunit.test;
 
 qmodule('linq-all');
 
+
+function simpleNumericPredicate(t) {
+    return t < 10;
+}
+
 qtest('basic all test', function (assert) {
-    assert.ok(mx(array).all(function (t) {
-        return t < 10;
-    }), 'Test all numbers in an array are less than 10');
+    assert.ok(mx(array).all(simpleNumericPredicate), 'Test all numbers in an array are less than 10');
 
     assert.ok(!mx(array).all(function (t) {
         return t < 2;
     }), 'Test all numbers in an array are less than 2');
 
-    assert.ok(mx([]).all(function (t) {
-        return t < 10;
-    }), 'Test all over an empty iterable results true');
+    assert.ok(mx([]).all(simpleNumericPredicate), 'Test all over an empty iterable results true');
 });
 
 
 qtest('collections all method tests', function (assert) {
-    assert.ok(mx(collection).all(function (t) {
-        return t < 10;
-    }), 'Test all numbers in a Collection are less than 10');
+    assert.ok(mx(collection).all(simpleNumericPredicate), 'Test all numbers in a Collection are less than 10');
 
-    assert.ok(mx(list).all(function (t) {
-        return t < 10;
-    }), 'Test all numbers in a List are less than 10');
+    assert.ok(mx(list).all(simpleNumericPredicate), 'Test all numbers in a List are less than 10');
 
-    assert.ok(mx(readOnlyCollection).all(function (t) {
-        return t < 10;
-    }), 'Test all numbers in a ReadOnlyCollection are less than 10');
+    assert.ok(mx(readOnlyCollection).all(simpleNumericPredicate), 'Test all numbers in a ReadOnlyCollection are less than 10');
 
-    assert.ok(mx(linkedList).all(function (t) {
-        return t < 10;
-    }), 'Test all numbers in a LinkedList are less than 10');
+    assert.ok(mx(linkedList).all(simpleNumericPredicate), 'Test all numbers in a LinkedList are less than 10');
 
-    assert.ok(mx(hashSet).all(function (t) {
-        return t < 10;
-    }), 'Test all numbers in a HashSet are less than 10');
+    assert.ok(mx(hashSet).all(simpleNumericPredicate), 'Test all numbers in a HashSet are less than 10');
 
-    assert.ok(mx(stack).all(function (t) {
-        return t < 10;
-    }), 'Test all numbers in a Stack are less than 10');
+    assert.ok(mx(stack).all(simpleNumericPredicate), 'Test all numbers in a Stack are less than 10');
 
-    assert.ok(mx(queue).all(function (t) {
-        return t < 10;
-    }), 'Test all numbers in a Queue are less than 10');
+    assert.ok(mx(queue).all(simpleNumericPredicate), 'Test all numbers in a Queue are less than 10');
 
-    assert.ok(mx(set).all(function (t) {
-        return t < 10;
-    }), 'Test all numbers in a Set are less than 10');
+    assert.ok(mx(set).all(simpleNumericPredicate), 'Test all numbers in a Set are less than 10');
 
     assert.ok(mx(map).all(function (t) {
         return t[0] < 10;
