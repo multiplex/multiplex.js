@@ -191,5 +191,23 @@ qtest('collections aggregate', function (assert) {
     }), 50, 'Aggregate lookup of numbers with seed and result selector!');
 });
 
+
+
+qtest('aggregate method validations', function (assert) {
+    assert.throws(function () {
+        mx([1]).aggregate();
+    }, 'null input');
+
+    assert.throws(function () {
+        mx([1]).aggregate(0, 0);
+    }, 'non-function aggregate function');
+
+    assert.throws(function () {
+        mx([1]).aggregate(0, function (a, b) {
+            return a + b;
+        }, 1);
+    }, 'non-function resultSelector');
+});
+
 })));
 
