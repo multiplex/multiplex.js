@@ -109,7 +109,7 @@ export default class Set extends Collection {
     * @returns {Array}
     */
     toArray() {
-        return this.table.keys();
+        return this.table.entries(true);
     }
 
     /**

@@ -129,7 +129,7 @@ export default class Map extends Collection {
     * @returns {Array}
     */
     toArray() {
-        return this.table.keys();
+        return this.table.entries(false);
     }
 
     /**

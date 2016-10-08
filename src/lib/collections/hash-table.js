@@ -131,7 +131,7 @@ export default class HashTable {
         return true;
     }
 
-    keys() {
+    entries(keysOnly = false) {
         let arr = new Array(this.count()),
             slot = null,
             index = 0;
@@ -140,7 +140,7 @@ export default class HashTable {
             slot = this.slots[i];
 
             if (slot.hash !== undefined) {
-                arr[index++] = slot.key;
+                arr[index++] = keysOnly ? slot.key : [slot.key, slot.value];
             }
         }
 

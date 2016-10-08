@@ -111,7 +111,7 @@ export default class HashSet extends Collection {
             // intersect is a lot faster if we can assume uniqueness.
 
             if (areEqualityComparersEqual(this, other)) {
-                let arr = this.table.keys(),
+                let arr = this.table.entries(true),
                     item;
 
                 c = this.count();
@@ -291,7 +291,7 @@ export default class HashSet extends Collection {
         assertType(match, Function);
 
         let len = this.count(),
-            arr = this.table.keys(),
+            arr = this.table.entries(true),
             removed = 0,
             item;
 
@@ -396,7 +396,7 @@ export default class HashSet extends Collection {
     * @returns {Array}
     */
     toArray() {
-        return this.table.keys();
+        return this.table.entries(true);
     }
 
     toString() {

@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 3.0.0 (October 03, 2016)
+* Version 3.0.0 (October 08, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -1344,7 +1344,7 @@ class HashTable {
         return true;
     }
 
-    keys() {
+    entries(keysOnly = false) {
         let arr = new Array(this.count()),
             slot = null,
             index = 0;
@@ -1353,7 +1353,7 @@ class HashTable {
             slot = this.slots[i];
 
             if (slot.hash !== undefined) {
-                arr[index++] = slot.key;
+                arr[index++] = keysOnly ? slot.key : [slot.key, slot.value];
             }
         }
 
@@ -3046,7 +3046,7 @@ class HashSet extends Collection {
             // intersect is a lot faster if we can assume uniqueness.
 
             if (areEqualityComparersEqual(this, other)) {
-                let arr = this.table.keys(),
+                let arr = this.table.entries(true),
                     item;
 
                 c = this.count();
@@ -3226,7 +3226,7 @@ class HashSet extends Collection {
         assertType(match, Function);
 
         let len = this.count(),
-            arr = this.table.keys(),
+            arr = this.table.entries(true),
             removed = 0,
             item;
 
@@ -3331,7 +3331,7 @@ class HashSet extends Collection {
     * @returns {Array}
     */
     toArray() {
-        return this.table.keys();
+        return this.table.entries(true);
     }
 
     toString() {
@@ -3538,7 +3538,7 @@ class Map extends Collection {
     * @returns {Array}
     */
     toArray() {
-        return this.table.keys();
+        return this.table.entries(false);
     }
 
     /**
@@ -3687,7 +3687,7 @@ class Set extends Collection {
     * @returns {Array}
     */
     toArray() {
-        return this.table.keys();
+        return this.table.entries(true);
     }
 
     /**
