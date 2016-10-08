@@ -137,7 +137,7 @@ mixin(HashTable.prototype, {
         return true;
     },
 
-    keys: function () {
+    entries: function (keysOnly) {
         var arr = new Array(this.count()),
             slot = null,
             index = 0;
@@ -146,7 +146,7 @@ mixin(HashTable.prototype, {
             slot = this.slots[i];
 
             if (slot.hash !== undefined) {
-                arr[index++] = slot.key;
+                arr[index++] = keysOnly ? slot.key : [slot.key, slot.value];
             }
         }
 

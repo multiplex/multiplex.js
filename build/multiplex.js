@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (October 05, 2016)
+* Version 2.0.0 (October 08, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -1438,7 +1438,7 @@ mixin(HashTable.prototype, {
         return true;
     },
 
-    keys: function () {
+    entries: function (keysOnly) {
         var arr = new Array(this.count()),
             slot = null,
             index = 0;
@@ -1447,7 +1447,7 @@ mixin(HashTable.prototype, {
             slot = this.slots[i];
 
             if (slot.hash !== undefined) {
-                arr[index++] = slot.key;
+                arr[index++] = keysOnly ? slot.key : [slot.key, slot.value];
             }
         }
 
@@ -3103,7 +3103,7 @@ extend(HashSet, Collection, {
             // intersect is a lot faster if we can assume uniqueness.
 
             if (areEqualityComparersEqual(this, other)) {
-                var arr = this.table.keys(),
+                var arr = this.table.entries(true),
                     item;
 
                 c = this.count();
@@ -3288,7 +3288,7 @@ extend(HashSet, Collection, {
         assertType(match, Function);
 
         var len = this.count(),
-            arr = this.table.keys(),
+            arr = this.table.entries(true),
             removed = 0,
             item;
 
@@ -3393,7 +3393,7 @@ extend(HashSet, Collection, {
     * @returns {Array}
     */
     toArray: function () {
-        return this.table.keys();
+        return this.table.entries(true);
     },
 
     toString: function () {
@@ -3604,7 +3604,7 @@ extend(Map, Collection, {
     * @returns {Array}
     */
     toArray: function () {
-        return this.table.keys();
+        return this.table.entries(false);
     },
 
     toString: function () {
@@ -3747,7 +3747,7 @@ extend(Set, Collection, {
     * @returns {Array}
     */
     toArray: function () {
-        return this.table.keys();
+        return this.table.entries(true);
     },
 
     toString: function () {

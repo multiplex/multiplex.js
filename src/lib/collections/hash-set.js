@@ -113,7 +113,7 @@ extend(HashSet, Collection, {
             // intersect is a lot faster if we can assume uniqueness.
 
             if (areEqualityComparersEqual(this, other)) {
-                var arr = this.table.keys(),
+                var arr = this.table.entries(true),
                     item;
 
                 c = this.count();
@@ -298,7 +298,7 @@ extend(HashSet, Collection, {
         assertType(match, Function);
 
         var len = this.count(),
-            arr = this.table.keys(),
+            arr = this.table.entries(true),
             removed = 0,
             item;
 
@@ -403,7 +403,7 @@ extend(HashSet, Collection, {
     * @returns {Array}
     */
     toArray: function () {
-        return this.table.keys();
+        return this.table.entries(true);
     },
 
     toString: function () {

@@ -137,7 +137,7 @@ extend(Map, Collection, {
     * @returns {Array}
     */
     toArray: function () {
-        return this.table.keys();
+        return this.table.entries(false);
     },
 
     toString: function () {

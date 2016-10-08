@@ -117,7 +117,7 @@ extend(Set, Collection, {
     * @returns {Array}
     */
     toArray: function () {
-        return this.table.keys();
+        return this.table.entries(true);
     },
 
     toString: function () {
