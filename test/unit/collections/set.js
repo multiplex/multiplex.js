@@ -7,4 +7,5 @@ var Set = mx.Set;
 
 qtest('create set', function (assert) {
     assert.ok(new Set() !== null, 'empty set');
+    assert.ok(new Set([1, 2, 3]) !== null, 'simple numeric Set');
 });

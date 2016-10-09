@@ -7,4 +7,5 @@ var Map = mx.Map;
 
 qtest('create map', function (assert) {
     assert.ok(new Map() !== null, 'empty map');
+    assert.ok(new Map([[1, 1], [2, 2], [3, 3]]) !== null, 'simple numeric Map');
 });

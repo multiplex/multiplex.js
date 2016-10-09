@@ -16,6 +16,7 @@ var Stack = mx.Stack;
 
 qtest('create stack', function (assert) {
     assert.ok(new Stack() !== null, 'empty stack');
+    assert.ok(new Stack([1, 2, 3]) !== null, 'simple numeric stack');
 });
 
 })));

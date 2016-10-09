@@ -16,6 +16,7 @@ var List = mx.List;
 
 qtest('create list', function (assert) {
     assert.ok(new List() !== null, 'empty list');
+    assert.ok(new List([1, 2, 3]) !== null, 'simple numeric list');
 });
 
 })));
