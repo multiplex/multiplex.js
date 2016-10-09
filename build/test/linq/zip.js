@@ -34,68 +34,41 @@ var qtest = qunit.test;
 
 qmodule('linq-zip');
 
-qtest('homogeneous zip', function (assert) {
-    assert.deepEqual(mx([1, 2]).zip([3, 4], function (t, u) {
-        return t + u;
-    }).toArray(), [4, 6], 'Zip two numeric array!');
 
-    assert.deepEqual(mx('ab').zip('cd', function (t, u) {
-        return t + u;
-    }).toArray(), ['ac', 'bd'], 'Zip two string objects!');
+function simpleNumericSelector(t, u) {
+    return t + u;
+}
+
+qtest('homogeneous zip', function (assert) {
+    assert.deepEqual(mx([1, 2]).zip([3, 4], simpleNumericSelector).toArray(), [4, 6], 'Zip two numeric array!');
+    assert.deepEqual(mx('ab').zip('cd', simpleNumericSelector).toArray(), ['ac', 'bd'], 'Zip two string objects!');
 });
 
 
 qtest('heterogeneous zip', function (assert) {
-    assert.deepEqual(mx([1, 2]).zip([3], function (t, u) {
-        return t + u;
-    }).toArray(), [4], 'Zip two numeric array!');
-
-    assert.deepEqual(mx('ab').zip('c', function (t, u) {
-        return t + u;
-    }).toArray(), ['ac'], 'Zip two string objects!');
-
-    assert.deepEqual(mx([]).zip([3], function (t, u) {
-        return t + u;
-    }).toArray(), [], 'Zip an empty iterable with anything results in an empty iterable!');
-
-    assert.deepEqual(mx([1, 2]).zip([], function (t, u) {
-        return t + u;
-    }).toArray(), [], 'Zip anything with an empty iterable results in an empty iterable!');
+    assert.deepEqual(mx([1, 2]).zip([3], simpleNumericSelector).toArray(), [4], 'Zip two numeric array!');
+    assert.deepEqual(mx('ab').zip('c', simpleNumericSelector).toArray(), ['ac'], 'Zip two string objects!');
+    assert.deepEqual(mx([]).zip([3], simpleNumericSelector).toArray(), [], 'Zip an empty iterable with anything results in an empty iterable!');
+    assert.deepEqual(mx([1, 2]).zip([], simpleNumericSelector).toArray(), [], 'Zip anything with an empty iterable results in an empty iterable!');
 });
 
 
 qtest('collections zip', function (assert) {
-    assert.deepEqual(collection.zip(collection, function (t, u) {
-        return t + u;
-    }).toArray(), [2, 4, 6, 8, 10], 'Zip two Collections!');
+    assert.deepEqual(collection.zip(collection, simpleNumericSelector).toArray(), [2, 4, 6, 8, 10], 'Zip two Collections!');
 
-    assert.deepEqual(list.zip(list, function (t, u) {
-        return t + u;
-    }).toArray(), [2, 4, 6, 8, 10], 'Zip two Lists!');
+    assert.deepEqual(list.zip(list, simpleNumericSelector).toArray(), [2, 4, 6, 8, 10], 'Zip two Lists!');
 
-    assert.deepEqual(readOnlyCollection.zip(readOnlyCollection, function (t, u) {
-        return t + u;
-    }).toArray(), [2, 4, 6, 8, 10], 'Zip two ReadOnlyCollection!');
+    assert.deepEqual(readOnlyCollection.zip(readOnlyCollection, simpleNumericSelector).toArray(), [2, 4, 6, 8, 10], 'Zip two ReadOnlyCollection!');
 
-    assert.deepEqual(linkedList.zip(linkedList, function (t, u) {
-        return t + u;
-    }).toArray(), [2, 4, 6, 8, 10], 'Zip two LinkedList!');
+    assert.deepEqual(linkedList.zip(linkedList, simpleNumericSelector).toArray(), [2, 4, 6, 8, 10], 'Zip two LinkedList!');
 
-    assert.deepEqual(hashSet.zip(hashSet, function (t, u) {
-        return t + u;
-    }).toArray(), [2, 4, 6, 8, 10], 'Zip two HashSet!');
+    assert.deepEqual(hashSet.zip(hashSet, simpleNumericSelector).toArray(), [2, 4, 6, 8, 10], 'Zip two HashSet!');
 
-    assert.deepEqual(stack.zip(stack, function (t, u) {
-        return t + u;
-    }).toArray(), [2, 4, 6, 8, 10], 'Zip two Stack!');
+    assert.deepEqual(stack.zip(stack, simpleNumericSelector).toArray(), [2, 4, 6, 8, 10], 'Zip two Stack!');
 
-    assert.deepEqual(queue.zip(queue, function (t, u) {
-        return t + u;
-    }).toArray(), [2, 4, 6, 8, 10], 'Zip two Queue!');
+    assert.deepEqual(queue.zip(queue, simpleNumericSelector).toArray(), [2, 4, 6, 8, 10], 'Zip two Queue!');
 
-    assert.deepEqual(set.zip(set, function (t, u) {
-        return t + u;
-    }).toArray(), [2, 4, 6, 8, 10], 'Zip two Sets!');
+    assert.deepEqual(set.zip(set, simpleNumericSelector).toArray(), [2, 4, 6, 8, 10], 'Zip two Sets!');
 
     assert.deepEqual(map.zip(map, function (t, u) {
         return t[0] + u[0];
