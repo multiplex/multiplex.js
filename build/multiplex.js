@@ -878,6 +878,9 @@ function Comparer(comparison) {
 }
 
 
+var defaultComparer = new Comparer(compare);
+
+
 mixin(Comparer.prototype, {
     /**
     * Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
@@ -929,9 +932,6 @@ mixin(Comparer, {
     }
 });
 
-
-var defaultComparer = new Comparer(compare);
-
 /**
 * Provides a base class for implementations of the EqualityComparer.
 */
@@ -942,6 +942,9 @@ function EqualityComparer(hashCodeProvider, equality) {
     this.hash = hashCodeProvider;
     this.equals = equality;
 }
+
+
+var defaultEqualityComparer = new EqualityComparer(runtimeHash, runtimeEquals);
 
 
 mixin(EqualityComparer.prototype, {
@@ -997,9 +1000,6 @@ mixin(EqualityComparer, {
         return defaultEqualityComparer;
     }
 });
-
-
-var defaultEqualityComparer = new EqualityComparer(runtimeHash, runtimeEquals);
 
 function isArray(val) {
     return val instanceof Array;
