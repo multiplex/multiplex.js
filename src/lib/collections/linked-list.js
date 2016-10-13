@@ -349,7 +349,7 @@ extend(LinkedList, Collection, {
     },
 
     toString: function () {
-        return '[LinkedList]';
+        return '[Linked List]';
     },
 
     '@@iterator': function () {

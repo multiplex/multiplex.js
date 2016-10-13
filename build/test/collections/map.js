@@ -19,5 +19,10 @@ qtest('create map', function (assert) {
     assert.ok(new Map([[1, 1], [2, 2], [3, 3]]) !== null, 'simple numeric Map');
 });
 
+
+qtest('map toString', function (assert) {
+    assert.equal(new Map().toString(), '[Map]', 'Map toString');
+});
+
 })));
 

@@ -293,7 +293,7 @@ extend(SortedList, Collection, {
     },
 
     toString: function () {
-        return '[Sorted List]';
+        return '[SortedList]';
     },
 
     '@@iterator': function () {

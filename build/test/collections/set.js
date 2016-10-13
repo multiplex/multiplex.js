@@ -19,5 +19,10 @@ qtest('create set', function (assert) {
     assert.ok(new Set([1, 2, 3]) !== null, 'simple numeric Set');
 });
 
+
+qtest('set toString', function (assert) {
+    assert.equal(new Set().toString(), '[Set]', 'Set toString');
+});
+
 })));
 

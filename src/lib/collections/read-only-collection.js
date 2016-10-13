@@ -93,7 +93,7 @@ extend(ReadOnlyCollection, Collection, {
     },
 
     toString: function () {
-        return '[ReadOnly Collection]';
+        return '[ReadOnlyCollection]';
     },
 
     '@@iterator': function () {

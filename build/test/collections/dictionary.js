@@ -18,5 +18,10 @@ qtest('create dictionary', function (assert) {
     assert.ok(new Dictionary() !== null, 'empty dictionary');
 });
 
+
+qtest('dictionary toString', function (assert) {
+    assert.equal(new Dictionary().toString(), '[Dictionary]', 'Dictionary toString');
+});
+
 })));
 
