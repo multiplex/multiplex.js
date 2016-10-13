@@ -12,6 +12,9 @@ export default function Comparer(comparison) {
 }
 
 
+var defaultComparer = new Comparer(runtimeCompare);
+
+
 mixin(Comparer.prototype, {
     /**
     * Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
@@ -62,6 +65,3 @@ mixin(Comparer, {
         }
     }
 });
-
-
-var defaultComparer = new Comparer(runtimeCompare);

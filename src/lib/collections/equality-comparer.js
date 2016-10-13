@@ -15,6 +15,9 @@ export default function EqualityComparer(hashCodeProvider, equality) {
 }
 
 
+var defaultEqualityComparer = new EqualityComparer(runtimeHash, runtimeEquals);
+
+
 mixin(EqualityComparer.prototype, {
     /**
     * Determines whether the specified objects are equal.
@@ -68,6 +71,3 @@ mixin(EqualityComparer, {
         return defaultEqualityComparer;
     }
 });
-
-
-var defaultEqualityComparer = new EqualityComparer(runtimeHash, runtimeEquals);
