@@ -30,6 +30,38 @@ qtest('basic equalityComparer tests', function (assert) {
 });
 
 
+qtest('equalityComparer factory method', function (assert) {
+    var com = new EqualityComparer(numericHashFunction, numericEqualsFunction);
+    assert.equal(EqualityComparer.from(), EqualityComparer.instance, 'create from undefined value');
+    assert.equal(EqualityComparer.from(null), EqualityComparer.instance, 'create from null value');
+    assert.equal(EqualityComparer.from(1), EqualityComparer.instance, 'create from invalid value');
+    assert.equal(EqualityComparer.from(com), com, 'create from EqualityComparer instance');
+    assert.equal(EqualityComparer.from({
+        hash: numericHashFunction,
+        equals: numericEqualsFunction
+    }).hash, numericHashFunction, 'create from object literal');
+});
+
+
+qtest('equalityComparer validations', function (assert) {
+    assert.throws(function () {
+        return new EqualityComparer();
+    }, 'null/undefined hashCodeProvider');
+
+    assert.throws(function () {
+        return new EqualityComparer(1);
+    }, 'non-function hashCodeProvider');
+
+    assert.throws(function () {
+        return new EqualityComparer(numericHashFunction);
+    }, 'null/undefined equality');
+
+    assert.throws(function () {
+        return new EqualityComparer(numericHashFunction, 1);
+    }, 'non-function equality');
+});
+
+
 qtest('equalityComparer toString', function (assert) {
     assert.equal(EqualityComparer.instance.toString(), '[EqualityComparer]', 'EqualityComparer toString');
 });
