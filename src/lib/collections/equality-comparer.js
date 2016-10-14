@@ -1,7 +1,7 @@
 import mixin from '../utils/mixin';
 import isFunction from '../utils/is-function';
 import assertType from '../utils/assert-type';
-import {runtimeHash, runtimeEquals} from '../runtime/runtime';
+import { runtimeHash, runtimeEquals } from '../runtime/runtime';
 
 /**
 * Provides a base class for implementations of the EqualityComparer.
