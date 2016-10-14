@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (October 13, 2016)
+* Version 2.0.0 (October 14, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -918,8 +918,12 @@ mixin(Comparer, {
             return defaultComparer;
         }
 
-        else if (value instanceof Comparer || isFunction(value)) {
+        else if (value instanceof Comparer) {
             return value;
+        }
+
+        else if (isFunction(value)) {
+            return new Comparer(value);
         }
 
         else if (isFunction(value.compare)) {
