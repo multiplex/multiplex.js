@@ -35,8 +35,13 @@ var qtest = qunit.test;
 qmodule('linq-average');
 
 
+function simpleNumericSelector(t) {
+    return t * 2;
+}
+
 qtest('basic average test', function (assert) {
     assert.equal(mx(array).average(), 3, 'Test average of first 5 numbers');
+    assert.equal(mx(array).average(simpleNumericSelector), 6, 'Test average of first 5 numbers using a selector');
 });
 
 })));

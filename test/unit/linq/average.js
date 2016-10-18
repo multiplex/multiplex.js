@@ -14,4 +14,5 @@ function simpleNumericSelector(t) {
 
 qtest('basic average test', function (assert) {
     assert.equal(mx(mocks.array).average(), 3, 'Test average of first 5 numbers');
+    assert.equal(mx(mocks.array).average(simpleNumericSelector), 6, 'Test average of first 5 numbers using a selector');
 });
