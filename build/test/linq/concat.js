@@ -12,7 +12,7 @@ var qtest = qunit.test;
 
 qmodule('linq-concat');
 
-qtest('dummy', function (assert) {
+qtest('basic "concat" test', function (assert) {
     assert.ok(mx([]), 'dumy');
 });
 
