@@ -14,6 +14,21 @@ qtest('basic "contains" test', function (assert) {
 });
 
 
+qtest('equalityComparer "contains" test', function (assert) {
+    assert.ok(mx([{ val: 1 }]).contains({ val: 1 }, {
+        equals: function (a, b) {
+            return a.val === b.val;
+        }
+    }), 'Test an array of objects contains a value');
+
+    assert.ok(!mx([{ val: 1 }]).contains({ val: 2 }, {
+        equals: function (a, b) {
+            return a.val === b.val;
+        }
+    }), 'Test an array of objects non containing a value');
+});
+
+
 qtest('collections "contains" method tests', function (assert) {
     assert.ok(mx(mocks.collection).contains(1), 'Test "contains" in a Collection');
     assert.ok(!mx(mocks.collection).contains(0), 'Test does not contain in a Collection');
