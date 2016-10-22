@@ -1,37 +1,45 @@
 import Collection from '../collections/collection';
 import ArrayIterable from '../iteration/iterable-array';
 import isArrayLike from './is-array-like';
+import assertType from './assert-type';
 import $iterator from '../iteration/iterator-factory';
 
 /**
 * Gets number of items in the specified iterable object.
 * @param {Iterable} value An Iterable object.
-* @param {Boolean} collectionOnly when true returns the number of items in iterable if the value is a Collection, Array or an Array-like, otherwise returns -1.
+* @param {Function=} predicate A function to test each element for a condition. eg. function(item)
 * @returns {Number}
 */
-export default function count(value, collectionOnly) {
-    if (isArrayLike(value)) {
-        return value.length;
+export default function count(value, predicate) {
+    if (!predicate) {
+        if (isArrayLike(value)) {
+            return value.length;
+        }
+
+        else if (value instanceof ArrayIterable) {
+            return value.toArray().length;
+        }
+
+        else if (value instanceof Collection) {
+            return value.count();
+        }
     }
 
-    else if (value instanceof ArrayIterable) {
-        return value.toArray().length;
+    var it = $iterator(value),
+        count = 0;
+
+    if (predicate) {
+        var next;
+        assertType(predicate, Function);
+        while (!(next = it.next()).done && predicate(next.value)) {
+            count++;
+        }
     }
-
-    else if (value instanceof Collection) {
-        return value.count();
-    }
-
-    else if (!collectionOnly) {
-        var it = $iterator(value),
-            count = 0;
-
+    else {
         while (!it.next().done) {
             count++;
         }
-
-        return count;
     }
 
-    return -1;
+    return count;
 }
