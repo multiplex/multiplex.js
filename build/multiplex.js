@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (October 21, 2016)
+* Version 2.0.0 (October 22, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -2971,39 +2971,6 @@ extend(Lookup, Collection, {
 });
 
 /**
-* Gets number of items in the specified iterable object.
-* @param {Iterable} value An Iterable object.
-* @param {Boolean} collectionOnly when true returns the number of items in iterable if the value is a Collection, Array or an Array-like, otherwise returns -1.
-* @returns {Number}
-*/
-function count(value, collectionOnly) {
-    if (isArrayLike(value)) {
-        return value.length;
-    }
-
-    else if (value instanceof ArrayIterable) {
-        return value.toArray().length;
-    }
-
-    else if (value instanceof Collection) {
-        return value.count();
-    }
-
-    else if (!collectionOnly) {
-        var it = $iterator(value),
-            count = 0;
-
-        while (!it.next().done) {
-            count++;
-        }
-
-        return count;
-    }
-
-    return -1;
-}
-
-/**
 * Initializes a new instance of the HashSet class.
 * @param {Iterable=} iterable The Iterable whose elements are copied to the new set.
 * @param {EqualityComparer=} comparer the EqualityComparer implementation to use when comparing values in the set.
@@ -3093,7 +3060,7 @@ extend(HashSet, Collection, {
             return;
         }
 
-        var c = count(other, true);
+        var c = getCount(other);
 
         if (c !== -1) {
             if (c === 0) {
@@ -3134,7 +3101,7 @@ extend(HashSet, Collection, {
     isProperSubsetOf: function (other) {
         assertNotNull(other);
 
-        var c = count(other, true);
+        var c = getCount(other);
 
         if (c !== -1) {
             if (this.count() === 0) {
@@ -3172,7 +3139,7 @@ extend(HashSet, Collection, {
             return false;
         }
 
-        var c = count(other, true);
+        var c = getCount(other);
 
         if (c !== -1) {
             // if other is the empty set then this is a superset
@@ -3231,7 +3198,7 @@ extend(HashSet, Collection, {
     isSupersetOf: function (other) {
         assertNotNull(other);
 
-        var c = count(other, true);
+        var c = getCount(other);
 
         if (c !== -1) {
             // if other is the empty set then this is a superset
@@ -3327,7 +3294,7 @@ extend(HashSet, Collection, {
             return containsAllElements(this, other);
         }
 
-        var c = count(other, true);
+        var c = getCount(other);
 
         if (c !== -1) {
             // if this count is 0 but other contains at least one element, they can't be equal
@@ -3476,6 +3443,22 @@ function checkUniqueAndUnfoundElements(set, other, returnIfUnfound) {
     });
 
     return new ElementCount(uniqueFoundCount, unfoundCount);
+}
+
+function getCount(value) {
+    if (isArrayLike(value)) {
+        return value.length;
+    }
+
+    else if (value instanceof ArrayIterable) {
+        return value.toArray().length;
+    }
+
+    else if (value instanceof Collection) {
+        return value.count();
+    }
+
+    return -1;
 }
 
 /**
@@ -4609,6 +4592,39 @@ function whereIterator(source, predicate) {
             };
         });
     });
+}
+
+/**
+* Gets number of items in the specified iterable object.
+* @param {Iterable} value An Iterable object.
+* @param {Boolean} collectionOnly when true returns the number of items in iterable if the value is a Collection, Array or an Array-like, otherwise returns -1.
+* @returns {Number}
+*/
+function count(value, collectionOnly) {
+    if (isArrayLike(value)) {
+        return value.length;
+    }
+
+    else if (value instanceof ArrayIterable) {
+        return value.toArray().length;
+    }
+
+    else if (value instanceof Collection) {
+        return value.count();
+    }
+
+    else if (!collectionOnly) {
+        var it = $iterator(value),
+            count = 0;
+
+        while (!it.next().done) {
+            count++;
+        }
+
+        return count;
+    }
+
+    return -1;
 }
 
 function countIterator(source, predicate) {
