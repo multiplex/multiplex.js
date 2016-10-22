@@ -2971,6 +2971,61 @@ extend(Lookup, Collection, {
 });
 
 /**
+* Gets number of items in the specified iterable object.
+* @param {Iterable} value An Iterable object.
+* @param {Function=} predicate A function to test each element for a condition. eg. function(item)
+* @returns {Number}
+*/
+function count(value, predicate) {
+    var count = -1;
+
+    if (!predicate) {
+        count = collectionCount(value);
+        if (count !== -1) {
+            return count;
+        }
+    }
+
+    var it = $iterator(value);
+
+    if (predicate) {
+        var next;
+        assertType(predicate, Function);
+        while (!(next = it.next()).done && predicate(next.value)) {
+            count++;
+        }
+    }
+    else {
+        while (!it.next().done) {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+
+/**
+* Gets number of items in the specified collection object. returns -1 if the value is not a collection.
+* @returns {Number}
+*/
+function collectionCount(value) {
+    if (isArrayLike(value)) {
+        return value.length;
+    }
+
+    else if (value instanceof ArrayIterable) {
+        return value.toArray().length;
+    }
+
+    else if (value instanceof Collection) {
+        return value.count();
+    }
+
+    return -1;
+}
+
+/**
 * Initializes a new instance of the HashSet class.
 * @param {Iterable=} iterable The Iterable whose elements are copied to the new set.
 * @param {EqualityComparer=} comparer the EqualityComparer implementation to use when comparing values in the set.
@@ -3060,7 +3115,7 @@ extend(HashSet, Collection, {
             return;
         }
 
-        var c = getCount(other);
+        var c = collectionCount(other);
 
         if (c !== -1) {
             if (c === 0) {
@@ -3101,7 +3156,7 @@ extend(HashSet, Collection, {
     isProperSubsetOf: function (other) {
         assertNotNull(other);
 
-        var c = getCount(other);
+        var c = collectionCount(other);
 
         if (c !== -1) {
             if (this.count() === 0) {
@@ -3139,7 +3194,7 @@ extend(HashSet, Collection, {
             return false;
         }
 
-        var c = getCount(other);
+        var c = collectionCount(other);
 
         if (c !== -1) {
             // if other is the empty set then this is a superset
@@ -3198,7 +3253,7 @@ extend(HashSet, Collection, {
     isSupersetOf: function (other) {
         assertNotNull(other);
 
-        var c = getCount(other);
+        var c = collectionCount(other);
 
         if (c !== -1) {
             // if other is the empty set then this is a superset
@@ -3294,7 +3349,7 @@ extend(HashSet, Collection, {
             return containsAllElements(this, other);
         }
 
-        var c = getCount(other);
+        var c = collectionCount(other);
 
         if (c !== -1) {
             // if this count is 0 but other contains at least one element, they can't be equal
@@ -3443,22 +3498,6 @@ function checkUniqueAndUnfoundElements(set, other, returnIfUnfound) {
     });
 
     return new ElementCount(uniqueFoundCount, unfoundCount);
-}
-
-function getCount(value) {
-    if (isArrayLike(value)) {
-        return value.length;
-    }
-
-    else if (value instanceof ArrayIterable) {
-        return value.toArray().length;
-    }
-
-    else if (value instanceof Collection) {
-        return value.count();
-    }
-
-    return -1;
 }
 
 /**
@@ -4567,46 +4606,6 @@ function containsIterator(source, value, comparer) {
     });
 
     return result;
-}
-
-/**
-* Gets number of items in the specified iterable object.
-* @param {Iterable} value An Iterable object.
-* @param {Function=} predicate A function to test each element for a condition. eg. function(item)
-* @returns {Number}
-*/
-function count(value, predicate) {
-    if (!predicate) {
-        if (isArrayLike(value)) {
-            return value.length;
-        }
-
-        else if (value instanceof ArrayIterable) {
-            return value.toArray().length;
-        }
-
-        else if (value instanceof Collection) {
-            return value.count();
-        }
-    }
-
-    var it = $iterator(value),
-        count = 0;
-
-    if (predicate) {
-        var next;
-        assertType(predicate, Function);
-        while (!(next = it.next()).done && predicate(next.value)) {
-            count++;
-        }
-    }
-    else {
-        while (!it.next().done) {
-            count++;
-        }
-    }
-
-    return count;
 }
 
 function defaultIfEmptyIterator(source, defaultValue) {
