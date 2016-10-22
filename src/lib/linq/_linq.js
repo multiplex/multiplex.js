@@ -17,7 +17,7 @@ import any from './any';
 import average from './average';
 import concat from './concat';
 import contains from './contains';
-import count from './count';
+import count from '../utils/count';
 import defaultIfEmpty from './default-if-empty';
 import distinct from './distinct';
 import elementAt from './element-at';

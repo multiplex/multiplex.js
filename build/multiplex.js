@@ -4493,62 +4493,45 @@ function containsIterator(source, value, comparer) {
     return false;
 }
 
-function whereIterator(source, predicate) {
-    assertNotNull(source);
-    assertType(predicate, Function);
-
-    return new Iterable(function* () {
-        let index = 0;
-
-        for (let element of source) {
-            if (predicate(element, index++)) {
-                yield element;
-            }
-        }
-    });
-}
-
 /**
 * Gets number of items in the specified iterable object.
 * @param {Iterable} value An Iterable object.
-* @param {Boolean} collectionOnly when true returns the number of items in iterable if the value is a Collection, Array or an Array-like, otherwise returns -1.
+* @param {Function=} predicate A function to test each element for a condition. eg. function(item)
 * @returns {Number}
 */
-function count(value, collectionOnly = false) {
-    if (isArrayLike(value)) {
-        return value.length;
+function count(value, predicate = undefined) {
+    if (!predicate) {
+        if (isArrayLike(value)) {
+            return value.length;
+        }
+
+        else if (value instanceof ArrayIterable) {
+            return value.toArray().length;
+        }
+
+        else if (value instanceof Collection) {
+            return value.count();
+        }
     }
 
-    else if (value instanceof ArrayIterable) {
-        return value.toArray().length;
+    let count = 0;
+
+    if (predicate) {
+        assertType(predicate, Function);
+        for (let element of $iterable(value)) {
+            if (predicate(element)) {
+                count++;
+            }
+        }
     }
-
-    else if (value instanceof Collection) {
-        return value.count();
-    }
-
-    /*jshint unused:false*/
-    else if (!collectionOnly) {
-        let count = 0;
-
+    else {
+        /*jshint unused:false*/
         for (let element of $iterable(value)) {
             count++;
         }
-
-        return count;
     }
 
-    return -1;
-}
-
-function countIterator(source, predicate) {
-    assertNotNull(source);
-
-    if (predicate) {
-        return count(whereIterator(source, predicate), false);
-    }
-
-    return count(source, false);
+    return count;
 }
 
 function defaultIfEmptyIterator(source, defaultValue) {
@@ -5100,6 +5083,21 @@ function unionIterator(first, second, comparer) {
     });
 }
 
+function whereIterator(source, predicate) {
+    assertNotNull(source);
+    assertType(predicate, Function);
+
+    return new Iterable(function* () {
+        let index = 0;
+
+        for (let element of source) {
+            if (predicate(element, index++)) {
+                yield element;
+            }
+        }
+    });
+}
+
 function zipIterator(first, second, resultSelector) {
     assertNotNull(first);
     assertNotNull(second);
@@ -5212,7 +5210,7 @@ function linq(iterable) {
         * @returns {Number}
         */
         count(predicate = null) {
-            return countIterator(this, predicate);
+            return count(this, predicate);
         },
 
         /**
