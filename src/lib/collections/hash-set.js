@@ -1,10 +1,9 @@
 import Collection from './collection';
 import HashTable, {HashTableIterator} from './hash-table';
 import EqulityComparer from './equality-comparer';
-import ArrayIterable from '../iteration/iterable-array';
-import isArrayLike from '../utils/is-array-like';
 import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
+import { collectionCount } from '../utils/count';
 import $iterable from '../iteration/iterable-factory';
 
 /**
@@ -98,7 +97,7 @@ export default class HashSet extends Collection {
             return;
         }
 
-        let c = getCount(other);
+        let c = collectionCount(other);
 
         if (c !== -1) {
             if (c === 0) {
@@ -139,7 +138,7 @@ export default class HashSet extends Collection {
     isProperSubsetOf(other) {
         assertNotNull(other);
 
-        let c = getCount(other);
+        let c = collectionCount(other);
 
         if (c !== -1) {
             if (this.count() === 0) {
@@ -177,7 +176,7 @@ export default class HashSet extends Collection {
             return false;
         }
 
-        let c = getCount(other);
+        let c = collectionCount(other);
 
         if (c !== -1) {
             // if other is the empty set then this is a superset
@@ -236,7 +235,7 @@ export default class HashSet extends Collection {
     isSupersetOf(other) {
         assertNotNull(other);
 
-        let c = getCount(other, true);
+        let c = collectionCount(other, true);
 
         if (c !== -1) {
             // if other is the empty set then this is a superset
@@ -327,7 +326,7 @@ export default class HashSet extends Collection {
             return containsAllElements(this, other);
         }
 
-        let c = getCount(other, true);
+        let c = collectionCount(other, true);
 
         if (c !== -1) {
             // if this count is 0 but other contains at least one element, they can't be equal
@@ -478,20 +477,4 @@ function checkUniqueAndUnfoundElements(set, other, returnIfUnfound) {
     }
 
     return new ElementCount(uniqueFoundCount, unfoundCount);
-}
-
-function getCount(value) {
-    if (isArrayLike(value)) {
-        return value.length;
-    }
-
-    else if (value instanceof ArrayIterable) {
-        return value.toArray().length;
-    }
-
-    else if (value instanceof Collection) {
-        return value.count();
-    }
-
-    return -1;
 }
