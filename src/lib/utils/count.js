@@ -11,22 +11,16 @@ import $iterator from '../iteration/iterator-factory';
 * @returns {Number}
 */
 export default function count(value, predicate) {
+    var count = 0;
+
     if (!predicate) {
-        if (isArrayLike(value)) {
-            return value.length;
-        }
-
-        else if (value instanceof ArrayIterable) {
-            return value.toArray().length;
-        }
-
-        else if (value instanceof Collection) {
-            return value.count();
+        count = collectionCount(value);
+        if (count !== -1) {
+            return count;
         }
     }
 
-    var it = $iterator(value),
-        count = 0;
+    var it = $iterator(value);
 
     if (predicate) {
         var next;
@@ -42,4 +36,25 @@ export default function count(value, predicate) {
     }
 
     return count;
+}
+
+
+/**
+* Gets number of items in the specified collection object. returns -1 if the value is not a collection.
+* @returns {Number}
+*/
+export function collectionCount(value) {
+    if (isArrayLike(value)) {
+        return value.length;
+    }
+
+    else if (value instanceof ArrayIterable) {
+        return value.toArray().length;
+    }
+
+    else if (value instanceof Collection) {
+        return value.count();
+    }
+
+    return -1;
 }
