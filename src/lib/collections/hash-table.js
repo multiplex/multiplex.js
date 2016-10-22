@@ -1,5 +1,4 @@
 import Iterator from '../iteration/iterator';
-import IterableIterator from '../iteration/iterable-iterator';
 import EqualityComparer from './equality-comparer';
 import resize from '../utils/resize';
 import forOf from '../utils/for-of';
@@ -54,23 +53,6 @@ mixin(HashTable.prototype, {
     entry: function (key) {
         var index = this.find(key);
         return index === -1 ? undefined : [key, this.slots[index].value];
-    },
-
-    entries: function () {
-        var arr = new Array(this.count()),
-            slots = this.slots,
-            slot = null,
-            index = 0;
-
-        for (var i = 0, count = this.size; i < count; i++) {
-            slot = slots[i];
-
-            if (slot.hash !== undefined) {
-                arr[index++] = [slot.key, slot.value];
-            }
-        }
-
-        return arr;
     },
 
     find: function (key) {
@@ -155,6 +137,22 @@ mixin(HashTable.prototype, {
         return true;
     },
 
+    entries: function (keysOnly) {
+        var arr = new Array(this.count()),
+            slot = null,
+            index = 0;
+
+        for (var i = 0; i < this.size; i++) {
+            slot = this.slots[i];
+
+            if (slot.hash !== undefined) {
+                arr[index++] = keysOnly ? slot.key : [slot.key, slot.value];
+            }
+        }
+
+        return arr;
+    },
+
     resize: function () {
         var size = this.size,
             newSize = resize(size),
@@ -234,33 +232,31 @@ mixin(HashTable.prototype, {
 
 
 export function HashTableIterator(table, selector) {
-    IterableIterator.call(this, function () {
-        var index = 0,
-            slot = null,
-            size = table.size,
-            slots = table.slots;
+    var index = 0,
+        slot = null,
+        size = table.size,
+        slots = table.slots;
 
-        return new Iterator(function () {
-            while (index < size) {
-                slot = slots[index++];
+    Iterator.call(this, function () {
+        while (index < size) {
+            slot = slots[index++];
 
-                // freed slots have undefined as hashCode value and do not enumerate
-                if (slot.hash !== undefined) {
-                    return {
-                        value: selector ? selector(slot.key, slot.value) : [slot.key, slot.value],
-                        done: false
-                    };
-                }
+            // freed slots have undefined as hashCode value and do not enumerate
+            if (slot.hash !== undefined) {
+                return {
+                    value: selector ? selector(slot.key, slot.value) : [slot.key, slot.value],
+                    done: false
+                };
             }
+        }
 
-            return {
-                done: true
-            };
-        });
+        return {
+            done: true
+        };
     });
 }
 
-extend(HashTableIterator, IterableIterator);
+extend(HashTableIterator, Iterator);
 
 
 function HashTableSlot(hash, next, key, value) {

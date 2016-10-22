@@ -130,7 +130,7 @@ export function LookupTableIterator(lookup) {
     Iterator.call(this, function () {
         if (++index < size) {
             return {
-                value: slots[index++].grouping,
+                value: slots[index].grouping,
                 done: false
             };
         }

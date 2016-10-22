@@ -1,7 +1,7 @@
 import mixin from '../utils/mixin';
 import isFunction from '../utils/is-function';
 import assertType from '../utils/assert-type';
-import {runtimeCompare} from '../runtime/runtime';
+import { runtimeCompare } from '../runtime/runtime';
 
 /**
 * Provides a base class for implementations of Comparer.
@@ -10,6 +10,9 @@ export default function Comparer(comparison) {
     assertType(comparison, Function);
     this.compare = comparison;
 }
+
+
+var defaultComparer = new Comparer(runtimeCompare);
 
 
 mixin(Comparer.prototype, {
@@ -49,8 +52,12 @@ mixin(Comparer, {
             return defaultComparer;
         }
 
-        else if (value instanceof Comparer || isFunction(value)) {
+        else if (value instanceof Comparer) {
             return value;
+        }
+
+        else if (isFunction(value)) {
+            return new Comparer(value);
         }
 
         else if (isFunction(value.compare)) {
@@ -62,6 +69,3 @@ mixin(Comparer, {
         }
     }
 });
-
-
-var defaultComparer = new Comparer(runtimeCompare);

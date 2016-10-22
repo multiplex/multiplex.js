@@ -1,5 +1,6 @@
 import Iterable from './iterable';
 import ObjectIterator from './iterator-object';
+import iterableSymbol from './iterable-symbol';
 import extend from '../utils/extend';
 
 /**
@@ -16,6 +17,6 @@ extend(ObjectIterable, Iterable, {
     },
 
     '@@iterator': function () {
-        return new ObjectIterator(this.valueOf());
+        return new ObjectIterator(this[iterableSymbol]);
     }
 });

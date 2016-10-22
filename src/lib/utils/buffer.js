@@ -8,45 +8,46 @@ import $iterator from '../iteration/iterator-factory';
 /**
 * Buffers an Iterale object into an array.
 * @param {Iterale} value An Iterale object.
+* @param {Boolean} forceIterate If true, buffers the specified iterable object using its iterator.
 * @returns {Array}
 */
-export default function buffer(value) {
-    if (value === null || value === undefined) {        // empty value
-        return [];
-    }
+export default function buffer(value, forceIterate) {
+    if (!forceIterate) {
+        if (value === null || value === undefined) {        // empty value
+            return [];
+        }
 
-    else if (isArrayLike(value)) {                      // array-likes have fixed element count
-        return arrayBuffer(value);
-    }
+        else if (isArrayLike(value)) {                      // array-likes have fixed element count
+            return arrayBuffer(value);
+        }
 
-    else if (value instanceof Collection) {             // Collections have 'valueOf' method
-        return arrayBuffer(value.valueOf());
-    }
+        else if (value instanceof Collection) {             // Collections have 'toArray' method
+            return arrayBuffer(value.toArray());
+        }
 
-    else if (value instanceof ArrayIterable) {          // ArrayIterable wrapper
-        return arrayBuffer(value.valueOf());
+        else if (value instanceof ArrayIterable) {          // ArrayIterable wrapper
+            return arrayBuffer(value.toArray());
+        }
     }
 
     // do it the hard way
-    else {
-        var it = $iterator(value),
-            count = 0,
-            length = 16,
-            arr = new Array(length),
-            result;
+    var it = $iterator(value),
+        count = 0,
+        length = 16,
+        arr = new Array(length),
+        result;
 
-        while (!(result = it.next()).done) {
-            if (count >= length) {
-                length *= 4;
-                arr.length = length;
-            }
-
-            arr[count++] = result.value;
+    while (!(result = it.next()).done) {
+        if (count >= length) {
+            length *= 4;
+            arr.length = length;
         }
 
-        arr.length = count;
-        return arr;
+        arr[count++] = result.value;
     }
+
+    arr.length = count;
+    return arr;
 }
 
 

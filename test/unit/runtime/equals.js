@@ -1,7 +1,7 @@
 /*jshint -W053 */
 
 import mx from '../../multiplex';
-import {qmodule, qtest} from '../../qunit';
+import { qmodule, qtest } from '../../qunit';
 
 qmodule('equals');
 

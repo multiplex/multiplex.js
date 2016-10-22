@@ -1,9 +1,10 @@
+import IterableIterator from '../iteration/iterable-iterator';
 import Collection from './collection';
 import HashTable, {HashTableIterator} from './hash-table';
-import bufferTo from '../utils/buffer-to';
 import isArray from '../utils/is-array';
 import error from '../utils/error';
 import forOf from '../utils/for-of';
+import defineProperty from '../utils/define-property';
 import extend from '../utils/extend';
 
 /**
@@ -27,6 +28,12 @@ export default function Map(iterable, comparer) {
 
     this.table = table;
     this.size = this.table.count();
+
+    defineProperty(this, 'comparer', {
+        get: function () {
+            return table.comparer;
+        }
+    });
 }
 
 extend(Map, Collection, {
@@ -36,15 +43,6 @@ extend(Map, Collection, {
     clear: function () {
         this.table.clear();
         this.size = 0;
-    },
-
-    /**
-    * Copies the keys of the Map to an existing one-dimensional Array, starting at the specified array index.
-    * @param {Array} array The one-dimensional Array that is the destination of the elements copied from Collection.
-    * @param {Number} arrayIndex The zero-based index in array at which copying begins.
-    */
-    copyTo: function (array, arrayIndex) {
-        bufferTo(this.keys(), array, arrayIndex);
     },
 
     /**
@@ -72,7 +70,7 @@ extend(Map, Collection, {
     * @returns {Iterator}
     */
     entries: function () {
-        return new MapIterator(this, -1);
+        return new MapIterator(this);
     },
 
     /**
@@ -135,11 +133,11 @@ extend(Map, Collection, {
     },
 
     /**
-    * Returns an array that contains an array of [key, value] for each element in the Map object in insertion order.
+    * Creates an array from the Map.
     * @returns {Array}
     */
-    valueOf: function () {
-        return this.table.entries();
+    toArray: function () {
+        return this.table.entries(false);
     },
 
     toString: function () {
@@ -159,10 +157,12 @@ extend(Map, Collection, {
 
 
 function MapIterator(map, selector) {
-    HashTableIterator.call(this, map, selector);
+    IterableIterator.call(this, function () {
+        return new HashTableIterator(map.table, selector);
+    });
 }
 
-extend(MapIterator, HashTableIterator, {
+extend(MapIterator, IterableIterator, {
     toString: function () {
         return '[Map Iterator]';
     }

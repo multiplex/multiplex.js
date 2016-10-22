@@ -15,7 +15,7 @@ import any from './any';
 import average from './average';
 import concat from './concat';
 import contains from './contains';
-import count from './count';
+import count from '../utils/count';
 import defaultIfEmpty from './default-if-empty';
 import distinct from './distinct';
 import elementAt from './element-at';
@@ -84,7 +84,7 @@ export default function linq(iterable) {
         * @returns {Object}
         */
         aggregate: function (seed, func, resultSelector) {
-            return aggregate(this, func, resultSelector);
+            return aggregate(this, seed, func, resultSelector);
         },
 
         /**

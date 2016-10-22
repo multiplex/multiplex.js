@@ -1,6 +1,7 @@
 import Iterable from '../iteration/iterable';
 import Iterator from '../iteration/iterator';
 import Comparer from './comparer';
+import iterableSymbol from '../iteration/iterable-symbol';
 import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
 import buffer from '../utils/buffer';
@@ -39,7 +40,7 @@ extend(OrderedIterable, Iterable, {
     * @returns {OrderedIterable}
     */
     thenBy: function (keySelector, comparer) {
-        return new OrderedIterable(this.valueOf(), keySelector, comparer, false, this);
+        return new OrderedIterable(this[iterableSymbol], keySelector, comparer, false, this);
     },
 
     /**
@@ -49,7 +50,7 @@ extend(OrderedIterable, Iterable, {
     * @returns {OrderedIterable}
     */
     thenByDescending: function (keySelector, comparer) {
-        return new OrderedIterable(this.valueOf(), keySelector, comparer, true, this);
+        return new OrderedIterable(this[iterableSymbol], keySelector, comparer, true, this);
     },
 
     toString: function () {
@@ -58,7 +59,7 @@ extend(OrderedIterable, Iterable, {
 
     '@@iterator': function () {
         var index = 0,
-            arr = buffer(this.valueOf()),
+            arr = buffer(this[iterableSymbol]),
             len = arr.length,
             map = this.sorter.sort(arr);
 

@@ -1,3 +1,4 @@
+import IterableIterator from '../iteration/iterable-iterator';
 import Collection from './collection';
 import HashTable, {HashTableIterator} from './hash-table';
 import EqualityComparer from './equality-comparer';
@@ -7,6 +8,7 @@ import isType from '../utils/is-type';
 import isNumber from '../utils/is-number';
 import assertType from '../utils/assert-type';
 import forOf from '../utils/for-of';
+import defineProperty from '../utils/define-property';
 import extend from '../utils/extend';
 import error, {ERROR_DUPLICATE_KEY, ERROR_KEY_NOT_FOUND} from '../utils/error';
 
@@ -27,6 +29,12 @@ export default function Dictionary(value, comparer) {
     }
 
     this.table = table;
+
+    defineProperty(this, 'comparer', {
+        get: function () {
+            return table.comparer;
+        }
+    });
 }
 
 extend(Dictionary, Collection, {
@@ -146,10 +154,6 @@ extend(Dictionary, Collection, {
         return this.table.remove(key);
     },
 
-    valueOf: function () {
-        return this.keys();
-    },
-
     toString: function () {
         return '[Dictionary]';
     },
@@ -164,10 +168,12 @@ extend(Dictionary, Collection, {
 
 
 function KeyValueIterator(dic, selector) {
-    HashTableIterator.call(this, dic, selector);
+    IterableIterator.call(this, function () {
+        return new HashTableIterator(dic.table, selector);
+    });
 }
 
-extend(KeyValueIterator, HashTableIterator, {
+extend(KeyValueIterator, IterableIterator, {
     toString: function () {
         return '[KeyValue Iterator]';
     }
