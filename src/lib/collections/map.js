@@ -3,6 +3,7 @@ import Collection from './collection';
 import HashTable, {HashTableIterator} from './hash-table';
 import isArray from '../utils/is-array';
 import error from '../utils/error';
+import count from '../utils/count';
 import $iterable from '../iteration/iterable-factory';
 
 /**
@@ -44,10 +45,11 @@ export default class Map extends Collection {
 
     /**
     * Returns the number of values in the Map object.
+    * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
     * @returns {Number}
     */
-    count() {
-        return this.size;
+    count(predicate = null) {
+        return predicate ? count(this, predicate) : this.size;
     }
 
     /**

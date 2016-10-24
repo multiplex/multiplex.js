@@ -3,6 +3,7 @@ import ArrayIterator from '../iteration/iterator-array';
 import buffer from '../utils/buffer';
 import isArrayLike from '../utils/is-array-like';
 import error from '../utils/error';
+import count from '../utils/count';
 import {
     ARRAY_PROTOTYPE
 } from '../utils/builtin-types';
@@ -26,10 +27,11 @@ export default class ReadOnlyCollection extends Collection {
 
     /**
      * Gets the number of elements contained in the ReadOnlyCollection.
+     * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
      * @returns {Number}
      */
-    count() {
-        return this.list.length;
+    count(predicate = null) {
+        return predicate ? count(this, predicate) : this.list.length;
     }
 
     /**

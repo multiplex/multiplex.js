@@ -2,8 +2,9 @@ import Collection from './collection';
 import Iterator from '../iteration/iterator';
 import LinkedListNode from './linked-list-node';
 import assertType from '../utils/assert-type';
-import {runtimeEquals} from '../runtime/runtime';
-import error, {ERROR_EMPTY_COLLECTION} from '../utils/error';
+import count from '../utils/count';
+import { runtimeEquals } from '../runtime/runtime';
+import error, { ERROR_EMPTY_COLLECTION } from '../utils/error';
 import $iterable from '../iteration/iterable-factory';
 
 /**
@@ -52,10 +53,11 @@ export default class LinkedList extends Collection {
 
     /**
     * Gets the number of elements contained in the LinkedList.
+    * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
     * @returns {Number}
     */
-    count() {
-        return this.size;
+    count(predicate = null) {
+        return predicate ? count(this, predicate) : this.size;
     }
 
     /**

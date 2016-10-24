@@ -1,12 +1,13 @@
 import IterableIterator from '../iteration/iterable-iterator';
 import Collection from './collection';
-import HashTable, {HashTableIterator} from './hash-table';
+import HashTable, { HashTableIterator } from './hash-table';
 import EqualityComparer from './equality-comparer';
 import KeyValuePair from './key-value-pair';
 import isType from '../utils/is-type';
 import isNumber from '../utils/is-number';
 import assertType from '../utils/assert-type';
-import error, {ERROR_DUPLICATE_KEY, ERROR_KEY_NOT_FOUND} from '../utils/error';
+import count from '../utils/count';
+import error, { ERROR_DUPLICATE_KEY, ERROR_KEY_NOT_FOUND } from '../utils/error';
 
 /**
 * Initializes a new instance of the Dictionary.
@@ -51,16 +52,17 @@ export default class Dictionary extends Collection {
     * Gets the EqualityComparer object that is used to determine equality for the values in the set.
     * @returns {EqualityComparer}
     */
-    get comparer () {
+    get comparer() {
         return this.table.comparer;
     }
 
     /**
     * Gets the number of elements contained in the Dictionary.
+    * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
     * @returns {Number}
     */
-    count() {
-        return this.table.count();
+    count(predicate = null) {
+        return predicate ? count(this, predicate) : this.table.count();
     }
 
     /**

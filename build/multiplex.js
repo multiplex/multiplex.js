@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 3.0.0 (October 22, 2016)
+* Version 3.0.0 (October 24, 2016)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -946,6 +946,61 @@ class EqualityComparer {
 
 const defaultEqualityComparer = new EqualityComparer(runtimeHash, runtimeEquals);
 
+/**
+* Gets number of items in the specified iterable object.
+* @param {Iterable} value An Iterable object.
+* @param {Function=} predicate A function to test each element for a condition. eg. function(item)
+* @returns {Number}
+*/
+function count(value, predicate = undefined) {
+    let count = 0;
+
+    if (!predicate) {
+        count = collectionCount(value);
+        if (count !== -1) {
+            return count;
+        }
+    }
+
+    if (predicate) {
+        assertType(predicate, Function);
+        for (let element of $iterable(value)) {
+            if (predicate(element)) {
+                count++;
+            }
+        }
+    }
+    else {
+        /*jshint unused:false*/
+        for (let element of $iterable(value)) {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+
+/**
+* Gets number of items in the specified collection object. returns -1 if the value is not a collection.
+* @returns {Number}
+*/
+function collectionCount(value) {
+    if (isArrayLike(value)) {
+        return value.length;
+    }
+
+    else if (value instanceof ArrayIterable) {
+        return value.toArray().length;
+    }
+
+    else if (value instanceof Collection) {
+        return value.count();
+    }
+
+    return -1;
+}
+
 function isArray(val) {
     return val instanceof Array;
 }
@@ -1039,12 +1094,13 @@ class Collection extends Iterable {
 
     /**
      * Gets the number of elements contained in the Collection.
+     * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
      * @returns {Number}
      */
-    count() {
+    count(predicate = null) {
         // if not overridden in subclass,
         // gets the count of the collection by converting the collection to an array
-        return this.toArray().length;
+        return predicate ? count(this, predicate) : this.toArray().length;
     }
 
     /**
@@ -1066,7 +1122,7 @@ class Collection extends Iterable {
         return this[iterableSymbol] || buffer(this, true);
     }
 
-    get[Symbol.toStringTag]() {
+    get [Symbol.toStringTag]() {
         return 'Collection';
     }
 
@@ -1100,10 +1156,11 @@ class ReadOnlyCollection extends Collection {
 
     /**
      * Gets the number of elements contained in the ReadOnlyCollection.
+     * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
      * @returns {Number}
      */
-    count() {
-        return this.list.length;
+    count(predicate = null) {
+        return predicate ? count(this, predicate) : this.list.length;
     }
 
     /**
@@ -1550,16 +1607,17 @@ class Dictionary extends Collection {
     * Gets the EqualityComparer object that is used to determine equality for the values in the set.
     * @returns {EqualityComparer}
     */
-    get comparer () {
+    get comparer() {
         return this.table.comparer;
     }
 
     /**
     * Gets the number of elements contained in the Dictionary.
+    * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
     * @returns {Number}
     */
-    count() {
-        return this.table.count();
+    count(predicate = null) {
+        return predicate ? count(this, predicate) : this.table.count();
     }
 
     /**
@@ -1779,10 +1837,11 @@ class List extends Collection {
 
     /**
     * Gets the number of elements contained in the List.
+    * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
     * @returns {Number}
     */
-    count() {
-        return this.length;
+    count(predicate = null) {
+        return predicate ? count(this, predicate) : this.length;
     }
 
     /**
@@ -2347,10 +2406,11 @@ class LinkedList extends Collection {
 
     /**
     * Gets the number of elements contained in the LinkedList.
+    * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
     * @returns {Number}
     */
-    count() {
-        return this.size;
+    count(predicate = null) {
+        return predicate ? count(this, predicate) : this.size;
     }
 
     /**
@@ -2887,8 +2947,8 @@ class Lookup extends Collection {
         return this.table.contains(key);
     }
 
-    count() {
-        return this.table.size;
+    count(predicate = null) {
+        return predicate ? count(this, predicate) : this.table.size;
     }
 
     toArray() {
@@ -2906,61 +2966,6 @@ class Lookup extends Collection {
     toString() {
         return '[Lookup]';
     }
-}
-
-/**
-* Gets number of items in the specified iterable object.
-* @param {Iterable} value An Iterable object.
-* @param {Function=} predicate A function to test each element for a condition. eg. function(item)
-* @returns {Number}
-*/
-function count(value, predicate = undefined) {
-    let count = 0;
-
-    if (!predicate) {
-        count = collectionCount(value);
-        if (count !== -1) {
-            return count;
-        }
-    }
-
-    if (predicate) {
-        assertType(predicate, Function);
-        for (let element of $iterable(value)) {
-            if (predicate(element)) {
-                count++;
-            }
-        }
-    }
-    else {
-        /*jshint unused:false*/
-        for (let element of $iterable(value)) {
-            count++;
-        }
-    }
-
-    return count;
-}
-
-
-/**
-* Gets number of items in the specified collection object. returns -1 if the value is not a collection.
-* @returns {Number}
-*/
-function collectionCount(value) {
-    if (isArrayLike(value)) {
-        return value.length;
-    }
-
-    else if (value instanceof ArrayIterable) {
-        return value.toArray().length;
-    }
-
-    else if (value instanceof Collection) {
-        return value.count();
-    }
-
-    return -1;
 }
 
 /**
@@ -2998,10 +3003,11 @@ class HashSet extends Collection {
 
     /**
     * Gets the number of elements contained in the HashSet.
+    * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
     * @returns {Number}
     */
-    count() {
-        return this.table.count();
+    count(predicate = null) {
+        return predicate ? count(this, predicate) : this.table.count();
     }
 
     /**
@@ -3475,10 +3481,11 @@ class Map extends Collection {
 
     /**
     * Returns the number of values in the Map object.
+    * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
     * @returns {Number}
     */
-    count() {
-        return this.size;
+    count(predicate = null) {
+        return predicate ? count(this, predicate) : this.size;
     }
 
     /**
@@ -3646,10 +3653,11 @@ class Set extends Collection {
 
     /**
     * Returns the number of values in the Set object.
+    * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
     * @returns {Number}
     */
-    count() {
-        return this.size;
+    count(predicate = null) {
+        return predicate ? count(this, predicate) : this.size;
     }
 
     /**
@@ -3993,10 +4001,11 @@ class SortedList extends Collection {
 
     /**
     * Gets the number of key/value pairs contained in the SortedList.
+    * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
     * @returns {Number}
     */
-    count() {
-        return this.slot.size;
+    count(predicate = null) {
+        return predicate ? count(this, predicate) : this.slot.size;
     }
 
     /**

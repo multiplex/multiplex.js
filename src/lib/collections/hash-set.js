@@ -3,6 +3,7 @@ import HashTable, {HashTableIterator} from './hash-table';
 import EqulityComparer from './equality-comparer';
 import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
+import count from '../utils/count';
 import { collectionCount } from '../utils/count';
 import $iterable from '../iteration/iterable-factory';
 
@@ -41,10 +42,11 @@ export default class HashSet extends Collection {
 
     /**
     * Gets the number of elements contained in the HashSet.
+    * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
     * @returns {Number}
     */
-    count() {
-        return this.table.count();
+    count(predicate = null) {
+        return predicate ? count(this, predicate) : this.table.count();
     }
 
     /**

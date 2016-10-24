@@ -1,6 +1,7 @@
 import IterableIterator from '../iteration/iterable-iterator';
 import Collection from './collection';
-import HashTable, {HashTableIterator} from './hash-table';
+import count from '../utils/count';
+import HashTable, { HashTableIterator } from './hash-table';
 import $iterable from '../iteration/iterable-factory';
 
 /**
@@ -46,10 +47,11 @@ export default class Set extends Collection {
 
     /**
     * Returns the number of values in the Set object.
+    * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
     * @returns {Number}
     */
-    count() {
-        return this.size;
+    count(predicate = null) {
+        return predicate ? count(this, predicate) : this.size;
     }
 
     /**

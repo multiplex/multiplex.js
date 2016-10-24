@@ -2,6 +2,7 @@ import Collection from './collection';
 import LookupTable, {LookupTableIterator} from './lookup-table';
 import EqualityComparer from './equality-comparer';
 import assertType from '../utils/assert-type';
+import count from '../utils/count';
 import assertNotNull from '../utils/assert-not-null';
 import $iterable from '../iteration/iterable-factory';
 
@@ -30,8 +31,8 @@ export default class Lookup extends Collection {
         return this.table.contains(key);
     }
 
-    count() {
-        return this.table.size;
+    count(predicate = null) {
+        return predicate ? count(this, predicate) : this.table.size;
     }
 
     toArray() {
