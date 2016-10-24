@@ -2,6 +2,7 @@ import Iterable from '../iteration/iterable';
 import ArrayIterator from '../iteration/iterator-array';
 import iterableSymbol from '../iteration/iterable-symbol';
 import extend from '../utils/extend';
+import count from '../utils/count';
 import buffer from '../utils/buffer';
 import bufferTo from '../utils/buffer-to';
 import isArrayLike from '../utils/is-array-like';
@@ -20,12 +21,13 @@ export default function Collection(value) {
 extend(Collection, Iterable, {
     /**
      * Gets the number of elements contained in the Collection.
+     * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
      * @returns {Number}
      */
-    count: function () {
+    count: function (predicate) {
         // if not overridden in subclass,
         // gets the count of the collection by converting the collection to an array
-        return this.toArray().length;
+        return predicate ? count(this, predicate) : this.toArray().length;
     },
 
     /**

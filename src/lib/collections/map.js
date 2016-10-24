@@ -4,6 +4,7 @@ import HashTable, {HashTableIterator} from './hash-table';
 import isArray from '../utils/is-array';
 import error from '../utils/error';
 import forOf from '../utils/for-of';
+import count from '../utils/count';
 import defineProperty from '../utils/define-property';
 import extend from '../utils/extend';
 
@@ -47,9 +48,10 @@ extend(Map, Collection, {
 
     /**
     * Returns the number of values in the Map object.
+    * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
     */
-    count: function () {
-        return this.size;
+    count: function (predicate) {
+        return predicate ? count(this, predicate) : this.size;
     },
 
     /**

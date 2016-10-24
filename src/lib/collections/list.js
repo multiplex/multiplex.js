@@ -11,8 +11,9 @@ import binarySearch from '../utils/binary-search';
 import buffer from '../utils/buffer';
 import bufferTo from '../utils/buffer-to';
 import extend from '../utils/extend';
-import {ARRAY_PROTOTYPE} from '../utils/builtin-types';
-import error, {ERROR_ARGUMENT_OUT_OF_RANGE} from '../utils/error';
+import count from '../utils/count';
+import { ARRAY_PROTOTYPE } from '../utils/builtin-types';
+import error, { ERROR_ARGUMENT_OUT_OF_RANGE } from '../utils/error';
 
 
 /**
@@ -87,10 +88,11 @@ extend(List, Collection, {
 
     /**
     * Gets the number of elements contained in the List.
+    * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
     * @returns {Number}
     */
-    count: function () {
-        return this.length;
+    count: function (predicate) {
+        return predicate ? count(this, predicate) : this.length;
     },
 
     /**

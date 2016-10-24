@@ -5,6 +5,7 @@ import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
 import forOf from '../utils/for-of';
 import extend from '../utils/extend';
+import count from '../utils/count';
 import defineProperty from '../utils/define-property';
 import { collectionCount } from '../utils/count';
 import $iterator from '../iteration/iterator-factory';
@@ -50,10 +51,11 @@ extend(HashSet, Collection, {
 
     /**
     * Gets the number of elements contained in the HashSet.
+    * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
     * @returns {Number}
     */
-    count: function () {
-        return this.table.count();
+    count: function (predicate) {
+        return predicate ? count(this, predicate) : this.table.count();
     },
 
     /**

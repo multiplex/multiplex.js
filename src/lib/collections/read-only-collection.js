@@ -3,6 +3,7 @@ import ArrayIterator from '../iteration/iterator-array';
 import isArrayLike from '../utils/is-array-like';
 import buffer from '../utils/buffer';
 import error from '../utils/error';
+import count from '../utils/count';
 import extend from '../utils/extend';
 import defineProperty from '../utils/define-property';
 import {
@@ -34,10 +35,11 @@ export default function ReadOnlyCollection(list) {
 extend(ReadOnlyCollection, Collection, {
     /**
      * Gets the number of elements contained in the ReadOnlyCollection.
+     * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
      * @returns {Number}
      */
-    count: function () {
-        return this.list.length;
+    count: function (predicate) {
+        return predicate ? count(this, predicate) : this.list.length;
     },
 
     /**

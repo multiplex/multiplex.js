@@ -4,8 +4,9 @@ import LinkedListNode from './linked-list-node';
 import forOf from '../utils/for-of';
 import assertType from '../utils/assert-type';
 import extend from '../utils/extend';
-import {runtimeEquals} from '../runtime/runtime';
-import error, {ERROR_EMPTY_COLLECTION} from '../utils/error';
+import count from '../utils/count';
+import { runtimeEquals } from '../runtime/runtime';
+import error, { ERROR_EMPTY_COLLECTION } from '../utils/error';
 
 /**
 * Represents a doubly linked list.
@@ -51,10 +52,11 @@ extend(LinkedList, Collection, {
 
     /**
     * Gets the number of elements contained in the LinkedList.
+    * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
     * @returns {Number}
     */
-    count: function () {
-        return this.size;
+    count: function (predicate) {
+        return predicate ? count(this, predicate) : this.size;
     },
 
     /**
