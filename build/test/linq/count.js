@@ -34,9 +34,9 @@ var qtest = qunit.test;
 
 qmodule('linq-count');
 
-// function simpleNumericPredicate(t) {
-//     return t < 3;
-// }
+function simpleNumericPredicate(t) {
+    return t < 3;
+}
 
 
 qtest('basic "count" test', function (assert) {
@@ -47,48 +47,48 @@ qtest('basic "count" test', function (assert) {
 
 qtest('collections "count" method tests', function (assert) {
     assert.equal(mx(collection).count(), 5, 'Test "count" in a Collection');
-    //assert.equal(mx(mocks.collection).count(simpleNumericPredicate), 2, 'Test "count" in a Collection with predicate');
+    assert.equal(mx(collection).count(simpleNumericPredicate), 2, 'Test "count" in a Collection with predicate');
 
     assert.equal(mx(list).count(), 5, 'Test "count" in a List');
-    //assert.equal(mx(mocks.list).count(simpleNumericPredicate), 2, 'Test "count" in a List with predicate');
+    assert.equal(mx(list).count(simpleNumericPredicate), 2, 'Test "count" in a List with predicate');
 
     assert.equal(mx(readOnlyCollection).count(), 5, 'Test "count" in a ReadOnlyCollection');
-    //assert.equal(mx(mocks.readOnlyCollection).count(simpleNumericPredicate), 2, 'Test "count" in a ReadOnlyCollection with predicate');
+    assert.equal(mx(readOnlyCollection).count(simpleNumericPredicate), 2, 'Test "count" in a ReadOnlyCollection with predicate');
 
     assert.equal(mx(linkedList).count(), 5, 'Test "count" in a LinkedList');
-    //assert.equal(mx(mocks.linkedList).count(simpleNumericPredicate), 2, 'Test "count" in a LinkedList with predicate');
+    assert.equal(mx(linkedList).count(simpleNumericPredicate), 2, 'Test "count" in a LinkedList with predicate');
 
     assert.equal(mx(hashSet).count(), 5, 'Test "count" in a HashSet');
-    //assert.equal(mx(mocks.hashSet).count(simpleNumericPredicate), 2, 'Test "count" in a HashSet with predicate');
+    assert.equal(mx(hashSet).count(simpleNumericPredicate), 2, 'Test "count" in a HashSet with predicate');
 
     assert.equal(mx(stack).count(), 5, 'Test "count" in a Stack');
-    //assert.equal(mx(mocks.stack).count(simpleNumericPredicate), 2, 'Test "count" in a Stack with predicate');
+    assert.equal(mx(stack).count(simpleNumericPredicate), 2, 'Test "count" in a Stack with predicate');
 
     assert.equal(mx(queue).count(), 5, 'Test "count" in a Queue');
-    //assert.equal(mx(mocks.queue).count(simpleNumericPredicate), 2, 'Test "count" in a Stack with Queue');
+    assert.equal(mx(queue).count(simpleNumericPredicate), 2, 'Test "count" in a Stack with Queue');
 
     assert.equal(mx(set).count(), 5, 'Test "count" in a Set');
-    //assert.equal(mx(mocks.set).count(simpleNumericPredicate), 2, 'Test "count" in a Stack with Set');
+    assert.equal(mx(set).count(simpleNumericPredicate), 2, 'Test "count" in a Stack with Set');
 
     assert.equal(mx(map).count(), 5, 'Test "count" in a Map');
-    // assert.equal(mx(mocks.map).count(function (t) {
-    //     return t[0] < 3;
-    // }), 2, 'Test "count" in a Stack with Map');
+    assert.equal(mx(map).count(function (t) {
+        return t[0] < 3;
+    }), 2, 'Test "count" in a Stack with Map');
 
     assert.equal(mx(dictionary).count(), 5, 'Test "count" in a Dictionary');
-    // assert.equal(mx(mocks.dictionary).count(function (t) {
-    //     return t.key < 3;
-    // }), 2, 'Test "count" in a Stack with Dictionary');
+    assert.equal(mx(dictionary).count(function (t) {
+        return t.key < 3;
+    }), 2, 'Test "count" in a Stack with Dictionary');
 
     assert.equal(mx(lookup).count(), 5, 'Test "count" in a Lookup');
-    // assert.equal(mx(mocks.lookup).count(function (t) {
-    //     return t.key < 3;
-    // }), 2, 'Test "count" in a Stack with Lookup');
+    assert.equal(mx(lookup).count(function (t) {
+        return t.key < 3;
+    }), 2, 'Test "count" in a Stack with Lookup');
 
     assert.equal(mx(sortedList).count(), 5, 'Test "count" in a SortedList');
-    // assert.equal(mx(mocks.sortedList).count(function (t) {
-    //     return t.key < 3;
-    // }), 2, 'Test "count" in a Stack with SortedList');
+    assert.equal(mx(sortedList).count(function (t) {
+        return t.key < 3;
+    }), 2, 'Test "count" in a Stack with SortedList');
 });
 
 })));
