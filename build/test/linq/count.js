@@ -91,5 +91,12 @@ qtest('collections "count" method tests', function (assert) {
     }), 2, 'Test "count" in a Stack with SortedList');
 });
 
+
+qtest('count method validations', function (assert) {
+    assert.throws(function () {
+        mx([1]).count(1);
+    }, 'non-function predicate');
+});
+
 })));
 
