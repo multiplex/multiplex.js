@@ -46,43 +46,43 @@ qtest('basic "average" test', function (assert) {
 
 
 qtest('collections "average" method tests', function (assert) {
-    assert.equal(mx(collection).average(), 3, 'Test average of numbers in a Collection');
-    assert.equal(mx(collection).average(simpleNumericSelector), 6, 'Test average of numbers in a Collection with a selector');
+    assert.equal(collection.average(), 3, 'Test average of numbers in a Collection');
+    assert.equal(collection.average(simpleNumericSelector), 6, 'Test average of numbers in a Collection with a selector');
 
-    assert.equal(mx(list).average(), 3, 'Test average of numbers in a List');
-    assert.equal(mx(list).average(simpleNumericSelector), 6, 'Test average of numbers in a List with a selector');
+    assert.equal(list.average(), 3, 'Test average of numbers in a List');
+    assert.equal(list.average(simpleNumericSelector), 6, 'Test average of numbers in a List with a selector');
 
-    assert.equal(mx(readOnlyCollection).average(), 3, 'Test average of numbers in a ReadOnlyCollection');
-    assert.equal(mx(readOnlyCollection).average(simpleNumericSelector), 6, 'Test average of numbers in a ReadOnlyCollection with a selector');
+    assert.equal(readOnlyCollection.average(), 3, 'Test average of numbers in a ReadOnlyCollection');
+    assert.equal(readOnlyCollection.average(simpleNumericSelector), 6, 'Test average of numbers in a ReadOnlyCollection with a selector');
 
-    assert.equal(mx(linkedList).average(), 3, 'Test average of numbers in a LinkedList');
-    assert.equal(mx(linkedList).average(simpleNumericSelector), 6, 'Test average of numbers in a LinkedList with a selector');
+    assert.equal(linkedList.average(), 3, 'Test average of numbers in a LinkedList');
+    assert.equal(linkedList.average(simpleNumericSelector), 6, 'Test average of numbers in a LinkedList with a selector');
 
-    assert.equal(mx(hashSet).average(), 3, 'Test average of numbers in a HashSet');
-    assert.equal(mx(hashSet).average(simpleNumericSelector), 6, 'Test average of numbers in a HashSet with a selector');
+    assert.equal(hashSet.average(), 3, 'Test average of numbers in a HashSet');
+    assert.equal(hashSet.average(simpleNumericSelector), 6, 'Test average of numbers in a HashSet with a selector');
 
-    assert.equal(mx(stack).average(), 3, 'Test average of numbers in a Stack');
-    assert.equal(mx(stack).average(simpleNumericSelector), 6, 'Test average of numbers in a Stack with a selector');
+    assert.equal(stack.average(), 3, 'Test average of numbers in a Stack');
+    assert.equal(stack.average(simpleNumericSelector), 6, 'Test average of numbers in a Stack with a selector');
 
-    assert.equal(mx(queue).average(), 3, 'Test average of numbers in a Queue');
-    assert.equal(mx(queue).average(simpleNumericSelector), 6, 'Test average of numbers in a Queue with a selector');
+    assert.equal(queue.average(), 3, 'Test average of numbers in a Queue');
+    assert.equal(queue.average(simpleNumericSelector), 6, 'Test average of numbers in a Queue with a selector');
 
-    assert.equal(mx(set).average(), 3, 'Test average of numbers in a Set');
-    assert.equal(mx(set).average(simpleNumericSelector), 6, 'Test average of numbers in a Set with a selector');
+    assert.equal(set.average(), 3, 'Test average of numbers in a Set');
+    assert.equal(set.average(simpleNumericSelector), 6, 'Test average of numbers in a Set with a selector');
 
-    assert.equal(mx(map).average(function (t) {
+    assert.equal(map.average(function (t) {
         return t[0];
     }), 3, 'Test average of numbers in a Map with a selector');
 
-    assert.equal(mx(dictionary).average(function (t) {
+    assert.equal(dictionary.average(function (t) {
         return t.key;
     }), 3, 'Test average of numbers in a Dictionary with a selector');
 
-    assert.equal(mx(lookup).average(function (t) {
+    assert.equal(lookup.average(function (t) {
         return t.key;
     }), 3, 'Test average of numbers in a Lookup with a selector');
 
-    assert.equal(mx(sortedList).average(function (t) {
+    assert.equal(sortedList.average(function (t) {
         return t.key;
     }), 3, 'Test average of numbers in a SortedList with a selector');
 });
