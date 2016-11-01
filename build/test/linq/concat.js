@@ -44,41 +44,41 @@ qtest('basic "concat" test', function (assert) {
 
 
 qtest('collections "concat" method tests', function (assert) {
-    assert.equal(mx(collection).concat([]).toArray().length, 5, 'Test "concat" with an empty array in a Collection');
-    assert.equal(mx(collection).concat(collection).toArray().length, 10, 'Test "concat" in a Collection');
+    assert.equal(collection.concat([]).toArray().length, 5, 'Test "concat" with an empty array in a Collection');
+    assert.equal(collection.concat(collection).toArray().length, 10, 'Test "concat" in a Collection');
 
-    assert.equal(mx(list).concat([]).toArray().length, 5, 'Test "concat" with an empty array in a List');
-    assert.equal(mx(list).concat(collection).toArray().length, 10, 'Test "concat" in a List');
+    assert.equal(list.concat([]).toArray().length, 5, 'Test "concat" with an empty array in a List');
+    assert.equal(list.concat(collection).toArray().length, 10, 'Test "concat" in a List');
 
-    assert.equal(mx(readOnlyCollection).concat([]).toArray().length, 5, 'Test "concat" with an empty array in a ReadOnlyCollection');
-    assert.equal(mx(readOnlyCollection).concat(collection).toArray().length, 10, 'Test "concat" in a ReadOnlyCollection');
+    assert.equal(readOnlyCollection.concat([]).toArray().length, 5, 'Test "concat" with an empty array in a ReadOnlyCollection');
+    assert.equal(readOnlyCollection.concat(collection).toArray().length, 10, 'Test "concat" in a ReadOnlyCollection');
 
-    assert.equal(mx(linkedList).concat([]).toArray().length, 5, 'Test "concat" with an empty array in a LinkedList');
-    assert.equal(mx(linkedList).concat(collection).toArray().length, 10, 'Test "concat" in a LinkedList');
+    assert.equal(linkedList.concat([]).toArray().length, 5, 'Test "concat" with an empty array in a LinkedList');
+    assert.equal(linkedList.concat(collection).toArray().length, 10, 'Test "concat" in a LinkedList');
 
-    assert.equal(mx(hashSet).concat([]).toArray().length, 5, 'Test "concat" with an empty array in a HashSet');
-    assert.equal(mx(hashSet).concat(collection).toArray().length, 10, 'Test "concat" in a HashSet');
+    assert.equal(hashSet.concat([]).toArray().length, 5, 'Test "concat" with an empty array in a HashSet');
+    assert.equal(hashSet.concat(collection).toArray().length, 10, 'Test "concat" in a HashSet');
 
-    assert.equal(mx(stack).concat([]).toArray().length, 5, 'Test "concat" with an empty array in a Stack');
-    assert.equal(mx(stack).concat(collection).toArray().length, 10, 'Test "concat" in a Stack');
+    assert.equal(stack.concat([]).toArray().length, 5, 'Test "concat" with an empty array in a Stack');
+    assert.equal(stack.concat(collection).toArray().length, 10, 'Test "concat" in a Stack');
 
-    assert.equal(mx(queue).concat([]).toArray().length, 5, 'Test "concat" with an empty array in a Queue');
-    assert.equal(mx(queue).concat(collection).toArray().length, 10, 'Test "concat" in a Queue');
+    assert.equal(queue.concat([]).toArray().length, 5, 'Test "concat" with an empty array in a Queue');
+    assert.equal(queue.concat(collection).toArray().length, 10, 'Test "concat" in a Queue');
 
-    assert.equal(mx(set).concat([]).toArray().length, 5, 'Test "concat" with an empty array in a Set');
-    assert.equal(mx(set).concat(collection).toArray().length, 10, 'Test "concat" in a Set');
+    assert.equal(set.concat([]).toArray().length, 5, 'Test "concat" with an empty array in a Set');
+    assert.equal(set.concat(collection).toArray().length, 10, 'Test "concat" in a Set');
 
-    assert.equal(mx(map).concat([]).toArray().length, 5, 'Test "concat" with an empty array in a Map');
-    assert.equal(mx(map).concat(collection).toArray().length, 10, 'Test "concat" in a Map');
+    assert.equal(map.concat([]).toArray().length, 5, 'Test "concat" with an empty array in a Map');
+    assert.equal(map.concat(collection).toArray().length, 10, 'Test "concat" in a Map');
 
-    assert.equal(mx(dictionary).concat([]).toArray().length, 5, 'Test "concat" with an empty array in a Dictionary');
-    assert.equal(mx(dictionary).concat(collection).toArray().length, 10, 'Test "concat" in a Dictionary');
+    assert.equal(dictionary.concat([]).toArray().length, 5, 'Test "concat" with an empty array in a Dictionary');
+    assert.equal(dictionary.concat(collection).toArray().length, 10, 'Test "concat" in a Dictionary');
 
-    assert.equal(mx(lookup).concat([]).toArray().length, 5, 'Test "concat" with an empty array in a Lookup');
-    assert.equal(mx(lookup).concat(collection).toArray().length, 10, 'Test "concat" in a Lookup');
+    assert.equal(lookup.concat([]).toArray().length, 5, 'Test "concat" with an empty array in a Lookup');
+    assert.equal(lookup.concat(collection).toArray().length, 10, 'Test "concat" in a Lookup');
 
-    assert.equal(mx(sortedList).concat([]).toArray().length, 5, 'Test "concat" with an empty array in a SortedList');
-    assert.equal(mx(sortedList).concat(collection).toArray().length, 10, 'Test "concat" in a SortedList');
+    assert.equal(sortedList.concat([]).toArray().length, 5, 'Test "concat" with an empty array in a SortedList');
+    assert.equal(sortedList.concat(collection).toArray().length, 10, 'Test "concat" in a SortedList');
 });
 
 
