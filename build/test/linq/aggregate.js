@@ -83,7 +83,6 @@ qtest('collections aggregate', function (assert) {
     assert.equal(set.aggregate(10, sumAggregateFunc), 25, 'Aggregate set of numbers with seed!');
     assert.equal(set.aggregate(10, sumAggregateFunc, simpleAggregateResult), 50, 'Aggregate set of numbers with seed and result selector!');
 
-
     assert.equal(map.aggregate(10, function (a, b) {
         return a + b[0];
     }), 25, 'Aggregate map of numbers with seed!');
@@ -91,7 +90,6 @@ qtest('collections aggregate', function (assert) {
     assert.equal(map.aggregate(10, function (a, b) {
         return a + b[0];
     }, simpleAggregateResult), 50, 'Aggregate map of numbers with seed and result selector!');
-
 
 
     assert.equal(dictionary.aggregate(10, function (a, b) {
@@ -103,7 +101,6 @@ qtest('collections aggregate', function (assert) {
     }, simpleAggregateResult), 50, 'Aggregate dictionary of numbers with seed and result selector!');
 
 
-
     assert.equal(sortedList.aggregate(10, function (a, b) {
         return a + b.key;
     }), 25, 'Aggregate sortedList of numbers with seed!');
@@ -111,7 +108,6 @@ qtest('collections aggregate', function (assert) {
     assert.equal(sortedList.aggregate(10, function (a, b) {
         return a + b.key;
     }, simpleAggregateResult), 50, 'Aggregate sortedList of numbers with seed and result selector!');
-
 
 
     assert.equal(lookup.aggregate(10, function (a, b) {

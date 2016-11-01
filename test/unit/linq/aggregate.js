@@ -56,7 +56,6 @@ qtest('collections aggregate', function (assert) {
     assert.equal(mocks.set.aggregate(10, sumAggregateFunc), 25, 'Aggregate set of numbers with seed!');
     assert.equal(mocks.set.aggregate(10, sumAggregateFunc, simpleAggregateResult), 50, 'Aggregate set of numbers with seed and result selector!');
 
-
     assert.equal(mocks.map.aggregate(10, function (a, b) {
         return a + b[0];
     }), 25, 'Aggregate map of numbers with seed!');
@@ -64,7 +63,6 @@ qtest('collections aggregate', function (assert) {
     assert.equal(mocks.map.aggregate(10, function (a, b) {
         return a + b[0];
     }, simpleAggregateResult), 50, 'Aggregate map of numbers with seed and result selector!');
-
 
 
     assert.equal(mocks.dictionary.aggregate(10, function (a, b) {
@@ -76,7 +74,6 @@ qtest('collections aggregate', function (assert) {
     }, simpleAggregateResult), 50, 'Aggregate dictionary of numbers with seed and result selector!');
 
 
-
     assert.equal(mocks.sortedList.aggregate(10, function (a, b) {
         return a + b.key;
     }), 25, 'Aggregate sortedList of numbers with seed!');
@@ -84,7 +81,6 @@ qtest('collections aggregate', function (assert) {
     assert.equal(mocks.sortedList.aggregate(10, function (a, b) {
         return a + b.key;
     }, simpleAggregateResult), 50, 'Aggregate sortedList of numbers with seed and result selector!');
-
 
 
     assert.equal(mocks.lookup.aggregate(10, function (a, b) {
