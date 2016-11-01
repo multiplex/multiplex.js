@@ -57,29 +57,29 @@ qtest('equalityComparer "contains" test', function (assert) {
 
 
 qtest('collections "contains" method tests', function (assert) {
-    assert.ok(mx(collection).contains(1), 'Test "contains" in a Collection');
-    assert.ok(!mx(collection).contains(0), 'Test does not contain in a Collection');
+    assert.ok(collection.contains(1), 'Test "contains" in a Collection');
+    assert.ok(!collection.contains(0), 'Test does not contain in a Collection');
 
-    assert.ok(mx(list).contains(1), 'Test "contains" in a List');
-    assert.ok(!mx(list).contains(0), 'Test does not contain in a List');
+    assert.ok(list.contains(1), 'Test "contains" in a List');
+    assert.ok(!list.contains(0), 'Test does not contain in a List');
 
-    assert.ok(mx(readOnlyCollection).contains(1), 'Test "contains" in a ReadOnlyCollection');
-    assert.ok(!mx(readOnlyCollection).contains(0), 'Test does not contain in a ReadOnlyCollection');
+    assert.ok(readOnlyCollection.contains(1), 'Test "contains" in a ReadOnlyCollection');
+    assert.ok(!readOnlyCollection.contains(0), 'Test does not contain in a ReadOnlyCollection');
 
-    assert.ok(mx(linkedList).contains(1), 'Test "contains" in a LinkedList');
-    assert.ok(!mx(linkedList).contains(0), 'Test does not contain in a LinkedList');
+    assert.ok(linkedList.contains(1), 'Test "contains" in a LinkedList');
+    assert.ok(!linkedList.contains(0), 'Test does not contain in a LinkedList');
 
-    assert.ok(mx(hashSet).contains(1), 'Test "contains" in a HashSet');
-    assert.ok(!mx(hashSet).contains(0), 'Test does not contain in a HashSet');
+    assert.ok(hashSet.contains(1), 'Test "contains" in a HashSet');
+    assert.ok(!hashSet.contains(0), 'Test does not contain in a HashSet');
 
-    assert.ok(mx(stack).contains(1), 'Test "contains" in a Stack');
-    assert.ok(!mx(stack).contains(0), 'Test does not contain in a Stack');
+    assert.ok(stack.contains(1), 'Test "contains" in a Stack');
+    assert.ok(!stack.contains(0), 'Test does not contain in a Stack');
 
-    assert.ok(mx(queue).contains(1), 'Test "contains" in a Queue');
-    assert.ok(!mx(queue).contains(0), 'Test does not contain in a Queue');
+    assert.ok(queue.contains(1), 'Test "contains" in a Queue');
+    assert.ok(!queue.contains(0), 'Test does not contain in a Queue');
 
-    assert.ok(mx(set).contains(1), 'Test "contains" in a Set');
-    assert.ok(!mx(set).contains(0), 'Test does not contain in a Set');
+    assert.ok(set.contains(1), 'Test "contains" in a Set');
+    assert.ok(!set.contains(0), 'Test does not contain in a Set');
 
     var mapComparer = {
         hash: function (t) {
@@ -99,17 +99,17 @@ qtest('collections "contains" method tests', function (assert) {
         }
     };
 
-    assert.ok(mx(map).contains([1, 1], mapComparer), 'Test "contains" in a Map');
-    assert.ok(!mx(map).contains([0, 0], mapComparer), 'Test does not contain in a Map');
+    assert.ok(map.contains([1, 1], mapComparer), 'Test "contains" in a Map');
+    assert.ok(!map.contains([0, 0], mapComparer), 'Test does not contain in a Map');
 
-    assert.ok(mx(dictionary).contains({ key: 1, value: 1 }, keyValuePairComparer), 'Test "contains" in a Dictionary');
-    assert.ok(!mx(dictionary).contains({ key: 0, value: 0 }, keyValuePairComparer), 'Test does not contain in a Dictionary');
+    assert.ok(dictionary.contains({ key: 1, value: 1 }, keyValuePairComparer), 'Test "contains" in a Dictionary');
+    assert.ok(!dictionary.contains({ key: 0, value: 0 }, keyValuePairComparer), 'Test does not contain in a Dictionary');
 
-    assert.ok(mx(lookup).contains(1), 'Test "contains" in a Lookup');
-    assert.ok(!mx(lookup).contains(0), 'Test does not contain in a Lookup');
+    assert.ok(lookup.contains(1), 'Test "contains" in a Lookup');
+    assert.ok(!lookup.contains(0), 'Test does not contain in a Lookup');
 
-    assert.ok(mx(sortedList).contains({ key: 1, value: 1 }, keyValuePairComparer), 'Test "contains" in a SortedList');
-    assert.ok(!mx(sortedList).contains({ key: 0, value: 0 }, keyValuePairComparer), 'Test does not contain in a SortedList');
+    assert.ok(sortedList.contains({ key: 1, value: 1 }, keyValuePairComparer), 'Test "contains" in a SortedList');
+    assert.ok(!sortedList.contains({ key: 0, value: 0 }, keyValuePairComparer), 'Test does not contain in a SortedList');
 });
 
 })));

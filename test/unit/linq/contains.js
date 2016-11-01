@@ -30,29 +30,29 @@ qtest('equalityComparer "contains" test', function (assert) {
 
 
 qtest('collections "contains" method tests', function (assert) {
-    assert.ok(mx(mocks.collection).contains(1), 'Test "contains" in a Collection');
-    assert.ok(!mx(mocks.collection).contains(0), 'Test does not contain in a Collection');
+    assert.ok(mocks.collection.contains(1), 'Test "contains" in a Collection');
+    assert.ok(!mocks.collection.contains(0), 'Test does not contain in a Collection');
 
-    assert.ok(mx(mocks.list).contains(1), 'Test "contains" in a List');
-    assert.ok(!mx(mocks.list).contains(0), 'Test does not contain in a List');
+    assert.ok(mocks.list.contains(1), 'Test "contains" in a List');
+    assert.ok(!mocks.list.contains(0), 'Test does not contain in a List');
 
-    assert.ok(mx(mocks.readOnlyCollection).contains(1), 'Test "contains" in a ReadOnlyCollection');
-    assert.ok(!mx(mocks.readOnlyCollection).contains(0), 'Test does not contain in a ReadOnlyCollection');
+    assert.ok(mocks.readOnlyCollection.contains(1), 'Test "contains" in a ReadOnlyCollection');
+    assert.ok(!mocks.readOnlyCollection.contains(0), 'Test does not contain in a ReadOnlyCollection');
 
-    assert.ok(mx(mocks.linkedList).contains(1), 'Test "contains" in a LinkedList');
-    assert.ok(!mx(mocks.linkedList).contains(0), 'Test does not contain in a LinkedList');
+    assert.ok(mocks.linkedList.contains(1), 'Test "contains" in a LinkedList');
+    assert.ok(!mocks.linkedList.contains(0), 'Test does not contain in a LinkedList');
 
-    assert.ok(mx(mocks.hashSet).contains(1), 'Test "contains" in a HashSet');
-    assert.ok(!mx(mocks.hashSet).contains(0), 'Test does not contain in a HashSet');
+    assert.ok(mocks.hashSet.contains(1), 'Test "contains" in a HashSet');
+    assert.ok(!mocks.hashSet.contains(0), 'Test does not contain in a HashSet');
 
-    assert.ok(mx(mocks.stack).contains(1), 'Test "contains" in a Stack');
-    assert.ok(!mx(mocks.stack).contains(0), 'Test does not contain in a Stack');
+    assert.ok(mocks.stack.contains(1), 'Test "contains" in a Stack');
+    assert.ok(!mocks.stack.contains(0), 'Test does not contain in a Stack');
 
-    assert.ok(mx(mocks.queue).contains(1), 'Test "contains" in a Queue');
-    assert.ok(!mx(mocks.queue).contains(0), 'Test does not contain in a Queue');
+    assert.ok(mocks.queue.contains(1), 'Test "contains" in a Queue');
+    assert.ok(!mocks.queue.contains(0), 'Test does not contain in a Queue');
 
-    assert.ok(mx(mocks.set).contains(1), 'Test "contains" in a Set');
-    assert.ok(!mx(mocks.set).contains(0), 'Test does not contain in a Set');
+    assert.ok(mocks.set.contains(1), 'Test "contains" in a Set');
+    assert.ok(!mocks.set.contains(0), 'Test does not contain in a Set');
 
     var mapComparer = {
         hash: function (t) {
@@ -72,15 +72,15 @@ qtest('collections "contains" method tests', function (assert) {
         }
     };
 
-    assert.ok(mx(mocks.map).contains([1, 1], mapComparer), 'Test "contains" in a Map');
-    assert.ok(!mx(mocks.map).contains([0, 0], mapComparer), 'Test does not contain in a Map');
+    assert.ok(mocks.map.contains([1, 1], mapComparer), 'Test "contains" in a Map');
+    assert.ok(!mocks.map.contains([0, 0], mapComparer), 'Test does not contain in a Map');
 
-    assert.ok(mx(mocks.dictionary).contains({ key: 1, value: 1 }, keyValuePairComparer), 'Test "contains" in a Dictionary');
-    assert.ok(!mx(mocks.dictionary).contains({ key: 0, value: 0 }, keyValuePairComparer), 'Test does not contain in a Dictionary');
+    assert.ok(mocks.dictionary.contains({ key: 1, value: 1 }, keyValuePairComparer), 'Test "contains" in a Dictionary');
+    assert.ok(!mocks.dictionary.contains({ key: 0, value: 0 }, keyValuePairComparer), 'Test does not contain in a Dictionary');
 
-    assert.ok(mx(mocks.lookup).contains(1), 'Test "contains" in a Lookup');
-    assert.ok(!mx(mocks.lookup).contains(0), 'Test does not contain in a Lookup');
+    assert.ok(mocks.lookup.contains(1), 'Test "contains" in a Lookup');
+    assert.ok(!mocks.lookup.contains(0), 'Test does not contain in a Lookup');
 
-    assert.ok(mx(mocks.sortedList).contains({ key: 1, value: 1 }, keyValuePairComparer), 'Test "contains" in a SortedList');
-    assert.ok(!mx(mocks.sortedList).contains({ key: 0, value: 0 }, keyValuePairComparer), 'Test does not contain in a SortedList');
+    assert.ok(mocks.sortedList.contains({ key: 1, value: 1 }, keyValuePairComparer), 'Test "contains" in a SortedList');
+    assert.ok(!mocks.sortedList.contains({ key: 0, value: 0 }, keyValuePairComparer), 'Test does not contain in a SortedList');
 });
