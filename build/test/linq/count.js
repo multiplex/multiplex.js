@@ -65,30 +65,30 @@ qtest('collections "count" method tests', function (assert) {
     assert.equal(mx(stack).count(simpleNumericPredicate), 2, 'Test "count" in a Stack with predicate');
 
     assert.equal(mx(queue).count(), 5, 'Test "count" in a Queue');
-    assert.equal(mx(queue).count(simpleNumericPredicate), 2, 'Test "count" in a Stack with Queue');
+    assert.equal(mx(queue).count(simpleNumericPredicate), 2, 'Test "count" in a Queue with predicate');
 
     assert.equal(mx(set).count(), 5, 'Test "count" in a Set');
-    assert.equal(mx(set).count(simpleNumericPredicate), 2, 'Test "count" in a Stack with Set');
+    assert.equal(mx(set).count(simpleNumericPredicate), 2, 'Test "count" in a Set with predicate');
 
     assert.equal(mx(map).count(), 5, 'Test "count" in a Map');
     assert.equal(mx(map).count(function (t) {
         return t[0] < 3;
-    }), 2, 'Test "count" in a Stack with Map');
+    }), 2, 'Test "count" in a Map with predicate');
 
     assert.equal(mx(dictionary).count(), 5, 'Test "count" in a Dictionary');
     assert.equal(mx(dictionary).count(function (t) {
         return t.key < 3;
-    }), 2, 'Test "count" in a Stack with Dictionary');
+    }), 2, 'Test "count" in a Dictionary with predicate');
 
     assert.equal(mx(lookup).count(), 5, 'Test "count" in a Lookup');
     assert.equal(mx(lookup).count(function (t) {
         return t.key < 3;
-    }), 2, 'Test "count" in a Stack with Lookup');
+    }), 2, 'Test "count" in a Lookup with predicate');
 
     assert.equal(mx(sortedList).count(), 5, 'Test "count" in a SortedList');
     assert.equal(mx(sortedList).count(function (t) {
         return t.key < 3;
-    }), 2, 'Test "count" in a Stack with SortedList');
+    }), 2, 'Test "count" in a SortedList with predicate');
 });
 
 
