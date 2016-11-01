@@ -46,47 +46,47 @@ qtest('basic "count" test', function (assert) {
 
 
 qtest('collections "count" method tests', function (assert) {
-    assert.equal(mx(collection).count(), 5, 'Test "count" in a Collection');
-    assert.equal(mx(collection).count(simpleNumericPredicate), 2, 'Test "count" in a Collection with predicate');
+    assert.equal(collection.count(), 5, 'Test "count" in a Collection');
+    assert.equal(collection.count(simpleNumericPredicate), 2, 'Test "count" in a Collection with predicate');
 
-    assert.equal(mx(list).count(), 5, 'Test "count" in a List');
-    assert.equal(mx(list).count(simpleNumericPredicate), 2, 'Test "count" in a List with predicate');
+    assert.equal(list.count(), 5, 'Test "count" in a List');
+    assert.equal(list.count(simpleNumericPredicate), 2, 'Test "count" in a List with predicate');
 
-    assert.equal(mx(readOnlyCollection).count(), 5, 'Test "count" in a ReadOnlyCollection');
-    assert.equal(mx(readOnlyCollection).count(simpleNumericPredicate), 2, 'Test "count" in a ReadOnlyCollection with predicate');
+    assert.equal(readOnlyCollection.count(), 5, 'Test "count" in a ReadOnlyCollection');
+    assert.equal(readOnlyCollection.count(simpleNumericPredicate), 2, 'Test "count" in a ReadOnlyCollection with predicate');
 
-    assert.equal(mx(linkedList).count(), 5, 'Test "count" in a LinkedList');
-    assert.equal(mx(linkedList).count(simpleNumericPredicate), 2, 'Test "count" in a LinkedList with predicate');
+    assert.equal(linkedList.count(), 5, 'Test "count" in a LinkedList');
+    assert.equal(linkedList.count(simpleNumericPredicate), 2, 'Test "count" in a LinkedList with predicate');
 
-    assert.equal(mx(hashSet).count(), 5, 'Test "count" in a HashSet');
-    assert.equal(mx(hashSet).count(simpleNumericPredicate), 2, 'Test "count" in a HashSet with predicate');
+    assert.equal(hashSet.count(), 5, 'Test "count" in a HashSet');
+    assert.equal(hashSet.count(simpleNumericPredicate), 2, 'Test "count" in a HashSet with predicate');
 
-    assert.equal(mx(stack).count(), 5, 'Test "count" in a Stack');
-    assert.equal(mx(stack).count(simpleNumericPredicate), 2, 'Test "count" in a Stack with predicate');
+    assert.equal(stack.count(), 5, 'Test "count" in a Stack');
+    assert.equal(stack.count(simpleNumericPredicate), 2, 'Test "count" in a Stack with predicate');
 
-    assert.equal(mx(queue).count(), 5, 'Test "count" in a Queue');
-    assert.equal(mx(queue).count(simpleNumericPredicate), 2, 'Test "count" in a Queue with predicate');
+    assert.equal(queue.count(), 5, 'Test "count" in a Queue');
+    assert.equal(queue.count(simpleNumericPredicate), 2, 'Test "count" in a Queue with predicate');
 
-    assert.equal(mx(set).count(), 5, 'Test "count" in a Set');
-    assert.equal(mx(set).count(simpleNumericPredicate), 2, 'Test "count" in a Set with predicate');
+    assert.equal(set.count(), 5, 'Test "count" in a Set');
+    assert.equal(set.count(simpleNumericPredicate), 2, 'Test "count" in a Set with predicate');
 
-    assert.equal(mx(map).count(), 5, 'Test "count" in a Map');
-    assert.equal(mx(map).count(function (t) {
+    assert.equal(map.count(), 5, 'Test "count" in a Map');
+    assert.equal(map.count(function (t) {
         return t[0] < 3;
     }), 2, 'Test "count" in a Map with predicate');
 
-    assert.equal(mx(dictionary).count(), 5, 'Test "count" in a Dictionary');
-    assert.equal(mx(dictionary).count(function (t) {
+    assert.equal(dictionary.count(), 5, 'Test "count" in a Dictionary');
+    assert.equal(dictionary.count(function (t) {
         return t.key < 3;
     }), 2, 'Test "count" in a Dictionary with predicate');
 
-    assert.equal(mx(lookup).count(), 5, 'Test "count" in a Lookup');
-    assert.equal(mx(lookup).count(function (t) {
+    assert.equal(lookup.count(), 5, 'Test "count" in a Lookup');
+    assert.equal(lookup.count(function (t) {
         return t.key < 3;
     }), 2, 'Test "count" in a Lookup with predicate');
 
-    assert.equal(mx(sortedList).count(), 5, 'Test "count" in a SortedList');
-    assert.equal(mx(sortedList).count(function (t) {
+    assert.equal(sortedList.count(), 5, 'Test "count" in a SortedList');
+    assert.equal(sortedList.count(function (t) {
         return t.key < 3;
     }), 2, 'Test "count" in a SortedList with predicate');
 });
