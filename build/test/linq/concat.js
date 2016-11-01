@@ -6,14 +6,86 @@
 
 mx = 'default' in mx ? mx['default'] : mx;
 
+var array = [1, 2, 3, 4, 5];
+var collection = new mx.Collection(array);
+var list = new mx.List(array);
+var linkedList = new mx.LinkedList(array);
+var hashSet = new mx.HashSet(array);
+var stack = new mx.Stack(array);
+var queue = new mx.Queue(array);
+var set = new mx.Set(array);
+var map = new mx.Map();
+var dictionary = new mx.Dictionary();
+var sortedList = new mx.SortedList();
+var readOnlyCollection = list.asReadOnly();
+var lookup = new mx.Lookup(array, function (t) {
+    return t;
+});
+
+for (var i = 0; i < array.length; i++) {
+    map.set(array[i], array[i]);
+    dictionary.set(array[i], array[i]);
+    sortedList.add(array[i], array[i]);
+}
+
 var qunit = typeof QUnit === 'undefined' ? require('qunitjs') : QUnit;
 var qmodule = qunit.module;
 var qtest = qunit.test;
 
 qmodule('linq-concat');
 
+
 qtest('basic "concat" test', function (assert) {
-    assert.ok(mx([]), 'dumy');
+    assert.deepEqual(mx([]).concat([]).toArray(), [], 'concat two empty arrays');
+    assert.deepEqual(mx([1, 2]).concat([]).toArray(), [1, 2], 'concat an array with empty array');
+    assert.deepEqual(mx([1, 2]).concat([3, 4]).toArray(), [1, 2, 3, 4], 'concat two arrays');
+    assert.deepEqual(mx([1, 2]).concat([1, 2]).toArray(), [1, 2, 1, 2], 'concat two identical arrays');
+});
+
+
+qtest('collections "concat" method tests', function (assert) {
+    assert.equal(mx(collection).concat([]).toArray().length, 5, 'Test "concat" with an empty array in a Collection');
+    assert.equal(mx(collection).concat(collection).toArray().length, 10, 'Test "concat" in a Collection');
+
+    assert.equal(mx(list).concat([]).toArray().length, 5, 'Test "concat" with an empty array in a List');
+    assert.equal(mx(list).concat(collection).toArray().length, 10, 'Test "concat" in a List');
+
+    assert.equal(mx(readOnlyCollection).concat([]).toArray().length, 5, 'Test "concat" with an empty array in a ReadOnlyCollection');
+    assert.equal(mx(readOnlyCollection).concat(collection).toArray().length, 10, 'Test "concat" in a ReadOnlyCollection');
+
+    assert.equal(mx(linkedList).concat([]).toArray().length, 5, 'Test "concat" with an empty array in a LinkedList');
+    assert.equal(mx(linkedList).concat(collection).toArray().length, 10, 'Test "concat" in a LinkedList');
+
+    assert.equal(mx(hashSet).concat([]).toArray().length, 5, 'Test "concat" with an empty array in a HashSet');
+    assert.equal(mx(hashSet).concat(collection).toArray().length, 10, 'Test "concat" in a HashSet');
+
+    assert.equal(mx(stack).concat([]).toArray().length, 5, 'Test "concat" with an empty array in a Stack');
+    assert.equal(mx(stack).concat(collection).toArray().length, 10, 'Test "concat" in a Stack');
+
+    assert.equal(mx(queue).concat([]).toArray().length, 5, 'Test "concat" with an empty array in a Queue');
+    assert.equal(mx(queue).concat(collection).toArray().length, 10, 'Test "concat" in a Queue');
+
+    assert.equal(mx(set).concat([]).toArray().length, 5, 'Test "concat" with an empty array in a Set');
+    assert.equal(mx(set).concat(collection).toArray().length, 10, 'Test "concat" in a Set');
+
+    assert.equal(mx(map).concat([]).toArray().length, 5, 'Test "concat" with an empty array in a Map');
+    assert.equal(mx(map).concat(collection).toArray().length, 10, 'Test "concat" in a Map');
+
+    assert.equal(mx(dictionary).concat([]).toArray().length, 5, 'Test "concat" with an empty array in a Dictionary');
+    assert.equal(mx(dictionary).concat(collection).toArray().length, 10, 'Test "concat" in a Dictionary');
+
+    assert.equal(mx(lookup).concat([]).toArray().length, 5, 'Test "concat" with an empty array in a Lookup');
+    assert.equal(mx(lookup).concat(collection).toArray().length, 10, 'Test "concat" in a Lookup');
+
+    assert.equal(mx(sortedList).concat([]).toArray().length, 5, 'Test "concat" with an empty array in a SortedList');
+    assert.equal(mx(sortedList).concat(collection).toArray().length, 10, 'Test "concat" in a SortedList');
+});
+
+
+qtest('concat method validations', function (assert) {
+    assert.throws(function () {
+        mx([1]).concat();
+    }, 'null input');
 });
 
 })));
