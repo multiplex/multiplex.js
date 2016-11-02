@@ -20,6 +20,8 @@ export default function count(value, predicate = undefined) {
         }
     }
 
+    count = 0;
+
     if (predicate) {
         assertType(predicate, Function);
         for (let element of $iterable(value)) {
