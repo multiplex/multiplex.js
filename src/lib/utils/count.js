@@ -20,6 +20,7 @@ export default function count(value, predicate) {
         }
     }
 
+    count = 0;
     var it = $iterator(value);
 
     if (predicate) {
