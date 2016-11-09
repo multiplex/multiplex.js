@@ -12,7 +12,7 @@ var qtest = qunit.test;
 
 qmodule('linq-distinct');
 
-qtest('dummy', function (assert) {
+qtest('basic "distinct" test', function (assert) {
     assert.ok(mx([]), 'dumy');
 });
 
