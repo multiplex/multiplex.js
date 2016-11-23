@@ -72,7 +72,7 @@ qtest('collections "distinct" method tests', function (assert) {
     assert.equal(collection.distinct().count(), 5, 'Test "distinct" in a Collection');
     assert.equal(collection.distinct(numericComparer).count(), 5, 'Test "distinct" in a Collection with comparer');
 
-    assert.equal(list.distinct().count(), 5, 'Test "count" in a List');
+    assert.equal(list.distinct().count(), 5, 'Test "distinct" in a List');
     assert.equal(list.distinct(numericComparer).count(), 5, 'Test "distinct" in a List with comparer');
 
     assert.equal(readOnlyCollection.distinct().count(), 5, 'Test "distinct" in a ReadOnlyCollection');
