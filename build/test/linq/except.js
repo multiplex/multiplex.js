@@ -12,7 +12,7 @@ var qtest = qunit.test;
 
 qmodule('linq-except');
 
-qtest('dummy', function (assert) {
+qtest('basic "except" test', function (assert) {
     assert.ok(mx([]), 'dumy');
 });
 
