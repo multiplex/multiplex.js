@@ -12,7 +12,7 @@ var qtest = qunit.test;
 
 qmodule('linq-first');
 
-qtest('dummy', function (assert) {
+qtest('basic "first" test', function (assert) {
     assert.ok(mx([]), 'dumy');
 });
 

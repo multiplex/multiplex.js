@@ -3,6 +3,6 @@ import {qmodule, qtest} from '../../qunit';
 
 qmodule('linq-first');
 
-qtest('dummy', function (assert) {
+qtest('basic "first" test', function (assert) {
     assert.ok(mx([]), 'dumy');
 });
