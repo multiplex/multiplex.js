@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (April 03, 2017)
+* Version 2.0.0 (April 10, 2017)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -5315,7 +5315,7 @@ function whereIterator(source, predicate) {
             next;
 
         return new Iterator(function () {
-            if (!(next = it.next()).done) {
+            while (!(next = it.next()).done) {
                 if (predicate(next.value, index++)) {
                     return {
                         value: next.value,
