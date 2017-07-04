@@ -11,7 +11,7 @@ export default function groupIterator(source, keySelector, elementSelector, resu
         let lookup = new Lookup(source, keySelector, elementSelector, comparer);
 
         for (let element of lookup) {
-            yield resultSelector ? resultSelector(element.key, element) : element;
+            yield resultSelector ? resultSelector(element.key, new Iterable(element.elements)) : element;
         }
     });
 }
