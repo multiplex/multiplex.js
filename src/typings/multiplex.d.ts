@@ -454,13 +454,6 @@ declare namespace multiplex {
 
 
         /**
-        * Performs the specified action on each element of the List.
-        * @param action The action function to perform on each element of the List.
-        */
-        forEach(action: (item: T) => void): void
-
-
-        /**
         * Gets the element at the specified index.
         * @param index The zero-based index of the element to get.
         */
