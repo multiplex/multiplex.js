@@ -1980,7 +1980,7 @@ declare namespace multiplex {
         * @param keySelector A function to extract a key from each element.
         * @param comparer A Comparer to compare keys.
         */
-        orderBy<TKey>(keySelector: (item: T) => TKey, comparer: EqualityComparer<TKey>): OrderedEnumerable<T>
+        orderBy<TKey>(keySelector: (item: T) => TKey, comparer: Comparer<TKey>): OrderedEnumerable<T>
 
 
         /**
@@ -1998,7 +1998,7 @@ declare namespace multiplex {
         * @param keySelector A function to extract a key from each element.
         * @param comparer A Comparer to compare keys.
         */
-        orderByDescending<TKey>(keySelector: (item: T) => TKey, comparer: EqualityComparer<TKey>): OrderedEnumerable<T>
+        orderByDescending<TKey>(keySelector: (item: T) => TKey, comparer: Comparer<TKey>): OrderedEnumerable<T>
 
 
         /**
