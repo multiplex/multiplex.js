@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (July 03, 2017)
+* Version 2.0.0 (July 09, 2017)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -2820,6 +2820,7 @@ function validateNode(node, list) {
 function Grouping(key, elements) {
     this.key = key;
     this.elements = elements;
+    Collection.call(this, elements);
 }
 
 extend(Grouping, Collection, {
