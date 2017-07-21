@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (July 13, 2017)
+* Version 2.0.0 (July 21, 2017)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -4853,8 +4853,13 @@ function joinIterator(outer, inner, outerKeySelector, innerKeySelector, resultSe
             next;
 
         return new Iterator(function () {
-            while (!(next = it.next()).done) {
+            while (true) {
                 if (elements === null) {
+                    if ((next = it.next()).done) {
+                        return {
+                            done: true
+                        };
+                    }
                     elements = lookup.get(outerKeySelector(next.value)).elements;
                 }
                 if (index < elements.length) {
@@ -4868,9 +4873,6 @@ function joinIterator(outer, inner, outerKeySelector, innerKeySelector, resultSe
                     elements = null;
                 }
             }
-            return {
-                done: true
-            };
         });
     });
 }
@@ -5571,7 +5573,7 @@ function linq(iterable) {
         * @returns {Iterable}
         */
         join: function (inner, outerKeySelector, innerKeySelector, resultSelector, comparer) {
-            return joinIterator(this, inner, outerKeySelector, innerKeySelector, comparer);
+            return joinIterator(this, inner, outerKeySelector, innerKeySelector, resultSelector, comparer);
         },
 
         /**
