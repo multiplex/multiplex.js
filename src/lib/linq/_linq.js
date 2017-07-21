@@ -264,7 +264,7 @@ export default function linq(iterable) {
         * @returns {Iterable}
         */
         join(inner, outerKeySelector, innerKeySelector, resultSelector, comparer = EqualityComparer.instance) {
-            return join(this, inner, outerKeySelector, innerKeySelector, comparer);
+            return join(this, inner, outerKeySelector, innerKeySelector, resultSelector, comparer);
         },
 
         /**
