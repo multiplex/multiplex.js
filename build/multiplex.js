@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 3.0.0 (July 03, 2017)
+* Version 3.0.0 (July 21, 2017)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -5339,7 +5339,7 @@ function linq(iterable) {
         * @returns {Iterable}
         */
         join(inner, outerKeySelector, innerKeySelector, resultSelector, comparer = EqualityComparer.instance) {
-            return joinIterator(this, inner, outerKeySelector, innerKeySelector, comparer);
+            return joinIterator(this, inner, outerKeySelector, innerKeySelector, resultSelector, comparer);
         },
 
         /**
