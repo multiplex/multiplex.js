@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 3.0.0 (July 21, 2017)
+* Version 3.0.0 (July 25, 2017)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -1425,7 +1425,7 @@ class HashTable {
             slot = null,
             bucket = 0;
 
-        this.buckets.length = newSize;          // expand buckets
+        this.buckets = new Array(newSize);      // expand buckets
         this.slots.length = newSize;            // expand slots
 
 
@@ -2866,7 +2866,7 @@ class LookupTable {
             bucket = 0;
 
         this.slots.length = newSize;
-        this.buckets.length = newSize;
+        this.buckets = new Array(newSize);
 
 
         // rehash values & update buckets and slots
