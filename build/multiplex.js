@@ -2870,10 +2870,14 @@ mixin(LookupTable.prototype, {
 
     entries: function () {
         var arr = new Array(this.size),
-            index = 0;
+            index = 0,
+            slot = null;
 
         for (var i = 0, count = this.slots.length; i < count; i++) {
-            arr[index++] = this.slots[i].grouping;
+            slot = this.slots[i];
+            if (slot !== undefined) {
+                arr[index++] = slot.grouping;
+            }
         }
 
         return arr;
@@ -3019,7 +3023,7 @@ extend(Lookup, Collection, {
     },
 
     toArray: function () {
-        this.table.entries();
+        return this.table.entries();
     },
 
     toString: function () {
