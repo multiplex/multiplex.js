@@ -37,7 +37,7 @@ extend(Lookup, Collection, {
     },
 
     toArray: function () {
-        this.table.entries();
+        return this.table.entries();
     },
 
     toString: function () {
