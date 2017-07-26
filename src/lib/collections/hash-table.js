@@ -153,7 +153,7 @@ export default class HashTable {
             slot = null,
             bucket = 0;
 
-        this.buckets.length = newSize;          // expand buckets
+        this.buckets = new Array(newSize);      // expand buckets
         this.slots.length = newSize;            // expand slots
 
 
