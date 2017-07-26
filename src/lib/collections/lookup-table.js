@@ -90,8 +90,7 @@ mixin(LookupTable.prototype, {
             bucket = 0;
 
         this.slots.length = newSize;
-        this.buckets.length = newSize;
-
+        this.buckets = new Array(newSize);
 
         // rehash values & update buckets and slots
         for (var index = 0; index < size; index++) {
