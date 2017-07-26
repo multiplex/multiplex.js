@@ -159,7 +159,7 @@ mixin(HashTable.prototype, {
             slot = null,
             bucket = 0;
 
-        this.buckets.length = newSize;          // expand buckets
+        this.buckets = new Array(newSize);      // expand buckets
         this.slots.length = newSize;            // expand slots
 
 
@@ -169,8 +169,8 @@ mixin(HashTable.prototype, {
 
             // freed slots have undefined hashCode value and do not need rehash
             if (slot.hash !== undefined) {
-                bucket = slot.hash % newSize;          // rehash
-                slot.next = this.buckets[bucket];      // update slot's next index in the bucket chain
+                bucket = slot.hash % newSize;           // rehash
+                slot.next = this.buckets[bucket];       // update slot's next index in the bucket chain
                 this.buckets[bucket] = index;           // update bucket index
             }
         }
