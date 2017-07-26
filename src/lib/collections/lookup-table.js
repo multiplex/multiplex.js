@@ -86,7 +86,7 @@ export default class LookupTable {
             bucket = 0;
 
         this.slots.length = newSize;
-        this.buckets.length = newSize;
+        this.buckets = new Array(newSize);
 
 
         // rehash values & update buckets and slots
