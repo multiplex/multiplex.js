@@ -36,7 +36,7 @@ export default class Lookup extends Collection {
     }
 
     toArray() {
-        this.table.entries();
+        return this.table.entries();
     }
 
     [Symbol.iterator]() {

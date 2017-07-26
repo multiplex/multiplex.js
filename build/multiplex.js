@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 3.0.0 (July 25, 2017)
+* Version 3.0.0 (July 26, 2017)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -2810,7 +2810,9 @@ class LookupTable {
             index = 0;
 
         for (let i = 0, count = this.slots.length; i < count; i++) {
-            arr[index++] = this.slots[i].grouping;
+            if (this.slots[i] !== undefined) {
+                arr[index++] = this.slots[i].grouping;
+            }
         }
 
         return arr;
@@ -2954,7 +2956,7 @@ class Lookup extends Collection {
     }
 
     toArray() {
-        this.table.entries();
+        return this.table.entries();
     }
 
     [Symbol.iterator]() {

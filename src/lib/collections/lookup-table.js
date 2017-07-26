@@ -30,7 +30,9 @@ export default class LookupTable {
             index = 0;
 
         for (let i = 0, count = this.slots.length; i < count; i++) {
-            arr[index++] = this.slots[i].grouping;
+            if (this.slots[i] !== undefined) {
+                arr[index++] = this.slots[i].grouping;
+            }
         }
 
         return arr;
