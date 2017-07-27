@@ -1,4 +1,4 @@
-import singleOrDefault from './first-or-default';
+import singleOrDefault from './single-or-default';
 import error, {ERROR_NO_ELEMENTS, ERROR_NO_MATCH} from '../utils/error';
 
 export default function singleIterator(source, predicate) {
