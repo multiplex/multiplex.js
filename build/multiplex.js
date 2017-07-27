@@ -5111,6 +5111,7 @@ function singleIterator(source, predicate) {
 function skipIterator(source, count) {
     assertNotNull(source);
     assertType(count, Number);
+    count = Math.max(count, 0);
 
     var arr = asArray(source);
 
@@ -5204,6 +5205,7 @@ function sumIterator(source, selector) {
 function takeIterator(source, count) {
     assertNotNull(source);
     assertType(count, Number);
+    count = Math.max(count, 0);
 
     var arr = asArray(source);
 
