@@ -7,6 +7,7 @@
 mx = 'default' in mx ? mx['default'] : mx;
 
 var array = [1, 2, 3, 4, 5];
+var enumerable = mx.range(1, 5);
 var collection = new mx.Collection(array);
 var list = new mx.List(array);
 var linkedList = new mx.LinkedList(array);
@@ -28,6 +29,19 @@ for (var i = 0; i < array.length; i++) {
     sortedList.add(array[i], array[i]);
 }
 
+function Basic(val, name) {
+    this.val = val;
+    this.name = name;
+}
+
+Basic.prototype.__hash__ = function () {
+    return this.val;
+};
+
+Basic.prototype.__eq__ = function (obj) {
+    return this.val === obj.val;
+};
+
 var qunit = typeof QUnit === 'undefined' ? require('qunitjs') : QUnit;
 var qmodule = qunit.module;
 var qtest = qunit.test;
@@ -40,6 +54,27 @@ qtest('basic "union" test', function (assert) {
     assert.deepEqual(mx([1, 2]).union([]).toArray(), [1, 2], 'union an array with empty array');
     assert.deepEqual(mx([1, 2]).union([3, 4]).toArray(), [1, 2, 3, 4], 'union two arrays');
     assert.deepEqual(mx([1, 2]).union([1, 2]).toArray(), [1, 2], 'union two identical arrays');
+});
+
+
+qtest('equalityComparer "union" test', function (assert) {
+    var comparer = {
+        hash: function (o) {
+            return o.val;
+        },
+        equals: function (a, b) {
+            return a.val === b.val;
+        }
+    };
+
+    assert.equal(mx([{ val: 1, index: 1 }]).union([{ val: 1, index: 2 }], comparer).toArray().length, 1, 'Test union in an array of objects with equality comparer');
+    assert.equal(mx([{ val: 1, index: 1 }]).union([{ val: 2, index: 2 }], comparer).toArray().length, 2, 'Test union an array of objects with equality comparer');
+});
+
+
+qtest('hash/equals override "union" test', function (assert) {
+    assert.equal(mx([new Basic(1, 'A'), new Basic(2, 'B')]).union([new Basic(1, 'C')]).toArray().length, 2, 'Test union in an array of objects overriding hash/equals methods');
+    assert.equal(mx([new Basic(1, 'A'), new Basic(2, 'B')]).union([new Basic(3, 'A')]).toArray().length, 3, 'Test union in an array of objects overriding hash/equals methods');
 });
 
 
