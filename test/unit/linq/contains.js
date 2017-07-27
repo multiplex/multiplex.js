@@ -16,7 +16,7 @@ qtest('basic "contains" test', function (assert) {
 
 qtest('equalityComparer "contains" test', function (assert) {
     var comparer = {
-        hash(o) {
+        hash: function (o) {
             return o.val;
         },
         equals: function (a, b) {
