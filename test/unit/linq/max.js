@@ -7,13 +7,13 @@ import {
 
 qmodule('linq-max');
 
-function squared(t) {
-    return t * t;
+function double(t) {
+    return t * 2;
 }
 
 qtest('basic "max" test', function (assert) {
     assert.equal(mx(mocks.array).max(), 5, 'max element of an array of numbers');
-    assert.equal(mx(mocks.array).max(squared), 25, 'max element of an array of numbers with selector');
+    assert.equal(mx(mocks.array).max(double), 10, 'max element of an array of numbers with selector');
 
     assert.equal(mx('test').max(), 't', 'max element of an array of strings');
     assert.equal(mx([true, false, true]).max(), true, 'max element of an array of boolean');
@@ -69,28 +69,28 @@ qtest('basic "max" test', function (assert) {
 
 qtest('collections "max" method tests', function (assert) {
     assert.equal(mocks.collection.max(), 5, 'max element in a Collection');
-    assert.equal(mocks.collection.max(squared), 25, 'max element in a Collection with predicate');
+    assert.equal(mocks.collection.max(double), 10, 'max element in a Collection with predicate');
 
     assert.equal(mocks.list.max(), 5, 'max element in a List');
-    assert.equal(mocks.list.max(squared), 25, 'max element in a List with predicate');
+    assert.equal(mocks.list.max(double), 10, 'max element in a List with predicate');
 
     assert.equal(mocks.readOnlyCollection.max(), 5, 'max element in a ReadOnlyCollection');
-    assert.equal(mocks.readOnlyCollection.max(squared), 25, 'max element in a ReadOnlyCollection with predicate');
+    assert.equal(mocks.readOnlyCollection.max(double), 10, 'max element in a ReadOnlyCollection with predicate');
 
     assert.equal(mocks.linkedList.max(), 5, 'max element in a LinkedList');
-    assert.equal(mocks.linkedList.max(squared), 25, 'max element in a LinkedList with predicate');
+    assert.equal(mocks.linkedList.max(double), 10, 'max element in a LinkedList with predicate');
 
     assert.equal(mocks.hashSet.max(), 5, 'max element in a HashSet');
-    assert.equal(mocks.hashSet.max(squared), 25, 'max element in a HashSet with predicate');
+    assert.equal(mocks.hashSet.max(double), 10, 'max element in a HashSet with predicate');
 
     assert.equal(mocks.stack.max(), 5, 'max element in a Stack');
-    assert.equal(mocks.stack.max(squared), 25, 'max element in a Stack with predicate');
+    assert.equal(mocks.stack.max(double), 10, 'max element in a Stack with predicate');
 
     assert.equal(mocks.queue.max(), 5, 'max element in a Queue');
-    assert.equal(mocks.queue.max(squared), 25, 'max element in a Queue with predicate');
+    assert.equal(mocks.queue.max(double), 10, 'max element in a Queue with predicate');
 
     assert.equal(mocks.set.max(), 5, 'max element in a Set');
-    assert.equal(mocks.set.max(squared), 25, 'max element in a Set with predicate');
+    assert.equal(mocks.set.max(double), 10, 'max element in a Set with predicate');
 
     assert.equal(mocks.map.max(function (t) {
         return t[0];
