@@ -2078,23 +2078,6 @@ extend(List, Collection, {
     },
 
     /**
-    * Performs the specified action on each element of the List.
-    * @param {Function} action The action function to perform on each element of the List. eg. function(item)
-    */
-    forEach: function (action, thisArg) {
-        assertType(action, Function);
-
-        for (var i = 0, len = this.length; i < len; i++) {
-            if (thisArg) {
-                action.call(thisArg, this[i]);
-            }
-            else {
-                action(this[i]);
-            }
-        }
-    },
-
-    /**
     * Gets the element at the specified index.
     * @param {Number} index The zero-based index of the element to get.
     * @returns {Object}
