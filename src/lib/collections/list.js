@@ -440,6 +440,8 @@ extend(List, Collection, {
         while (len-- > 0) {
             this[len + index] = arr[len];
         }
+
+        return this;
     },
 
     /**
