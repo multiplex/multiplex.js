@@ -11,6 +11,7 @@ qmodule('linq-distinct');
 qtest('basic "distinct" test', function (assert) {
     assert.equal(mx(mocks.array).distinct().count(), 5, ' distinct count of an array of separate numbers');
     assert.equal(mx([1, 1, 1]).distinct().count(), 1, ' distinct count of an array of identical numbers');
+    assert.equal(mx.repeat(1, 100).distinct().count(), 1, ' distinct count of an array of 100 identical numbers');
     assert.equal(mx(['1', '1', '1']).distinct().count(), 1, ' distinct count of an array of identical strings');
     assert.equal(mx([true, true, true]).distinct().count(), 1, ' distinct count of an array of identical booleans');
     assert.equal(mx([null, null, null]).distinct().count(), 1, ' distinct count of an array of null values');
