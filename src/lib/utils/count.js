@@ -10,7 +10,7 @@ import $iterable from '../iteration/iterable-factory';
 * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
 * @returns {Number}
 */
-export default function count(value, predicate = undefined) {
+export default function iterableCount(value, predicate = undefined) {
     let count = 0;
 
     if (!predicate) {

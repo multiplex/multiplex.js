@@ -8,12 +8,13 @@
 */
 
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-    typeof define === 'function' && define.amd ? define(factory) :
-    (global.mx = factory());
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+	typeof define === 'function' && define.amd ? define(factory) :
+	(global.mx = factory());
 }(this, (function () { 'use strict';
 
 mx.version = '3.0.0';
+
 
 function isObject(obj) {
     return typeof obj === 'object';
@@ -75,6 +76,7 @@ function error(msg) {
 
 const ERROR_ARGUMENT_OUT_OF_RANGE = 'Argument was out of the range of valid values.';
 const ERROR_ARRAY_SIZE = 'The number of elements in the source is greater than the number of elements that the destination array can contain.';
+
 const ERROR_NO_ELEMENTS = 'Sequence contains no elements.';
 const ERROR_NO_MATCH = 'Sequence contains no matching element.';
 const ERROR_NON_NUMERIC_TYPE = 'Value is not a number.';
@@ -952,7 +954,7 @@ const defaultEqualityComparer = new EqualityComparer(runtimeHash, runtimeEquals)
 * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
 * @returns {Number}
 */
-function count(value, predicate = undefined) {
+function iterableCount(value, predicate = undefined) {
     let count = 0;
 
     if (!predicate) {
@@ -1102,7 +1104,7 @@ class Collection extends Iterable {
     count(predicate = null) {
         // if not overridden in subclass,
         // gets the count of the collection by converting the collection to an array
-        return predicate ? count(this, predicate) : this.toArray().length;
+        return predicate ? iterableCount(this, predicate) : this.toArray().length;
     }
 
     /**
@@ -1162,7 +1164,7 @@ class ReadOnlyCollection extends Collection {
      * @returns {Number}
      */
     count(predicate = null) {
-        return predicate ? count(this, predicate) : this.list.length;
+        return predicate ? iterableCount(this, predicate) : this.list.length;
     }
 
     /**
@@ -1619,7 +1621,7 @@ class Dictionary extends Collection {
     * @returns {Number}
     */
     count(predicate = null) {
-        return predicate ? count(this, predicate) : this.table.count();
+        return predicate ? iterableCount(this, predicate) : this.table.count();
     }
 
     /**
@@ -1843,7 +1845,7 @@ class List extends Collection {
     * @returns {Number}
     */
     count(predicate = null) {
-        return predicate ? count(this, predicate) : this.length;
+        return predicate ? iterableCount(this, predicate) : this.length;
     }
 
     /**
@@ -2414,7 +2416,7 @@ class LinkedList extends Collection {
     * @returns {Number}
     */
     count(predicate = null) {
-        return predicate ? count(this, predicate) : this.size;
+        return predicate ? iterableCount(this, predicate) : this.size;
     }
 
     /**
@@ -2954,7 +2956,7 @@ class Lookup extends Collection {
     }
 
     count(predicate = null) {
-        return predicate ? count(this, predicate) : this.table.size;
+        return predicate ? iterableCount(this, predicate) : this.table.size;
     }
 
     toArray() {
@@ -3013,7 +3015,7 @@ class HashSet extends Collection {
     * @returns {Number}
     */
     count(predicate = null) {
-        return predicate ? count(this, predicate) : this.table.count();
+        return predicate ? iterableCount(this, predicate) : this.table.count();
     }
 
     /**
@@ -3491,7 +3493,7 @@ class Map extends Collection {
     * @returns {Number}
     */
     count(predicate = null) {
-        return predicate ? count(this, predicate) : this.size;
+        return predicate ? iterableCount(this, predicate) : this.size;
     }
 
     /**
@@ -3663,7 +3665,7 @@ class Set extends Collection {
     * @returns {Number}
     */
     count(predicate = null) {
-        return predicate ? count(this, predicate) : this.size;
+        return predicate ? iterableCount(this, predicate) : this.size;
     }
 
     /**
@@ -4011,7 +4013,7 @@ class SortedList extends Collection {
     * @returns {Number}
     */
     count(predicate = null) {
-        return predicate ? count(this, predicate) : this.slot.size;
+        return predicate ? iterableCount(this, predicate) : this.slot.size;
     }
 
     /**
@@ -4946,6 +4948,7 @@ function singleIterator(source, predicate) {
 function skipIterator(source, count) {
     assertNotNull(source);
     assertType(count, Number);
+    count = Math.max(0, count);
 
     let arr = asArray(source);
 
@@ -5022,6 +5025,7 @@ function sumIterator(source, selector) {
 function takeIterator(source, count) {
     assertNotNull(source);
     assertType(count, Number);
+    count = Math.max(0, count);
 
     let arr = asArray(source);
 
@@ -5223,7 +5227,7 @@ function linq(iterable) {
         * @returns {Number}
         */
         count(predicate = null) {
-            return count(this, predicate);
+            return iterableCount(this, predicate);
         },
 
         /**
