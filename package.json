@@ -53,13 +53,13 @@
         "grunt-contrib-watch": "1.0.0",
         "grunt-benchmark": "1.0.0",
         "grunt-jscs": "3.0.1",
-        "es6-promise": "3.2.1",
-        "es6-map": "0.1.4",
+        "es6-promise": "4.1.1",
+        "es6-map": "0.1.5",
         "benchmark": "2.1.0",
-        "qunit": "0.9.1",
-        "rollup": "0.34.10",
+        "qunit": "1.0.0",
+        "rollup": "0.45.2",
         "coveralls": "2.11.12",
-        "nyc": "7.1.0"
+        "nyc": "11.0.3"
     },
     "scripts": {
         "build": "npm install && grunt",

@@ -10,7 +10,7 @@ import $iterator from '../iteration/iterator-factory';
 * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
 * @returns {Number}
 */
-export default function count(value, predicate) {
+export default function iterableCount(value, predicate) {
     var count = 0;
 
     if (!predicate) {
