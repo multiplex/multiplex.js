@@ -4710,7 +4710,7 @@ function exceptIntersectIterator(first, second, comparer, intersect) {
                 table.add(element);
             });
 
-            if (!(next = it.next()).done) {
+            while (!(next = it.next()).done) {
                 if (table.contains(next.value) === result) {
                     return {
                         value: next.value,
