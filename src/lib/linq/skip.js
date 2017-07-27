@@ -8,6 +8,7 @@ import $iterator from '../iteration/iterator-factory';
 export default function skipIterator(source, count) {
     assertNotNull(source);
     assertType(count, Number);
+    count = Math.max(0, count);
 
     let arr = asArray(source);
 

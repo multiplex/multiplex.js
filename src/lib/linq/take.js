@@ -7,6 +7,7 @@ import assertNotNull from '../utils/assert-not-null';
 export default function takeIterator(source, count) {
     assertNotNull(source);
     assertType(count, Number);
+    count = Math.max(0, count);
 
     let arr = asArray(source);
 
