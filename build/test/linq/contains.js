@@ -57,9 +57,6 @@ qtest('basic "contains" test', function (assert) {
 
 qtest('equalityComparer "contains" test', function (assert) {
     var comparer = {
-        hash: function (o) {
-            return o.val;
-        },
         equals: function (a, b) {
             return a.val === b.val;
         }
@@ -71,6 +68,8 @@ qtest('equalityComparer "contains" test', function (assert) {
 
 
 qtest('hash/equals override "contains" test', function (assert) {
+    mx.hash(new Basic(1, 'A'));
+
     assert.ok(mx([new Basic(1, 'A'), new Basic(2, 'B')]).contains(new Basic(1, 'C')), 'Test an array of objects contains a value');
     assert.ok(!mx([new Basic(1, 'A'), new Basic(2, 'B')]).contains(new Basic(3, 'A')), 'Test an array of objects non containing a value');
 });
