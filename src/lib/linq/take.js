@@ -9,6 +9,7 @@ import $iterator from '../iteration/iterator-factory';
 export default function takeIterator(source, count) {
     assertNotNull(source);
     assertType(count, Number);
+    count = Math.max(count, 0);
 
     var arr = asArray(source);
 
