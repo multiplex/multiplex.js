@@ -81,6 +81,10 @@ qtest('single method validations', function (assert) {
     }, 'more than one match');
 
     assert.throws(function () {
+        mx.range(0, 100).singleOrDefault(simpleNumericPredicate);
+    }, 'more than one match');
+
+    assert.throws(function () {
         mx([1]).singleOrDefault(1);
     }, 'non-function predicate');
 });
