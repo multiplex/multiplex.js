@@ -5076,17 +5076,6 @@ function sequenceEqualIterator(first, second, comparer) {
     return true;
 }
 
-function singleIterator(source, predicate) {
-    var value = {},
-        result = firstOrDefaultIterator(source, predicate, value);
-
-    if (result === value) {
-        error(predicate ? ERROR_NO_MATCH : ERROR_NO_ELEMENTS);
-    }
-
-    return result;
-}
-
 function singleOrDefaultIterator(source, predicate, defaultValue) {
     assertNotNull(source);
     predicate = predicate || trueFunction;
@@ -5123,6 +5112,17 @@ function singleOrDefaultIterator(source, predicate, defaultValue) {
     }
 
     error(ERROR_MORE_THAN_ONE_ELEMENT);
+}
+
+function singleIterator(source, predicate) {
+    var value = {},
+        result = singleOrDefaultIterator(source, predicate, value);
+
+    if (result === value) {
+        error(predicate ? ERROR_NO_MATCH : ERROR_NO_ELEMENTS);
+    }
+
+    return result;
 }
 
 function skipIterator(source, count) {
