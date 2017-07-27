@@ -7,6 +7,7 @@
 mx = 'default' in mx ? mx['default'] : mx;
 
 var array = [1, 2, 3, 4, 5];
+var enumerable = mx.range(1, 5);
 var collection = new mx.Collection(array);
 var list = new mx.List(array);
 var linkedList = new mx.LinkedList(array);

@@ -1,6 +1,7 @@
 import mx from '../../multiplex';
 
 var array = [1, 2, 3, 4, 5];
+var enumerable = mx.range(1, 5);
 var collection = new mx.Collection(array);
 var list = new mx.List(array);
 var linkedList = new mx.LinkedList(array);
@@ -22,8 +23,23 @@ for (var i = 0; i < array.length; i++) {
     sortedList.add(array[i], array[i]);
 }
 
+function Basic(val, name) {
+    this.val = val;
+    this.name = name;
+}
+
+Basic.prototype.__hash__ = function () {
+    return this.val;
+};
+
+Basic.prototype.__eq__ = function (obj) {
+    return this.val === obj.val;
+};
+
+
 export {
     array,
+    enumerable,
     collection,
     list,
     readOnlyCollection,
@@ -35,5 +51,6 @@ export {
     map,
     dictionary,
     lookup,
-    sortedList
+    sortedList,
+    Basic
 };
