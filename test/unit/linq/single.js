@@ -20,7 +20,8 @@ qtest('basic "single" test', function (assert) {
 
 
 qtest('collections "single" method tests', function (assert) {
-    assert.equal(mocks.collection.single(simpleNumericPredicate), 5, 'Test "single" in a Collection with predicate');
+    assert.equal(mocks.enumerable.single(simpleNumericPredicate), 5, 'Test "single" in an enumerable with predicate');
+    assert.equal(mocks.collection.single(simpleNumericPredicate), 5, 'Test "single" in an Collection with predicate');
     assert.equal(mocks.list.single(simpleNumericPredicate), 5, 'Test "single" in a List with predicate');
     assert.equal(mocks.readOnlyCollection.single(simpleNumericPredicate), 5, 'Test "single" in a ReadOnlyCollection with predicate');
     assert.equal(mocks.linkedList.single(simpleNumericPredicate), 5, 'Test "single" in a LinkedList with predicate');

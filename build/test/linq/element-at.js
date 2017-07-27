@@ -43,6 +43,9 @@ qtest('basic "element-at" test', function (assert) {
 
 
 qtest('collections "element-at" method tests', function (assert) {
+    assert.equal(enumerable.elementAt(0), 1, 'first element in an enumerable');
+    assert.equal(enumerable.elementAt(4), 5, 'last element in an enumerable');
+
     assert.equal(collection.elementAt(0), 1, 'first element in a Collection');
     assert.equal(collection.elementAt(4), 5, 'last element in a Collection');
 

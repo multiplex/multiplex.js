@@ -46,6 +46,9 @@ qtest('basic "max" test', function (assert) {
 
 
 qtest('collections "max" method tests', function (assert) {
+    assert.equal(mocks.enumerable.max(), 5, 'max element in an enumerable');
+    assert.equal(mocks.enumerable.max(double), 10, 'max element in an enumerable with predicate');
+
     assert.equal(mocks.collection.max(), 5, 'max element in a Collection');
     assert.equal(mocks.collection.max(double), 10, 'max element in a Collection with predicate');
 

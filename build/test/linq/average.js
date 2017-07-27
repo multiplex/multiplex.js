@@ -47,6 +47,9 @@ qtest('basic "average" test', function (assert) {
 
 
 qtest('collections "average" method tests', function (assert) {
+    assert.equal(enumerable.average(), 3, 'Test average of numbers in an enumerable');
+    assert.equal(enumerable.average(simpleNumericSelector), 6, 'Test average of numbers in an enumerable with a selector');
+
     assert.equal(collection.average(), 3, 'Test average of numbers in a Collection');
     assert.equal(collection.average(simpleNumericSelector), 6, 'Test average of numbers in a Collection with a selector');
 

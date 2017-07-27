@@ -24,6 +24,10 @@ qtest('basic "lastOrDefault" test', function (assert) {
 
 
 qtest('collections "lastOrDefault" method tests', function (assert) {
+    assert.equal(mocks.enumerable.lastOrDefault(), 5, 'Test "lastOrDefault" in an enumerable');
+    assert.equal(mocks.enumerable.lastOrDefault(simpleNumericPredicate), null, 'Test "lastOrDefault" in an enumerable with predicate');
+    assert.equal(mocks.enumerable.lastOrDefault(simpleNumericPredicate, 0), 0, 'Test "lastOrDefault" in an enumerable with predicate and default value');
+
     assert.equal(mocks.collection.lastOrDefault(), 5, 'Test "lastOrDefault" in a Collection');
     assert.equal(mocks.collection.lastOrDefault(simpleNumericPredicate), null, 'Test "lastOrDefault" in a Collection with predicate');
     assert.equal(mocks.collection.lastOrDefault(simpleNumericPredicate, 0), 0, 'Test "lastOrDefault" in a Collection with predicate and default value');

@@ -46,6 +46,9 @@ qtest('basic "min" test', function (assert) {
 
 
 qtest('collections "min" method tests', function (assert) {
+    assert.equal(mocks.enumerable.min(), 1, 'min element in an enumerable');
+    assert.equal(mocks.enumerable.min(double), 2, 'min element in an enumerable with predicate');
+
     assert.equal(mocks.collection.min(), 1, 'min element in a Collection');
     assert.equal(mocks.collection.min(double), 2, 'min element in a Collection with predicate');
 

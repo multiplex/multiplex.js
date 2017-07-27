@@ -52,6 +52,9 @@ qtest('basic "singleOrDefault" test', function (assert) {
 
 
 qtest('collections "singleOrDefault" method tests', function (assert) {
+    assert.equal(enumerable.singleOrDefault(simpleNumericPredicate), null, 'Test "singleOrDefault" in an enumerable with predicate');
+    assert.equal(enumerable.singleOrDefault(simpleNumericPredicate, 0), 0, 'Test "singleOrDefault" in an enumerable with predicate and default value');
+
     assert.equal(collection.singleOrDefault(simpleNumericPredicate), null, 'Test "singleOrDefault" in a Collection with predicate');
     assert.equal(collection.singleOrDefault(simpleNumericPredicate, 0), 0, 'Test "singleOrDefault" in a Collection with predicate and default value');
 

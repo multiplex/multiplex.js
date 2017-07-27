@@ -78,6 +78,9 @@ qtest('hash/equals override "contains" test', function (assert) {
 
 
 qtest('collections "contains" method tests', function (assert) {
+    assert.ok(enumerable.contains(1), 'Test "contains" in an enumerable');
+    assert.ok(!enumerable.contains(0), 'Test does not contain in an enumerable');
+
     assert.ok(collection.contains(1), 'Test "contains" in a Collection');
     assert.ok(!collection.contains(0), 'Test does not contain in a Collection');
 

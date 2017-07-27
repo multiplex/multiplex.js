@@ -41,6 +41,9 @@ qtest('basic "defaultIfEmpty" test', function (assert) {
 });
 
 qtest('collections "defaultIfEmpty" method tests', function (assert) {
+    assert.equal(enumerable.defaultIfEmpty().count(), 5, 'Test "defaultIfEmpty" in an enumerable');
+    assert.equal(new mx.range(0, 0).defaultIfEmpty().count(), 1, 'Test "defaultIfEmpty" in an empty enumerable');
+
     assert.equal(collection.defaultIfEmpty().count(), 5, 'Test "defaultIfEmpty" in a Collection');
     assert.equal(new mx.Collection().defaultIfEmpty().count(), 1, 'Test "defaultIfEmpty" in an empty Collection');
 

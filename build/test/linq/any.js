@@ -53,6 +53,9 @@ qtest('basic any test', function (assert) {
 
 
 qtest('collections any method tests', function (assert) {
+    assert.ok(enumerable.any(), 'Test any item in an enumerable');
+    assert.ok(enumerable.any(simpleNumericPredicate), 'Test any numbers in an enumerable are less than 10');
+
     assert.ok(collection.any(), 'Test any item in a Collection');
     assert.ok(collection.any(simpleNumericPredicate), 'Test any numbers in a Collection are less than 10');
 

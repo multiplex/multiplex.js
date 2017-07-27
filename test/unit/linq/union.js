@@ -39,6 +39,10 @@ qtest('hash/equals override "union" test', function (assert) {
 
 qtest('collections "union" method tests', function (assert) {
     var len = mocks.array.length;
+
+    assert.equal(mocks.enumerable.union([]).toArray().length, len, 'Test "union" with an empty array in an enumerable');
+    assert.equal(mocks.enumerable.union(mocks.enumerable).toArray().length, len, 'Test "union" in an enumerable');
+
     assert.equal(mocks.collection.union([]).toArray().length, len, 'Test "union" with an empty array in a Collection');
     assert.equal(mocks.collection.union(mocks.collection).toArray().length, len, 'Test "union" in a Collection');
 

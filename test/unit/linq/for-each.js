@@ -44,6 +44,9 @@ qtest('basic "forEach" test', function (assert) {
 
 
 qtest('collections "forEach" method tests', function (assert) {
+    assert.ok(accumulateTest(mocks.enumerable), 'Test forEach in an enumerable');
+    assert.ok(indexTest(mocks.enumerable), 'Test forEach index in an enumerable');
+
     assert.ok(accumulateTest(mocks.collection), 'Test forEach in a Collection');
     assert.ok(indexTest(mocks.collection), 'Test forEach index in a Collection');
 

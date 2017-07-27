@@ -51,6 +51,7 @@ qtest('heterogeneous zip', function (assert) {
     assert.deepEqual(mx('ab').zip('c', simpleNumericSelector).toArray(), ['ac'], 'Zip two string objects!');
     assert.deepEqual(mx([]).zip([3], simpleNumericSelector).toArray(), [], 'Zip an empty iterable with anything results in an empty iterable!');
     assert.deepEqual(mx([1, 2]).zip([], simpleNumericSelector).toArray(), [], 'Zip anything with an empty iterable results in an empty iterable!');
+    assert.deepEqual(enumerable.zip(enumerable, simpleNumericSelector).toArray(), [2, 4, 6, 8, 10], 'Zip two enumerable!');
 });
 
 

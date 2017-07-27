@@ -48,6 +48,7 @@ qtest('basic "reverse" test', function (assert) {
 
 
 qtest('collections "reverse" method tests', function (assert) {
+    assert.deepEqual(enumerable.reverse().toArray(), reversed, 'Test "reverse" in an enumerable');
     assert.deepEqual(collection.reverse().toArray(), reversed, 'Test "reverse" in a Collection');
     assert.deepEqual(list.reverse().toArray(), reversed, 'Test "reverse" in a List');
     assert.deepEqual(readOnlyCollection.reverse().toArray(), reversed, 'Test "reverse" in a ReadOnlyCollection');

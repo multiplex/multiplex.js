@@ -70,6 +70,9 @@ qtest('collections "distinct" method tests', function (assert) {
         }
     };
 
+    assert.equal(enumerable.distinct().count(), 5, 'Test "distinct" in an enumerable');
+    assert.equal(enumerable.distinct(numericComparer).count(), 5, 'Test "distinct" in an enumerable with comparer');
+
     assert.equal(collection.distinct().count(), 5, 'Test "distinct" in a Collection');
     assert.equal(collection.distinct(numericComparer).count(), 5, 'Test "distinct" in a Collection with comparer');
 

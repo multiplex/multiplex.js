@@ -20,6 +20,9 @@ qtest('basic "first" test', function (assert) {
 
 
 qtest('collections "first" method tests', function (assert) {
+    assert.equal(mocks.enumerable.first(), 1, 'Test "first" in an enumerable');
+    assert.equal(mocks.enumerable.first(simpleNumericPredicate), 4, 'Test "first" in an enumerable with predicate');
+
     assert.equal(mocks.collection.first(), 1, 'Test "first" in a Collection');
     assert.equal(mocks.collection.first(simpleNumericPredicate), 4, 'Test "first" in a Collection with predicate');
 

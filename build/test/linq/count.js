@@ -47,6 +47,9 @@ qtest('basic "count" test', function (assert) {
 
 
 qtest('collections "count" method tests', function (assert) {
+    assert.equal(enumerable.count(), 5, 'Test "count" in an enumerable');
+    assert.equal(enumerable.count(simpleNumericPredicate), 2, 'Test "count" in an enumerable with predicate');
+
     assert.equal(collection.count(), 5, 'Test "count" in a Collection');
     assert.equal(collection.count(simpleNumericPredicate), 2, 'Test "count" in a Collection with predicate');
 

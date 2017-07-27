@@ -48,6 +48,9 @@ qtest('basic "first" test', function (assert) {
 
 
 qtest('collections "first" method tests', function (assert) {
+    assert.equal(enumerable.first(), 1, 'Test "first" in an enumerable');
+    assert.equal(enumerable.first(simpleNumericPredicate), 4, 'Test "first" in an enumerable with predicate');
+
     assert.equal(collection.first(), 1, 'Test "first" in a Collection');
     assert.equal(collection.first(simpleNumericPredicate), 4, 'Test "first" in a Collection with predicate');
 

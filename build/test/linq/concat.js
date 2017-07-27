@@ -45,6 +45,9 @@ qtest('basic "concat" test', function (assert) {
 
 
 qtest('collections "concat" method tests', function (assert) {
+    assert.equal(enumerable.concat([]).toArray().length, 5, 'Test "concat" with an empty array in an enumerable');
+    assert.equal(enumerable.concat(enumerable).toArray().length, 10, 'Test "concat" in an enumerable');
+
     assert.equal(collection.concat([]).toArray().length, 5, 'Test "concat" with an empty array in a Collection');
     assert.equal(collection.concat(collection).toArray().length, 10, 'Test "concat" in a Collection');
 

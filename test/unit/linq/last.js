@@ -20,6 +20,9 @@ qtest('basic "last" test', function (assert) {
 
 
 qtest('collections "last" method tests', function (assert) {
+    assert.equal(mocks.enumerable.last(), 5, 'Test "last" in an enumerable');
+    assert.equal(mocks.enumerable.last(simpleNumericPredicate), 4, 'Test "last" in an enumerable with predicate');
+
     assert.equal(mocks.collection.last(), 5, 'Test "last" in a Collection');
     assert.equal(mocks.collection.last(simpleNumericPredicate), 4, 'Test "last" in a Collection with predicate');
 

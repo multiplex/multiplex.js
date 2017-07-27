@@ -42,6 +42,7 @@ function simpleNumericPredicate(t) {
 
 qtest('basic where test', function (assert) {
     assert.equal(mx(array).where(simpleNumericPredicate).count(), array.length, 'Test where numbers in an array are less than 10');
+    assert.equal(mx(enumerable).where(simpleNumericPredicate).count(), array.length, 'Test where numbers in an enumerable are less than 10');
 
     assert.equal(mx(array).where(function (t) {
         return t > 10;

@@ -10,6 +10,7 @@ qmodule('linq-to-list');
 qtest('collections to-list method tests', function (assert) {
     var len = mocks.array.length;
     assert.equal(mx(mocks.array).toList().count(), len, 'Test toList in an array');
+    assert.equal(mocks.enumerable.toList().count(), len, 'Test toList in an enumerable');
     assert.equal(mocks.collection.toList().count(), len, 'Test toList in a Collection');
     assert.equal(mocks.list.toList().count(), len, 'Test toList in a List');
     assert.equal(mocks.readOnlyCollection.toList().count(), len, 'Test toList in a ReadOnlyCollection');
