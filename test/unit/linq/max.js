@@ -19,46 +19,24 @@ qtest('basic "max" test', function (assert) {
     assert.equal(mx([true, false, true]).max(), true, 'max element of an array of boolean');
     assert.equal(mx([new Date(2017, 1, 1), new Date(2018, 1, 1), new Date(2016, 1, 1)]).max().getFullYear(), 2018, 'max element of an array of dates');
 
+    function cmp(b) {
+        return this.val - b.val;
+    }
+
+    function valueOf() {
+        return this.val;
+    }
+
     var data1 = [
-        {
-            val: 2,
-            __cmp__: function (b) {
-                return this.val - b.val;
-            }
-        },
-        {
-            val: 3,
-            __cmp__: function (b) {
-                return this.val - b.val;
-            }
-        },
-        {
-            val: 1,
-            __cmp__: function (b) {
-                return this.val - b.val;
-            }
-        }
+        { val: 2, __cmp__: cmp },
+        { val: 3, __cmp__: cmp },
+        { val: 1, __cmp__: cmp }
     ];
 
     var data2 = [
-        {
-            val: 2,
-            valueOf: function () {
-                return this.val;
-            }
-        },
-        {
-            val: 3,
-            valueOf: function () {
-                return this.val;
-            }
-        },
-        {
-            val: 1,
-            valueOf: function () {
-                return this.val;
-            }
-        }
+        { val: 2, valueOf: valueOf },
+        { val: 3, valueOf: valueOf },
+        { val: 1, valueOf: valueOf }
     ];
 
     assert.equal(mx(data1).max().val, 3, 'max element of an array of objects with __cmp__ method');

@@ -42,17 +42,17 @@ qtest('basic "contains" test', function (assert) {
 
 
 qtest('equalityComparer "contains" test', function (assert) {
-    assert.ok(mx([{ val: 1 }]).contains({ val: 1 }, {
+    var comparer = {
+        hash: function () {
+            return this.val;
+        },
         equals: function (a, b) {
             return a.val === b.val;
         }
-    }), 'Test an array of objects contains a value');
+    };
 
-    assert.ok(!mx([{ val: 1 }]).contains({ val: 2 }, {
-        equals: function (a, b) {
-            return a.val === b.val;
-        }
-    }), 'Test an array of objects non containing a value');
+    assert.ok(mx([{ val: 1 }]).contains({ val: 1 }, comparer), 'Test an array of objects contains a value');
+    assert.ok(!mx([{ val: 1 }]).contains({ val: 2 }, comparer), 'Test an array of objects non containing a value');
 });
 
 
