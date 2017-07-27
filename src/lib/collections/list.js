@@ -438,6 +438,8 @@ export default class List extends Collection {
         while (len-- > 0) {
             this[len + index] = arr[len];
         }
+
+        return this;
     }
 
     /**

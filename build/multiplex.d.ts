@@ -571,7 +571,7 @@ declare namespace multiplex {
         * @param index The zero-based starting index of the range to reverse.
         * @param count The number of elements in the range to reverse.
         */
-        reverse(index: number, count: number): void
+        reverse(index: number, count: number): List<T>
 
 
         /**
