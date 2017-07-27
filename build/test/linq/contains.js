@@ -7,6 +7,7 @@
 mx = 'default' in mx ? mx['default'] : mx;
 
 var array = [1, 2, 3, 4, 5];
+var enumerable = mx.range(1, 5);
 var collection = new mx.Collection(array);
 var list = new mx.List(array);
 var linkedList = new mx.LinkedList(array);
@@ -28,6 +29,19 @@ for (var i = 0; i < array.length; i++) {
     sortedList.add(array[i], array[i]);
 }
 
+function Basic(val, name) {
+    this.val = val;
+    this.name = name;
+}
+
+Basic.prototype.__hash__ = function () {
+    return this.val;
+};
+
+Basic.prototype.__eq__ = function (obj) {
+    return this.val === obj.val;
+};
+
 var qunit = typeof QUnit === 'undefined' ? require('qunitjs') : QUnit;
 var qmodule = qunit.module;
 var qtest = qunit.test;
@@ -43,8 +57,8 @@ qtest('basic "contains" test', function (assert) {
 
 qtest('equalityComparer "contains" test', function (assert) {
     var comparer = {
-        hash: function () {
-            return this.val;
+        hash: function (o) {
+            return o.val;
         },
         equals: function (a, b) {
             return a.val === b.val;
@@ -54,6 +68,13 @@ qtest('equalityComparer "contains" test', function (assert) {
     assert.ok(mx([{ val: 1 }]).contains({ val: 1 }, comparer), 'Test an array of objects contains a value');
     assert.ok(!mx([{ val: 1 }]).contains({ val: 2 }, comparer), 'Test an array of objects non containing a value');
 });
+
+
+qtest('hash/equals override "contains" test', function (assert) {
+    assert.ok(mx([new Basic(1, 'A'), new Basic(2, 'B')]).contains(new Basic(1, 'C')), 'Test an array of objects contains a value');
+    assert.ok(!mx([new Basic(1, 'A'), new Basic(2, 'B')]).contains(new Basic(3, 'A')), 'Test an array of objects non containing a value');
+});
+
 
 
 qtest('collections "contains" method tests', function (assert) {
