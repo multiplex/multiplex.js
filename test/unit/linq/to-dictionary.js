@@ -38,7 +38,7 @@ qtest('equalityComparer "to-dictionary" test', function (assert) {
 
 
 qtest('hash/equals override "to-dictionary" test', function (assert) {
-    assert.equal(mx([new mocks.Basic(1, 'A'), new mocks.Basic(2, 'B'), new mocks.Basic(3, 'C')])
+    assert.equal(mx([new mocks.Basic(1, 'A'), new mocks.Basic(2, 'B'), new mocks.Basic(1, 'C')])
         .toDictionary(identity).count(), 3, 'Test toDictionary in an array of objects overriding hash/equals methods');
 });
 

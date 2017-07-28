@@ -1,7 +1,7 @@
 {
     "name": "multiplexjs",
     "title": "Multiplex.js",
-    "description": "Comprehensive data-structure and LINQ library for JavaScript.",
+    "description": "LINQ for JavaScript.",
     "version": "2.0.0",
     "main": "dist/multiplex.js",
     "typings": "dist/multiplex.d.ts",
@@ -36,6 +36,7 @@
     "preferGlobal": true,
     "nyc": {
         "exclude": [
+            "**/testrunner.js",
             "test",
             "tasks",
             "external"
