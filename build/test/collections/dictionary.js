@@ -22,6 +22,8 @@ qtest('create dictionary', function (assert) {
 
     dic.remove('A');
     assert.ok(dic.containsKey('A') === false, 'dictionary remove');
+
+    dic.clear();
 });
 
 
