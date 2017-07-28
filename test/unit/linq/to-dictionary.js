@@ -16,7 +16,10 @@ qtest('basic "to-dictionary" tests', function (assert) {
     var dic = mx(mocks.array).toDictionary(identity);
 
     assert.ok(dic.count() === mocks.array.length, 'Test toDictionary numbers in an array');
-    assert.ok(dic.containsKey(1), 'Test values of toDictionary method in an array');
+    assert.ok(dic.keys().count() === mocks.array.length, 'Test toDictionary keys count in an array');
+    assert.ok(dic.values().count() === mocks.array.length, 'Test toDictionary values count in an array');
+    assert.ok(dic.containsKey(1), 'Test keys of toDictionary method in an array');
+    assert.ok(dic.containsValue(1), 'Test values of toDictionary method in an array');
     assert.ok(!dic.containsKey('a'), 'Test not exsiatnce of the values of toDictionary method in an array');
     assert.ok(mx([]).toDictionary(identity).count() === 0, 'Test toDictionary in an empty array');
 });

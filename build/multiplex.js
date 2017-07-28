@@ -1,5 +1,5 @@
 /*!
-* Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
+* Multiplex.js - LINQ for JavaScript.
 * Version 2.0.0 (July 28, 2017)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>

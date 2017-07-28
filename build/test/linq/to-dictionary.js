@@ -57,7 +57,10 @@ qtest('basic "to-dictionary" tests', function (assert) {
     var dic = mx(array).toDictionary(identity);
 
     assert.ok(dic.count() === array.length, 'Test toDictionary numbers in an array');
-    assert.ok(dic.containsKey(1), 'Test values of toDictionary method in an array');
+    assert.ok(dic.keys().count() === array.length, 'Test toDictionary keys count in an array');
+    assert.ok(dic.values().count() === array.length, 'Test toDictionary values count in an array');
+    assert.ok(dic.containsKey(1), 'Test keys of toDictionary method in an array');
+    assert.ok(dic.containsValue(1), 'Test values of toDictionary method in an array');
     assert.ok(!dic.containsKey('a'), 'Test not exsiatnce of the values of toDictionary method in an array');
     assert.ok(mx([]).toDictionary(identity).count() === 0, 'Test toDictionary in an empty array');
 });
@@ -79,7 +82,7 @@ qtest('equalityComparer "to-dictionary" test', function (assert) {
 
 
 qtest('hash/equals override "to-dictionary" test', function (assert) {
-    assert.equal(mx([new Basic(1, 'A'), new Basic(2, 'B'), new Basic(3, 'C')])
+    assert.equal(mx([new Basic(1, 'A'), new Basic(2, 'B'), new Basic(1, 'C')])
         .toDictionary(identity).count(), 3, 'Test toDictionary in an array of objects overriding hash/equals methods');
 });
 
