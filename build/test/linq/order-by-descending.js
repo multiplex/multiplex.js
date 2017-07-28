@@ -33,14 +33,32 @@ var qunit = typeof QUnit === 'undefined' ? require('qunitjs') : QUnit;
 var qmodule = qunit.module;
 var qtest = qunit.test;
 
-qmodule('linq-select-many');
+qmodule('linq-order-by-descending');
 
 function identity(t) {
     return t;
 }
 
-qtest('basic select-many test', function (assert) {
-    assert.equal(mx([array]).selectMany(identity, identity).count(), array.length, 'Test selectMany numbers in an array are less than 10');
+qtest('basic "order-by" tests', function (assert) {
+    assert.equal(mx.range(0, 50).orderByDescending(identity).toArray()[0], 49, 'Test orderByDescending for array of numbers');
+    assert.equal(mx('string').orderByDescending(identity).last(), 'g', 'Test orderByDescending for array of string');
+
+    assert.deepEqual(mx([{ a: 2, b: 3, c: 1 }, { a: 1, b: 2, c: 3 }, { a: 2, b: 1, c: 3 }, { a: 2, b: 1, c: 2 }])
+        .orderByDescending(function (t) {
+            return t.a;
+        })
+        .thenBy(function (t) {
+            return t.b;
+        })
+        .thenByDescending(function (t) {
+            return t.c;
+        })
+        .toArray(), [{ a: 2, b: 1, c: 3 }, { a: 2, b: 1, c: 2 }, { a: 2, b: 3, c: 1 }, { a: 1, b: 2, c: 3 }], 'Test orderByDescending for array of objects');
+});
+
+
+qtest('collections "order-by" method tests', function (assert) {
+    assert.equal(enumerable.orderByDescending(identity).last(), 1, 'Test orderByDescending for an enumerable');
 });
 
 })));

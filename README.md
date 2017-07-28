@@ -13,6 +13,7 @@
 
 ## What is Multiplex
 Multiplex is a set of data-structures and implementation of .Net LINQ methods in JavaScript which adds data querying capabilities to JavaScript objects. The main features are:
+
 * Complete set of data-structures:
   - `List` - strongly typed list of objects that can be accessed by index.
   - `Dictionary` - collection of key/value pairs.

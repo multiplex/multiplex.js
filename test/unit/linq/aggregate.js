@@ -25,73 +25,65 @@ qtest('basic aggregate over numbers', function (assert) {
 
 
 qtest('collections aggregate', function (assert) {
-    assert.equal(mx(mocks.collection).aggregate(10, sumAggregateFunc), 25, 'Aggregate collection of numbers with seed!');
-    assert.equal(mx(mocks.collection).aggregate(10, sumAggregateFunc, simpleAggregateResult), 50, 'Aggregate collection of numbers with seed and result selector!');
+    assert.equal(mocks.enumerable.aggregate(10, sumAggregateFunc), 25, 'Aggregate enumerable of numbers with seed!');
+    assert.equal(mocks.enumerable.aggregate(10, sumAggregateFunc, simpleAggregateResult), 50, 'Aggregate enumerable of numbers with seed and result selector!');
 
+    assert.equal(mocks.collection.aggregate(10, sumAggregateFunc), 25, 'Aggregate collection of numbers with seed!');
+    assert.equal(mocks.collection.aggregate(10, sumAggregateFunc, simpleAggregateResult), 50, 'Aggregate collection of numbers with seed and result selector!');
 
-    assert.equal(mx(mocks.list).aggregate(10, sumAggregateFunc), 25, 'Aggregate list of numbers with seed!');
-    assert.equal(mx(mocks.list).aggregate(10, sumAggregateFunc, simpleAggregateResult), 50, 'Aggregate list of numbers with seed and result selector!');
+    assert.equal(mocks.list.aggregate(10, sumAggregateFunc), 25, 'Aggregate list of numbers with seed!');
+    assert.equal(mocks.list.aggregate(10, sumAggregateFunc, simpleAggregateResult), 50, 'Aggregate list of numbers with seed and result selector!');
 
+    assert.equal(mocks.readOnlyCollection.aggregate(10, sumAggregateFunc), 25, 'Aggregate readOnlyCollection of numbers with seed!');
+    assert.equal(mocks.readOnlyCollection.aggregate(10, sumAggregateFunc, simpleAggregateResult), 50, 'Aggregate readOnlyCollection of numbers with seed and result selector!');
 
-    assert.equal(mx(mocks.readOnlyCollection).aggregate(10, sumAggregateFunc), 25, 'Aggregate readOnlyCollection of numbers with seed!');
-    assert.equal(mx(mocks.readOnlyCollection).aggregate(10, sumAggregateFunc, simpleAggregateResult), 50, 'Aggregate readOnlyCollection of numbers with seed and result selector!');
+    assert.equal(mocks.linkedList.aggregate(10, sumAggregateFunc), 25, 'Aggregate linkedList of numbers with seed!');
+    assert.equal(mocks.linkedList.aggregate(10, sumAggregateFunc, simpleAggregateResult), 50, 'Aggregate linkedList of numbers with seed and result selector!');
 
+    assert.equal(mocks.hashSet.aggregate(10, sumAggregateFunc), 25, 'Aggregate hashSet of numbers with seed!');
+    assert.equal(mocks.hashSet.aggregate(10, sumAggregateFunc, simpleAggregateResult), 50, 'Aggregate hashSet of numbers with seed and result selector!');
 
-    assert.equal(mx(mocks.linkedList).aggregate(10, sumAggregateFunc), 25, 'Aggregate linkedList of numbers with seed!');
-    assert.equal(mx(mocks.linkedList).aggregate(10, sumAggregateFunc, simpleAggregateResult), 50, 'Aggregate linkedList of numbers with seed and result selector!');
+    assert.equal(mocks.stack.aggregate(10, sumAggregateFunc), 25, 'Aggregate stack of numbers with seed!');
+    assert.equal(mocks.stack.aggregate(10, sumAggregateFunc, simpleAggregateResult), 50, 'Aggregate stack of numbers with seed and result selector!');
 
+    assert.equal(mocks.queue.aggregate(10, sumAggregateFunc), 25, 'Aggregate queue of numbers with seed!');
+    assert.equal(mocks.queue.aggregate(10, sumAggregateFunc, simpleAggregateResult), 50, 'Aggregate queue of numbers with seed and result selector!');
 
-    assert.equal(mx(mocks.hashSet).aggregate(10, sumAggregateFunc), 25, 'Aggregate hashSet of numbers with seed!');
-    assert.equal(mx(mocks.hashSet).aggregate(10, sumAggregateFunc, simpleAggregateResult), 50, 'Aggregate hashSet of numbers with seed and result selector!');
+    assert.equal(mocks.set.aggregate(10, sumAggregateFunc), 25, 'Aggregate set of numbers with seed!');
+    assert.equal(mocks.set.aggregate(10, sumAggregateFunc, simpleAggregateResult), 50, 'Aggregate set of numbers with seed and result selector!');
 
-
-    assert.equal(mx(mocks.stack).aggregate(10, sumAggregateFunc), 25, 'Aggregate stack of numbers with seed!');
-    assert.equal(mx(mocks.stack).aggregate(10, sumAggregateFunc, simpleAggregateResult), 50, 'Aggregate stack of numbers with seed and result selector!');
-
-
-    assert.equal(mx(mocks.queue).aggregate(10, sumAggregateFunc), 25, 'Aggregate queue of numbers with seed!');
-    assert.equal(mx(mocks.queue).aggregate(10, sumAggregateFunc, simpleAggregateResult), 50, 'Aggregate queue of numbers with seed and result selector!');
-
-
-    assert.equal(mx(mocks.set).aggregate(10, sumAggregateFunc), 25, 'Aggregate set of numbers with seed!');
-    assert.equal(mx(mocks.set).aggregate(10, sumAggregateFunc, simpleAggregateResult), 50, 'Aggregate set of numbers with seed and result selector!');
-
-
-    assert.equal(mx(mocks.map).aggregate(10, function (a, b) {
+    assert.equal(mocks.map.aggregate(10, function (a, b) {
         return a + b[0];
     }), 25, 'Aggregate map of numbers with seed!');
 
-    assert.equal(mx(mocks.map).aggregate(10, function (a, b) {
+    assert.equal(mocks.map.aggregate(10, function (a, b) {
         return a + b[0];
     }, simpleAggregateResult), 50, 'Aggregate map of numbers with seed and result selector!');
 
 
-
-    assert.equal(mx(mocks.dictionary).aggregate(10, function (a, b) {
+    assert.equal(mocks.dictionary.aggregate(10, function (a, b) {
         return a + b.key;
     }), 25, 'Aggregate dictionary of numbers with seed!');
 
-    assert.equal(mx(mocks.dictionary).aggregate(10, function (a, b) {
+    assert.equal(mocks.dictionary.aggregate(10, function (a, b) {
         return a + b.key;
     }, simpleAggregateResult), 50, 'Aggregate dictionary of numbers with seed and result selector!');
 
 
-
-    assert.equal(mx(mocks.sortedList).aggregate(10, function (a, b) {
+    assert.equal(mocks.sortedList.aggregate(10, function (a, b) {
         return a + b.key;
     }), 25, 'Aggregate sortedList of numbers with seed!');
 
-    assert.equal(mx(mocks.sortedList).aggregate(10, function (a, b) {
+    assert.equal(mocks.sortedList.aggregate(10, function (a, b) {
         return a + b.key;
     }, simpleAggregateResult), 50, 'Aggregate sortedList of numbers with seed and result selector!');
 
 
-
-    assert.equal(mx(mocks.lookup).aggregate(10, function (a, b) {
+    assert.equal(mocks.lookup.aggregate(10, function (a, b) {
         return a + b.key;
     }), 25, 'Aggregate lookup of numbers with seed!');
 
-    assert.equal(mx(mocks.lookup).aggregate(10, function (a, b) {
+    assert.equal(mocks.lookup.aggregate(10, function (a, b) {
         return a + b.key;
     }, simpleAggregateResult), 50, 'Aggregate lookup of numbers with seed and result selector!');
 });

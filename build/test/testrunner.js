@@ -41,6 +41,8 @@ var modules = [
     './linq/max.js',
     './linq/min.js',
     './linq/of-type.js',
+    './linq/order-by-descending.js',
+    './linq/order-by.js',
     './linq/range.js',
     './linq/repeat.js',
     './linq/reverse.js',

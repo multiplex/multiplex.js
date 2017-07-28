@@ -53,3 +53,4 @@ export default function minMaxIterator(source, max, selector) {
 
     return value;
 }
+

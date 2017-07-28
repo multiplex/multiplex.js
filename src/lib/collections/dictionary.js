@@ -1,6 +1,6 @@
 import IterableIterator from '../iteration/iterable-iterator';
 import Collection from './collection';
-import HashTable, {HashTableIterator} from './hash-table';
+import HashTable, { HashTableIterator } from './hash-table';
 import EqualityComparer from './equality-comparer';
 import KeyValuePair from './key-value-pair';
 
@@ -10,7 +10,8 @@ import assertType from '../utils/assert-type';
 import forOf from '../utils/for-of';
 import defineProperty from '../utils/define-property';
 import extend from '../utils/extend';
-import error, {ERROR_DUPLICATE_KEY, ERROR_KEY_NOT_FOUND} from '../utils/error';
+import count from '../utils/count';
+import error, { ERROR_DUPLICATE_KEY, ERROR_KEY_NOT_FOUND } from '../utils/error';
 
 /**
 * Initializes a new instance of the Dictionary.
@@ -58,10 +59,11 @@ extend(Dictionary, Collection, {
 
     /**
     * Gets the number of elements contained in the Dictionary.
+    * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
     * @returns {Number}
     */
-    count: function () {
-        return this.table.count();
+    count: function (predicate) {
+        return predicate ? count(this, predicate) : this.table.count();
     },
 
     /**

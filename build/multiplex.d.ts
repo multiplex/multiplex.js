@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (October 22, 2016)
+* Version 2.0.0 (July 28, 2017)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -463,13 +463,6 @@ declare namespace multiplex {
 
 
         /**
-        * Performs the specified action on each element of the List.
-        * @param action The action function to perform on each element of the List.
-        */
-        forEach(action: (item: T) => void): void
-
-
-        /**
         * Gets the element at the specified index.
         * @param index The zero-based index of the element to get.
         */
@@ -578,7 +571,7 @@ declare namespace multiplex {
         * @param index The zero-based starting index of the range to reverse.
         * @param count The number of elements in the range to reverse.
         */
-        reverse(index: number, count: number): void
+        reverse(index: number, count: number): List<T>
 
 
         /**
@@ -1989,7 +1982,7 @@ declare namespace multiplex {
         * @param keySelector A function to extract a key from each element.
         * @param comparer A Comparer to compare keys.
         */
-        orderBy<TKey>(keySelector: (item: T) => TKey, comparer: EqualityComparer<TKey>): OrderedEnumerable<T>
+        orderBy<TKey>(keySelector: (item: T) => TKey, comparer: Comparer<TKey>): OrderedEnumerable<T>
 
 
         /**
@@ -2007,7 +2000,7 @@ declare namespace multiplex {
         * @param keySelector A function to extract a key from each element.
         * @param comparer A Comparer to compare keys.
         */
-        orderByDescending<TKey>(keySelector: (item: T) => TKey, comparer: EqualityComparer<TKey>): OrderedEnumerable<T>
+        orderByDescending<TKey>(keySelector: (item: T) => TKey, comparer: Comparer<TKey>): OrderedEnumerable<T>
 
 
         /**

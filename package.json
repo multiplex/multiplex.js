@@ -1,7 +1,7 @@
 {
     "name": "multiplexjs",
     "title": "Multiplex.js",
-    "description": "Comprehensive data-structure and LINQ library for JavaScript.",
+    "description": "LINQ for JavaScript.",
     "version": "2.0.0",
     "main": "dist/multiplex.js",
     "typings": "dist/multiplex.d.ts",
@@ -36,6 +36,7 @@
     "preferGlobal": true,
     "nyc": {
         "exclude": [
+            "**/testrunner.js",
             "test",
             "tasks",
             "external"
@@ -53,10 +54,10 @@
         "grunt-contrib-watch": "1.0.0",
         "grunt-benchmark": "1.0.0",
         "grunt-jscs": "3.0.1",
-        "es6-promise": "3.2.1",
-        "es6-map": "0.1.4",
+        "es6-promise": "4.1.1",
+        "es6-map": "0.1.5",
         "benchmark": "2.1.0",
-        "qunit": "0.9.1",
+        "qunit": "1.0.0",
         "rollup": "0.34.10",
         "coveralls": "2.11.12",
         "nyc": "7.1.0"

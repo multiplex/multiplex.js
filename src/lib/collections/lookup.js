@@ -3,6 +3,7 @@ import LookupTable, {LookupTableIterator} from './lookup-table';
 import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
 import forOf from '../utils/for-of';
+import count from '../utils/count';
 import extend from '../utils/extend';
 
 export default function Lookup(source, keySelector, elementSelector, comparer) {
@@ -31,12 +32,12 @@ extend(Lookup, Collection, {
         return this.table.contains(key);
     },
 
-    count: function () {
-        return this.table.size;
+    count: function (predicate) {
+        return predicate ? count(this, predicate) : this.table.size;
     },
 
     toArray: function () {
-        this.table.entries();
+        return this.table.entries();
     },
 
     toString: function () {

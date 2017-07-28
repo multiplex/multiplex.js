@@ -9,6 +9,7 @@ import assertType from '../utils/assert-type';
 import assertNotNull from '../utils/assert-not-null';
 import binarySearch from '../utils/binary-search';
 import buffer from '../utils/buffer';
+import count from '../utils/count';
 import extend from '../utils/extend';
 import error, {
     ERROR_DUPLICATE_KEY,
@@ -121,10 +122,11 @@ extend(SortedList, Collection, {
 
     /**
      * Gets the number of key/value pairs contained in the SortedList.
+     * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
      * @returns {Number}
      */
-    count: function () {
-        return this.slot.size;
+    count: function (predicate) {
+        return predicate ? count(this, predicate) : this.slot.size;
     },
 
 

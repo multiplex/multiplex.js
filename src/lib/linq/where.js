@@ -14,7 +14,7 @@ export default function whereIterator(source, predicate) {
             next;
 
         return new Iterator(function () {
-            if (!(next = it.next()).done) {
+            while (!(next = it.next()).done) {
                 if (predicate(next.value, index++)) {
                     return {
                         value: next.value,

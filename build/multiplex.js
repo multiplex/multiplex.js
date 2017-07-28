@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 2.0.0 (October 22, 2016)
+* Version 2.0.0 (July 28, 2017)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -1005,6 +1005,62 @@ mixin(EqualityComparer, {
     }
 });
 
+/**
+* Gets number of items in the specified iterable object.
+* @param {Iterable} value An Iterable object.
+* @param {Function=} predicate A function to test each element for a condition. eg. function(item)
+* @returns {Number}
+*/
+function iterableCount(value, predicate) {
+    var count = 0;
+
+    if (!predicate) {
+        count = collectionCount(value);
+        if (count !== -1) {
+            return count;
+        }
+    }
+
+    count = 0;
+    var it = $iterator(value);
+
+    if (predicate) {
+        var next;
+        assertType(predicate, Function);
+        while (!(next = it.next()).done && predicate(next.value)) {
+            count++;
+        }
+    }
+    else {
+        while (!it.next().done) {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+
+/**
+* Gets number of items in the specified collection object. returns -1 if the value is not a collection.
+* @returns {Number}
+*/
+function collectionCount(value) {
+    if (isArrayLike(value)) {
+        return value.length;
+    }
+
+    else if (value instanceof ArrayIterable) {
+        return value.toArray().length;
+    }
+
+    else if (value instanceof Collection) {
+        return value.count();
+    }
+
+    return -1;
+}
+
 function isArray(val) {
     return val instanceof Array;
 }
@@ -1113,12 +1169,13 @@ function Collection(value) {
 extend(Collection, Iterable, {
     /**
      * Gets the number of elements contained in the Collection.
+     * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
      * @returns {Number}
      */
-    count: function () {
+    count: function (predicate) {
         // if not overridden in subclass,
         // gets the count of the collection by converting the collection to an array
-        return this.toArray().length;
+        return predicate ? iterableCount(this, predicate) : this.toArray().length;
     },
 
     /**
@@ -1176,10 +1233,11 @@ function ReadOnlyCollection(list) {
 extend(ReadOnlyCollection, Collection, {
     /**
      * Gets the number of elements contained in the ReadOnlyCollection.
+     * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
      * @returns {Number}
      */
-    count: function () {
-        return this.list.length;
+    count: function (predicate) {
+        return predicate ? iterableCount(this, predicate) : this.list.length;
     },
 
     /**
@@ -1464,7 +1522,7 @@ mixin(HashTable.prototype, {
             slot = null,
             bucket = 0;
 
-        this.buckets.length = newSize;          // expand buckets
+        this.buckets = new Array(newSize);      // expand buckets
         this.slots.length = newSize;            // expand slots
 
 
@@ -1474,8 +1532,8 @@ mixin(HashTable.prototype, {
 
             // freed slots have undefined hashCode value and do not need rehash
             if (slot.hash !== undefined) {
-                bucket = slot.hash % newSize;          // rehash
-                slot.next = this.buckets[bucket];      // update slot's next index in the bucket chain
+                bucket = slot.hash % newSize;           // rehash
+                slot.next = this.buckets[bucket];       // update slot's next index in the bucket chain
                 this.buckets[bucket] = index;           // update bucket index
             }
         }
@@ -1647,10 +1705,11 @@ extend(Dictionary, Collection, {
 
     /**
     * Gets the number of elements contained in the Dictionary.
+    * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
     * @returns {Number}
     */
-    count: function () {
-        return this.table.count();
+    count: function (predicate) {
+        return predicate ? iterableCount(this, predicate) : this.table.count();
     },
 
     /**
@@ -1870,10 +1929,11 @@ extend(List, Collection, {
 
     /**
     * Gets the number of elements contained in the List.
+    * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
     * @returns {Number}
     */
-    count: function () {
-        return this.length;
+    count: function (predicate) {
+        return predicate ? iterableCount(this, predicate) : this.length;
     },
 
     /**
@@ -2015,23 +2075,6 @@ extend(List, Collection, {
 
         arr.length = count;
         return new List(arr);
-    },
-
-    /**
-    * Performs the specified action on each element of the List.
-    * @param {Function} action The action function to perform on each element of the List. eg. function(item)
-    */
-    forEach: function (action, thisArg) {
-        assertType(action, Function);
-
-        for (var i = 0, len = this.length; i < len; i++) {
-            if (thisArg) {
-                action.call(thisArg, this[i]);
-            }
-            else {
-                action(this[i]);
-            }
-        }
     },
 
     /**
@@ -2221,6 +2264,8 @@ extend(List, Collection, {
         while (len-- > 0) {
             this[len + index] = arr[len];
         }
+
+        return this;
     },
 
     /**
@@ -2423,10 +2468,11 @@ extend(LinkedList, Collection, {
 
     /**
     * Gets the number of elements contained in the LinkedList.
+    * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
     * @returns {Number}
     */
-    count: function () {
-        return this.size;
+    count: function (predicate) {
+        return predicate ? iterableCount(this, predicate) : this.size;
     },
 
     /**
@@ -2759,6 +2805,7 @@ function validateNode(node, list) {
 function Grouping(key, elements) {
     this.key = key;
     this.elements = elements;
+    Collection.call(this, elements);
 }
 
 extend(Grouping, Collection, {
@@ -2808,10 +2855,14 @@ mixin(LookupTable.prototype, {
 
     entries: function () {
         var arr = new Array(this.size),
-            index = 0;
+            index = 0,
+            slot = null;
 
         for (var i = 0, count = this.slots.length; i < count; i++) {
-            arr[index++] = this.slots[i].grouping;
+            slot = this.slots[i];
+            if (slot !== undefined) {
+                arr[index++] = slot.grouping;
+            }
         }
 
         return arr;
@@ -2867,8 +2918,7 @@ mixin(LookupTable.prototype, {
             bucket = 0;
 
         this.slots.length = newSize;
-        this.buckets.length = newSize;
-
+        this.buckets = new Array(newSize);
 
         // rehash values & update buckets and slots
         for (var index = 0; index < size; index++) {
@@ -2953,12 +3003,12 @@ extend(Lookup, Collection, {
         return this.table.contains(key);
     },
 
-    count: function () {
-        return this.table.size;
+    count: function (predicate) {
+        return predicate ? iterableCount(this, predicate) : this.table.size;
     },
 
     toArray: function () {
-        this.table.entries();
+        return this.table.entries();
     },
 
     toString: function () {
@@ -3011,10 +3061,11 @@ extend(HashSet, Collection, {
 
     /**
     * Gets the number of elements contained in the HashSet.
+    * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
     * @returns {Number}
     */
-    count: function () {
-        return this.table.count();
+    count: function (predicate) {
+        return predicate ? iterableCount(this, predicate) : this.table.count();
     },
 
     /**
@@ -3060,7 +3111,7 @@ extend(HashSet, Collection, {
             return;
         }
 
-        var c = getCount(other);
+        var c = collectionCount(other);
 
         if (c !== -1) {
             if (c === 0) {
@@ -3101,7 +3152,7 @@ extend(HashSet, Collection, {
     isProperSubsetOf: function (other) {
         assertNotNull(other);
 
-        var c = getCount(other);
+        var c = collectionCount(other);
 
         if (c !== -1) {
             if (this.count() === 0) {
@@ -3139,7 +3190,7 @@ extend(HashSet, Collection, {
             return false;
         }
 
-        var c = getCount(other);
+        var c = collectionCount(other);
 
         if (c !== -1) {
             // if other is the empty set then this is a superset
@@ -3198,7 +3249,7 @@ extend(HashSet, Collection, {
     isSupersetOf: function (other) {
         assertNotNull(other);
 
-        var c = getCount(other);
+        var c = collectionCount(other);
 
         if (c !== -1) {
             // if other is the empty set then this is a superset
@@ -3294,7 +3345,7 @@ extend(HashSet, Collection, {
             return containsAllElements(this, other);
         }
 
-        var c = getCount(other);
+        var c = collectionCount(other);
 
         if (c !== -1) {
             // if this count is 0 but other contains at least one element, they can't be equal
@@ -3445,22 +3496,6 @@ function checkUniqueAndUnfoundElements(set, other, returnIfUnfound) {
     return new ElementCount(uniqueFoundCount, unfoundCount);
 }
 
-function getCount(value) {
-    if (isArrayLike(value)) {
-        return value.length;
-    }
-
-    else if (value instanceof ArrayIterable) {
-        return value.toArray().length;
-    }
-
-    else if (value instanceof Collection) {
-        return value.count();
-    }
-
-    return -1;
-}
-
 /**
 * Initializes a new instance of the Map class that that is empty or contains elements copied from the specified iterable.
 * @param {Iterable=} iterable An iterable object whose all of its elements will be added to the new Map.
@@ -3501,9 +3536,10 @@ extend(Map, Collection, {
 
     /**
     * Returns the number of values in the Map object.
+    * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
     */
-    count: function () {
-        return this.size;
+    count: function (predicate) {
+        return predicate ? iterableCount(this, predicate) : this.size;
     },
 
     /**
@@ -3667,9 +3703,10 @@ extend(Set, Collection, {
 
     /**
     * Returns the number of values in the Set object.
+    * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
     */
-    count: function () {
-        return this.size;
+    count: function (predicate) {
+        return predicate ? iterableCount(this, predicate) : this.size;
     },
 
     /**
@@ -3999,10 +4036,11 @@ extend(SortedList, Collection, {
 
     /**
      * Gets the number of key/value pairs contained in the SortedList.
+     * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
      * @returns {Number}
      */
-    count: function () {
-        return this.slot.size;
+    count: function (predicate) {
+        return predicate ? iterableCount(this, predicate) : this.slot.size;
     },
 
 
@@ -4569,46 +4607,6 @@ function containsIterator(source, value, comparer) {
     return result;
 }
 
-/**
-* Gets number of items in the specified iterable object.
-* @param {Iterable} value An Iterable object.
-* @param {Function=} predicate A function to test each element for a condition. eg. function(item)
-* @returns {Number}
-*/
-function count(value, predicate) {
-    if (!predicate) {
-        if (isArrayLike(value)) {
-            return value.length;
-        }
-
-        else if (value instanceof ArrayIterable) {
-            return value.toArray().length;
-        }
-
-        else if (value instanceof Collection) {
-            return value.count();
-        }
-    }
-
-    var it = $iterator(value),
-        count = 0;
-
-    if (predicate) {
-        var next;
-        assertType(predicate, Function);
-        while (!(next = it.next()).done && predicate(next.value)) {
-            count++;
-        }
-    }
-    else {
-        while (!it.next().done) {
-            count++;
-        }
-    }
-
-    return count;
-}
-
 function defaultIfEmptyIterator(source, defaultValue) {
     assertNotNull(source);
 
@@ -4712,7 +4710,7 @@ function exceptIntersectIterator(first, second, comparer, intersect) {
                 table.add(element);
             });
 
-            if (!(next = it.next()).done) {
+            while (!(next = it.next()).done) {
                 if (table.contains(next.value) === result) {
                     return {
                         value: next.value,
@@ -4793,7 +4791,7 @@ function groupIterator(source, keySelector, elementSelector, resultSelector, com
         return new Iterator(function () {
             if (!(next = it.next()).done) {
                 return {
-                    value: resultSelector ? resultSelector(next.value.key, next.value) : next.value,
+                    value: resultSelector ? resultSelector(next.value.key, new Iterable(next.value.elements)) : next.value,
                     done: false
                 };
             }
@@ -4843,8 +4841,13 @@ function joinIterator(outer, inner, outerKeySelector, innerKeySelector, resultSe
             next;
 
         return new Iterator(function () {
-            while (!(next = it.next()).done) {
+            while (true) {
                 if (elements === null) {
+                    if ((next = it.next()).done) {
+                        return {
+                            done: true
+                        };
+                    }
                     elements = lookup.get(outerKeySelector(next.value)).elements;
                 }
                 if (index < elements.length) {
@@ -4858,9 +4861,6 @@ function joinIterator(outer, inner, outerKeySelector, innerKeySelector, resultSe
                     elements = null;
                 }
             }
-            return {
-                done: true
-            };
         });
     });
 }
@@ -5059,17 +5059,6 @@ function sequenceEqualIterator(first, second, comparer) {
     return true;
 }
 
-function singleIterator(source, predicate) {
-    var value = {},
-        result = firstOrDefaultIterator(source, predicate, value);
-
-    if (result === value) {
-        error(predicate ? ERROR_NO_MATCH : ERROR_NO_ELEMENTS);
-    }
-
-    return result;
-}
-
 function singleOrDefaultIterator(source, predicate, defaultValue) {
     assertNotNull(source);
     predicate = predicate || trueFunction;
@@ -5108,9 +5097,21 @@ function singleOrDefaultIterator(source, predicate, defaultValue) {
     error(ERROR_MORE_THAN_ONE_ELEMENT);
 }
 
+function singleIterator(source, predicate) {
+    var value = {},
+        result = singleOrDefaultIterator(source, predicate, value);
+
+    if (result === value) {
+        error(predicate ? ERROR_NO_MATCH : ERROR_NO_ELEMENTS);
+    }
+
+    return result;
+}
+
 function skipIterator(source, count) {
     assertNotNull(source);
     assertType(count, Number);
+    count = Math.max(count, 0);
 
     var arr = asArray(source);
 
@@ -5204,6 +5205,7 @@ function sumIterator(source, selector) {
 function takeIterator(source, count) {
     assertNotNull(source);
     assertType(count, Number);
+    count = Math.max(count, 0);
 
     var arr = asArray(source);
 
@@ -5306,7 +5308,7 @@ function whereIterator(source, predicate) {
             next;
 
         return new Iterator(function () {
-            if (!(next = it.next()).done) {
+            while (!(next = it.next()).done) {
                 if (predicate(next.value, index++)) {
                     return {
                         value: next.value,
@@ -5441,7 +5443,7 @@ function linq(iterable) {
         * @returns {Number}
         */
         count: function (predicate) {
-            return count(this, predicate);
+            return iterableCount(this, predicate);
         },
 
         /**
@@ -5561,7 +5563,7 @@ function linq(iterable) {
         * @returns {Iterable}
         */
         join: function (inner, outerKeySelector, innerKeySelector, resultSelector, comparer) {
-            return joinIterator(this, inner, outerKeySelector, innerKeySelector, comparer);
+            return joinIterator(this, inner, outerKeySelector, innerKeySelector, resultSelector, comparer);
         },
 
         /**

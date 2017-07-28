@@ -4,6 +4,7 @@ import extend from '../utils/extend';
 export default function Grouping(key, elements) {
     this.key = key;
     this.elements = elements;
+    Collection.call(this, elements);
 }
 
 extend(Grouping, Collection, {

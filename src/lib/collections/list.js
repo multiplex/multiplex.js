@@ -11,8 +11,9 @@ import binarySearch from '../utils/binary-search';
 import buffer from '../utils/buffer';
 import bufferTo from '../utils/buffer-to';
 import extend from '../utils/extend';
-import {ARRAY_PROTOTYPE} from '../utils/builtin-types';
-import error, {ERROR_ARGUMENT_OUT_OF_RANGE} from '../utils/error';
+import count from '../utils/count';
+import { ARRAY_PROTOTYPE } from '../utils/builtin-types';
+import error, { ERROR_ARGUMENT_OUT_OF_RANGE } from '../utils/error';
 
 
 /**
@@ -87,10 +88,11 @@ extend(List, Collection, {
 
     /**
     * Gets the number of elements contained in the List.
+    * @param {Function=} predicate A function to test each element for a condition. eg. function(item)
     * @returns {Number}
     */
-    count: function () {
-        return this.length;
+    count: function (predicate) {
+        return predicate ? count(this, predicate) : this.length;
     },
 
     /**
@@ -232,23 +234,6 @@ extend(List, Collection, {
 
         arr.length = count;
         return new List(arr);
-    },
-
-    /**
-    * Performs the specified action on each element of the List.
-    * @param {Function} action The action function to perform on each element of the List. eg. function(item)
-    */
-    forEach: function (action, thisArg) {
-        assertType(action, Function);
-
-        for (var i = 0, len = this.length; i < len; i++) {
-            if (thisArg) {
-                action.call(thisArg, this[i]);
-            }
-            else {
-                action(this[i]);
-            }
-        }
     },
 
     /**
@@ -438,6 +423,8 @@ extend(List, Collection, {
         while (len-- > 0) {
             this[len + index] = arr[len];
         }
+
+        return this;
     },
 
     /**

@@ -60,6 +60,34 @@ qtest('from iterable function', function (assert) {
 });
 
 
+qtest('from .Net Enumerable object', function (assert) {
+    var obj = {
+        getEnumerator: function () {
+            var count = 3, index = 0;
+            return {
+                current: undefined,
+                next: function () {
+                    if (index++ < count) {
+                        this.current = index;
+                        return true;
+                    }
+                    else {
+                        this.current = undefined;
+                        return false;
+                    }
+                }
+            };
+        }
+    };
+
+    var it = mx(obj);
+    assert.equal(count(it), 3, 'Enumerable count');
+    assert.deepEqual(toArray(it), [1, 2, 3], 'Enumerablen to array');
+
+    assert.equal(it.toString(), '[Iterable]', 'Enumerable Iterable toString');
+});
+
+
 qtest('from generator function', function (assert) {
     /*jshint evil:true*/
     try {

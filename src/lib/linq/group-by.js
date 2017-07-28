@@ -17,7 +17,7 @@ export default function groupIterator(source, keySelector, elementSelector, resu
         return new Iterator(function () {
             if (!(next = it.next()).done) {
                 return {
-                    value: resultSelector ? resultSelector(next.value.key, next.value) : next.value,
+                    value: resultSelector ? resultSelector(next.value.key, new Iterable(next.value.elements)) : next.value,
                     done: false
                 };
             }
