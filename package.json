@@ -59,7 +59,7 @@
         "qunit": "1.0.0",
         "rollup": "0.34.10",
         "coveralls": "2.11.12",
-        "nyc": "11.0.3"
+        "nyc": "7.1.0"
     },
     "scripts": {
         "build": "npm install && grunt",
