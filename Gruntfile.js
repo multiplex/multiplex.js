@@ -56,10 +56,10 @@ module.exports = function (grunt) {
     grunt.registerTask('lint', ['jshint', 'jscs']);
 
     // test tasks
-    grunt.registerTask('test', ['qtest']);
+    grunt.registerTask('test', ['build', 'qtest']);
 
     // default task
-    grunt.registerTask('default', ['lint', 'build', 'test']);
+    grunt.registerTask('default', ['lint', 'test']);
 
     // travis build task
     grunt.registerTask('build:travis', ['default']);
