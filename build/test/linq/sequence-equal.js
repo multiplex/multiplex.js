@@ -84,6 +84,7 @@ qtest('equalityComparer "sequenceEqual" test', function (assert) {
 
 
 qtest('hash/equals override "sequenceEqual" test', function (assert) {
+    mx.hash(new Basic(1, 'A'));
     assert.ok(mx([new Basic(1, 'A'), new Basic(2, 'B')]).sequenceEqual([new Basic(1, 'A'), new Basic(2, 'B')]), 'Test sequenceEqual in an array of objects overriding hash/equals methods');
     assert.ok(!mx([new Basic(1, 'A')]).sequenceEqual([new Basic(3, 'A')]), 'Test sequenceEqual in an array of objects overriding hash/equals methods');
 });
