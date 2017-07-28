@@ -8,13 +8,12 @@
 */
 
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-	typeof define === 'function' && define.amd ? define(factory) :
-	(global.mx = factory());
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+    typeof define === 'function' && define.amd ? define(factory) :
+    (global.mx = factory());
 }(this, (function () { 'use strict';
 
 mx.version = '2.0.0';
-
 
 function isFunction(fn) {
     return typeof fn === 'function';
@@ -59,7 +58,6 @@ function error(msg) {
 
 var ERROR_ARGUMENT_OUT_OF_RANGE = 'Argument was out of the range of valid values.';
 var ERROR_ARRAY_SIZE = 'The number of elements in the source is greater than the number of elements that the destination array can contain.';
-
 var ERROR_NO_ELEMENTS = 'Sequence contains no elements.';
 var ERROR_NO_MATCH = 'Sequence contains no matching element.';
 var ERROR_NON_NUMERIC_TYPE = 'Value is not a number.';
