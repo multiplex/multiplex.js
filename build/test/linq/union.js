@@ -39,7 +39,7 @@ Basic.prototype.__hash__ = function () {
 };
 
 Basic.prototype.__eq__ = function (obj) {
-    return this.val === obj.val;
+    return this.val === obj.val && this.name === obj.name;
 };
 
 var qunit = typeof QUnit === 'undefined' ? require('qunitjs') : QUnit;
@@ -73,7 +73,7 @@ qtest('equalityComparer "union" test', function (assert) {
 
 
 qtest('hash/equals override "union" test', function (assert) {
-    assert.equal(mx([new Basic(1, 'A'), new Basic(2, 'B')]).union([new Basic(1, 'C')]).toArray().length, 2, 'Test union in an array of objects overriding hash/equals methods');
+    assert.equal(mx([new Basic(1, 'A'), new Basic(2, 'B')]).union([new Basic(1, 'A')]).toArray().length, 2, 'Test union in an array of objects overriding hash/equals methods');
     assert.equal(mx([new Basic(1, 'A'), new Basic(2, 'B')]).union([new Basic(3, 'A')]).toArray().length, 3, 'Test union in an array of objects overriding hash/equals methods');
 });
 

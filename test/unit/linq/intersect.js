@@ -33,8 +33,8 @@ qtest('equalityComparer "intersect" test', function (assert) {
 
 
 qtest('hash/equals override "intersect" test', function (assert) {
-    assert.equal(mx([new mocks.Basic(1, 'A'), new mocks.Basic(2, 'B')]).intersect([new mocks.Basic(1, 'C')]).toArray().length, 1, 'Test intersect in an array of objects overriding hash/equals methods');
-    assert.equal(mx([new mocks.Basic(1, 'A'), new mocks.Basic(2, 'B')]).intersect([new mocks.Basic(3, 'A')]).toArray().length, 0, 'Test intersect in an array of objects overriding hash/equals methods');
+    assert.equal(mx([new mocks.Basic(1, 'A'), new mocks.Basic(2, 'B')]).intersect([new mocks.Basic(1, 'A')]).toArray().length, 1, 'Test intersect in an array of objects overriding hash/equals methods');
+    assert.equal(mx([new mocks.Basic(1, 'A'), new mocks.Basic(2, 'B')]).intersect([new mocks.Basic(1, 'B')]).toArray().length, 0, 'Test intersect in an array of objects overriding hash/equals methods');
 });
 
 

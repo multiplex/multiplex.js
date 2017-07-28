@@ -39,7 +39,7 @@ Basic.prototype.__hash__ = function () {
 };
 
 Basic.prototype.__eq__ = function (obj) {
-    return this.val === obj.val;
+    return this.val === obj.val && this.name === obj.name;
 };
 
 var qunit = typeof QUnit === 'undefined' ? require('qunitjs') : QUnit;
@@ -74,8 +74,8 @@ qtest('equalityComparer "intersect" test', function (assert) {
 
 
 qtest('hash/equals override "intersect" test', function (assert) {
-    assert.equal(mx([new Basic(1, 'A'), new Basic(2, 'B')]).intersect([new Basic(1, 'C')]).toArray().length, 1, 'Test intersect in an array of objects overriding hash/equals methods');
-    assert.equal(mx([new Basic(1, 'A'), new Basic(2, 'B')]).intersect([new Basic(3, 'A')]).toArray().length, 0, 'Test intersect in an array of objects overriding hash/equals methods');
+    assert.equal(mx([new Basic(1, 'A'), new Basic(2, 'B')]).intersect([new Basic(1, 'A')]).toArray().length, 1, 'Test intersect in an array of objects overriding hash/equals methods');
+    assert.equal(mx([new Basic(1, 'A'), new Basic(2, 'B')]).intersect([new Basic(1, 'B')]).toArray().length, 0, 'Test intersect in an array of objects overriding hash/equals methods');
 });
 
 

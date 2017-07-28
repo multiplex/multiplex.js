@@ -32,8 +32,8 @@ qtest('equalityComparer "except" test', function (assert) {
 
 
 qtest('hash/equals override "except" test', function (assert) {
-    assert.equal(mx([new mocks.Basic(1, 'A'), new mocks.Basic(2, 'B')]).except([new mocks.Basic(1, 'C')]).toArray().length, 1, 'Test except in an array of objects overriding hash/equals methods');
-    assert.equal(mx([new mocks.Basic(1, 'A'), new mocks.Basic(2, 'B')]).except([new mocks.Basic(3, 'A')]).toArray().length, 2, 'Test except in an array of objects overriding hash/equals methods');
+    assert.equal(mx([new mocks.Basic(1, 'A'), new mocks.Basic(2, 'B')]).except([new mocks.Basic(1, 'A')]).toArray().length, 1, 'Test except in an array of objects overriding hash/equals methods');
+    assert.equal(mx([new mocks.Basic(1, 'A'), new mocks.Basic(2, 'B')]).except([new mocks.Basic(1, 'B')]).toArray().length, 2, 'Test except in an array of objects overriding hash/equals methods');
 });
 
 

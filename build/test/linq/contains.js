@@ -39,7 +39,7 @@ Basic.prototype.__hash__ = function () {
 };
 
 Basic.prototype.__eq__ = function (obj) {
-    return this.val === obj.val;
+    return this.val === obj.val && this.name === obj.name;
 };
 
 var qunit = typeof QUnit === 'undefined' ? require('qunitjs') : QUnit;
@@ -75,8 +75,8 @@ qtest('equalityComparer "contains" test', function (assert) {
 qtest('hash/equals override "contains" test', function (assert) {
     mx.hash(new Basic(1, 'A'));
 
-    assert.ok(mx([new Basic(1, 'A'), new Basic(2, 'B')]).contains(new Basic(1, 'C')), 'Test an array of objects contains a value');
-    assert.ok(!mx([new Basic(1, 'A'), new Basic(2, 'B')]).contains(new Basic(3, 'A')), 'Test an array of objects non containing a value');
+    assert.ok(mx([new Basic(1, 'A'), new Basic(2, 'B')]).contains(new Basic(1, 'A')), 'Test an array of objects contains a value');
+    assert.ok(!mx([new Basic(1, 'A'), new Basic(2, 'B')]).contains(new Basic(1, 'B')), 'Test an array of objects non containing a value');
 });
 
 

@@ -32,7 +32,7 @@ qtest('equalityComparer "union" test', function (assert) {
 
 
 qtest('hash/equals override "union" test', function (assert) {
-    assert.equal(mx([new mocks.Basic(1, 'A'), new mocks.Basic(2, 'B')]).union([new mocks.Basic(1, 'C')]).toArray().length, 2, 'Test union in an array of objects overriding hash/equals methods');
+    assert.equal(mx([new mocks.Basic(1, 'A'), new mocks.Basic(2, 'B')]).union([new mocks.Basic(1, 'A')]).toArray().length, 2, 'Test union in an array of objects overriding hash/equals methods');
     assert.equal(mx([new mocks.Basic(1, 'A'), new mocks.Basic(2, 'B')]).union([new mocks.Basic(3, 'A')]).toArray().length, 3, 'Test union in an array of objects overriding hash/equals methods');
 });
 

@@ -39,7 +39,7 @@ Basic.prototype.__hash__ = function () {
 };
 
 Basic.prototype.__eq__ = function (obj) {
-    return this.val === obj.val;
+    return this.val === obj.val && this.name === obj.name;
 };
 
 var qunit = typeof QUnit === 'undefined' ? require('qunitjs') : QUnit;
@@ -73,8 +73,8 @@ qtest('equalityComparer "except" test', function (assert) {
 
 
 qtest('hash/equals override "except" test', function (assert) {
-    assert.equal(mx([new Basic(1, 'A'), new Basic(2, 'B')]).except([new Basic(1, 'C')]).toArray().length, 1, 'Test except in an array of objects overriding hash/equals methods');
-    assert.equal(mx([new Basic(1, 'A'), new Basic(2, 'B')]).except([new Basic(3, 'A')]).toArray().length, 2, 'Test except in an array of objects overriding hash/equals methods');
+    assert.equal(mx([new Basic(1, 'A'), new Basic(2, 'B')]).except([new Basic(1, 'A')]).toArray().length, 1, 'Test except in an array of objects overriding hash/equals methods');
+    assert.equal(mx([new Basic(1, 'A'), new Basic(2, 'B')]).except([new Basic(1, 'B')]).toArray().length, 2, 'Test except in an array of objects overriding hash/equals methods');
 });
 
 

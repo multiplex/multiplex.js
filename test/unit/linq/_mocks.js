@@ -33,7 +33,7 @@ Basic.prototype.__hash__ = function () {
 };
 
 Basic.prototype.__eq__ = function (obj) {
-    return this.val === obj.val;
+    return this.val === obj.val && this.name === obj.name;
 };
 
 

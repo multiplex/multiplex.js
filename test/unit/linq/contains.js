@@ -34,8 +34,8 @@ qtest('equalityComparer "contains" test', function (assert) {
 qtest('hash/equals override "contains" test', function (assert) {
     mx.hash(new mocks.Basic(1, 'A'));
 
-    assert.ok(mx([new mocks.Basic(1, 'A'), new mocks.Basic(2, 'B')]).contains(new mocks.Basic(1, 'C')), 'Test an array of objects contains a value');
-    assert.ok(!mx([new mocks.Basic(1, 'A'), new mocks.Basic(2, 'B')]).contains(new mocks.Basic(3, 'A')), 'Test an array of objects non containing a value');
+    assert.ok(mx([new mocks.Basic(1, 'A'), new mocks.Basic(2, 'B')]).contains(new mocks.Basic(1, 'A')), 'Test an array of objects contains a value');
+    assert.ok(!mx([new mocks.Basic(1, 'A'), new mocks.Basic(2, 'B')]).contains(new mocks.Basic(1, 'B')), 'Test an array of objects non containing a value');
 });
 
 
