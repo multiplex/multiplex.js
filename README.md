@@ -1,4 +1,5 @@
-[![npm version][npm-version-image]][npm-url] 
+[![npm version][npm-version-image]][npm-url] [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fmultiplex%2Fmultiplex.js.svg?type=shield)](https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fmultiplex%2Fmultiplex.js?ref=badge_shield)
+
 [![build status][travis-image]][travis-url]
 [![code climate][climate-image]][climate-url]
 [![coverage status][coverage-image]][coverage-url] 
@@ -477,3 +478,7 @@ When the tests pass, the built version of Multiplex will be put in the `dist/` s
 
 [coverage-url]: https://coveralls.io/github/multiplex/multiplex.js
 [coverage-image]: https://coveralls.io/repos/github/multiplex/multiplex.js/badge.svg
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fmultiplex%2Fmultiplex.js.svg?type=large)](https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fmultiplex%2Fmultiplex.js?ref=badge_large)
