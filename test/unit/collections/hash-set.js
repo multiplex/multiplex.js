@@ -197,14 +197,17 @@ qtest('hash-set "setEquals" tests', function (assert) {
     set2.remove(1);
     assert.ok(!set1.setEquals(set2), 'HashSet setEquals different size, same comparable');
 
-    set2 = new HashSet([1, 2, 3, 4, 5], {
+    var comp = {
         hash: function (t) {
             return t;
         },
         equals: function (a, b) {
             return a === b;
         }
-    });
+    };
+    comp.hash(1);
+    comp.equals(1, 1);
+    set2 = new HashSet([1, 2, 3, 4, 5], comp);
     assert.ok(set1.setEquals(set2), 'HashSet setEquals same size, different comparable');
 
     assert.throws(function () {

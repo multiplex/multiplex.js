@@ -38,7 +38,7 @@ extend(Stack, Collection, {
         var items = this[iterableSymbol];
 
         if (items.length > 0) {
-            return items[this.length - 1];
+            return items[items.length - 1];
         }
 
         error(ERROR_EMPTY_COLLECTION);

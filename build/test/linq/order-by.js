@@ -60,5 +60,10 @@ qtest('collections "order-by" method tests', function (assert) {
     assert.equal(enumerable.orderBy(identity).last(), 5, 'Test orderBy for an enumerable');
 });
 
+
+qtest('"order-by" toString tests', function (assert) {
+    assert.equal(enumerable.orderBy(identity).toString(), '[Ordered Iterable]', 'Test orderBy toString');
+});
+
 })));
 

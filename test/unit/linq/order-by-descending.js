@@ -11,7 +11,7 @@ function identity(t) {
     return t;
 }
 
-qtest('basic "order-by" tests', function (assert) {
+qtest('basic "order-by-descending" tests', function (assert) {
     assert.equal(mx.range(0, 50).orderByDescending(identity).toArray()[0], 49, 'Test orderByDescending for array of numbers');
     assert.equal(mx('string').orderByDescending(identity).last(), 'g', 'Test orderByDescending for array of string');
 
@@ -29,6 +29,11 @@ qtest('basic "order-by" tests', function (assert) {
 });
 
 
-qtest('collections "order-by" method tests', function (assert) {
+qtest('collections "order-by-descending" method tests', function (assert) {
     assert.equal(mocks.enumerable.orderByDescending(identity).last(), 1, 'Test orderByDescending for an enumerable');
+});
+
+
+qtest('"order-by-descending" toString tests', function (assert) {
+    assert.equal(mocks.enumerable.orderByDescending(identity).toString(), '[Ordered Iterable]', 'Test orderByDescending toString');
 });

@@ -94,7 +94,7 @@ qtest('collections "to-dictionary" method tests', function (assert) {
 
 
 
-qtest('select method validations', function (assert) {
+qtest('toDictionary method validations', function (assert) {
     assert.throws(function () {
         mx([1]).toDictionary();
     }, 'without key selector');

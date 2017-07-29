@@ -59,6 +59,7 @@ var modules = [
     './linq/to-array.js',
     './linq/to-dictionary.js',
     './linq/to-list.js',
+    './linq/to-lookup.js',
     './linq/union.js',
     './linq/where.js',
     './linq/zip.js',

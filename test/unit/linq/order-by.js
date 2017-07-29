@@ -31,3 +31,8 @@ qtest('basic "order-by" tests', function (assert) {
 qtest('collections "order-by" method tests', function (assert) {
     assert.equal(mocks.enumerable.orderBy(identity).last(), 5, 'Test orderBy for an enumerable');
 });
+
+
+qtest('"order-by" toString tests', function (assert) {
+    assert.equal(mocks.enumerable.orderBy(identity).toString(), '[Ordered Iterable]', 'Test orderBy toString');
+});
