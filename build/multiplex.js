@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - LINQ for JavaScript.
-* Version 2.0.0 (July 28, 2017)
+* Version 2.0.0 (July 29, 2017)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -1027,8 +1027,10 @@ function iterableCount(value, predicate) {
     if (predicate) {
         var next;
         assertType(predicate, Function);
-        while (!(next = it.next()).done && predicate(next.value)) {
-            count++;
+        while (!(next = it.next()).done) {
+            if (predicate(next.value)) {
+                count++;
+            }
         }
     }
     else {
