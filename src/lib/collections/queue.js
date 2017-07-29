@@ -57,7 +57,7 @@ export default class Queue extends Collection {
         let items = this[iterableSymbol];
 
         if (items.length > 0) {
-            return items[this.length - 1];
+            return items[0];
         }
 
         error(ERROR_EMPTY_COLLECTION);
