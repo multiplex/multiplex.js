@@ -26,8 +26,10 @@ export default function iterableCount(value, predicate) {
     if (predicate) {
         var next;
         assertType(predicate, Function);
-        while (!(next = it.next()).done && predicate(next.value)) {
-            count++;
+        while (!(next = it.next()).done) {
+            if (predicate(next.value)) {
+                count++;
+            }
         }
     }
     else {
