@@ -264,4 +264,5 @@ qtest('hash-set "unionWith" tests', function (assert) {
 
 qtest('hash-set toString', function (assert) {
     assert.equal(new HashSet().toString(), '[HashSet]', 'HashSet toString');
+    assert.equal(new HashSet()[typeof Symbol === 'function' ? Symbol.iterator : '@@iterator']().toString(), '[HashSet Iterator]', 'HashSet Iterator toString');
 });
