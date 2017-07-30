@@ -1,6 +1,7 @@
 import Iterable from './lib/iteration/iterable';
 import Iterator from './lib/iteration/iterator';
 import $iterable from './lib/iteration/iterable-factory';
+import $iterator from './lib/iteration/iterator-factory';
 
 import runtime, {
     runtimeHash,
@@ -48,6 +49,7 @@ mx.compare = runtimeCompare;
 mx.empty = Iterable.empty;
 mx.range = Iterable.range;
 mx.repeat = Iterable.repeat;
+mx.iter = $iterator;
 
 mx.Iterable = Iterable;
 mx.Iterator = Iterator;

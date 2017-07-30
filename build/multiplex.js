@@ -1,6 +1,6 @@
 /*!
-* Multiplex.js - Comprehensive data-structure and LINQ library for JavaScript.
-* Version 3.0.0 (July 27, 2017)
+* Multiplex.js - LINQ for JavaScript.
+* Version 3.0.0 (July 29, 2017)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -8,13 +8,12 @@
 */
 
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-	typeof define === 'function' && define.amd ? define(factory) :
-	(global.mx = factory());
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+    typeof define === 'function' && define.amd ? define(factory) :
+    (global.mx = factory());
 }(this, (function () { 'use strict';
 
 mx.version = '3.0.0';
-
 
 function isObject(obj) {
     return typeof obj === 'object';
@@ -76,7 +75,6 @@ function error(msg) {
 
 const ERROR_ARGUMENT_OUT_OF_RANGE = 'Argument was out of the range of valid values.';
 const ERROR_ARRAY_SIZE = 'The number of elements in the source is greater than the number of elements that the destination array can contain.';
-
 const ERROR_NO_ELEMENTS = 'Sequence contains no elements.';
 const ERROR_NO_MATCH = 'Sequence contains no matching element.';
 const ERROR_NON_NUMERIC_TYPE = 'Value is not a number.';
@@ -224,7 +222,7 @@ class EmptyIterator extends Iterator {
 }
 
 /**
-* Supports an iteration over an .Net Enumerable.
+* Supports an iteration over a .Net Enumerable.
 * @param {Object} obj An Enumerable instance.
 */
 class EnumerableIterator extends Iterator {
@@ -5608,6 +5606,7 @@ mx.compare = compare;
 mx.empty = Iterable.empty;
 mx.range = Iterable.range;
 mx.repeat = Iterable.repeat;
+mx.iter = $iterator;
 
 mx.Iterable = Iterable;
 mx.Iterator = Iterator;
