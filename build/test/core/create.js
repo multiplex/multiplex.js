@@ -83,7 +83,7 @@ qtest('from .Net Enumerable object', function (assert) {
     var it = mx(obj);
     assert.equal(count(it), 3, 'Enumerable count');
     assert.deepEqual(toArray(it), [1, 2, 3], 'Enumerablen to array');
-
+    assert.equal(mx.iter(it).toString(), '[Enumerable Iterator]', 'Enumerable Iterator toString');
     assert.equal(it.toString(), '[Iterable]', 'Enumerable Iterable toString');
 });
 

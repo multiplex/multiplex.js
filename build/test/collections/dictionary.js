@@ -19,16 +19,37 @@ qtest('create dictionary', function (assert) {
 
     dic.add('A', 1);
     assert.ok(dic.get('A') === 1, 'dictionary add/get');
+    assert.ok(dic.containsValue(1), 'dictionary contains value');
 
     dic.remove('A');
     assert.ok(dic.containsKey('A') === false, 'dictionary remove');
+    assert.ok(dic.containsValue(1) === false, 'dictionary does not contain value');
+
+    dic.add('A', 1);
+    dic = new Dictionary(dic);
+    dic.comparer.hash(1);
+
+    var val = null;
+    dic.tryGetValue(1, function (v) {
+        val = v;
+    });
+
+    dic.tryGetValue(2, function (v) {
+        val = v;
+    });
+
+    assert.throws(function () {
+        dic.get(2);
+    }, 'throws an error gettig item that does not exist!');
 
     dic.clear();
 });
 
 
 qtest('dictionary toString', function (assert) {
-    assert.equal(new Dictionary().toString(), '[Dictionary]', 'Dictionary toString');
+    var dic = new Dictionary();
+    assert.equal(dic.toString(), '[Dictionary]', 'Dictionary toString');
+    assert.equal(mx.iter(dic).toString(), '[KeyValue Iterator]', 'Dictionary iterator toString');
 });
 
 })));
