@@ -9,12 +9,4 @@ export default class IterableIterator extends Iterable {
         super(factory);
         this.next = factory().next;
     }
-
-    get [Symbol.toStringTag]() {
-        return 'Iterable Iterator';
-    }
-
-    toString() {
-        return '[Iterable Iterator]';
-    }
 }

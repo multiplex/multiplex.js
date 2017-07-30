@@ -100,16 +100,6 @@ export default class LookupTable {
         }
     }
 
-    static create(source, keySelector, comparer = EqualityComparer.instance) {
-        let lookup = new LookupTable(comparer);
-
-        for (let element of source) {
-            lookup.add(keySelector(element), element);
-        }
-
-        return lookup;
-    }
-
     [Symbol.iterator]() {
         return new LookupTableIterator(this);
     }

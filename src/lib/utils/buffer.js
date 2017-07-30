@@ -13,11 +13,7 @@ import $iterable from '../iteration/iterable-factory';
 */
 export default function buffer(value, forceIterate = false) {
     if (!forceIterate) {
-        if (value === null || value === undefined) {        // empty value
-            return [];
-        }
-
-        else if (isArrayLike(value)) {                      // array-likes have fixed element count
+        if (isArrayLike(value)) {                      // array-likes have fixed element count
             return arrayBuffer(value);
         }
 

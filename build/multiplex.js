@@ -1019,11 +1019,7 @@ function isString(val) {
 */
 function buffer(value, forceIterate = false) {
     if (!forceIterate) {
-        if (value === null || value === undefined) {        // empty value
-            return [];
-        }
-
-        else if (isArrayLike(value)) {                      // array-likes have fixed element count
+        if (isArrayLike(value)) {                      // array-likes have fixed element count
             return arrayBuffer(value);
         }
 
@@ -1250,14 +1246,6 @@ class IterableIterator extends Iterable {
     constructor(factory) {
         super(factory);
         this.next = factory().next;
-    }
-
-    get [Symbol.toStringTag]() {
-        return 'Iterable Iterator';
-    }
-
-    toString() {
-        return '[Iterable Iterator]';
     }
 }
 
@@ -2882,16 +2870,6 @@ class LookupTable {
         }
     }
 
-    static create(source, keySelector, comparer = EqualityComparer.instance) {
-        let lookup = new LookupTable(comparer);
-
-        for (let element of source) {
-            lookup.add(keySelector(element), element);
-        }
-
-        return lookup;
-    }
-
     [Symbol.iterator]() {
         return new LookupTableIterator(this);
     }
@@ -3820,7 +3798,7 @@ class Queue extends Collection {
         let items = this[iterableSymbol];
 
         if (items.length > 0) {
-            return items[this.length - 1];
+            return items[0];
         }
 
         error(ERROR_EMPTY_COLLECTION);
@@ -3869,7 +3847,7 @@ class Stack extends Collection {
         let items = this[iterableSymbol];
 
         if (items.length > 0) {
-            return items[this.length - 1];
+            return items[items.length - 1];
         }
 
         error(ERROR_EMPTY_COLLECTION);
