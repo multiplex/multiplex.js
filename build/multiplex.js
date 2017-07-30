@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - LINQ for JavaScript.
-* Version 2.0.0 (July 29, 2017)
+* Version 2.0.0 (July 30, 2017)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
