@@ -25,18 +25,14 @@ mixin(EqualityComparer.prototype, {
     * @param {Object} y The second object of type Object to compare.
     * @returns true if the specified objects are equal; otherwise, false.
     */
-    equals: function (x, y) {
-        return runtimeEquals(x, y);
-    },
+    equals: runtimeEquals,
 
     /**
     * Returns a hash code for the specified object.
     * @param {Object} obj The Object for which a hash code is to be returned.
     * @returns A hash code for the specified object.
     */
-    hash: function (obj) {
-        return runtimeHash(obj);
-    },
+    hash: runtimeHash,
 
     toString: function () {
         return '[EqualityComparer]';

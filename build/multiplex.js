@@ -257,7 +257,7 @@ extend(EmptyIterator, Iterator, {
 });
 
 /**
-* Supports an iteration over an .Net Enumerable.
+* Supports an iteration over n .Net Enumerable.
 * @param {Object} obj An Enumerable instance.
 */
 function EnumerableIterator(enumerable) {
@@ -891,9 +891,7 @@ mixin(Comparer.prototype, {
     * Zero x equals y.
     * Greater than zero x is greater than y.
     */
-    compare: function (objA, objB) {
-        compare(objA, objB);
-    },
+    compare: compare,
 
     toString: function () {
         return '[Comparer]';
@@ -958,18 +956,14 @@ mixin(EqualityComparer.prototype, {
     * @param {Object} y The second object of type Object to compare.
     * @returns true if the specified objects are equal; otherwise, false.
     */
-    equals: function (x, y) {
-        return runtimeEquals(x, y);
-    },
+    equals: runtimeEquals,
 
     /**
     * Returns a hash code for the specified object.
     * @param {Object} obj The Object for which a hash code is to be returned.
     * @returns A hash code for the specified object.
     */
-    hash: function (obj) {
-        return runtimeHash(obj);
-    },
+    hash: runtimeHash,
 
     toString: function () {
         return '[EqualityComparer]';
@@ -1079,11 +1073,7 @@ function isString(val) {
 */
 function buffer(value, forceIterate) {
     if (!forceIterate) {
-        if (value === null || value === undefined) {        // empty value
-            return [];
-        }
-
-        else if (isArrayLike(value)) {                      // array-likes have fixed element count
+        if (isArrayLike(value)) {                      // array-likes have fixed element count
             return arrayBuffer(value);
         }
 
@@ -1312,11 +1302,7 @@ function IterableIterator(factory) {
     this.next = factory().next;
 }
 
-extend(IterableIterator, Iterable, {
-    toString: function () {
-        return '[Iterable Iterator]';
-    }
-});
+extend(IterableIterator, Iterable);
 
 /// Array of primes larger than: 2 ^ (4 x n)
 var primes = [17, 67, 257, 1031, 4099, 16411, 65537, 262147, 1048583, 4194319, 16777259];
@@ -5826,6 +5812,7 @@ mx.compare = compare;
 mx.empty = Iterable.empty;
 mx.range = Iterable.range;
 mx.repeat = Iterable.repeat;
+mx.iter = $iterator;
 
 mx.Iterable = Iterable;
 mx.Iterator = Iterator;

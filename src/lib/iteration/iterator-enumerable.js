@@ -2,7 +2,7 @@ import Iterator from './iterator';
 import extend from '../utils/extend';
 
 /**
-* Supports an iteration over an .Net Enumerable.
+* Supports an iteration over n .Net Enumerable.
 * @param {Object} obj An Enumerable instance.
 */
 export default function EnumerableIterator(enumerable) {

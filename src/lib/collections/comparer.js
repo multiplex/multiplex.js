@@ -25,9 +25,7 @@ mixin(Comparer.prototype, {
     * Zero x equals y.
     * Greater than zero x is greater than y.
     */
-    compare: function (objA, objB) {
-        runtimeCompare(objA, objB);
-    },
+    compare: runtimeCompare,
 
     toString: function () {
         return '[Comparer]';

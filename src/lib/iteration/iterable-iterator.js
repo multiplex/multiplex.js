@@ -10,8 +10,4 @@ export default function IterableIterator(factory) {
     this.next = factory().next;
 }
 
-extend(IterableIterator, Iterable, {
-    toString: function () {
-        return '[Iterable Iterator]';
-    }
-});
+extend(IterableIterator, Iterable);
