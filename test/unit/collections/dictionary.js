@@ -21,13 +21,11 @@ qtest('create dictionary', function (assert) {
     dic.comparer.hash(1);
 
     var val = null;
-    dic.tryGetValue(1, function (v) {
+    var callback = function (v) {
         val = v;
-    });
-
-    dic.tryGetValue(2, function (v) {
-        val = v;
-    });
+    };
+    dic.tryGetValue('A', callback);
+    dic.tryGetValue('B', callback);
 
     assert.throws(function () {
         dic.get(2);
