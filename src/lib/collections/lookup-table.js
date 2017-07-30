@@ -2,7 +2,6 @@ import Grouping from './grouping';
 import Iterator from '../iteration/iterator';
 import EqualityComparer from './equality-comparer';
 import resize from '../utils/resize';
-import forOf from '../utils/for-of';
 import extend from '../utils/extend';
 import mixin from '../utils/mixin';
 
@@ -107,19 +106,6 @@ mixin(LookupTable.prototype, {
 
     '@@iterator': function () {
         return new LookupTableIterator(this);
-    }
-});
-
-
-mixin(LookupTable, {
-    create: function (source, keySelector, comparer) {
-        var lookup = new LookupTable(comparer);
-
-        forOf(source, function (element) {
-            lookup.add(keySelector(element), element);
-        });
-
-        return lookup;
     }
 });
 

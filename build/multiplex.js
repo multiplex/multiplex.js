@@ -2923,19 +2923,6 @@ mixin(LookupTable.prototype, {
 });
 
 
-mixin(LookupTable, {
-    create: function (source, keySelector, comparer) {
-        var lookup = new LookupTable(comparer);
-
-        forOf(source, function (element) {
-            lookup.add(keySelector(element), element);
-        });
-
-        return lookup;
-    }
-});
-
-
 
 function LookupTableIterator(lookup) {
     var index = -1,
