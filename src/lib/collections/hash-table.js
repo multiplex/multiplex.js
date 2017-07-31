@@ -74,13 +74,15 @@ mixin(HashTable.prototype, {
     },
 
     forEach: function (callback, target, thisArg) {
+        if (thisArg) {
+            var _callback = callback;
+            callback = function () {
+                _callback.apply(thisArg, arguments);
+            };
+        }
+
         forOf(this, function (element) {
-            if (thisArg) {
-                callback.call(thisArg, element[0], element[1], target);
-            }
-            else {
-                callback(element[0], element[1], target);
-            }
+            callback(element[0], element[1], target);
         });
     },
 
