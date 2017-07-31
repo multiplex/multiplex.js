@@ -19,13 +19,8 @@ export default function joinIterator(outer, inner, outerKeySelector, innerKeySel
             next;
 
         return new Iterator(function () {
-            while (true) {
+            while (index !== 0 || !(next = it.next()).done) {
                 if (elements === null) {
-                    if ((next = it.next()).done) {
-                        return {
-                            done: true
-                        };
-                    }
                     elements = lookup.get(outerKeySelector(next.value)).elements;
                 }
                 if (index < elements.length) {
@@ -39,6 +34,10 @@ export default function joinIterator(outer, inner, outerKeySelector, innerKeySel
                     elements = null;
                 }
             }
+
+            return {
+                done: true
+            };
         });
     });
 }
