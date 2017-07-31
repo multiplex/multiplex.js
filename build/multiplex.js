@@ -1425,13 +1425,15 @@ mixin(HashTable.prototype, {
     },
 
     forEach: function (callback, target, thisArg) {
+        if (thisArg) {
+            var _callback = callback;
+            callback = function () {
+                _callback.apply(thisArg, arguments);
+            };
+        }
+
         forOf(this, function (element) {
-            if (thisArg) {
-                callback.call(thisArg, element[0], element[1], target);
-            }
-            else {
-                callback(element[0], element[1], target);
-            }
+            callback(element[0], element[1], target);
         });
     },
 
@@ -4816,13 +4818,8 @@ function joinIterator(outer, inner, outerKeySelector, innerKeySelector, resultSe
             next;
 
         return new Iterator(function () {
-            while (true) {
+            while (index !== 0 || !(next = it.next()).done) {
                 if (elements === null) {
-                    if ((next = it.next()).done) {
-                        return {
-                            done: true
-                        };
-                    }
                     elements = lookup.get(outerKeySelector(next.value)).elements;
                 }
                 if (index < elements.length) {
@@ -4836,6 +4833,10 @@ function joinIterator(outer, inner, outerKeySelector, innerKeySelector, resultSe
                     elements = null;
                 }
             }
+
+            return {
+                done: true
+            };
         });
     });
 }
