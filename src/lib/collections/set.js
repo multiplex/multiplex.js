@@ -73,7 +73,7 @@ extend(Set, Collection, {
     * @returns {Iterator}
     */
     entries: function () {
-        return new SetIterator(this, -1);
+        return new SetIterator(this);
     },
 
     /**

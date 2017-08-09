@@ -1,6 +1,6 @@
 /*!
 * Multiplex.js - LINQ for JavaScript.
-* Version 2.0.0 (August 08, 2017)
+* Version 2.0.0 (August 09, 2017)
 
 * Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>
 * Licensed under MIT License
@@ -3702,7 +3702,7 @@ extend(Set, Collection, {
     * @returns {Iterator}
     */
     entries: function () {
-        return new SetIterator(this, -1);
+        return new SetIterator(this);
     },
 
     /**
