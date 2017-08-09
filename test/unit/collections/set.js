@@ -32,6 +32,15 @@ qtest('basic set tests', function (assert) {
     assert.ok(set.delete(1), 'set "delete" test');
     assert.ok(!set.delete(1), 'set "delete" test');
 
+    var el = null;
+    set.forEach(function (element) {
+        el = element;
+    }, this);
+
+    set.forEach(function (element) {
+        el = element;
+    });
+
     set.clear();
     assert.equal(set.count(), 0, 'set "clear" test');
 });
