@@ -1,47 +1,50 @@
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('../../multiplex')) :
     typeof define === 'function' && define.amd ? define(['../../multiplex'], factory) :
-    (factory(global.mx));
+    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.mx));
 }(this, (function (mx) { 'use strict';
 
-mx = 'default' in mx ? mx['default'] : mx;
+    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
-var array = [1, 2, 3, 4, 5];
-var enumerable = mx.range(1, 5);
-var collection = new mx.Collection(array);
-var list = new mx.List(array);
-var linkedList = new mx.LinkedList(array);
-var hashSet = new mx.HashSet(array);
-var stack = new mx.Stack(array);
-var queue = new mx.Queue(array);
-var set = new mx.Set(array);
-var map = new mx.Map();
-var dictionary = new mx.Dictionary();
-var sortedList = new mx.SortedList();
-var readOnlyCollection = list.asReadOnly();
-var lookup = new mx.Lookup(array, function (t) {
-    return t;
-});
+    var mx__default = /*#__PURE__*/_interopDefaultLegacy(mx);
 
-for (var i = 0; i < array.length; i++) {
-    map.set(array[i], array[i]);
-    dictionary.set(array[i], array[i]);
-    sortedList.add(array[i], array[i]);
-}
+    var array = [1, 2, 3, 4, 5];
+    mx__default['default'].range(1, 5);
+    new mx__default['default'].Collection(array);
+    var list = new mx__default['default'].List(array);
+    new mx__default['default'].LinkedList(array);
+    new mx__default['default'].HashSet(array);
+    new mx__default['default'].Stack(array);
+    new mx__default['default'].Queue(array);
+    new mx__default['default'].Set(array);
+    var map = new mx__default['default'].Map();
+    var dictionary = new mx__default['default'].Dictionary();
+    var sortedList = new mx__default['default'].SortedList();
+    list.asReadOnly();
+    new mx__default['default'].Lookup(array, function (t) {
+        return t;
+    });
 
-var qunit = typeof QUnit === 'undefined' ? require('qunitjs') : QUnit;
-var qmodule = qunit.module;
-var qtest = qunit.test;
+    for (var i = 0; i < array.length; i++) {
+        map.set(array[i], array[i]);
+        dictionary.set(array[i], array[i]);
+        sortedList.add(array[i], array[i]);
+    }
 
-qmodule('linq-select-many');
+    var qunit = typeof QUnit === 'undefined' ? require('qunitjs') : QUnit;
+    var qmodule = qunit.module;
+    var qtest = qunit.test;
+    qunit.expect;
 
-function identity(t) {
-    return t;
-}
+    qmodule('linq-select-many');
 
-qtest('basic select-many test', function (assert) {
-    assert.equal(mx([array]).selectMany(identity, identity).count(), array.length, 'Test selectMany numbers in an array are less than 10');
-});
+    function identity(t) {
+        return t;
+    }
+
+    qtest('basic select-many test', function (assert) {
+        assert.equal(mx__default['default']([array]).selectMany(identity, identity).count(), array.length, 'Test selectMany numbers in an array are less than 10');
+    });
 
 })));
 

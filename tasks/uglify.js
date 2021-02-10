@@ -15,14 +15,12 @@ module.exports = function (grunt) {
         uglify: {
             options: {
                 sourceMap: true,
-                screwIE8: true,
                 preserveComments: false,
                 banner: banner,
                 report: 'min',
                 mangle: {
-                    sort: true,
                     eval: true,
-                    except: [
+                    reserved: [
                         'mx',
                         'multiplex',
                         'Iterable',

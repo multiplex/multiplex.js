@@ -29,7 +29,7 @@ module.exports = function (grunt) {
             '* ' + pkg.title + ' - ' + pkg.description,
             '* Version ' + pkg.version + ' (' + grunt.template.today('mmmm dd, yyyy') + ')',
             '',
-            '* Created and maintained by Kamyar Nazeri <Kamyar.Nazeri@yahoo.com>',
+            '* Created and maintained by Kamyar Nazeri <kamyar.nzr@gmail.com>',
             '* Licensed under MIT License',
             '* ' + pkg.homepage,
             '*/',

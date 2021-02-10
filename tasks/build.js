@@ -20,17 +20,17 @@ module.exports = function (grunt) {
     // transpile es6 modules
     function transpile() {
         return rollup.rollup({
-            entry: path.join(dirs.source, files.main)
+            input: path.join(dirs.source, files.main)
         }).then(function (bundle) {
             return bundle.write({
                 // output format - 'amd', 'cjs', 'es6', 'iife', 'umd'
                 format: 'umd',
-                dest: path.join(dirs.build, files.main),
-                sourceMap: false,
+                file: path.join(dirs.build, files.main),
+                sourcemap: false,
                 banner: grunt.config('banner'),
                 intro: 'mx.version = \'' + grunt.config('pkg').version + '\';\n',
                 footer: '\n',
-                moduleName: 'mx'
+                name: 'mx'
             });
         });
     }
@@ -44,7 +44,7 @@ module.exports = function (grunt) {
 
         return Promise.all(units.map(function (file) {
             return rollup.rollup({
-                entry: path.join(dirs.unit, file),
+                input: path.join(dirs.unit, file),
                 external: function (id) {
                     if (pattern.test(id)) {
                         return true;
@@ -55,9 +55,9 @@ module.exports = function (grunt) {
                     // output format - 'amd', 'cjs', 'es6', 'iife', 'umd'
                     format: 'umd',
                     footer: '\n',
-                    sourceMap: false,
-                    dest: path.join(dirs.build, dirs.test, file),
-                    moduleName: 'mx',
+                    sourcemap: false,
+                    file: path.join(dirs.build, dirs.test, file),
+                    name: 'mx',
                     globals: function (id) {
                         if (pattern.test(id)) {
                             return 'mx';

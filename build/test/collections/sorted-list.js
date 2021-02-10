@@ -1,52 +1,55 @@
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('../../multiplex')) :
     typeof define === 'function' && define.amd ? define(['../../multiplex'], factory) :
-    (factory(global.mx));
+    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.mx));
 }(this, (function (mx) { 'use strict';
 
-mx = 'default' in mx ? mx['default'] : mx;
+    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
-var qunit = typeof QUnit === 'undefined' ? require('qunitjs') : QUnit;
-var qmodule = qunit.module;
-var qtest = qunit.test;
+    var mx__default = /*#__PURE__*/_interopDefaultLegacy(mx);
 
-qmodule('sorted-list');
+    var qunit = typeof QUnit === 'undefined' ? require('qunitjs') : QUnit;
+    var qmodule = qunit.module;
+    var qtest = qunit.test;
+    qunit.expect;
 
-var SortedList = mx.SortedList;
+    qmodule('sorted-list');
 
-qtest('create sorted-list', function (assert) {
-    assert.ok(new SortedList() !== null, 'empty sorted-list');
-});
+    var SortedList = mx__default['default'].SortedList;
 
-
-qtest('basic sorted-list tests', function (assert) {
-    var dic = mx([1, 2, 3, 4, 5]).toDictionary(function (t) {
-        return t;
+    qtest('create sorted-list', function (assert) {
+        assert.ok(new SortedList() !== null, 'empty sorted-list');
     });
-    var list = new SortedList(dic);
 
-    assert.ok(list.count() === 5, 'basic sorted-list test');
-    assert.ok(list.keys().length === 5, 'basic sorted-list test');
-    assert.ok(list.values().length === 5, 'basic sorted-list test');
 
-    list.get(1);
-    list.containsKey(1);
-    list.containsValue(1);
-    list.indexOfKey(1);
-    list.indexOfValue(1);
-    list.remove(1);
-    list.removeAt(0);
-    list.set(1, 1);
-    list.trimExcess();
-    list.insert(1, 1, 1);
-    list.tryGetValue(1, function () {
+    qtest('basic sorted-list tests', function (assert) {
+        var dic = mx__default['default']([1, 2, 3, 4, 5]).toDictionary(function (t) {
+            return t;
+        });
+        var list = new SortedList(dic);
+
+        assert.ok(list.count() === 5, 'basic sorted-list test');
+        assert.ok(list.keys().length === 5, 'basic sorted-list test');
+        assert.ok(list.values().length === 5, 'basic sorted-list test');
+
+        list.get(1);
+        list.containsKey(1);
+        list.containsValue(1);
+        list.indexOfKey(1);
+        list.indexOfValue(1);
+        list.remove(1);
+        list.removeAt(0);
+        list.set(1, 1);
+        list.trimExcess();
+        list.insert(1, 1, 1);
+        list.tryGetValue(1, function () {
+        });
+        list.clear();
     });
-    list.clear();
-});
 
-qtest('sorted-list toString', function (assert) {
-    assert.equal(new SortedList().toString(), '[SortedList]', 'SortedList toString');
-});
+    qtest('sorted-list toString', function (assert) {
+        assert.equal(new SortedList().toString(), '[SortedList]', 'SortedList toString');
+    });
 
 })));
 

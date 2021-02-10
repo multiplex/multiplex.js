@@ -1,116 +1,119 @@
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('../../multiplex')) :
     typeof define === 'function' && define.amd ? define(['../../multiplex'], factory) :
-    (factory(global.mx));
+    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.mx));
 }(this, (function (mx) { 'use strict';
 
-mx = 'default' in mx ? mx['default'] : mx;
+    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
-var array = [1, 2, 3, 4, 5];
-var enumerable = mx.range(1, 5);
-var collection = new mx.Collection(array);
-var list = new mx.List(array);
-var linkedList = new mx.LinkedList(array);
-var hashSet = new mx.HashSet(array);
-var stack = new mx.Stack(array);
-var queue = new mx.Queue(array);
-var set = new mx.Set(array);
-var map = new mx.Map();
-var dictionary = new mx.Dictionary();
-var sortedList = new mx.SortedList();
-var readOnlyCollection = list.asReadOnly();
-var lookup = new mx.Lookup(array, function (t) {
-    return t;
-});
+    var mx__default = /*#__PURE__*/_interopDefaultLegacy(mx);
 
-for (var i = 0; i < array.length; i++) {
-    map.set(array[i], array[i]);
-    dictionary.set(array[i], array[i]);
-    sortedList.add(array[i], array[i]);
-}
+    var array = [1, 2, 3, 4, 5];
+    var enumerable = mx__default['default'].range(1, 5);
+    var collection = new mx__default['default'].Collection(array);
+    var list = new mx__default['default'].List(array);
+    var linkedList = new mx__default['default'].LinkedList(array);
+    var hashSet = new mx__default['default'].HashSet(array);
+    var stack = new mx__default['default'].Stack(array);
+    var queue = new mx__default['default'].Queue(array);
+    var set = new mx__default['default'].Set(array);
+    var map = new mx__default['default'].Map();
+    var dictionary = new mx__default['default'].Dictionary();
+    var sortedList = new mx__default['default'].SortedList();
+    var readOnlyCollection = list.asReadOnly();
+    var lookup = new mx__default['default'].Lookup(array, function (t) {
+        return t;
+    });
 
-var qunit = typeof QUnit === 'undefined' ? require('qunitjs') : QUnit;
-var qmodule = qunit.module;
-var qtest = qunit.test;
+    for (var i = 0; i < array.length; i++) {
+        map.set(array[i], array[i]);
+        dictionary.set(array[i], array[i]);
+        sortedList.add(array[i], array[i]);
+    }
 
-qmodule('linq-average');
+    var qunit = typeof QUnit === 'undefined' ? require('qunitjs') : QUnit;
+    var qmodule = qunit.module;
+    var qtest = qunit.test;
+    qunit.expect;
 
-
-function simpleNumericSelector(t) {
-    return t * 2;
-}
-
-qtest('basic "average" test', function (assert) {
-    assert.equal(mx(array).average(), 3, 'Test average of first 5 numbers');
-    assert.equal(mx(array).average(simpleNumericSelector), 6, 'Test average of first 5 numbers using a selector');
-});
+    qmodule('linq-average');
 
 
-qtest('collections "average" method tests', function (assert) {
-    assert.equal(enumerable.average(), 3, 'Test average of numbers in an enumerable');
-    assert.equal(enumerable.average(simpleNumericSelector), 6, 'Test average of numbers in an enumerable with a selector');
+    function simpleNumericSelector(t) {
+        return t * 2;
+    }
 
-    assert.equal(collection.average(), 3, 'Test average of numbers in a Collection');
-    assert.equal(collection.average(simpleNumericSelector), 6, 'Test average of numbers in a Collection with a selector');
-
-    assert.equal(list.average(), 3, 'Test average of numbers in a List');
-    assert.equal(list.average(simpleNumericSelector), 6, 'Test average of numbers in a List with a selector');
-
-    assert.equal(readOnlyCollection.average(), 3, 'Test average of numbers in a ReadOnlyCollection');
-    assert.equal(readOnlyCollection.average(simpleNumericSelector), 6, 'Test average of numbers in a ReadOnlyCollection with a selector');
-
-    assert.equal(linkedList.average(), 3, 'Test average of numbers in a LinkedList');
-    assert.equal(linkedList.average(simpleNumericSelector), 6, 'Test average of numbers in a LinkedList with a selector');
-
-    assert.equal(hashSet.average(), 3, 'Test average of numbers in a HashSet');
-    assert.equal(hashSet.average(simpleNumericSelector), 6, 'Test average of numbers in a HashSet with a selector');
-
-    assert.equal(stack.average(), 3, 'Test average of numbers in a Stack');
-    assert.equal(stack.average(simpleNumericSelector), 6, 'Test average of numbers in a Stack with a selector');
-
-    assert.equal(queue.average(), 3, 'Test average of numbers in a Queue');
-    assert.equal(queue.average(simpleNumericSelector), 6, 'Test average of numbers in a Queue with a selector');
-
-    assert.equal(set.average(), 3, 'Test average of numbers in a Set');
-    assert.equal(set.average(simpleNumericSelector), 6, 'Test average of numbers in a Set with a selector');
-
-    assert.equal(map.average(function (t) {
-        return t[0];
-    }), 3, 'Test average of numbers in a Map with a selector');
-
-    assert.equal(dictionary.average(function (t) {
-        return t.key;
-    }), 3, 'Test average of numbers in a Dictionary with a selector');
-
-    assert.equal(lookup.average(function (t) {
-        return t.key;
-    }), 3, 'Test average of numbers in a Lookup with a selector');
-
-    assert.equal(sortedList.average(function (t) {
-        return t.key;
-    }), 3, 'Test average of numbers in a SortedList with a selector');
-});
+    qtest('basic "average" test', function (assert) {
+        assert.equal(mx__default['default'](array).average(), 3, 'Test average of first 5 numbers');
+        assert.equal(mx__default['default'](array).average(simpleNumericSelector), 6, 'Test average of first 5 numbers using a selector');
+    });
 
 
-qtest('"average" method validations', function (assert) {
-    assert.throws(function () {
-        mx([]).average();
-    }, 'no elements error');
+    qtest('collections "average" method tests', function (assert) {
+        assert.equal(enumerable.average(), 3, 'Test average of numbers in an enumerable');
+        assert.equal(enumerable.average(simpleNumericSelector), 6, 'Test average of numbers in an enumerable with a selector');
 
-    assert.throws(function () {
-        mx([]).average();
-    }, 'non numeric average error');
+        assert.equal(collection.average(), 3, 'Test average of numbers in a Collection');
+        assert.equal(collection.average(simpleNumericSelector), 6, 'Test average of numbers in a Collection with a selector');
 
-    assert.throws(function () {
-        mx(['a']).average(function (t) {
-            return t;
-        });
-    }, 'non numeric average with selector error');
+        assert.equal(list.average(), 3, 'Test average of numbers in a List');
+        assert.equal(list.average(simpleNumericSelector), 6, 'Test average of numbers in a List with a selector');
 
-    assert.throws(function () {
-        mx([1]).average(1);
-    }, 'non-function predicate');
-});
+        assert.equal(readOnlyCollection.average(), 3, 'Test average of numbers in a ReadOnlyCollection');
+        assert.equal(readOnlyCollection.average(simpleNumericSelector), 6, 'Test average of numbers in a ReadOnlyCollection with a selector');
+
+        assert.equal(linkedList.average(), 3, 'Test average of numbers in a LinkedList');
+        assert.equal(linkedList.average(simpleNumericSelector), 6, 'Test average of numbers in a LinkedList with a selector');
+
+        assert.equal(hashSet.average(), 3, 'Test average of numbers in a HashSet');
+        assert.equal(hashSet.average(simpleNumericSelector), 6, 'Test average of numbers in a HashSet with a selector');
+
+        assert.equal(stack.average(), 3, 'Test average of numbers in a Stack');
+        assert.equal(stack.average(simpleNumericSelector), 6, 'Test average of numbers in a Stack with a selector');
+
+        assert.equal(queue.average(), 3, 'Test average of numbers in a Queue');
+        assert.equal(queue.average(simpleNumericSelector), 6, 'Test average of numbers in a Queue with a selector');
+
+        assert.equal(set.average(), 3, 'Test average of numbers in a Set');
+        assert.equal(set.average(simpleNumericSelector), 6, 'Test average of numbers in a Set with a selector');
+
+        assert.equal(map.average(function (t) {
+            return t[0];
+        }), 3, 'Test average of numbers in a Map with a selector');
+
+        assert.equal(dictionary.average(function (t) {
+            return t.key;
+        }), 3, 'Test average of numbers in a Dictionary with a selector');
+
+        assert.equal(lookup.average(function (t) {
+            return t.key;
+        }), 3, 'Test average of numbers in a Lookup with a selector');
+
+        assert.equal(sortedList.average(function (t) {
+            return t.key;
+        }), 3, 'Test average of numbers in a SortedList with a selector');
+    });
+
+
+    qtest('"average" method validations', function (assert) {
+        assert.throws(function () {
+            mx__default['default']([]).average();
+        }, 'no elements error');
+
+        assert.throws(function () {
+            mx__default['default']([]).average();
+        }, 'non numeric average error');
+
+        assert.throws(function () {
+            mx__default['default'](['a']).average(function (t) {
+                return t;
+            });
+        }, 'non numeric average with selector error');
+
+        assert.throws(function () {
+            mx__default['default']([1]).average(1);
+        }, 'non-function predicate');
+    });
 
 })));
 
